@@ -1,7 +1,7 @@
 import {
   configurePlainrouter,
-  operationsEmq,
-  zOperationsEmqResponse,
+  getEmqReport,
+  zGetEmqReportResponse,
 } from '@plainrouter/sdk';
 
 let capturedRequest;
@@ -20,9 +20,9 @@ configurePlainrouter({
   signalTrackerSecret: 'production-smoke-secret',
 });
 
-const result = await operationsEmq();
+const result = await getEmqReport();
 
-zOperationsEmqResponse.parse(result.data);
+zGetEmqReportResponse.parse(result.data);
 
 if (capturedRequest?.headers.get('Authorization') !== 'Bearer production-smoke-secret') {
   throw new Error('Production SDK did not apply bearer authentication.');
