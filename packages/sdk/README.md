@@ -1,0 +1,11 @@
+# @plainrouter/sdk
+
+Generated TypeScript client and Zod schemas for PlainRouter's signed OpenAPI
+contract.
+
+This package is in `0.x` development. Its interface is unstable and carries no
+support promise yet.
+
+Configure authentication by injecting a `signalTrackerSecret` bearer token with
+the exported client configuration helper. No credential is embedded in the
+package.

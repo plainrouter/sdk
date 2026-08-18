@@ -2,6 +2,7 @@
 
 The Plainrouter CLI is a `0.x` interface over `@plainrouter/sdk`. It adds no API
 behavior: every API command delegates to one generated SDK operation.
+The interface is unstable and carries no support promise yet.
 
 Authentication uses `PLAINROUTER_TOKEN` first, then
 `$XDG_CONFIG_HOME/plainrouter/config.json` (or
