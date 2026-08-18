@@ -5,9 +5,8 @@ import json
 import os
 import re
 import sys
-from pathlib import Path
-
 import tomllib
+from pathlib import Path
 
 EXPECTED_ACTOR = "bursteri"
 ROOT = Path(__file__).resolve().parent.parent
