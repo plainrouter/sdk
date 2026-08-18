@@ -22,36 +22,34 @@ jobs:
           node-version-file: .nvmrc
           package-manager-cache: false
           registry-url: https://registry.npmjs.org
-      - name: Install pinned npm
-        run: npm install --global npm@11.19.0
       - name: Verify npm version
-        run: test "$(npm --version)" = "11.19.0"
+        run: test "$(corepack npm --version)" = "11.19.0"
       - name: Clean install
-        run: npm ci
+        run: corepack npm ci
       - name: Verify release versions and tag owner
-        run: npm run verify:release
+        run: corepack npm run verify:release
       - name: Verify signed contract
-        run: npm run verify:spec
+        run: corepack npm run verify:spec
       - name: Typecheck
-        run: npm run typecheck
+        run: corepack npm run typecheck
       - name: Test
-        run: npm test
+        run: corepack npm test
       - name: Build
-        run: npm run build
+        run: corepack npm run build
       - name: Verify generated SDK drift
         run: |
-          npm run generate
+          corepack npm run generate
           git diff --exit-code -- packages/sdk/src/generated
       - name: Pack SDK
         run: |
           mkdir -p build/npm
-          npm pack --workspace @plainrouter/sdk --json --pack-destination build/npm > build/npm/sdk-pack.json
+          corepack npm pack --workspace @plainrouter/sdk --json --pack-destination build/npm > build/npm/sdk-pack.json
           node scripts/verify-pack.mjs build/npm/sdk-pack.json sdk SDK_TARBALL
       - name: Pack CLI
         run: |
-          npm pack --workspace @plainrouter/cli --json --pack-destination build/npm > build/npm/cli-pack.json
+          corepack npm pack --workspace @plainrouter/cli --json --pack-destination build/npm > build/npm/cli-pack.json
           node scripts/verify-pack.mjs build/npm/cli-pack.json cli CLI_TARBALL
       - name: Publish SDK with provenance
-        run: npm publish "$SDK_TARBALL" --access public --provenance
+        run: corepack npm publish "$SDK_TARBALL" --access public --provenance
       - name: Publish CLI with provenance
-        run: npm publish "$CLI_TARBALL" --access public --provenance
+        run: corepack npm publish "$CLI_TARBALL" --access public --provenance

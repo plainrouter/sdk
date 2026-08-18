@@ -20,13 +20,13 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - name: Install pinned npm
-        run: npm install --global npm@11.19.0
-      - run: npm ci
-      - run: npm run verify:spec
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
+      - name: Verify pinned npm
+        run: test "$(corepack npm --version)" = "11.19.0"
+      - run: corepack npm ci
+      - run: corepack npm run verify:spec
+      - run: corepack npm run typecheck
+      - run: corepack npm test
+      - run: corepack npm run build
 
   production-install:
     name: Production install parity
@@ -39,12 +39,12 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - name: Install pinned npm
-        run: npm install --global npm@11.19.0
-      - run: npm ci
-      - run: npm run build
-      - run: npm prune --omit=dev
-      - run: npm run smoke:production
+      - name: Verify pinned npm
+        run: test "$(corepack npm --version)" = "11.19.0"
+      - run: corepack npm ci
+      - run: corepack npm run build
+      - run: corepack npm prune --omit=dev
+      - run: corepack npm run smoke:production
       - run: node packages/cli/bin/plainrouter.js --help
 
   secret-scan:
