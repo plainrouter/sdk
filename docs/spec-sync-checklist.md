@@ -12,7 +12,10 @@ unmerged until Robin countersigns it.
 - [ ] Run strict TypeScript typechecking.
 - [ ] Run the SDK tests without live network calls.
 - [ ] Regenerate again and confirm the committed generated output has no drift.
-- [ ] Confirm the informational spec-drift check reports that live and vendored hashes match.
+- [ ] Open the informational spec-drift job log and confirm it says
+      `Live contract matches vendored sha256 <Robin-provided hash>.`; a green job
+      alone is insufficient because mismatch and fetch-failure annotations do not
+      fail this check.
 - [ ] Confirm all required CI checks are green.
 
 Robin countersign: ____________________
