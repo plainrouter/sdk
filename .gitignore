@@ -4,3 +4,9 @@ dist/
 coverage/
 *.log
 .DS_Store
+__pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/

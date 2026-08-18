@@ -1,0 +1,8 @@
+{
+  "package_name_override": "generated",
+  "package_version_override": "0.2.0",
+  "post_hooks": [
+    "ruff check . --fix",
+    "ruff format ."
+  ]
+}
