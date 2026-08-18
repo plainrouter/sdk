@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { EventShowData, EventShowErrors, EventShowResponses, EventStoreData, EventStoreErrors, EventStoreResponses, OperationsDeleteUserDataData, OperationsDeleteUserDataErrors, OperationsDeleteUserDataResponses, OperationsEmqData, OperationsEmqErrors, OperationsEmqResponses, OperationsIndexData, OperationsIndexErrors, OperationsIndexResponses, OperationsReconciliationData, OperationsReconciliationErrors, OperationsReconciliationResponses, OperationsReplayData, OperationsReplayErrors, OperationsReplayResponses, OperationsSendTestData, OperationsSendTestErrors, OperationsSendTestResponses, OperationsTestModeData, OperationsTestModeErrors, OperationsTestModeResponses } from './types.gen.js';
+import type { CreateEventData, CreateEventErrors, CreateEventResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -18,7 +18,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
     meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
 
-export const eventStore = <ThrowOnError extends boolean = false>(options: Options<EventStoreData, ThrowOnError>): RequestResult<EventStoreResponses, EventStoreErrors, ThrowOnError> => (options.client ?? client).post<EventStoreResponses, EventStoreErrors, ThrowOnError>({
+export const createEvent = <ThrowOnError extends boolean = false>(options: Options<CreateEventData, ThrowOnError>): RequestResult<CreateEventResponses, CreateEventErrors, ThrowOnError> => (options.client ?? client).post<CreateEventResponses, CreateEventErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/events',
     ...options,
@@ -28,19 +28,19 @@ export const eventStore = <ThrowOnError extends boolean = false>(options: Option
     }
 });
 
-export const eventShow = <ThrowOnError extends boolean = false>(options: Options<EventShowData, ThrowOnError>): RequestResult<EventShowResponses, EventShowErrors, ThrowOnError> => (options.client ?? client).get<EventShowResponses, EventShowErrors, ThrowOnError>({
+export const getEvent = <ThrowOnError extends boolean = false>(options: Options<GetEventData, ThrowOnError>): RequestResult<GetEventResponses, GetEventErrors, ThrowOnError> => (options.client ?? client).get<GetEventResponses, GetEventErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/events/{event}',
     ...options
 });
 
-export const operationsIndex = <ThrowOnError extends boolean = false>(options?: Options<OperationsIndexData, ThrowOnError>): RequestResult<OperationsIndexResponses, OperationsIndexErrors, ThrowOnError> => (options?.client ?? client).get<OperationsIndexResponses, OperationsIndexErrors, ThrowOnError>({
+export const listEvents = <ThrowOnError extends boolean = false>(options?: Options<ListEventsData, ThrowOnError>): RequestResult<ListEventsResponses, ListEventsErrors, ThrowOnError> => (options?.client ?? client).get<ListEventsResponses, ListEventsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/dashboard/events',
     ...options
 });
 
-export const operationsTestMode = <ThrowOnError extends boolean = false>(options: Options<OperationsTestModeData, ThrowOnError>): RequestResult<OperationsTestModeResponses, OperationsTestModeErrors, ThrowOnError> => (options.client ?? client).patch<OperationsTestModeResponses, OperationsTestModeErrors, ThrowOnError>({
+export const setDestinationTestMode = <ThrowOnError extends boolean = false>(options: Options<SetDestinationTestModeData, ThrowOnError>): RequestResult<SetDestinationTestModeResponses, SetDestinationTestModeErrors, ThrowOnError> => (options.client ?? client).patch<SetDestinationTestModeResponses, SetDestinationTestModeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/destinations/{destination}/test-mode',
     ...options,
@@ -50,7 +50,7 @@ export const operationsTestMode = <ThrowOnError extends boolean = false>(options
     }
 });
 
-export const operationsSendTest = <ThrowOnError extends boolean = false>(options: Options<OperationsSendTestData, ThrowOnError>): RequestResult<OperationsSendTestResponses, OperationsSendTestErrors, ThrowOnError> => (options.client ?? client).post<OperationsSendTestResponses, OperationsSendTestErrors, ThrowOnError>({
+export const sendTestPurchase = <ThrowOnError extends boolean = false>(options: Options<SendTestPurchaseData, ThrowOnError>): RequestResult<SendTestPurchaseResponses, SendTestPurchaseErrors, ThrowOnError> => (options.client ?? client).post<SendTestPurchaseResponses, SendTestPurchaseErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/destinations/{destination}/test-purchase',
     ...options,
@@ -60,7 +60,7 @@ export const operationsSendTest = <ThrowOnError extends boolean = false>(options
     }
 });
 
-export const operationsReplay = <ThrowOnError extends boolean = false>(options?: Options<OperationsReplayData, ThrowOnError>): RequestResult<OperationsReplayResponses, OperationsReplayErrors, ThrowOnError> => (options?.client ?? client).post<OperationsReplayResponses, OperationsReplayErrors, ThrowOnError>({
+export const replayDeliveries = <ThrowOnError extends boolean = false>(options?: Options<ReplayDeliveriesData, ThrowOnError>): RequestResult<ReplayDeliveriesResponses, ReplayDeliveriesErrors, ThrowOnError> => (options?.client ?? client).post<ReplayDeliveriesResponses, ReplayDeliveriesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/deliveries/replay',
     ...options,
@@ -70,19 +70,19 @@ export const operationsReplay = <ThrowOnError extends boolean = false>(options?:
     }
 });
 
-export const operationsReconciliation = <ThrowOnError extends boolean = false>(options: Options<OperationsReconciliationData, ThrowOnError>): RequestResult<OperationsReconciliationResponses, OperationsReconciliationErrors, ThrowOnError> => (options.client ?? client).get<OperationsReconciliationResponses, OperationsReconciliationErrors, ThrowOnError>({
+export const getReconciliationReport = <ThrowOnError extends boolean = false>(options: Options<GetReconciliationReportData, ThrowOnError>): RequestResult<GetReconciliationReportResponses, GetReconciliationReportErrors, ThrowOnError> => (options.client ?? client).get<GetReconciliationReportResponses, GetReconciliationReportErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/reports/reconciliation',
     ...options
 });
 
-export const operationsEmq = <ThrowOnError extends boolean = false>(options?: Options<OperationsEmqData, ThrowOnError>): RequestResult<OperationsEmqResponses, OperationsEmqErrors, ThrowOnError> => (options?.client ?? client).get<OperationsEmqResponses, OperationsEmqErrors, ThrowOnError>({
+export const getEmqReport = <ThrowOnError extends boolean = false>(options?: Options<GetEmqReportData, ThrowOnError>): RequestResult<GetEmqReportResponses, GetEmqReportErrors, ThrowOnError> => (options?.client ?? client).get<GetEmqReportResponses, GetEmqReportErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/reports/emq',
     ...options
 });
 
-export const operationsDeleteUserData = <ThrowOnError extends boolean = false>(options: Options<OperationsDeleteUserDataData, ThrowOnError>): RequestResult<OperationsDeleteUserDataResponses, OperationsDeleteUserDataErrors, ThrowOnError> => (options.client ?? client).delete<OperationsDeleteUserDataResponses, OperationsDeleteUserDataErrors, ThrowOnError>({
+export const deleteUserData = <ThrowOnError extends boolean = false>(options: Options<DeleteUserDataData, ThrowOnError>): RequestResult<DeleteUserDataResponses, DeleteUserDataErrors, ThrowOnError> => (options.client ?? client).delete<DeleteUserDataResponses, DeleteUserDataErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/user-data',
     ...options,

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { configurePlainrouter, operationsEmq } from '../src/index.js';
+import { configurePlainrouter, getEmqReport } from '../src/index.js';
 
 describe('signalTrackerSecret authentication', () => {
   it('sets the bearer header from injected configuration without a network call', async () => {
@@ -22,7 +22,7 @@ describe('signalTrackerSecret authentication', () => {
       signalTrackerSecret: 'tracker-test-secret',
     });
 
-    const result = await operationsEmq();
+    const result = await getEmqReport();
 
     expect(result.data).toEqual({ snapshots: [] });
     expect(fetchMock).toHaveBeenCalledOnce();

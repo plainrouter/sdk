@@ -1,9 +1,9 @@
 {
-    "x-signed": true,
     "openapi": "3.1.0",
+    "x-signed": true,
     "info": {
         "title": "PlainRouter Conversion API",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "description": "PlainRouter public Signals Conversion API."
     },
     "servers": [
@@ -20,7 +20,7 @@
     "paths": {
         "/events": {
             "post": {
-                "operationId": "event.store",
+                "operationId": "createEvent",
                 "tags": [
                     "Event"
                 ],
@@ -182,7 +182,7 @@
         },
         "/events/{event}": {
             "get": {
-                "operationId": "event.show",
+                "operationId": "getEvent",
                 "tags": [
                     "Event"
                 ],
@@ -928,7 +928,7 @@
         },
         "/dashboard/events": {
             "get": {
-                "operationId": "operations.index",
+                "operationId": "listEvents",
                 "tags": [
                     "Operations"
                 ],
@@ -1356,7 +1356,7 @@
         },
         "/destinations/{destination}/test-mode": {
             "patch": {
-                "operationId": "operations.testMode",
+                "operationId": "setDestinationTestMode",
                 "tags": [
                     "Operations"
                 ],
@@ -1515,7 +1515,7 @@
         },
         "/destinations/{destination}/test-purchase": {
             "post": {
-                "operationId": "operations.sendTest",
+                "operationId": "sendTestPurchase",
                 "tags": [
                     "Operations"
                 ],
@@ -1664,7 +1664,7 @@
         },
         "/deliveries/replay": {
             "post": {
-                "operationId": "operations.replay",
+                "operationId": "replayDeliveries",
                 "tags": [
                     "Operations"
                 ],
@@ -1755,7 +1755,7 @@
         },
         "/reports/reconciliation": {
             "get": {
-                "operationId": "operations.reconciliation",
+                "operationId": "getReconciliationReport",
                 "tags": [
                     "Operations"
                 ],
@@ -2001,7 +2001,7 @@
         },
         "/reports/emq": {
             "get": {
-                "operationId": "operations.emq",
+                "operationId": "getEmqReport",
                 "tags": [
                     "Operations"
                 ],
@@ -2107,7 +2107,7 @@
         },
         "/user-data": {
             "delete": {
-                "operationId": "operations.deleteUserData",
+                "operationId": "deleteUserData",
                 "tags": [
                     "Operations"
                 ],

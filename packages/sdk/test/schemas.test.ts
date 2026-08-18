@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  zEventStoreResponse,
-  zOperationsEmqResponse,
+  zCreateEventResponse,
+  zGetEmqReportResponse,
 } from '../src/index.js';
 
 describe('generated response schemas', () => {
@@ -13,10 +13,10 @@ describe('generated response schemas', () => {
     };
 
     expect(
-      zEventStoreResponse.parse(JSON.parse(JSON.stringify(response))),
+      zCreateEventResponse.parse(JSON.parse(JSON.stringify(response))),
     ).toEqual(response);
     expect(() =>
-      zEventStoreResponse.parse({ event_id: 123, duplicate: false }),
+      zCreateEventResponse.parse({ event_id: 123, duplicate: false }),
     ).toThrow();
   });
 
@@ -24,10 +24,10 @@ describe('generated response schemas', () => {
     const response = { snapshots: [] };
 
     expect(
-      zOperationsEmqResponse.parse(JSON.parse(JSON.stringify(response))),
+      zGetEmqReportResponse.parse(JSON.parse(JSON.stringify(response))),
     ).toEqual(response);
     expect(() =>
-      zOperationsEmqResponse.parse({ snapshots: 'not-an-array' }),
+      zGetEmqReportResponse.parse({ snapshots: 'not-an-array' }),
     ).toThrow();
   });
 });

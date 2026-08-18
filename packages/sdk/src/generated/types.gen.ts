@@ -116,7 +116,7 @@ export type ValidationError = {
     };
 };
 
-export type EventStoreData = {
+export type CreateEventData = {
     body: {
         /**
          * Caller-supplied idempotency key; maximum 128 characters.
@@ -180,7 +180,7 @@ export type EventStoreData = {
     url: '/events';
 };
 
-export type EventStoreErrors = {
+export type CreateEventErrors = {
     /**
      * Invalid or missing Signal tracker secret.
      */
@@ -191,9 +191,9 @@ export type EventStoreErrors = {
     422: ValidationError;
 };
 
-export type EventStoreError = EventStoreErrors[keyof EventStoreErrors];
+export type CreateEventError = CreateEventErrors[keyof CreateEventErrors];
 
-export type EventStoreResponses = {
+export type CreateEventResponses = {
     /**
      * Duplicate event accepted idempotently.
      */
@@ -210,9 +210,9 @@ export type EventStoreResponses = {
     };
 };
 
-export type EventStoreResponse = EventStoreResponses[keyof EventStoreResponses];
+export type CreateEventResponse = CreateEventResponses[keyof CreateEventResponses];
 
-export type EventShowData = {
+export type GetEventData = {
     body?: never;
     path: {
         event: string;
@@ -221,7 +221,7 @@ export type EventShowData = {
     url: '/events/{event}';
 };
 
-export type EventShowErrors = {
+export type GetEventErrors = {
     /**
      * Invalid or missing Signal tracker secret.
      */
@@ -232,9 +232,9 @@ export type EventShowErrors = {
     404: ErrorMessage;
 };
 
-export type EventShowError = EventShowErrors[keyof EventShowErrors];
+export type GetEventError = GetEventErrors[keyof GetEventErrors];
 
-export type EventShowResponses = {
+export type GetEventResponses = {
     /**
      * Event, lineage, and destination delivery state.
      */
@@ -374,9 +374,9 @@ export type EventShowResponses = {
     };
 };
 
-export type EventShowResponse = EventShowResponses[keyof EventShowResponses];
+export type GetEventResponse = GetEventResponses[keyof GetEventResponses];
 
-export type OperationsIndexData = {
+export type ListEventsData = {
     body?: never;
     path?: never;
     query?: {
@@ -388,16 +388,16 @@ export type OperationsIndexData = {
     url: '/dashboard/events';
 };
 
-export type OperationsIndexErrors = {
+export type ListEventsErrors = {
     /**
      * Invalid or missing Signal tracker secret.
      */
     401: ErrorMessage;
 };
 
-export type OperationsIndexError = OperationsIndexErrors[keyof OperationsIndexErrors];
+export type ListEventsError = ListEventsErrors[keyof ListEventsErrors];
 
-export type OperationsIndexResponses = {
+export type ListEventsResponses = {
     /**
      * Paginated events and delivery acceptance metrics.
      */
@@ -478,9 +478,9 @@ export type OperationsIndexResponses = {
     };
 };
 
-export type OperationsIndexResponse = OperationsIndexResponses[keyof OperationsIndexResponses];
+export type ListEventsResponse = ListEventsResponses[keyof ListEventsResponses];
 
-export type OperationsTestModeData = {
+export type SetDestinationTestModeData = {
     body: {
         enabled: boolean;
         test_event_code?: string | null;
@@ -495,7 +495,7 @@ export type OperationsTestModeData = {
     url: '/destinations/{destination}/test-mode';
 };
 
-export type OperationsTestModeErrors = {
+export type SetDestinationTestModeErrors = {
     /**
      * Invalid or missing Signal tracker secret.
      */
@@ -510,9 +510,9 @@ export type OperationsTestModeErrors = {
     422: ValidationError;
 };
 
-export type OperationsTestModeError = OperationsTestModeErrors[keyof OperationsTestModeErrors];
+export type SetDestinationTestModeError = SetDestinationTestModeErrors[keyof SetDestinationTestModeErrors];
 
-export type OperationsTestModeResponses = {
+export type SetDestinationTestModeResponses = {
     /**
      * Updated destination and its effective test-mode state.
      */
@@ -534,9 +534,9 @@ export type OperationsTestModeResponses = {
     };
 };
 
-export type OperationsTestModeResponse = OperationsTestModeResponses[keyof OperationsTestModeResponses];
+export type SetDestinationTestModeResponse = SetDestinationTestModeResponses[keyof SetDestinationTestModeResponses];
 
-export type OperationsSendTestData = {
+export type SendTestPurchaseData = {
     body?: {
         value?: string | null;
         currency?: string | null;
@@ -552,7 +552,7 @@ export type OperationsSendTestData = {
     url: '/destinations/{destination}/test-purchase';
 };
 
-export type OperationsSendTestErrors = {
+export type SendTestPurchaseErrors = {
     /**
      * Invalid or missing Signal tracker secret.
      */
@@ -575,9 +575,9 @@ export type OperationsSendTestErrors = {
     };
 };
 
-export type OperationsSendTestError = OperationsSendTestErrors[keyof OperationsSendTestErrors];
+export type SendTestPurchaseError = SendTestPurchaseErrors[keyof SendTestPurchaseErrors];
 
-export type OperationsSendTestResponses = {
+export type SendTestPurchaseResponses = {
     /**
      * Meta accepted the test purchase.
      */
@@ -588,9 +588,9 @@ export type OperationsSendTestResponses = {
     };
 };
 
-export type OperationsSendTestResponse = OperationsSendTestResponses[keyof OperationsSendTestResponses];
+export type SendTestPurchaseResponse = SendTestPurchaseResponses[keyof SendTestPurchaseResponses];
 
-export type OperationsReplayData = {
+export type ReplayDeliveriesData = {
     body?: {
         delivery_ids?: Array<number>;
         event_name?: string | null;
@@ -601,7 +601,7 @@ export type OperationsReplayData = {
     url: '/deliveries/replay';
 };
 
-export type OperationsReplayErrors = {
+export type ReplayDeliveriesErrors = {
     /**
      * Invalid or missing Signal tracker secret.
      */
@@ -612,9 +612,9 @@ export type OperationsReplayErrors = {
     422: ValidationError;
 };
 
-export type OperationsReplayError = OperationsReplayErrors[keyof OperationsReplayErrors];
+export type ReplayDeliveriesError = ReplayDeliveriesErrors[keyof ReplayDeliveriesErrors];
 
-export type OperationsReplayResponses = {
+export type ReplayDeliveriesResponses = {
     /**
      * Replay candidates were evaluated and eligible deliveries queued.
      */
@@ -626,9 +626,9 @@ export type OperationsReplayResponses = {
     };
 };
 
-export type OperationsReplayResponse = OperationsReplayResponses[keyof OperationsReplayResponses];
+export type ReplayDeliveriesResponse = ReplayDeliveriesResponses[keyof ReplayDeliveriesResponses];
 
-export type OperationsReconciliationData = {
+export type GetReconciliationReportData = {
     body?: never;
     path?: never;
     query: {
@@ -637,7 +637,7 @@ export type OperationsReconciliationData = {
     url: '/reports/reconciliation';
 };
 
-export type OperationsReconciliationErrors = {
+export type GetReconciliationReportErrors = {
     /**
      * Invalid or missing Signal tracker secret.
      */
@@ -648,9 +648,9 @@ export type OperationsReconciliationErrors = {
     422: ValidationError;
 };
 
-export type OperationsReconciliationError = OperationsReconciliationErrors[keyof OperationsReconciliationErrors];
+export type GetReconciliationReportError = GetReconciliationReportErrors[keyof GetReconciliationReportErrors];
 
-export type OperationsReconciliationResponses = {
+export type GetReconciliationReportResponses = {
     /**
      * Stored reconciliation reports for the requested date.
      */
@@ -700,25 +700,25 @@ export type OperationsReconciliationResponses = {
     };
 };
 
-export type OperationsReconciliationResponse = OperationsReconciliationResponses[keyof OperationsReconciliationResponses];
+export type GetReconciliationReportResponse = GetReconciliationReportResponses[keyof GetReconciliationReportResponses];
 
-export type OperationsEmqData = {
+export type GetEmqReportData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/reports/emq';
 };
 
-export type OperationsEmqErrors = {
+export type GetEmqReportErrors = {
     /**
      * Invalid or missing Signal tracker secret.
      */
     401: ErrorMessage;
 };
 
-export type OperationsEmqError = OperationsEmqErrors[keyof OperationsEmqErrors];
+export type GetEmqReportError = GetEmqReportErrors[keyof GetEmqReportErrors];
 
-export type OperationsEmqResponses = {
+export type GetEmqReportResponses = {
     /**
      * Recent event-match-quality snapshots.
      */
@@ -740,9 +740,9 @@ export type OperationsEmqResponses = {
     };
 };
 
-export type OperationsEmqResponse = OperationsEmqResponses[keyof OperationsEmqResponses];
+export type GetEmqReportResponse = GetEmqReportResponses[keyof GetEmqReportResponses];
 
-export type OperationsDeleteUserDataData = {
+export type DeleteUserDataData = {
     body: {
         identifier_type: 'email' | 'phone' | 'external_id';
         identifier_hash: string;
@@ -752,7 +752,7 @@ export type OperationsDeleteUserDataData = {
     url: '/user-data';
 };
 
-export type OperationsDeleteUserDataErrors = {
+export type DeleteUserDataErrors = {
     /**
      * Invalid or missing Signal tracker secret.
      */
@@ -763,9 +763,9 @@ export type OperationsDeleteUserDataErrors = {
     422: ValidationError;
 };
 
-export type OperationsDeleteUserDataError = OperationsDeleteUserDataErrors[keyof OperationsDeleteUserDataErrors];
+export type DeleteUserDataError = DeleteUserDataErrors[keyof DeleteUserDataErrors];
 
-export type OperationsDeleteUserDataResponses = {
+export type DeleteUserDataResponses = {
     /**
      * Completed idempotent deletion request.
      */
@@ -778,4 +778,4 @@ export type OperationsDeleteUserDataResponses = {
     };
 };
 
-export type OperationsDeleteUserDataResponse = OperationsDeleteUserDataResponses[keyof OperationsDeleteUserDataResponses];
+export type DeleteUserDataResponse = DeleteUserDataResponses[keyof DeleteUserDataResponses];

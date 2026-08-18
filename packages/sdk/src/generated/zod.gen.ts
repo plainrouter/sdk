@@ -124,7 +124,7 @@ export const zValidationError = z.object({
     errors: z.record(z.string(), z.array(z.string()))
 });
 
-export const zEventStoreBody = z.object({
+export const zCreateEventBody = z.object({
     event_id: z.string().optional(),
     event_name: z.string(),
     parent_event_id: z.string().optional(),
@@ -147,7 +147,7 @@ export const zEventStoreBody = z.object({
     }).optional()
 });
 
-export const zEventStoreResponse = z.union([
+export const zCreateEventResponse = z.union([
     z.object({
         event_id: z.string(),
         duplicate: z.boolean()
@@ -158,14 +158,14 @@ export const zEventStoreResponse = z.union([
     })
 ]);
 
-export const zEventShowPath = z.object({
+export const zGetEventPath = z.object({
     event: z.string()
 });
 
 /**
  * Event, lineage, and destination delivery state.
  */
-export const zEventShowResponse = z.object({
+export const zGetEventResponse = z.object({
     event: z.object({
         id: z.string(),
         signal_tracker_id: z.string(),
@@ -319,14 +319,14 @@ export const zEventShowResponse = z.object({
     })))
 });
 
-export const zOperationsIndexQuery = z.object({
+export const zListEventsQuery = z.object({
     per_page: z.int().optional().default(25)
 });
 
 /**
  * Paginated events and delivery acceptance metrics.
  */
-export const zOperationsIndexResponse = z.object({
+export const zListEventsResponse = z.object({
     events: z.object({
         current_page: z.int(),
         data: z.array(z.object({
@@ -409,19 +409,19 @@ export const zOperationsIndexResponse = z.object({
     })
 });
 
-export const zOperationsTestModeBody = z.object({
+export const zSetDestinationTestModeBody = z.object({
     enabled: z.boolean(),
     test_event_code: z.string().max(100).nullish()
 });
 
-export const zOperationsTestModePath = z.object({
+export const zSetDestinationTestModePath = z.object({
     destination: z.string()
 });
 
 /**
  * Updated destination and its effective test-mode state.
  */
-export const zOperationsTestModeResponse = z.object({
+export const zSetDestinationTestModeResponse = z.object({
     destination: z.object({
         id: z.string(),
         signal_tracker_id: z.string(),
@@ -439,26 +439,26 @@ export const zOperationsTestModeResponse = z.object({
     test_mode: z.boolean()
 });
 
-export const zOperationsSendTestBody = z.object({
+export const zSendTestPurchaseBody = z.object({
     value: z.string().regex(/^-?\d+(?:\.\d+)?$/).nullish(),
     currency: z.string().length(3).nullish(),
     order_id: z.string().max(128).nullish()
 });
 
-export const zOperationsSendTestPath = z.object({
+export const zSendTestPurchasePath = z.object({
     destination: z.string()
 });
 
 /**
  * Meta accepted the test purchase.
  */
-export const zOperationsSendTestResponse = z.object({
+export const zSendTestPurchaseResponse = z.object({
     event_id: z.string(),
     status: zDeliveryStatus,
     trace_id: z.string().nullable()
 });
 
-export const zOperationsReplayBody = z.object({
+export const zReplayDeliveriesBody = z.object({
     delivery_ids: z.array(z.int()).optional(),
     event_name: z.string().max(100).nullish(),
     limit: z.int().gte(1).nullish()
@@ -467,21 +467,21 @@ export const zOperationsReplayBody = z.object({
 /**
  * Replay candidates were evaluated and eligible deliveries queued.
  */
-export const zOperationsReplayResponse = z.object({
+export const zReplayDeliveriesResponse = z.object({
     queued: z.int(),
     expired: z.int(),
     payload_expired: z.int(),
     capped: z.boolean()
 });
 
-export const zOperationsReconciliationQuery = z.object({
+export const zGetReconciliationReportQuery = z.object({
     date: z.iso.date()
 });
 
 /**
  * Stored reconciliation reports for the requested date.
  */
-export const zOperationsReconciliationResponse = z.object({
+export const zGetReconciliationReportResponse = z.object({
     date: z.string(),
     reports: z.array(z.object({
         id: z.int(),
@@ -530,7 +530,7 @@ export const zOperationsReconciliationResponse = z.object({
 /**
  * Recent event-match-quality snapshots.
  */
-export const zOperationsEmqResponse = z.object({
+export const zGetEmqReportResponse = z.object({
     snapshots: z.array(z.object({
         id: z.int(),
         signal_tracker_id: z.string(),
@@ -548,7 +548,7 @@ export const zOperationsEmqResponse = z.object({
     }))
 });
 
-export const zOperationsDeleteUserDataBody = z.object({
+export const zDeleteUserDataBody = z.object({
     identifier_type: z.enum([
         'email',
         'phone',
@@ -560,7 +560,7 @@ export const zOperationsDeleteUserDataBody = z.object({
 /**
  * Completed idempotent deletion request.
  */
-export const zOperationsDeleteUserDataResponse = z.object({
+export const zDeleteUserDataResponse = z.object({
     deletion_request_id: z.string(),
     duplicate: z.boolean(),
     events_updated: z.int(),
