@@ -5,14 +5,13 @@ on:
     tags:
       - 'v*.*.*'
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
   publish:
     name: Verify, pack, and publish
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -53,3 +52,20 @@ jobs:
         run: corepack npm publish "$SDK_TARBALL" --access public --provenance
       - name: Publish CLI with provenance
         run: corepack npm publish "$CLI_TARBALL" --access public --provenance
+
+  post-publish-smoke:
+    name: Install published packages
+    needs: publish
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Verify published packages
+        run: node scripts/post-publish-smoke.mjs

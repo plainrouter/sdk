@@ -6,6 +6,7 @@ on:
       - spec/**
       - packages/cli/**
       - packages/sdk/**
+      - packages/python/**
       - openapi-ts.config.ts
       - package.json
       - package-lock.json
@@ -30,3 +31,29 @@ jobs:
       - run: corepack npm ci
       - run: corepack npm run generate
       - run: git diff --exit-code -- packages/sdk/src/generated
+
+  python-generate-drift:
+    name: Generated Python SDK is current
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.11.16'
+          cache: pip
+          cache-dependency-path: packages/python/requirements-dev.txt
+      - name: Install pinned Python dependencies
+        working-directory: packages/python
+        run: python -m pip install --disable-pip-version-check -r requirements-dev.txt
+      - name: Regenerate Python SDK
+        run: >-
+          openapi-python-client generate
+          --path spec/openapi.json
+          --config packages/python/openapi-python-client.json
+          --meta none
+          --output-path packages/python/src/plainrouter/generated
+          --overwrite
+          --fail-on-warning
+      - run: git diff --exit-code -- packages/python/src/plainrouter/generated
