@@ -1,0 +1,33 @@
+{
+  "name": "plainrouter-sdk-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/sdk",
+    "packages/cli"
+  ],
+  "engines": {
+    "node": ">=22.22.2 <23",
+    "npm": "10.9.7"
+  },
+  "packageManager": "npm@10.9.7",
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "generate": "openapi-ts",
+    "smoke:production": "node scripts/production-smoke.mjs",
+    "spec:drift": "node scripts/check-spec-drift.mjs",
+    "test": "npm run test --workspace=@plainrouter/sdk",
+    "typecheck": "npm run typecheck --workspace=@plainrouter/sdk",
+    "verify:spec": "node scripts/verify-spec.mjs"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
+    "@types/node": "22.20.1",
+    "typescript": "6.0.3",
+    "vitest": "4.1.10"
+  },
+  "overrides": {
+    "js-yaml": "4.3.1"
+  }
+}
