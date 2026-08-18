@@ -28,6 +28,6 @@ client = create_client("your-signal-tracker-secret")
 response = await get_event.asyncio(event="event-id", client=client)
 ```
 
-The default API base is `https://plainrouter.com/api/v1`. Pass `base_url` to `create_client` to override it. Credentials are supplied by the caller and are never embedded in the SDK.
+The default API base is `https://plainrouter.com/api/v1` and the default request timeout is 30 seconds. Pass `base_url` or an `httpx.Timeout` to `create_client` to override either setting. Credentials are supplied by the caller and are never embedded in the SDK.
 
 Licensed under Apache-2.0.

@@ -13,19 +13,17 @@ def main() -> None:
     wheel = Path(sys.argv[1])
     sdist = Path(sys.argv[2])
     with zipfile.ZipFile(wheel) as archive:
-        wheel_files = sorted(
-            name for name in archive.namelist() if not name.endswith("/")
-        )
+        wheel_files = sorted(name for name in archive.namelist() if not name.endswith("/"))
     with tarfile.open(sdist, "r:gz") as archive:
-        sdist_files = sorted(
-            member.name for member in archive.getmembers() if member.isfile()
-        )
+        sdist_files = sorted(member.name for member in archive.getmembers() if member.isfile())
 
     assert_distribution_is_clean(wheel_files, "wheel")
     assert_distribution_is_clean(sdist_files, "sdist")
     require_suffix(wheel_files, "plainrouter/__init__.py", "wheel")
     require_suffix(wheel_files, "plainrouter/client.py", "wheel")
+    require_suffix(wheel_files, "plainrouter/py.typed", "wheel")
     require_suffix(wheel_files, ".dist-info/licenses/LICENSE", "wheel")
+    require_suffix(sdist_files, "/src/plainrouter/py.typed", "sdist")
     require_suffix(sdist_files, "/README.md", "sdist")
     require_suffix(sdist_files, "/LICENSE", "sdist")
 
@@ -37,9 +35,7 @@ def main() -> None:
 
 def assert_distribution_is_clean(files: list[str], label: str) -> None:
     forbidden = ("/tests/", "/test/", "/spec/", ".map", ".pyc", "__pycache__", ".env")
-    offenders = [
-        name for name in files if any(fragment in f"/{name}" for fragment in forbidden)
-    ]
+    offenders = [name for name in files if any(fragment in f"/{name}" for fragment in forbidden)]
     if offenders:
         raise RuntimeError(f"{label} contains forbidden files: {', '.join(offenders)}")
 

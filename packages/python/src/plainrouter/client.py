@@ -25,7 +25,7 @@ def create_client(
     return AuthenticatedClient(
         base_url=base_url,
         token=signal_tracker_secret,
-        timeout=timeout,
+        timeout=httpx.Timeout(30.0) if timeout is None else timeout,
         verify_ssl=verify_ssl,
         follow_redirects=follow_redirects,
         raise_on_unexpected_status=raise_on_unexpected_status,

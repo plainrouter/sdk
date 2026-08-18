@@ -19,6 +19,19 @@ const run = (command, args, cwd) =>
     env: process.env,
     stdio: 'pipe',
   });
+const assertSuccessful = (result, description) => {
+  if (result.error) {
+    throw new Error(`${description} failed to start: ${result.error.message}`, { cause: result.error });
+  }
+
+  if (result.status === null) {
+    throw new Error(`${description} ended without an exit status.`);
+  }
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr?.trim() || result.stdout?.trim() || `${description} exited with ${result.status}.`);
+  }
+};
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 let lastFailure;
@@ -46,9 +59,7 @@ for (let attempt = 1; attempt <= attempts; attempt += 1) {
       installationDirectory,
     );
 
-    if (installation.status !== 0) {
-      throw new Error(installation.stderr.trim() || installation.stdout.trim());
-    }
+    assertSuccessful(installation, 'Package installation');
 
     const sdkImport = run(
       process.execPath,
@@ -56,9 +67,7 @@ for (let attempt = 1; attempt <= attempts; attempt += 1) {
       installationDirectory,
     );
 
-    if (sdkImport.status !== 0) {
-      throw new Error(sdkImport.stderr.trim() || sdkImport.stdout.trim());
-    }
+    assertSuccessful(sdkImport, 'SDK import');
 
     const cliHelp = run(
       join(installationDirectory, 'node_modules', '.bin', 'plainrouter'),
@@ -66,8 +75,10 @@ for (let attempt = 1; attempt <= attempts; attempt += 1) {
       installationDirectory,
     );
 
-    if (cliHelp.status !== 0 || !cliHelp.stdout.includes('Plainrouter Signals API')) {
-      throw new Error(cliHelp.stderr.trim() || cliHelp.stdout.trim() || 'CLI help output was unexpected.');
+    assertSuccessful(cliHelp, 'CLI help');
+
+    if (!cliHelp.stdout.includes('Plainrouter Signals API')) {
+      throw new Error('CLI help output was unexpected.');
     }
 
     console.log(`Verified published @plainrouter/sdk and @plainrouter/cli ${requestedVersion}.`);
