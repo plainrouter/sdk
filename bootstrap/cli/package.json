@@ -1,0 +1,18 @@
+{
+  "name": "@plainrouter/cli",
+  "version": "0.0.0",
+  "description": "Bootstrap placeholder for the PlainRouter CLI.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wudaku/plainrouter-sdk.git",
+    "directory": "packages/cli"
+  },
+  "files": [
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
