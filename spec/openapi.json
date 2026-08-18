@@ -3,7 +3,7 @@
     "x-signed": true,
     "info": {
         "title": "PlainRouter Conversion API",
-        "version": "0.2.0",
+        "version": "0.3.1",
         "description": "PlainRouter public Signals Conversion API."
     },
     "servers": [
@@ -67,9 +67,23 @@
                                         "type": "string",
                                         "description": "Optional visitor identifier; maximum 255 characters."
                                     },
+                                    "consent_basis": {
+                                        "type": "string",
+                                        "description": "Legal basis for processing: consent or legitimate_interest."
+                                    },
                                     "consent": {
                                         "type": "object",
                                         "description": "Consent state supplied with the event.",
+                                        "additionalProperties": {}
+                                    },
+                                    "consent_mode": {
+                                        "type": "object",
+                                        "description": "Consent Mode v2 signal values supplied with the event.",
+                                        "additionalProperties": {}
+                                    },
+                                    "tcf": {
+                                        "type": "object",
+                                        "description": "TCF v2 data containing string and optional captured_at.",
                                         "additionalProperties": {}
                                     },
                                     "user_data": {
@@ -106,7 +120,8 @@
                                     }
                                 },
                                 "required": [
-                                    "event_name"
+                                    "event_name",
+                                    "consent_basis"
                                 ]
                             }
                         }
@@ -173,6 +188,70 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/verification-events": {
+            "post": {
+                "operationId": "verifySignalIngestion",
+                "tags": [
+                    "Event"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The idempotent server verification event already exists.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "event_id": {
+                                            "type": "string"
+                                        },
+                                        "duplicate": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "event_id",
+                                        "duplicate"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "202": {
+                        "description": "Server-side Signal ingestion verified.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "event_id": {
+                                            "type": "string"
+                                        },
+                                        "duplicate": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "event_id",
+                                        "duplicate"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or missing Signal tracker secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
                                 }
                             }
                         }
@@ -250,6 +329,21 @@
                                                     ]
                                                 },
                                                 "created_at": {
+                                                    "type": "string"
+                                                },
+                                                "consent_basis": {
+                                                    "type": "string"
+                                                },
+                                                "measurement_class": {
+                                                    "type": "string"
+                                                },
+                                                "attribution_join": {
+                                                    "type": "string"
+                                                },
+                                                "enforcement_scope": {
+                                                    "type": "string"
+                                                },
+                                                "consent_normalization_version": {
                                                     "type": "string"
                                                 },
                                                 "consent": {
@@ -447,6 +541,11 @@
                                                 "value_amount",
                                                 "value_currency",
                                                 "created_at",
+                                                "consent_basis",
+                                                "measurement_class",
+                                                "attribution_join",
+                                                "enforcement_scope",
+                                                "consent_normalization_version",
                                                 "consent",
                                                 "user_data_hashed",
                                                 "click_ids",
@@ -509,6 +608,21 @@
                                                             ]
                                                         },
                                                         "created_at": {
+                                                            "type": "string"
+                                                        },
+                                                        "consent_basis": {
+                                                            "type": "string"
+                                                        },
+                                                        "measurement_class": {
+                                                            "type": "string"
+                                                        },
+                                                        "attribution_join": {
+                                                            "type": "string"
+                                                        },
+                                                        "enforcement_scope": {
+                                                            "type": "string"
+                                                        },
+                                                        "consent_normalization_version": {
                                                             "type": "string"
                                                         },
                                                         "consent": {
@@ -608,6 +722,11 @@
                                                         "value_amount",
                                                         "value_currency",
                                                         "created_at",
+                                                        "consent_basis",
+                                                        "measurement_class",
+                                                        "attribution_join",
+                                                        "enforcement_scope",
+                                                        "consent_normalization_version",
                                                         "consent",
                                                         "user_data_hashed",
                                                         "click_ids",
@@ -665,6 +784,21 @@
                                                                 ]
                                                             },
                                                             "created_at": {
+                                                                "type": "string"
+                                                            },
+                                                            "consent_basis": {
+                                                                "type": "string"
+                                                            },
+                                                            "measurement_class": {
+                                                                "type": "string"
+                                                            },
+                                                            "attribution_join": {
+                                                                "type": "string"
+                                                            },
+                                                            "enforcement_scope": {
+                                                                "type": "string"
+                                                            },
+                                                            "consent_normalization_version": {
                                                                 "type": "string"
                                                             },
                                                             "consent": {
@@ -764,6 +898,11 @@
                                                             "value_amount",
                                                             "value_currency",
                                                             "created_at",
+                                                            "consent_basis",
+                                                            "measurement_class",
+                                                            "attribution_join",
+                                                            "enforcement_scope",
+                                                            "consent_normalization_version",
                                                             "consent",
                                                             "user_data_hashed",
                                                             "click_ids",
@@ -1007,6 +1146,21 @@
                                                             "created_at": {
                                                                 "type": "string"
                                                             },
+                                                            "consent_basis": {
+                                                                "type": "string"
+                                                            },
+                                                            "measurement_class": {
+                                                                "type": "string"
+                                                            },
+                                                            "attribution_join": {
+                                                                "type": "string"
+                                                            },
+                                                            "enforcement_scope": {
+                                                                "type": "string"
+                                                            },
+                                                            "consent_normalization_version": {
+                                                                "type": "string"
+                                                            },
                                                             "consent": {
                                                                 "anyOf": [
                                                                     {
@@ -1202,6 +1356,11 @@
                                                             "value_amount",
                                                             "value_currency",
                                                             "created_at",
+                                                            "consent_basis",
+                                                            "measurement_class",
+                                                            "attribution_join",
+                                                            "enforcement_scope",
+                                                            "consent_normalization_version",
                                                             "consent",
                                                             "user_data_hashed",
                                                             "click_ids",
@@ -1649,10 +1808,10 @@
                                 "schema": {
                                     "anyOf": [
                                         {
-                                            "$ref": "#/components/schemas/ErrorMessage"
+                                            "$ref": "#/components/schemas/ValidationError"
                                         },
                                         {
-                                            "$ref": "#/components/schemas/ValidationError"
+                                            "$ref": "#/components/schemas/ErrorMessage"
                                         }
                                     ]
                                 }
@@ -2429,6 +2588,21 @@
                         "type": "string",
                         "format": "date-time"
                     },
+                    "consent_basis": {
+                        "type": "string"
+                    },
+                    "measurement_class": {
+                        "type": "string"
+                    },
+                    "attribution_join": {
+                        "type": "string"
+                    },
+                    "enforcement_scope": {
+                        "type": "string"
+                    },
+                    "consent_normalization_version": {
+                        "type": "string"
+                    },
                     "consent": {
                         "type": "string"
                     },
@@ -2467,6 +2641,11 @@
                     "value_amount",
                     "value_currency",
                     "created_at",
+                    "consent_basis",
+                    "measurement_class",
+                    "attribution_join",
+                    "enforcement_scope",
+                    "consent_normalization_version",
                     "consent",
                     "user_data_hashed",
                     "click_ids",

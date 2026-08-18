@@ -87,6 +87,11 @@ export const zEvent = z.object({
     value_amount: z.int().nullable(),
     value_currency: z.string().nullable(),
     created_at: z.iso.datetime(),
+    consent_basis: z.string(),
+    measurement_class: z.string(),
+    attribution_join: z.string(),
+    enforcement_scope: z.string(),
+    consent_normalization_version: z.string(),
     consent: z.string(),
     user_data_hashed: z.string(),
     click_ids: z.string(),
@@ -135,7 +140,10 @@ export const zCreateEventBody = z.object({
     event_source: z.url().optional(),
     action_source: z.string().optional(),
     visitor_id: z.string().optional(),
+    consent_basis: z.string(),
     consent: z.record(z.string(), z.unknown()).optional(),
+    consent_mode: z.record(z.string(), z.unknown()).optional(),
+    tcf: z.record(z.string(), z.unknown()).optional(),
     user_data: z.record(z.string(), z.unknown()).optional(),
     click_ids: z.record(z.string(), z.unknown()).optional(),
     value_data: z.object({
@@ -148,6 +156,17 @@ export const zCreateEventBody = z.object({
 });
 
 export const zCreateEventResponse = z.union([
+    z.object({
+        event_id: z.string(),
+        duplicate: z.boolean()
+    }),
+    z.object({
+        event_id: z.string(),
+        duplicate: z.boolean()
+    })
+]);
+
+export const zVerifySignalIngestionResponse = z.union([
     z.object({
         event_id: z.string(),
         duplicate: z.boolean()
@@ -178,6 +197,11 @@ export const zGetEventResponse = z.object({
         value_amount: z.int().nullable(),
         value_currency: z.string().nullable(),
         created_at: z.string(),
+        consent_basis: z.string(),
+        measurement_class: z.string(),
+        attribution_join: z.string(),
+        enforcement_scope: z.string(),
+        consent_normalization_version: z.string(),
         consent: z.union([
             z.record(z.string(), z.unknown()),
             z.array(z.unknown())
@@ -235,6 +259,11 @@ export const zGetEventResponse = z.object({
             value_amount: z.int().nullable(),
             value_currency: z.string().nullable(),
             created_at: z.string(),
+            consent_basis: z.string(),
+            measurement_class: z.string(),
+            attribution_join: z.string(),
+            enforcement_scope: z.string(),
+            consent_normalization_version: z.string(),
             consent: z.union([
                 z.record(z.string(), z.unknown()),
                 z.array(z.unknown())
@@ -270,6 +299,11 @@ export const zGetEventResponse = z.object({
             value_amount: z.int().nullable(),
             value_currency: z.string().nullable(),
             created_at: z.string(),
+            consent_basis: z.string(),
+            measurement_class: z.string(),
+            attribution_join: z.string(),
+            enforcement_scope: z.string(),
+            consent_normalization_version: z.string(),
             consent: z.union([
                 z.record(z.string(), z.unknown()),
                 z.array(z.unknown())
@@ -341,6 +375,11 @@ export const zListEventsResponse = z.object({
             value_amount: z.int().nullable(),
             value_currency: z.string().nullable(),
             created_at: z.string(),
+            consent_basis: z.string(),
+            measurement_class: z.string(),
+            attribution_join: z.string(),
+            enforcement_scope: z.string(),
+            consent_normalization_version: z.string(),
             consent: z.union([
                 z.record(z.string(), z.unknown()),
                 z.array(z.unknown())

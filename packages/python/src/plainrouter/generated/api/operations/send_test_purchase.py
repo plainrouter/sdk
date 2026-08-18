@@ -61,14 +61,14 @@ def _parse_response(
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                response_422_type_0 = ErrorMessage.from_dict(data)
+                response_422_type_0 = ValidationError.from_dict(data)
 
                 return response_422_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
                 pass
             if not isinstance(data, dict):
                 raise TypeError()
-            response_422_type_1 = ValidationError.from_dict(data)
+            response_422_type_1 = ErrorMessage.from_dict(data)
 
             return response_422_type_1
 

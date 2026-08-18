@@ -45,6 +45,11 @@ class ListEventsResponse200EventsDataItem:
         value_amount (int | None):
         value_currency (None | str):
         created_at (str):
+        consent_basis (str):
+        measurement_class (str):
+        attribution_join (str):
+        enforcement_scope (str):
+        consent_normalization_version (str):
         consent (list[Any] | ListEventsResponse200EventsDataItemConsentType0 | None):
         user_data_hashed (list[Any] | ListEventsResponse200EventsDataItemUserDataHashedType0 | None):
         click_ids (list[Any] | ListEventsResponse200EventsDataItemClickIdsType0 | None):
@@ -66,6 +71,11 @@ class ListEventsResponse200EventsDataItem:
     value_amount: int | None
     value_currency: None | str
     created_at: str
+    consent_basis: str
+    measurement_class: str
+    attribution_join: str
+    enforcement_scope: str
+    consent_normalization_version: str
     consent: list[Any] | ListEventsResponse200EventsDataItemConsentType0 | None
     user_data_hashed: list[Any] | ListEventsResponse200EventsDataItemUserDataHashedType0 | None
     click_ids: list[Any] | ListEventsResponse200EventsDataItemClickIdsType0 | None
@@ -118,6 +128,16 @@ class ListEventsResponse200EventsDataItem:
         value_currency = self.value_currency
 
         created_at = self.created_at
+
+        consent_basis = self.consent_basis
+
+        measurement_class = self.measurement_class
+
+        attribution_join = self.attribution_join
+
+        enforcement_scope = self.enforcement_scope
+
+        consent_normalization_version = self.consent_normalization_version
 
         consent: dict[str, Any] | list[Any] | None
         if isinstance(self.consent, ListEventsResponse200EventsDataItemConsentType0):
@@ -189,6 +209,11 @@ class ListEventsResponse200EventsDataItem:
                 "value_amount": value_amount,
                 "value_currency": value_currency,
                 "created_at": created_at,
+                "consent_basis": consent_basis,
+                "measurement_class": measurement_class,
+                "attribution_join": attribution_join,
+                "enforcement_scope": enforcement_scope,
+                "consent_normalization_version": consent_normalization_version,
                 "consent": consent,
                 "user_data_hashed": user_data_hashed,
                 "click_ids": click_ids,
@@ -265,6 +290,16 @@ class ListEventsResponse200EventsDataItem:
         value_currency = _parse_value_currency(d.pop("value_currency"))
 
         created_at = d.pop("created_at")
+
+        consent_basis = d.pop("consent_basis")
+
+        measurement_class = d.pop("measurement_class")
+
+        attribution_join = d.pop("attribution_join")
+
+        enforcement_scope = d.pop("enforcement_scope")
+
+        consent_normalization_version = d.pop("consent_normalization_version")
 
         def _parse_consent(data: object) -> list[Any] | ListEventsResponse200EventsDataItemConsentType0 | None:
             if data is None:
@@ -411,6 +446,11 @@ class ListEventsResponse200EventsDataItem:
             value_amount=value_amount,
             value_currency=value_currency,
             created_at=created_at,
+            consent_basis=consent_basis,
+            measurement_class=measurement_class,
+            attribution_join=attribution_join,
+            enforcement_scope=enforcement_scope,
+            consent_normalization_version=consent_normalization_version,
             consent=consent,
             user_data_hashed=user_data_hashed,
             click_ids=click_ids,

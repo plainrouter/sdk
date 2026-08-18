@@ -25,6 +25,11 @@ class Event:
         value_amount (int | None):
         value_currency (None | str):
         created_at (datetime.datetime):
+        consent_basis (str):
+        measurement_class (str):
+        attribution_join (str):
+        enforcement_scope (str):
+        consent_normalization_version (str):
         consent (str):
         user_data_hashed (str):
         click_ids (str):
@@ -46,6 +51,11 @@ class Event:
     value_amount: int | None
     value_currency: None | str
     created_at: datetime.datetime
+    consent_basis: str
+    measurement_class: str
+    attribution_join: str
+    enforcement_scope: str
+    consent_normalization_version: str
     consent: str
     user_data_hashed: str
     click_ids: str
@@ -83,6 +93,16 @@ class Event:
 
         created_at = self.created_at.isoformat()
 
+        consent_basis = self.consent_basis
+
+        measurement_class = self.measurement_class
+
+        attribution_join = self.attribution_join
+
+        enforcement_scope = self.enforcement_scope
+
+        consent_normalization_version = self.consent_normalization_version
+
         consent = self.consent
 
         user_data_hashed = self.user_data_hashed
@@ -114,6 +134,11 @@ class Event:
                 "value_amount": value_amount,
                 "value_currency": value_currency,
                 "created_at": created_at,
+                "consent_basis": consent_basis,
+                "measurement_class": measurement_class,
+                "attribution_join": attribution_join,
+                "enforcement_scope": enforcement_scope,
+                "consent_normalization_version": consent_normalization_version,
                 "consent": consent,
                 "user_data_hashed": user_data_hashed,
                 "click_ids": click_ids,
@@ -172,6 +197,16 @@ class Event:
 
         created_at = datetime.datetime.fromisoformat(d.pop("created_at"))
 
+        consent_basis = d.pop("consent_basis")
+
+        measurement_class = d.pop("measurement_class")
+
+        attribution_join = d.pop("attribution_join")
+
+        enforcement_scope = d.pop("enforcement_scope")
+
+        consent_normalization_version = d.pop("consent_normalization_version")
+
         consent = d.pop("consent")
 
         user_data_hashed = d.pop("user_data_hashed")
@@ -200,6 +235,11 @@ class Event:
             value_amount=value_amount,
             value_currency=value_currency,
             created_at=created_at,
+            consent_basis=consent_basis,
+            measurement_class=measurement_class,
+            attribution_join=attribution_join,
+            enforcement_scope=enforcement_scope,
+            consent_normalization_version=consent_normalization_version,
             consent=consent,
             user_data_hashed=user_data_hashed,
             click_ids=click_ids,
