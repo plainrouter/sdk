@@ -41,7 +41,7 @@ jobs:
       - run: npm run build
       - run: npm prune --omit=dev
       - run: npm run smoke:production
-      - run: node packages/cli/bin/plainrouter.js
+      - run: node packages/cli/bin/plainrouter.js --help
 
   secret-scan:
     name: Gitleaks

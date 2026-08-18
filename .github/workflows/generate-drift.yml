@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - spec/**
+      - packages/cli/**
       - packages/sdk/**
       - openapi-ts.config.ts
       - package.json

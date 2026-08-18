@@ -9,10 +9,26 @@
   "bin": {
     "plainrouter": "./bin/plainrouter.js"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "files": [
-    "bin"
+    "bin",
+    "dist",
+    "README.md"
   ],
   "scripts": {
-    "build": "node --check bin/plainrouter.js"
+    "build": "tsc --project tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit --project tsconfig.json"
+  },
+  "dependencies": {
+    "@plainrouter/sdk": "0.2.0",
+    "commander": "15.0.0"
   }
 }

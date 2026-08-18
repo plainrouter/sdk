@@ -15,10 +15,11 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "generate": "openapi-ts",
+    "smoke:cli": "node scripts/cli-smoke.mjs",
     "smoke:production": "node scripts/production-smoke.mjs",
     "spec:drift": "node scripts/check-spec-drift.mjs",
-    "test": "npm run test --workspace=@plainrouter/sdk",
-    "typecheck": "npm run typecheck --workspace=@plainrouter/sdk",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "verify:spec": "node scripts/verify-spec.mjs"
   },
   "devDependencies": {
