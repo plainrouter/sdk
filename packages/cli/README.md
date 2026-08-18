@@ -3,6 +3,21 @@
 The Plainrouter CLI is a `0.x` interface over `@plainrouter/sdk`. It adds no API
 behavior: every API command delegates to one generated SDK operation.
 The interface is unstable and carries no support promise yet.
+This package is unrelated to the npm package `plain-router`.
+
+## Installation
+
+Install the canonical scoped package globally:
+
+```sh
+npm i -g @plainrouter/cli
+```
+
+Or run it without a global installation:
+
+```sh
+npx @plainrouter/cli --help
+```
 
 Authentication uses `PLAINROUTER_TOKEN` first, then
 `$XDG_CONFIG_HOME/plainrouter/config.json` (or
