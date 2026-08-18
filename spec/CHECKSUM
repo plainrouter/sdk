@@ -1,4 +1,4 @@
-sha256: 42e7a40a7e53a304b9e69b853636e0c389f051fc8b451ca062ccbe39ff0d39f1
-info.version: 0.2.0
-date: 2026-08-18
+sha256: 9b8b464671a1d69d0bf218912b8ce896689414a5290ae5b24b9dbaf158a3a94e
+info.version: 0.3.1
+date: 2026-08-19
 source: https://plainrouter.com/openapi.json

@@ -3,6 +3,8 @@
 from .create_event_body import CreateEventBody
 from .create_event_body_click_ids import CreateEventBodyClickIds
 from .create_event_body_consent import CreateEventBodyConsent
+from .create_event_body_consent_mode import CreateEventBodyConsentMode
+from .create_event_body_tcf import CreateEventBodyTcf
 from .create_event_body_user_data import CreateEventBodyUserData
 from .create_event_body_value_data import CreateEventBodyValueData
 from .create_event_response_200 import CreateEventResponse200
@@ -133,11 +135,15 @@ from .set_destination_test_mode_response_200_destination_config_type_0 import (
 )
 from .validation_error import ValidationError
 from .validation_error_errors import ValidationErrorErrors
+from .verify_signal_ingestion_response_200 import VerifySignalIngestionResponse200
+from .verify_signal_ingestion_response_202 import VerifySignalIngestionResponse202
 
 __all__ = (
     "CreateEventBody",
     "CreateEventBodyClickIds",
     "CreateEventBodyConsent",
+    "CreateEventBodyConsentMode",
+    "CreateEventBodyTcf",
     "CreateEventBodyUserData",
     "CreateEventBodyValueData",
     "CreateEventResponse200",
@@ -216,4 +222,6 @@ __all__ = (
     "SetDestinationTestModeResponse200DestinationConfigType0",
     "ValidationError",
     "ValidationErrorErrors",
+    "VerifySignalIngestionResponse200",
+    "VerifySignalIngestionResponse202",
 )

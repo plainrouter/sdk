@@ -77,6 +77,11 @@ export type Event = {
     value_amount: number | null;
     value_currency: string | null;
     created_at: string;
+    consent_basis: string;
+    measurement_class: string;
+    attribution_join: string;
+    enforcement_scope: string;
+    consent_normalization_version: string;
     consent: string;
     user_data_hashed: string;
     click_ids: string;
@@ -147,9 +152,25 @@ export type CreateEventData = {
          */
         visitor_id?: string;
         /**
+         * Legal basis for processing: consent or legitimate_interest.
+         */
+        consent_basis: string;
+        /**
          * Consent state supplied with the event.
          */
         consent?: {
+            [key: string]: unknown;
+        };
+        /**
+         * Consent Mode v2 signal values supplied with the event.
+         */
+        consent_mode?: {
+            [key: string]: unknown;
+        };
+        /**
+         * TCF v2 data containing string and optional captured_at.
+         */
+        tcf?: {
             [key: string]: unknown;
         };
         /**
@@ -212,6 +233,41 @@ export type CreateEventResponses = {
 
 export type CreateEventResponse = CreateEventResponses[keyof CreateEventResponses];
 
+export type VerifySignalIngestionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/verification-events';
+};
+
+export type VerifySignalIngestionErrors = {
+    /**
+     * Invalid or missing Signal tracker secret.
+     */
+    401: ErrorMessage;
+};
+
+export type VerifySignalIngestionError = VerifySignalIngestionErrors[keyof VerifySignalIngestionErrors];
+
+export type VerifySignalIngestionResponses = {
+    /**
+     * The idempotent server verification event already exists.
+     */
+    200: {
+        event_id: string;
+        duplicate: boolean;
+    };
+    /**
+     * Server-side Signal ingestion verified.
+     */
+    202: {
+        event_id: string;
+        duplicate: boolean;
+    };
+};
+
+export type VerifySignalIngestionResponse = VerifySignalIngestionResponses[keyof VerifySignalIngestionResponses];
+
 export type GetEventData = {
     body?: never;
     path: {
@@ -251,6 +307,11 @@ export type GetEventResponses = {
             value_amount: number | null;
             value_currency: string | null;
             created_at: string;
+            consent_basis: string;
+            measurement_class: string;
+            attribution_join: string;
+            enforcement_scope: string;
+            consent_normalization_version: string;
             consent: {
                 [key: string]: unknown;
             } | Array<unknown> | null;
@@ -301,6 +362,11 @@ export type GetEventResponses = {
                 value_amount: number | null;
                 value_currency: string | null;
                 created_at: string;
+                consent_basis: string;
+                measurement_class: string;
+                attribution_join: string;
+                enforcement_scope: string;
+                consent_normalization_version: string;
                 consent: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
@@ -331,6 +397,11 @@ export type GetEventResponses = {
                 value_amount: number | null;
                 value_currency: string | null;
                 created_at: string;
+                consent_basis: string;
+                measurement_class: string;
+                attribution_join: string;
+                enforcement_scope: string;
+                consent_normalization_version: string;
                 consent: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
@@ -416,6 +487,11 @@ export type ListEventsResponses = {
                 value_amount: number | null;
                 value_currency: string | null;
                 created_at: string;
+                consent_basis: string;
+                measurement_class: string;
+                attribution_join: string;
+                enforcement_scope: string;
+                consent_normalization_version: string;
                 consent: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
@@ -564,7 +640,7 @@ export type SendTestPurchaseErrors = {
     /**
      * Test mode is disabled or request validation failed.
      */
-    422: ErrorMessage | ValidationError;
+    422: ValidationError | ErrorMessage;
     /**
      * Meta did not accept the test purchase.
      */
