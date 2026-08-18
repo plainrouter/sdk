@@ -20,6 +20,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Install pinned npm
+        run: npm install --global npm@11.19.0
       - run: npm ci
       - run: npm run verify:spec
       - run: npm run typecheck
@@ -37,6 +39,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Install pinned npm
+        run: npm install --global npm@11.19.0
       - run: npm ci
       - run: npm run build
       - run: npm prune --omit=dev

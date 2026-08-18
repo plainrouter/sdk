@@ -1,0 +1,57 @@
+name: Publish packages
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Verify, pack, and publish
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+          registry-url: https://registry.npmjs.org
+      - name: Install pinned npm
+        run: npm install --global npm@11.19.0
+      - name: Verify npm version
+        run: test "$(npm --version)" = "11.19.0"
+      - name: Clean install
+        run: npm ci
+      - name: Verify release versions and tag owner
+        run: npm run verify:release
+      - name: Verify signed contract
+        run: npm run verify:spec
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Verify generated SDK drift
+        run: |
+          npm run generate
+          git diff --exit-code -- packages/sdk/src/generated
+      - name: Pack SDK
+        run: |
+          mkdir -p build/npm
+          npm pack --workspace @plainrouter/sdk --json --pack-destination build/npm > build/npm/sdk-pack.json
+          node scripts/verify-pack.mjs build/npm/sdk-pack.json sdk SDK_TARBALL
+      - name: Pack CLI
+        run: |
+          npm pack --workspace @plainrouter/cli --json --pack-destination build/npm > build/npm/cli-pack.json
+          node scripts/verify-pack.mjs build/npm/cli-pack.json cli CLI_TARBALL
+      - name: Publish SDK with provenance
+        run: npm publish "$SDK_TARBALL" --access public --provenance
+      - name: Publish CLI with provenance
+        run: npm publish "$CLI_TARBALL" --access public --provenance
