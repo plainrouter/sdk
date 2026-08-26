@@ -1,6 +1,15 @@
 name: Generate drift
 
 on:
+  push:
+    paths:
+      - spec/**
+      - packages/cli/**
+      - packages/sdk/**
+      - packages/python/**
+      - openapi-ts.config.ts
+      - package.json
+      - package-lock.json
   pull_request:
     paths:
       - spec/**
