@@ -4,10 +4,17 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag whose CLI package needs recovery
+        required: true
+        type: string
 
 jobs:
   publish:
     name: Verify, pack, and publish
+    if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -71,3 +78,85 @@ jobs:
           package-manager-cache: false
       - name: Verify published packages
         run: node scripts/post-publish-smoke.mjs
+
+  recover-cli:
+    name: Verify, pack, and recover CLI
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+          registry-url: https://registry.npmjs.org
+      - name: Verify npm version
+        run: test "$(corepack npm --version)" = "11.19.0"
+      - name: Clean install
+        run: corepack npm ci
+      - name: Verify release versions and tag owner
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: env -u GITHUB_REF_NAME corepack npm run verify:release -- "$RELEASE_TAG"
+      - name: Verify official package metadata
+        run: corepack npm run verify:metadata
+      - name: Verify signed contract
+        run: corepack npm run verify:spec
+      - name: Typecheck
+        run: corepack npm run typecheck
+      - name: Test
+        run: corepack npm test
+      - name: Build
+        run: corepack npm run build
+      - name: Verify generated SDK drift
+        run: |
+          corepack npm run generate
+          git diff --exit-code -- packages/sdk/src/generated
+      - name: Pack CLI
+        run: |
+          mkdir -p build/npm
+          corepack npm pack --workspace @plainrouter/cli --json --pack-destination build/npm > build/npm/cli-pack.json
+          node scripts/verify-pack.mjs build/npm/cli-pack.json cli CLI_TARBALL
+      - name: Verify registry state
+        id: registry
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          VERSION="${RELEASE_TAG#v}"
+          test "$(corepack npm view "@plainrouter/sdk@$VERSION" version)" = "$VERSION"
+          if corepack npm view "@plainrouter/cli@$VERSION" version >/dev/null 2>&1; then
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish CLI with provenance
+        if: steps.registry.outputs.already_published != 'true'
+        run: corepack npm publish "$CLI_TARBALL" --access public --provenance
+
+  post-recovery-smoke:
+    name: Install recovered packages
+    needs: recover-cli
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Verify published packages
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: node scripts/post-publish-smoke.mjs "${RELEASE_TAG#v}"
