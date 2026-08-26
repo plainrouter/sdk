@@ -65,7 +65,7 @@ def require_metadata(metadata: str) -> None:
         f"Version: {version}",
         "Project-URL: Homepage, https://plainrouter.com",
         "Project-URL: Documentation, https://docs.plainrouter.com/sdk/python",
-        "Project-URL: Repository, https://github.com/wudaku/plainrouter-sdk",
+        "Project-URL: Repository, https://github.com/plainrouter/sdk",
     }
     lines = set(metadata.splitlines())
     missing = sorted(required_lines - lines)

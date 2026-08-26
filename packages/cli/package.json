@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wudaku/plainrouter-sdk.git",
+    "url": "git+https://github.com/plainrouter/sdk.git",
     "directory": "packages/cli"
   },
   "type": "module",

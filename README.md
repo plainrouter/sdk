@@ -6,7 +6,7 @@ Official developer resources: [PlainRouter developer index](https://plainrouter.
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
 [documentation](https://docs.plainrouter.com) ·
-[source](https://github.com/wudaku/plainrouter-sdk)
+[source](https://github.com/plainrouter/sdk)
 
 This repository is in `0.x` development. Stability and support are not yet
 promised.

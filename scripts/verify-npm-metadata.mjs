@@ -32,7 +32,7 @@ for (const [name, packageMetadata, directory] of [
     throw new Error(`${name} homepage must identify https://plainrouter.com.`);
   }
 
-  if (packageMetadata.repository?.url !== 'git+https://github.com/wudaku/plainrouter-sdk.git') {
+  if (packageMetadata.repository?.url !== 'git+https://github.com/plainrouter/sdk.git') {
     throw new Error(`${name} repository URL is not the official SDK repository.`);
   }
 
