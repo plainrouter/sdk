@@ -108,7 +108,11 @@ def sync_detailed(
 ) -> Response[
     ErrorMessage | ErrorMessage | ValidationError | SendTestPurchaseResponse200 | SendTestPurchaseResponse502
 ]:
-    """
+    """Send a controlled test purchase
+
+     Creates an identity-free synthetic purchase and sends it only to the selected destination while test
+    mode is enabled.
+
     Args:
         destination (str):
         body (SendTestPurchaseBody | Unset):
@@ -139,7 +143,11 @@ def sync(
     client: AuthenticatedClient | Client,
     body: SendTestPurchaseBody | Unset = UNSET,
 ) -> ErrorMessage | ErrorMessage | ValidationError | SendTestPurchaseResponse200 | SendTestPurchaseResponse502 | None:
-    """
+    """Send a controlled test purchase
+
+     Creates an identity-free synthetic purchase and sends it only to the selected destination while test
+    mode is enabled.
+
     Args:
         destination (str):
         body (SendTestPurchaseBody | Unset):
@@ -167,7 +175,11 @@ async def asyncio_detailed(
 ) -> Response[
     ErrorMessage | ErrorMessage | ValidationError | SendTestPurchaseResponse200 | SendTestPurchaseResponse502
 ]:
-    """
+    """Send a controlled test purchase
+
+     Creates an identity-free synthetic purchase and sends it only to the selected destination while test
+    mode is enabled.
+
     Args:
         destination (str):
         body (SendTestPurchaseBody | Unset):
@@ -196,7 +208,11 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     body: SendTestPurchaseBody | Unset = UNSET,
 ) -> ErrorMessage | ErrorMessage | ValidationError | SendTestPurchaseResponse200 | SendTestPurchaseResponse502 | None:
-    """
+    """Send a controlled test purchase
+
+     Creates an identity-free synthetic purchase and sends it only to the selected destination while test
+    mode is enabled.
+
     Args:
         destination (str):
         body (SendTestPurchaseBody | Unset):

@@ -1,9 +1,8 @@
 {
     "openapi": "3.1.0",
-    "x-signed": true,
     "info": {
         "title": "PlainRouter Conversion API",
-        "version": "0.3.1",
+        "version": "0.5.0",
         "description": "PlainRouter public Signals Conversion API."
     },
     "servers": [
@@ -21,107 +20,225 @@
         "/events": {
             "post": {
                 "operationId": "createEvent",
+                "description": "Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or Idempotency-Key in the request headers to make retries idempotent.",
+                "summary": "Submit a conversion event",
                 "tags": [
                     "Event"
+                ],
+                "parameters": [
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "description": "Optional idempotency key. When event_id is omitted, PlainRouter uses this value as event_id. If both are supplied, they must match.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "event_id": {
-                                        "type": "string",
-                                        "description": "Caller-supplied idempotency key; maximum 128 characters."
-                                    },
-                                    "event_name": {
-                                        "type": "string",
-                                        "description": "Signal event name; maximum 100 characters."
-                                    },
-                                    "parent_event_id": {
-                                        "type": "string",
-                                        "description": "Optional parent event id; maximum 128 characters."
-                                    },
-                                    "event_time": {
-                                        "description": "Unix timestamp or ISO-8601 date-time. Defaults to receipt time.",
-                                        "anyOf": [
-                                            {
-                                                "type": "integer"
+                                "anyOf": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "event_id": {
+                                                "type": "string",
+                                                "description": "Caller-supplied idempotency key; maximum 128 characters."
                                             },
-                                            {
-                                                "type": "string"
+                                            "event_name": {
+                                                "type": "string",
+                                                "description": "Signal event name; maximum 100 characters."
+                                            },
+                                            "parent_event_id": {
+                                                "type": "string",
+                                                "description": "Optional parent event id; maximum 128 characters."
+                                            },
+                                            "event_time": {
+                                                "description": "Unix timestamp or ISO-8601 date-time. Defaults to receipt time.",
+                                                "anyOf": [
+                                                    {
+                                                        "type": "integer"
+                                                    },
+                                                    {
+                                                        "type": "string"
+                                                    }
+                                                ]
+                                            },
+                                            "event_source": {
+                                                "type": "string",
+                                                "format": "uri",
+                                                "description": "Optional absolute source URL."
+                                            },
+                                            "action_source": {
+                                                "type": "string",
+                                                "description": "Optional action source; defaults to website and is limited to 50 characters."
+                                            },
+                                            "visitor_id": {
+                                                "type": "string",
+                                                "description": "Optional visitor identifier; maximum 255 characters."
+                                            },
+                                            "consent_basis": {
+                                                "type": "string",
+                                                "description": "Legal basis for processing. Legitimate-interest revenue lifecycle events are rejected; use an authenticated server adapter.",
+                                                "const": "consent"
+                                            },
+                                            "consent": {
+                                                "type": "object",
+                                                "description": "Consent state supplied with the event.",
+                                                "additionalProperties": {}
+                                            },
+                                            "consent_mode": {
+                                                "type": "object",
+                                                "description": "Consent Mode v2 signal values supplied with the event.",
+                                                "additionalProperties": {}
+                                            },
+                                            "tcf": {
+                                                "type": "object",
+                                                "description": "TCF v2 data containing string and optional captured_at.",
+                                                "additionalProperties": {}
+                                            },
+                                            "user_data": {
+                                                "type": "object",
+                                                "description": "Identity fields accepted by the tracker.",
+                                                "additionalProperties": {}
+                                            },
+                                            "click_ids": {
+                                                "type": "object",
+                                                "description": "Advertising click identifiers.",
+                                                "additionalProperties": {}
+                                            },
+                                            "value_data": {
+                                                "type": "object",
+                                                "description": "Optional commerce data. Contents accepts at most 50 items and 16 KB serialized.",
+                                                "properties": {
+                                                    "value": {
+                                                        "type": "string"
+                                                    },
+                                                    "currency": {
+                                                        "type": "string"
+                                                    },
+                                                    "order_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "contents": {
+                                                        "type": "array",
+                                                        "items": {}
+                                                    },
+                                                    "num_items": {
+                                                        "type": "integer"
+                                                    }
+                                                }
                                             }
+                                        },
+                                        "required": [
+                                            "event_name",
+                                            "consent_basis"
                                         ]
                                     },
-                                    "event_source": {
-                                        "type": "string",
-                                        "format": "uri",
-                                        "description": "Optional absolute source URL."
-                                    },
-                                    "action_source": {
-                                        "type": "string",
-                                        "description": "Optional action source; defaults to website and is limited to 50 characters."
-                                    },
-                                    "visitor_id": {
-                                        "type": "string",
-                                        "description": "Optional visitor identifier; maximum 255 characters."
-                                    },
-                                    "consent_basis": {
-                                        "type": "string",
-                                        "description": "Legal basis for processing: consent or legitimate_interest."
-                                    },
-                                    "consent": {
+                                    {
                                         "type": "object",
-                                        "description": "Consent state supplied with the event.",
-                                        "additionalProperties": {}
-                                    },
-                                    "consent_mode": {
-                                        "type": "object",
-                                        "description": "Consent Mode v2 signal values supplied with the event.",
-                                        "additionalProperties": {}
-                                    },
-                                    "tcf": {
-                                        "type": "object",
-                                        "description": "TCF v2 data containing string and optional captured_at.",
-                                        "additionalProperties": {}
-                                    },
-                                    "user_data": {
-                                        "type": "object",
-                                        "description": "Identity fields accepted by the tracker.",
-                                        "additionalProperties": {}
-                                    },
-                                    "click_ids": {
-                                        "type": "object",
-                                        "description": "Advertising click identifiers.",
-                                        "additionalProperties": {}
-                                    },
-                                    "value_data": {
-                                        "type": "object",
-                                        "description": "Optional commerce data. Contents accepts at most 50 items and 16 KB serialized.",
                                         "properties": {
-                                            "value": {
-                                                "type": "string"
+                                            "event_id": {
+                                                "type": "string",
+                                                "description": "Caller-supplied idempotency key; maximum 128 characters."
                                             },
-                                            "currency": {
-                                                "type": "string"
+                                            "event_name": {
+                                                "type": "string",
+                                                "description": "Signal event name; maximum 100 characters.",
+                                                "enum": [
+                                                    "signal_verification",
+                                                    "consent_withdrawal"
+                                                ]
                                             },
-                                            "order_id": {
-                                                "type": "string"
+                                            "parent_event_id": {
+                                                "type": "string",
+                                                "description": "Optional parent event id; maximum 128 characters."
                                             },
-                                            "contents": {
-                                                "type": "array",
-                                                "items": {}
+                                            "event_time": {
+                                                "description": "Unix timestamp or ISO-8601 date-time. Defaults to receipt time.",
+                                                "anyOf": [
+                                                    {
+                                                        "type": "integer"
+                                                    },
+                                                    {
+                                                        "type": "string"
+                                                    }
+                                                ]
                                             },
-                                            "num_items": {
-                                                "type": "integer"
+                                            "event_source": {
+                                                "type": "string",
+                                                "format": "uri",
+                                                "description": "Optional absolute source URL."
+                                            },
+                                            "action_source": {
+                                                "type": "string",
+                                                "description": "Optional action source; defaults to website and is limited to 50 characters."
+                                            },
+                                            "visitor_id": {
+                                                "type": "string",
+                                                "description": "Optional visitor identifier; maximum 255 characters."
+                                            },
+                                            "consent_basis": {
+                                                "type": "string",
+                                                "description": "Legal basis for processing. Legitimate-interest revenue lifecycle events are rejected; use an authenticated server adapter.",
+                                                "const": "legitimate_interest"
+                                            },
+                                            "consent": {
+                                                "type": "object",
+                                                "description": "Consent state supplied with the event.",
+                                                "additionalProperties": {}
+                                            },
+                                            "consent_mode": {
+                                                "type": "object",
+                                                "description": "Consent Mode v2 signal values supplied with the event.",
+                                                "additionalProperties": {}
+                                            },
+                                            "tcf": {
+                                                "type": "object",
+                                                "description": "TCF v2 data containing string and optional captured_at.",
+                                                "additionalProperties": {}
+                                            },
+                                            "user_data": {
+                                                "type": "object",
+                                                "description": "Identity fields accepted by the tracker.",
+                                                "additionalProperties": {}
+                                            },
+                                            "click_ids": {
+                                                "type": "object",
+                                                "description": "Advertising click identifiers.",
+                                                "additionalProperties": {}
+                                            },
+                                            "value_data": {
+                                                "type": "object",
+                                                "description": "Optional commerce data. Contents accepts at most 50 items and 16 KB serialized.",
+                                                "properties": {
+                                                    "value": {
+                                                        "type": "string"
+                                                    },
+                                                    "currency": {
+                                                        "type": "string"
+                                                    },
+                                                    "order_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "contents": {
+                                                        "type": "array",
+                                                        "items": {}
+                                                    },
+                                                    "num_items": {
+                                                        "type": "integer"
+                                                    }
+                                                }
                                             }
-                                        }
+                                        },
+                                        "required": [
+                                            "event_name",
+                                            "consent_basis"
+                                        ]
                                     }
-                                },
-                                "required": [
-                                    "event_name",
-                                    "consent_basis"
                                 ]
                             }
                         }
@@ -148,6 +265,21 @@
                                     ]
                                 }
                             }
+                        },
+                        "headers": {
+                            "Location": {
+                                "description": "Canonical event resource to poll for delivery state.",
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uri"
+                                }
+                            },
+                            "Idempotency-Key": {
+                                "description": "Echoes the Idempotency-Key supplied by the caller.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
                     "202": {
@@ -168,6 +300,21 @@
                                         "event_id",
                                         "duplicate"
                                     ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Location": {
+                                "description": "Canonical event resource to poll for delivery state.",
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uri"
+                                }
+                            },
+                            "Idempotency-Key": {
+                                "description": "Echoes the Idempotency-Key supplied by the caller.",
+                                "schema": {
+                                    "type": "string"
                                 }
                             }
                         }
@@ -198,6 +345,8 @@
         "/verification-events": {
             "post": {
                 "operationId": "verifySignalIngestion",
+                "description": "Writes one identity-free verification event for onboarding and returns the existing event on retry.",
+                "summary": "Verify server-side Signal ingestion",
                 "tags": [
                     "Event"
                 ],
@@ -222,6 +371,15 @@
                                     ]
                                 }
                             }
+                        },
+                        "headers": {
+                            "Location": {
+                                "description": "Canonical verification-event resource to poll.",
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uri"
+                                }
+                            }
                         }
                     },
                     "202": {
@@ -244,6 +402,15 @@
                                     ]
                                 }
                             }
+                        },
+                        "headers": {
+                            "Location": {
+                                "description": "Canonical verification-event resource to poll.",
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uri"
+                                }
+                            }
                         }
                     },
                     "401": {
@@ -262,6 +429,8 @@
         "/events/{event}": {
             "get": {
                 "operationId": "getEvent",
+                "description": "Returns one retained customer-readable event with lineage and destination delivery state.",
+                "summary": "Get an event and delivery trace",
                 "tags": [
                     "Event"
                 ],
@@ -1068,6 +1237,8 @@
         "/dashboard/events": {
             "get": {
                 "operationId": "listEvents",
+                "description": "Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.",
+                "summary": "List recent events",
                 "tags": [
                     "Operations"
                 ],
@@ -1084,7 +1255,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Paginated events and delivery acceptance metrics.",
+                        "description": "Page-number-paginated events and delivery acceptance metrics.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1513,9 +1684,417 @@
                 }
             }
         },
+        "/dashboard/events/cursor": {
+            "get": {
+                "operationId": "listEventsByCursor",
+                "description": "Returns retained customer-readable events using stable cursor pagination and aggregate destination-delivery acceptance metrics.",
+                "summary": "List recent events by cursor",
+                "tags": [
+                    "Operations"
+                ],
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Events per cursor page, capped at 100.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 25
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "description": "Opaque cursor returned by a previous response. Omit it on the first request.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cursor-paginated events and delivery acceptance metrics.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "events": {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string"
+                                                            },
+                                                            "signal_tracker_id": {
+                                                                "type": "string"
+                                                            },
+                                                            "parent_event_id": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "event_name": {
+                                                                "type": "string"
+                                                            },
+                                                            "event_time": {
+                                                                "type": "string"
+                                                            },
+                                                            "action_source": {
+                                                                "type": "string"
+                                                            },
+                                                            "event_class": {
+                                                                "type": "string"
+                                                            },
+                                                            "order_id": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "value_amount": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "value_currency": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string"
+                                                            },
+                                                            "consent_basis": {
+                                                                "type": "string"
+                                                            },
+                                                            "measurement_class": {
+                                                                "type": "string"
+                                                            },
+                                                            "attribution_join": {
+                                                                "type": "string"
+                                                            },
+                                                            "enforcement_scope": {
+                                                                "type": "string"
+                                                            },
+                                                            "consent_normalization_version": {
+                                                                "type": "string"
+                                                            },
+                                                            "consent": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "object",
+                                                                        "additionalProperties": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "items": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "user_data_hashed": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "object",
+                                                                        "additionalProperties": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "items": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "click_ids": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "object",
+                                                                        "additionalProperties": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "items": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "session": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "object",
+                                                                        "additionalProperties": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "items": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "value_data": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "object",
+                                                                        "additionalProperties": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "items": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "event_source": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "payload_expired": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "deliveries": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "signal_tracker_id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "event_id": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "destination_id": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "status": {
+                                                                            "$ref": "#/components/schemas/DeliveryStatus"
+                                                                        },
+                                                                        "is_test": {
+                                                                            "type": "boolean"
+                                                                        },
+                                                                        "attempt_count": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "last_error": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "type": "object",
+                                                                                    "additionalProperties": {}
+                                                                                },
+                                                                                {
+                                                                                    "type": "array",
+                                                                                    "items": {}
+                                                                                },
+                                                                                {
+                                                                                    "type": "null"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "platform_response": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "type": "object",
+                                                                                    "additionalProperties": {}
+                                                                                },
+                                                                                {
+                                                                                    "type": "array",
+                                                                                    "items": {}
+                                                                                },
+                                                                                {
+                                                                                    "type": "null"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "platform_trace_id": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "next_attempt_at": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "created_at": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "updated_at": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "id",
+                                                                        "signal_tracker_id",
+                                                                        "event_id",
+                                                                        "destination_id",
+                                                                        "status",
+                                                                        "is_test",
+                                                                        "attempt_count",
+                                                                        "last_error",
+                                                                        "platform_response",
+                                                                        "platform_trace_id",
+                                                                        "next_attempt_at",
+                                                                        "created_at",
+                                                                        "updated_at"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "signal_tracker_id",
+                                                            "parent_event_id",
+                                                            "event_name",
+                                                            "event_time",
+                                                            "action_source",
+                                                            "event_class",
+                                                            "order_id",
+                                                            "value_amount",
+                                                            "value_currency",
+                                                            "created_at",
+                                                            "consent_basis",
+                                                            "measurement_class",
+                                                            "attribution_join",
+                                                            "enforcement_scope",
+                                                            "consent_normalization_version",
+                                                            "consent",
+                                                            "user_data_hashed",
+                                                            "click_ids",
+                                                            "session",
+                                                            "value_data",
+                                                            "event_source",
+                                                            "payload_expired",
+                                                            "deliveries"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "per_page": {
+                                                    "type": "integer"
+                                                },
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next_page_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev_page_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "data",
+                                                "path",
+                                                "per_page",
+                                                "next_cursor",
+                                                "next_page_url",
+                                                "prev_cursor",
+                                                "prev_page_url"
+                                            ]
+                                        },
+                                        "metrics": {
+                                            "type": "object",
+                                            "properties": {
+                                                "accepted": {
+                                                    "type": "integer"
+                                                },
+                                                "total_deliveries": {
+                                                    "type": "integer"
+                                                },
+                                                "acceptance_rate": {
+                                                    "type": [
+                                                        "number",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "acceptance_rate_window": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "accepted",
+                                                "total_deliveries",
+                                                "acceptance_rate",
+                                                "acceptance_rate_window"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "events",
+                                        "metrics"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or missing Signal tracker secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/destinations/{destination}/test-mode": {
             "patch": {
                 "operationId": "setDestinationTestMode",
+                "description": "Enables or disables Meta Test Events mode for a destination owned by the authenticated Signal tracker.",
+                "summary": "Configure destination test mode",
                 "tags": [
                     "Operations"
                 ],
@@ -1675,6 +2254,8 @@
         "/destinations/{destination}/test-purchase": {
             "post": {
                 "operationId": "sendTestPurchase",
+                "description": "Creates an identity-free synthetic purchase and sends it only to the selected destination while test mode is enabled.",
+                "summary": "Send a controlled test purchase",
                 "tags": [
                     "Operations"
                 ],
@@ -1824,6 +2405,8 @@
         "/deliveries/replay": {
             "post": {
                 "operationId": "replayDeliveries",
+                "description": "Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.",
+                "summary": "Replay eligible deliveries",
                 "tags": [
                     "Operations"
                 ],
@@ -1887,6 +2470,15 @@
                                     ]
                                 }
                             }
+                        },
+                        "headers": {
+                            "Location": {
+                                "description": "Event collection to poll for updated delivery state.",
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uri"
+                                }
+                            }
                         }
                     },
                     "401": {
@@ -1915,6 +2507,8 @@
         "/reports/reconciliation": {
             "get": {
                 "operationId": "getReconciliationReport",
+                "description": "Returns stored delivery-versus-platform reconciliation results for one calendar date.",
+                "summary": "Get a reconciliation report",
                 "tags": [
                     "Operations"
                 ],
@@ -2161,6 +2755,8 @@
         "/reports/emq": {
             "get": {
                 "operationId": "getEmqReport",
+                "description": "Returns recent Meta Event Match Quality snapshots for the authenticated Signal tracker.",
+                "summary": "Get Event Match Quality history",
                 "tags": [
                     "Operations"
                 ],
@@ -2267,6 +2863,8 @@
         "/user-data": {
             "delete": {
                 "operationId": "deleteUserData",
+                "description": "Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.",
+                "summary": "Delete user data by hashed identifier",
                 "tags": [
                     "Operations"
                 ],
@@ -2355,6 +2953,510 @@
                     }
                 }
             }
+        },
+        "/sandbox": {
+            "get": {
+                "operationId": "getSandbox",
+                "description": "Returns a ready-to-run synthetic event example. The sandbox requires no account or API key and cannot read production data, persist events, or contact an advertising provider.",
+                "summary": "Discover the zero-auth sandbox",
+                "tags": [
+                    "Sandbox"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sandbox capabilities and a ready-to-run example.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "environment": {
+                                            "type": "string"
+                                        },
+                                        "authentication_required": {
+                                            "type": "boolean"
+                                        },
+                                        "account_required": {
+                                            "type": "boolean"
+                                        },
+                                        "production_data": {
+                                            "type": "boolean"
+                                        },
+                                        "persists_data": {
+                                            "type": "boolean"
+                                        },
+                                        "provider_delivery": {
+                                            "type": "boolean"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "self_serve_key": {
+                                            "type": "object",
+                                            "properties": {
+                                                "method": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "authentication_required": {
+                                                    "type": "boolean"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "method",
+                                                "url",
+                                                "authentication_required",
+                                                "description"
+                                            ]
+                                        },
+                                        "try": {
+                                            "type": "object",
+                                            "properties": {
+                                                "method": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "content_type": {
+                                                    "type": "string"
+                                                },
+                                                "body": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "event_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "event_name": {
+                                                            "type": "string"
+                                                        },
+                                                        "action_source": {
+                                                            "type": "string"
+                                                        },
+                                                        "value_data": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "value": {
+                                                                    "type": "string"
+                                                                },
+                                                                "currency": {
+                                                                    "type": "string"
+                                                                },
+                                                                "order_id": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "value",
+                                                                "currency",
+                                                                "order_id"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "event_id",
+                                                        "event_name",
+                                                        "action_source",
+                                                        "value_data"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "method",
+                                                "url",
+                                                "content_type",
+                                                "body"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "environment",
+                                        "authentication_required",
+                                        "account_required",
+                                        "production_data",
+                                        "persists_data",
+                                        "provider_delivery",
+                                        "description",
+                                        "self_serve_key",
+                                        "try"
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Access-Control-Allow-Origin": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "*"
+                                }
+                            },
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
+                                }
+                            },
+                            "X-Content-Type-Options": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "nosniff"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/sandbox/keys": {
+            "post": {
+                "operationId": "createSandboxKey",
+                "description": "Issues a short-lived sandbox-only bearer key without an account, human approval, or production access.",
+                "summary": "Create a sandbox API key",
+                "tags": [
+                    "Sandbox"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Short-lived sandbox API key issued.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "api_key": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer"
+                                        },
+                                        "expires_at": {
+                                            "type": "string"
+                                        },
+                                        "scope": {
+                                            "type": "string"
+                                        },
+                                        "production_access": {
+                                            "type": "boolean"
+                                        },
+                                        "use": {
+                                            "type": "object",
+                                            "properties": {
+                                                "method": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "authorization": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "method",
+                                                "url",
+                                                "authorization"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "api_key",
+                                        "token_type",
+                                        "expires_in",
+                                        "expires_at",
+                                        "scope",
+                                        "production_access",
+                                        "use"
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Access-Control-Allow-Origin": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "*"
+                                }
+                            },
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
+                                }
+                            },
+                            "X-Content-Type-Options": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "nosniff"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/sandbox/events": {
+            "post": {
+                "operationId": "validateSandboxEvent",
+                "description": "Validates and immediately discards one identity-free synthetic event. It requires no account or API key and never writes to the ledger or contacts Meta.",
+                "summary": "Validate a synthetic event",
+                "tags": [
+                    "Sandbox"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "event_id": {
+                                        "type": "string",
+                                        "description": "Optional synthetic idempotency key; maximum 128 characters."
+                                    },
+                                    "event_name": {
+                                        "type": "string",
+                                        "description": "Synthetic event name; maximum 100 characters."
+                                    },
+                                    "action_source": {
+                                        "type": "string",
+                                        "description": "Synthetic action source.",
+                                        "examples": [
+                                            "website"
+                                        ]
+                                    },
+                                    "value_data": {
+                                        "type": "object",
+                                        "description": "Optional synthetic commerce data.",
+                                        "properties": {
+                                            "value": {
+                                                "type": "string"
+                                            },
+                                            "currency": {
+                                                "type": "string"
+                                            },
+                                            "order_id": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "event_name"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Synthetic event validated and discarded.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "sandbox": {
+                                            "type": "boolean"
+                                        },
+                                        "accepted": {
+                                            "type": "boolean"
+                                        },
+                                        "event_id": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "persisted": {
+                                            "type": "boolean"
+                                        },
+                                        "provider_delivery": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "sandbox",
+                                        "accepted",
+                                        "event_id",
+                                        "status",
+                                        "persisted",
+                                        "provider_delivery",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Access-Control-Allow-Origin": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "*"
+                                }
+                            },
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
+                                }
+                            },
+                            "X-Content-Type-Options": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "nosniff"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/sandbox/keyed-events": {
+            "post": {
+                "operationId": "validateSandboxEventWithKey",
+                "description": "Validates a synthetic event using the short-lived key returned by the self-serve sandbox key endpoint. It never persists data or contacts an advertising provider.",
+                "summary": "Validate a synthetic event with a sandbox key",
+                "tags": [
+                    "Sandbox"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "event_id": {
+                                        "type": "string",
+                                        "description": "Optional synthetic idempotency key; maximum 128 characters."
+                                    },
+                                    "event_name": {
+                                        "type": "string",
+                                        "description": "Synthetic event name; maximum 100 characters."
+                                    },
+                                    "action_source": {
+                                        "type": "string",
+                                        "description": "Synthetic action source.",
+                                        "examples": [
+                                            "website"
+                                        ]
+                                    },
+                                    "value_data": {
+                                        "type": "object",
+                                        "description": "Optional synthetic commerce data.",
+                                        "properties": {
+                                            "value": {
+                                                "type": "string"
+                                            },
+                                            "currency": {
+                                                "type": "string"
+                                            },
+                                            "order_id": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "event_name"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Synthetic event validated with a sandbox key and discarded.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "sandbox": {
+                                            "type": "boolean"
+                                        },
+                                        "accepted": {
+                                            "type": "boolean"
+                                        },
+                                        "event_id": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "persisted": {
+                                            "type": "boolean"
+                                        },
+                                        "provider_delivery": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "sandbox",
+                                        "accepted",
+                                        "event_id",
+                                        "status",
+                                        "persisted",
+                                        "provider_delivery",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Sandbox key missing, invalid, or expired.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sandboxCredential": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -2362,6 +3464,11 @@
             "signalTrackerSecret": {
                 "type": "http",
                 "description": "Per-tracker bearer secret. It authenticates only the Signal tracker represented by the credential.",
+                "scheme": "bearer"
+            },
+            "sandboxCredential": {
+                "type": "http",
+                "description": "Short-lived sandbox-only key issued by POST /sandbox/keys.",
                 "scheme": "bearer"
             }
         },
@@ -2603,6 +3710,12 @@
                     "consent_normalization_version": {
                         "type": "string"
                     },
+                    "policy_class": {
+                        "$ref": "#/components/schemas/JurisdictionPolicyClass"
+                    },
+                    "traffic_class": {
+                        "$ref": "#/components/schemas/TrafficClass"
+                    },
                     "consent": {
                         "type": "string"
                     },
@@ -2646,6 +3759,8 @@
                     "attribution_join",
                     "enforcement_scope",
                     "consent_normalization_version",
+                    "policy_class",
+                    "traffic_class",
                     "consent",
                     "user_data_hashed",
                     "click_ids",
@@ -2656,6 +3771,15 @@
                     "deliveries"
                 ],
                 "title": "Event"
+            },
+            "JurisdictionPolicyClass": {
+                "type": "string",
+                "description": "The two policy classes used by the single Signals collector. The enum intentionally has no country or region members. Country evidence is an edge input used to derive a policy class and is never a ledger value.\n",
+                "enum": [
+                    "strict_eu",
+                    "global"
+                ],
+                "title": "JurisdictionPolicyClass"
             },
             "ReconciliationReport": {
                 "type": "object",
@@ -2709,6 +3833,12 @@
                             "null"
                         ],
                         "format": "date-time"
+                    },
+                    "claimed_clicks": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
                     }
                 },
                 "required": [
@@ -2724,9 +3854,19 @@
                     "unexplained_residual",
                     "status",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+                    "claimed_clicks"
                 ],
                 "title": "ReconciliationReport"
+            },
+            "TrafficClass": {
+                "type": "string",
+                "description": "The only persisted traffic verdicts for passive document arrivals. Request facts and classifier reasons never cross the stripping boundary.\n",
+                "enum": [
+                    "valid",
+                    "invalid"
+                ],
+                "title": "TrafficClass"
             },
             "ValidationError": {
                 "type": "object",
@@ -2751,5 +3891,6 @@
                 "title": "ValidationError"
             }
         }
-    }
+    },
+    "x-signed": true
 }

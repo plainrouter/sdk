@@ -1,16 +1,17 @@
 {
   "name": "@plainrouter/sdk",
-  "version": "0.3.1",
+  "version": "0.5.0",
   "description": "Generated TypeScript client and Zod schemas for the PlainRouter API.",
+  "homepage": "https://plainrouter.com",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wudaku/plainrouter-sdk.git",
+    "url": "git+https://github.com/plainrouter/sdk.git",
     "directory": "packages/sdk"
   },
   "type": "module",
   "engines": {
-    "node": ">=22.22.2 <23"
+    "node": ">=22.22.2"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

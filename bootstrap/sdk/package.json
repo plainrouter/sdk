@@ -2,10 +2,11 @@
   "name": "@plainrouter/sdk",
   "version": "0.0.0",
   "description": "Bootstrap placeholder for the PlainRouter TypeScript SDK.",
+  "homepage": "https://plainrouter.com",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wudaku/plainrouter-sdk.git",
+    "url": "git+https://github.com/plainrouter/sdk.git",
     "directory": "packages/sdk"
   },
   "files": [

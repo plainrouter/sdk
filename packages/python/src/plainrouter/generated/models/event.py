@@ -7,6 +7,9 @@ from typing import Any, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.jurisdiction_policy_class import JurisdictionPolicyClass
+from ..models.traffic_class import TrafficClass
+
 T = TypeVar("T", bound="Event")
 
 
@@ -30,6 +33,11 @@ class Event:
         attribution_join (str):
         enforcement_scope (str):
         consent_normalization_version (str):
+        policy_class (JurisdictionPolicyClass): The two policy classes used by the single Signals collector. The enum
+            intentionally has no country or region members. Country evidence is an edge input used to derive a policy class
+            and is never a ledger value.
+        traffic_class (TrafficClass): The only persisted traffic verdicts for passive document arrivals. Request facts
+            and classifier reasons never cross the stripping boundary.
         consent (str):
         user_data_hashed (str):
         click_ids (str):
@@ -56,6 +64,8 @@ class Event:
     attribution_join: str
     enforcement_scope: str
     consent_normalization_version: str
+    policy_class: JurisdictionPolicyClass
+    traffic_class: TrafficClass
     consent: str
     user_data_hashed: str
     click_ids: str
@@ -103,6 +113,10 @@ class Event:
 
         consent_normalization_version = self.consent_normalization_version
 
+        policy_class = self.policy_class.value
+
+        traffic_class = self.traffic_class.value
+
         consent = self.consent
 
         user_data_hashed = self.user_data_hashed
@@ -139,6 +153,8 @@ class Event:
                 "attribution_join": attribution_join,
                 "enforcement_scope": enforcement_scope,
                 "consent_normalization_version": consent_normalization_version,
+                "policy_class": policy_class,
+                "traffic_class": traffic_class,
                 "consent": consent,
                 "user_data_hashed": user_data_hashed,
                 "click_ids": click_ids,
@@ -207,6 +223,10 @@ class Event:
 
         consent_normalization_version = d.pop("consent_normalization_version")
 
+        policy_class = JurisdictionPolicyClass(d.pop("policy_class"))
+
+        traffic_class = TrafficClass(d.pop("traffic_class"))
+
         consent = d.pop("consent")
 
         user_data_hashed = d.pop("user_data_hashed")
@@ -240,6 +260,8 @@ class Event:
             attribution_join=attribution_join,
             enforcement_scope=enforcement_scope,
             consent_normalization_version=consent_normalization_version,
+            policy_class=policy_class,
+            traffic_class=traffic_class,
             consent=consent,
             user_data_hashed=user_data_hashed,
             click_ids=click_ids,

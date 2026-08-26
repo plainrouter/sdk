@@ -65,7 +65,10 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ErrorMessage | GetEventResponse200]:
-    """
+    """Get an event and delivery trace
+
+     Returns one retained customer-readable event with lineage and destination delivery state.
+
     Args:
         event (str):
 
@@ -93,7 +96,10 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
 ) -> ErrorMessage | GetEventResponse200 | None:
-    """
+    """Get an event and delivery trace
+
+     Returns one retained customer-readable event with lineage and destination delivery state.
+
     Args:
         event (str):
 
@@ -116,7 +122,10 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ErrorMessage | GetEventResponse200]:
-    """
+    """Get an event and delivery trace
+
+     Returns one retained customer-readable event with lineage and destination delivery state.
+
     Args:
         event (str):
 
@@ -142,7 +151,10 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
 ) -> ErrorMessage | GetEventResponse200 | None:
-    """
+    """Get an event and delivery trace
+
+     Returns one retained customer-readable event with lineage and destination delivery state.
+
     Args:
         event (str):
 

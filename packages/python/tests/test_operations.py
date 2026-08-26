@@ -22,10 +22,10 @@ from plainrouter import (
 )
 from plainrouter.generated import AuthenticatedClient
 from plainrouter.generated.models import (
-    CreateEventBody,
-    CreateEventBodyConsent,
-    CreateEventBodyConsentMode,
-    CreateEventBodyTcf,
+    CreateEventBodyType0,
+    CreateEventBodyType0Consent,
+    CreateEventBodyType0ConsentMode,
+    CreateEventBodyType0Tcf,
     CreateEventResponse200,
     DeleteUserDataBody,
     DeleteUserDataBodyIdentifierType,
@@ -68,18 +68,18 @@ def assert_error_response(response: Response[T]) -> None:
 def test_create_event_calls_generated_operation_with_body() -> None:
     requests: list[httpx.Request] = []
     client = make_client(error_handler(requests))
-    consent = CreateEventBodyConsent()
+    consent = CreateEventBodyType0Consent()
     consent["analytics_storage"] = "granted"
-    consent_mode = CreateEventBodyConsentMode()
+    consent_mode = CreateEventBodyType0ConsentMode()
     consent_mode["ad_user_data"] = "granted"
-    tcf = CreateEventBodyTcf()
+    tcf = CreateEventBodyType0Tcf()
     tcf["string"] = (
         "COwK6gaOwK6gaFmAAAENAPCAAAAAAAAAAAAAAAAAAAAA.IFMsv_Z_G____bvQXQlf9eY1f9_z_q7t0eY1f9_z2-8v8Z9wKZ1v9t0Q"
     )
 
     response = create_event.sync_detailed(
         client=client,
-        body=CreateEventBody(
+        body=CreateEventBodyType0(
             event_name="Purchase",
             consent_basis="consent",
             consent=consent,
@@ -254,7 +254,7 @@ def test_create_event_parses_a_success_response() -> None:
 
     response = create_event.sync_detailed(
         client=make_client(handle),
-        body=CreateEventBody(event_name="Purchase", consent_basis="consent"),
+        body=CreateEventBodyType0(event_name="Purchase", consent_basis="consent"),
     )
 
     assert isinstance(response.parsed, CreateEventResponse200)
@@ -281,6 +281,8 @@ def test_event_deserializes_consent_decision_fields() -> None:
             "attribution_join": "allowed",
             "enforcement_scope": "event",
             "consent_normalization_version": "1",
+            "policy_class": "global",
+            "traffic_class": "valid",
             "consent": "{}",
             "user_data_hashed": "{}",
             "click_ids": "{}",

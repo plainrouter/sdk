@@ -60,7 +60,10 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ErrorMessage | VerifySignalIngestionResponse200 | VerifySignalIngestionResponse202]:
-    """
+    """Verify server-side Signal ingestion
+
+     Writes one identity-free verification event for onboarding and returns the existing event on retry.
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -82,7 +85,10 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
 ) -> ErrorMessage | VerifySignalIngestionResponse200 | VerifySignalIngestionResponse202 | None:
-    """
+    """Verify server-side Signal ingestion
+
+     Writes one identity-free verification event for onboarding and returns the existing event on retry.
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -100,7 +106,10 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ErrorMessage | VerifySignalIngestionResponse200 | VerifySignalIngestionResponse202]:
-    """
+    """Verify server-side Signal ingestion
+
+     Writes one identity-free verification event for onboarding and returns the existing event on retry.
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -120,7 +129,10 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
 ) -> ErrorMessage | VerifySignalIngestionResponse200 | VerifySignalIngestionResponse202 | None:
-    """
+    """Verify server-side Signal ingestion
+
+     Writes one identity-free verification event for onboarding and returns the existing event on retry.
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
