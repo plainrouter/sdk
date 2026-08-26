@@ -7,7 +7,7 @@ This package is unrelated to the npm package `plain-router`.
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
 [documentation](https://docs.plainrouter.com) ·
-[source](https://github.com/wudaku/plainrouter-sdk/tree/main/packages/cli)
+[source](https://github.com/plainrouter/sdk/tree/main/packages/cli)
 
 ## Installation
 
@@ -26,7 +26,7 @@ npx @plainrouter/cli --help
 Or install it from the official Homebrew tap:
 
 ```sh
-brew install wudaku/tap/plainrouter
+brew install plainrouter/tap/plainrouter
 ```
 
 Authentication uses `PLAINROUTER_TOKEN` first, then

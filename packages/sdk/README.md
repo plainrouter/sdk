@@ -5,7 +5,7 @@ contract.
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
 [documentation](https://docs.plainrouter.com) ·
-[source](https://github.com/wudaku/plainrouter-sdk/tree/main/packages/sdk)
+[source](https://github.com/plainrouter/sdk/tree/main/packages/sdk)
 
 This package is in `0.x` development. Its interface is unstable and carries no
 support promise yet.

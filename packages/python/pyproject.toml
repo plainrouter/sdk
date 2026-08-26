@@ -26,7 +26,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://plainrouter.com"
 Documentation = "https://docs.plainrouter.com/sdk/python"
-Repository = "https://github.com/wudaku/plainrouter-sdk"
+Repository = "https://github.com/plainrouter/sdk"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/plainrouter"]

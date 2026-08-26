@@ -19,7 +19,7 @@ def main() -> None:
     expected_urls = {
         "Homepage": "https://plainrouter.com",
         "Documentation": "https://docs.plainrouter.com/sdk/python",
-        "Repository": "https://github.com/wudaku/plainrouter-sdk",
+        "Repository": "https://github.com/plainrouter/sdk",
     }
     if urls != expected_urls:
         raise RuntimeError(f"Python project URLs do not identify PlainRouter: {urls!r}")
