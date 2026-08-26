@@ -9,6 +9,8 @@ Official project: [plainrouter.com](https://plainrouter.com) ·
 [documentation](https://docs.plainrouter.com) ·
 [source](https://github.com/plainrouter/sdk/tree/main/packages/cli)
 
+Report CLI issues in the [PlainRouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
+
 ## Installation
 
 Install the canonical scoped package globally:

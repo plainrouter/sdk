@@ -4,6 +4,8 @@ Generated from Plainrouter's signed OpenAPI contract. The package is in 0.x and 
 
 Official project: [plainrouter.com](https://plainrouter.com) · [documentation](https://docs.plainrouter.com/sdk/python) · [source](https://github.com/plainrouter/sdk/tree/main/packages/python)
 
+Report Python SDK issues in the [PlainRouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
+
 ## Install
 
 ```bash

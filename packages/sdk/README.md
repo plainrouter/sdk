@@ -7,6 +7,8 @@ Official project: [plainrouter.com](https://plainrouter.com) ·
 [documentation](https://docs.plainrouter.com) ·
 [source](https://github.com/plainrouter/sdk/tree/main/packages/sdk)
 
+Report SDK issues in the [PlainRouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
+
 This package is in `0.x` development. Its interface is unstable and carries no
 support promise yet.
 
