@@ -2,6 +2,8 @@
 
 Generated from Plainrouter's signed OpenAPI contract. The package is in 0.x and its API may change between minor releases. No support guarantees are made yet.
 
+Official project: [plainrouter.com](https://plainrouter.com) · [documentation](https://docs.plainrouter.com/sdk/python) · [source](https://github.com/wudaku/plainrouter-sdk/tree/main/packages/python)
+
 ## Install
 
 ```bash

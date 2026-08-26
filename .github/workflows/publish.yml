@@ -27,6 +27,8 @@ jobs:
         run: corepack npm ci
       - name: Verify release versions and tag owner
         run: corepack npm run verify:release
+      - name: Verify official package metadata
+        run: corepack npm run verify:metadata
       - name: Verify signed contract
         run: corepack npm run verify:spec
       - name: Typecheck

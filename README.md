@@ -2,6 +2,10 @@
 
 Generated from Plainrouter's signed OpenAPI contract.
 
+Official project: [plainrouter.com](https://plainrouter.com) ·
+[documentation](https://docs.plainrouter.com) ·
+[source](https://github.com/wudaku/plainrouter-sdk)
+
 This repository is in `0.x` development. Stability and support are not yet
 promised.
 
@@ -68,4 +72,18 @@ read -s PLAINROUTER_TOKEN
 export PLAINROUTER_TOKEN
 plainrouter events list
 unset PLAINROUTER_TOKEN
+```
+
+The same CLI is also available from the official Homebrew tap:
+
+```sh
+brew install wudaku/tap/plainrouter
+```
+
+## Go SDK
+
+The generated Go client is published as its own standard Go module:
+
+```sh
+go get github.com/wudaku/plainrouter-go@v0.5.0
 ```

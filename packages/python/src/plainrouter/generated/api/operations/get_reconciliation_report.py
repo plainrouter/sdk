@@ -73,7 +73,10 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     date: datetime.date,
 ) -> Response[ErrorMessage | GetReconciliationReportResponse200 | ValidationError]:
-    """
+    """Get a reconciliation report
+
+     Returns stored delivery-versus-platform reconciliation results for one calendar date.
+
     Args:
         date (datetime.date):
 
@@ -101,7 +104,10 @@ def sync(
     client: AuthenticatedClient | Client,
     date: datetime.date,
 ) -> ErrorMessage | GetReconciliationReportResponse200 | ValidationError | None:
-    """
+    """Get a reconciliation report
+
+     Returns stored delivery-versus-platform reconciliation results for one calendar date.
+
     Args:
         date (datetime.date):
 
@@ -124,7 +130,10 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     date: datetime.date,
 ) -> Response[ErrorMessage | GetReconciliationReportResponse200 | ValidationError]:
-    """
+    """Get a reconciliation report
+
+     Returns stored delivery-versus-platform reconciliation results for one calendar date.
+
     Args:
         date (datetime.date):
 
@@ -150,7 +159,10 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     date: datetime.date,
 ) -> ErrorMessage | GetReconciliationReportResponse200 | ValidationError | None:
-    """
+    """Get a reconciliation report
+
+     Returns stored delivery-versus-platform reconciliation results for one calendar date.
+
     Args:
         date (datetime.date):
 

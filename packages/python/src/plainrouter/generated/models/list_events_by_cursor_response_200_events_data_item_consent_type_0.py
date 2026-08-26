@@ -6,12 +6,12 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="CreateEventBodyClickIds")
+T = TypeVar("T", bound="ListEventsByCursorResponse200EventsDataItemConsentType0")
 
 
 @_attrs_define
-class CreateEventBodyClickIds:
-    """Advertising click identifiers."""
+class ListEventsByCursorResponse200EventsDataItemConsentType0:
+    """ """
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -25,10 +25,10 @@ class CreateEventBodyClickIds:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        create_event_body_click_ids = cls()
+        list_events_by_cursor_response_200_events_data_item_consent_type_0 = cls()
 
-        create_event_body_click_ids.additional_properties = d
-        return create_event_body_click_ids
+        list_events_by_cursor_response_200_events_data_item_consent_type_0.additional_properties = d
+        return list_events_by_cursor_response_200_events_data_item_consent_type_0
 
     @property
     def additional_keys(self) -> list[str]:

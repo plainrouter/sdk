@@ -82,6 +82,8 @@ export type Event = {
     attribution_join: string;
     enforcement_scope: string;
     consent_normalization_version: string;
+    policy_class: JurisdictionPolicyClass;
+    traffic_class: TrafficClass;
     consent: string;
     user_data_hashed: string;
     click_ids: string;
@@ -91,6 +93,14 @@ export type Event = {
     payload_expired: boolean;
     deliveries: Array<unknown>;
 };
+
+/**
+ * JurisdictionPolicyClass
+ *
+ * The two policy classes used by the single Signals collector. The enum intentionally has no country or region members. Country evidence is an edge input used to derive a policy class and is never a ledger value.
+ *
+ */
+export type JurisdictionPolicyClass = 'strict_eu' | 'global';
 
 /**
  * ReconciliationReport
@@ -109,7 +119,16 @@ export type ReconciliationReport = {
     status: string;
     created_at: string | null;
     updated_at: string | null;
+    claimed_clicks: number | null;
 };
+
+/**
+ * TrafficClass
+ *
+ * The only persisted traffic verdicts for passive document arrivals. Request facts and classifier reasons never cross the stripping boundary.
+ *
+ */
+export type TrafficClass = 'valid' | 'invalid';
 
 /**
  * ValidationError
@@ -152,9 +171,9 @@ export type CreateEventData = {
          */
         visitor_id?: string;
         /**
-         * Legal basis for processing: consent or legitimate_interest.
+         * Legal basis for processing. Legitimate-interest revenue lifecycle events are rejected; use an authenticated server adapter.
          */
-        consent_basis: string;
+        consent_basis: 'consent';
         /**
          * Consent state supplied with the event.
          */
@@ -195,6 +214,85 @@ export type CreateEventData = {
             contents?: Array<unknown>;
             num_items?: number;
         };
+    } | {
+        /**
+         * Caller-supplied idempotency key; maximum 128 characters.
+         */
+        event_id?: string;
+        /**
+         * Signal event name; maximum 100 characters.
+         */
+        event_name: 'signal_verification' | 'consent_withdrawal';
+        /**
+         * Optional parent event id; maximum 128 characters.
+         */
+        parent_event_id?: string;
+        /**
+         * Unix timestamp or ISO-8601 date-time. Defaults to receipt time.
+         */
+        event_time?: number | string;
+        /**
+         * Optional absolute source URL.
+         */
+        event_source?: string;
+        /**
+         * Optional action source; defaults to website and is limited to 50 characters.
+         */
+        action_source?: string;
+        /**
+         * Optional visitor identifier; maximum 255 characters.
+         */
+        visitor_id?: string;
+        /**
+         * Legal basis for processing. Legitimate-interest revenue lifecycle events are rejected; use an authenticated server adapter.
+         */
+        consent_basis: 'legitimate_interest';
+        /**
+         * Consent state supplied with the event.
+         */
+        consent?: {
+            [key: string]: unknown;
+        };
+        /**
+         * Consent Mode v2 signal values supplied with the event.
+         */
+        consent_mode?: {
+            [key: string]: unknown;
+        };
+        /**
+         * TCF v2 data containing string and optional captured_at.
+         */
+        tcf?: {
+            [key: string]: unknown;
+        };
+        /**
+         * Identity fields accepted by the tracker.
+         */
+        user_data?: {
+            [key: string]: unknown;
+        };
+        /**
+         * Advertising click identifiers.
+         */
+        click_ids?: {
+            [key: string]: unknown;
+        };
+        /**
+         * Optional commerce data. Contents accepts at most 50 items and 16 KB serialized.
+         */
+        value_data?: {
+            value?: string;
+            currency?: string;
+            order_id?: string;
+            contents?: Array<unknown>;
+            num_items?: number;
+        };
+    };
+    headers?: {
+        /**
+         * Optional idempotency key. When event_id is omitted, PlainRouter uses this value as event_id. If both are supplied, they must match.
+         */
+        'Idempotency-Key'?: string;
     };
     path?: never;
     query?: never;
@@ -470,7 +568,7 @@ export type ListEventsError = ListEventsErrors[keyof ListEventsErrors];
 
 export type ListEventsResponses = {
     /**
-     * Paginated events and delivery acceptance metrics.
+     * Page-number-paginated events and delivery acceptance metrics.
      */
     200: {
         events: {
@@ -555,6 +653,109 @@ export type ListEventsResponses = {
 };
 
 export type ListEventsResponse = ListEventsResponses[keyof ListEventsResponses];
+
+export type ListEventsByCursorData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Events per cursor page, capped at 100.
+         */
+        per_page?: number;
+        /**
+         * Opaque cursor returned by a previous response. Omit it on the first request.
+         */
+        cursor?: string;
+    };
+    url: '/dashboard/events/cursor';
+};
+
+export type ListEventsByCursorErrors = {
+    /**
+     * Invalid or missing Signal tracker secret.
+     */
+    401: ErrorMessage;
+};
+
+export type ListEventsByCursorError = ListEventsByCursorErrors[keyof ListEventsByCursorErrors];
+
+export type ListEventsByCursorResponses = {
+    /**
+     * Cursor-paginated events and delivery acceptance metrics.
+     */
+    200: {
+        events: {
+            data: Array<{
+                id: string;
+                signal_tracker_id: string;
+                parent_event_id: string | null;
+                event_name: string;
+                event_time: string;
+                action_source: string;
+                event_class: string;
+                order_id: string | null;
+                value_amount: number | null;
+                value_currency: string | null;
+                created_at: string;
+                consent_basis: string;
+                measurement_class: string;
+                attribution_join: string;
+                enforcement_scope: string;
+                consent_normalization_version: string;
+                consent: {
+                    [key: string]: unknown;
+                } | Array<unknown> | null;
+                user_data_hashed: {
+                    [key: string]: unknown;
+                } | Array<unknown> | null;
+                click_ids: {
+                    [key: string]: unknown;
+                } | Array<unknown> | null;
+                session: {
+                    [key: string]: unknown;
+                } | Array<unknown> | null;
+                value_data: {
+                    [key: string]: unknown;
+                } | Array<unknown> | null;
+                event_source: string | null;
+                payload_expired: boolean;
+                deliveries: Array<{
+                    id: number;
+                    signal_tracker_id: string;
+                    event_id: string;
+                    destination_id: string | null;
+                    status: DeliveryStatus;
+                    is_test: boolean;
+                    attempt_count: number;
+                    last_error: {
+                        [key: string]: unknown;
+                    } | Array<unknown> | null;
+                    platform_response: {
+                        [key: string]: unknown;
+                    } | Array<unknown> | null;
+                    platform_trace_id: string | null;
+                    next_attempt_at: string | null;
+                    created_at: string;
+                    updated_at: string | null;
+                }>;
+            }>;
+            path: string | null;
+            per_page: number;
+            next_cursor: string | null;
+            next_page_url: string | null;
+            prev_cursor: string | null;
+            prev_page_url: string | null;
+        };
+        metrics: {
+            accepted: number;
+            total_deliveries: number;
+            acceptance_rate: number | null;
+            acceptance_rate_window: string;
+        };
+    };
+};
+
+export type ListEventsByCursorResponse = ListEventsByCursorResponses[keyof ListEventsByCursorResponses];
 
 export type SetDestinationTestModeData = {
     body: {
@@ -855,3 +1056,188 @@ export type DeleteUserDataResponses = {
 };
 
 export type DeleteUserDataResponse = DeleteUserDataResponses[keyof DeleteUserDataResponses];
+
+export type GetSandboxData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/sandbox';
+};
+
+export type GetSandboxResponses = {
+    /**
+     * Sandbox capabilities and a ready-to-run example.
+     */
+    200: {
+        environment: string;
+        authentication_required: boolean;
+        account_required: boolean;
+        production_data: boolean;
+        persists_data: boolean;
+        provider_delivery: boolean;
+        description: string;
+        self_serve_key: {
+            method: string;
+            url: string;
+            authentication_required: boolean;
+            description: string;
+        };
+        try: {
+            method: string;
+            url: string;
+            content_type: string;
+            body: {
+                event_id: string;
+                event_name: string;
+                action_source: string;
+                value_data: {
+                    value: string;
+                    currency: string;
+                    order_id: string;
+                };
+            };
+        };
+    };
+};
+
+export type GetSandboxResponse = GetSandboxResponses[keyof GetSandboxResponses];
+
+export type CreateSandboxKeyData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/sandbox/keys';
+};
+
+export type CreateSandboxKeyResponses = {
+    /**
+     * Short-lived sandbox API key issued.
+     */
+    201: {
+        api_key: string;
+        token_type: string;
+        expires_in: number;
+        expires_at: string;
+        scope: string;
+        production_access: boolean;
+        use: {
+            method: string;
+            url: string;
+            authorization: string;
+        };
+    };
+};
+
+export type CreateSandboxKeyResponse = CreateSandboxKeyResponses[keyof CreateSandboxKeyResponses];
+
+export type ValidateSandboxEventData = {
+    body: {
+        /**
+         * Optional synthetic idempotency key; maximum 128 characters.
+         */
+        event_id?: string;
+        /**
+         * Synthetic event name; maximum 100 characters.
+         */
+        event_name: string;
+        /**
+         * Synthetic action source.
+         */
+        action_source?: string;
+        /**
+         * Optional synthetic commerce data.
+         */
+        value_data?: {
+            value?: string;
+            currency?: string;
+            order_id?: string;
+        };
+    };
+    path?: never;
+    query?: never;
+    url: '/sandbox/events';
+};
+
+export type ValidateSandboxEventErrors = {
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type ValidateSandboxEventError = ValidateSandboxEventErrors[keyof ValidateSandboxEventErrors];
+
+export type ValidateSandboxEventResponses = {
+    /**
+     * Synthetic event validated and discarded.
+     */
+    200: {
+        sandbox: boolean;
+        accepted: boolean;
+        event_id: string;
+        status: string;
+        persisted: boolean;
+        provider_delivery: boolean;
+        message: string;
+    };
+};
+
+export type ValidateSandboxEventResponse = ValidateSandboxEventResponses[keyof ValidateSandboxEventResponses];
+
+export type ValidateSandboxEventWithKeyData = {
+    body: {
+        /**
+         * Optional synthetic idempotency key; maximum 128 characters.
+         */
+        event_id?: string;
+        /**
+         * Synthetic event name; maximum 100 characters.
+         */
+        event_name: string;
+        /**
+         * Synthetic action source.
+         */
+        action_source?: string;
+        /**
+         * Optional synthetic commerce data.
+         */
+        value_data?: {
+            value?: string;
+            currency?: string;
+            order_id?: string;
+        };
+    };
+    path?: never;
+    query?: never;
+    url: '/sandbox/keyed-events';
+};
+
+export type ValidateSandboxEventWithKeyErrors = {
+    /**
+     * Sandbox key missing, invalid, or expired.
+     */
+    401: ErrorMessage;
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type ValidateSandboxEventWithKeyError = ValidateSandboxEventWithKeyErrors[keyof ValidateSandboxEventWithKeyErrors];
+
+export type ValidateSandboxEventWithKeyResponses = {
+    /**
+     * Synthetic event validated with a sandbox key and discarded.
+     */
+    200: {
+        sandbox: boolean;
+        accepted: boolean;
+        event_id: string;
+        status: string;
+        persisted: boolean;
+        provider_delivery: boolean;
+        message: string;
+    };
+};
+
+export type ValidateSandboxEventWithKeyResponse = ValidateSandboxEventWithKeyResponses[keyof ValidateSandboxEventWithKeyResponses];

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Literal, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -9,52 +9,53 @@ from attrs import field as _attrs_field
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.create_event_body_click_ids import CreateEventBodyClickIds
-    from ..models.create_event_body_consent import CreateEventBodyConsent
-    from ..models.create_event_body_consent_mode import CreateEventBodyConsentMode
-    from ..models.create_event_body_tcf import CreateEventBodyTcf
-    from ..models.create_event_body_user_data import CreateEventBodyUserData
-    from ..models.create_event_body_value_data import CreateEventBodyValueData
+    from ..models.create_event_body_type_0_click_ids import CreateEventBodyType0ClickIds
+    from ..models.create_event_body_type_0_consent import CreateEventBodyType0Consent
+    from ..models.create_event_body_type_0_consent_mode import CreateEventBodyType0ConsentMode
+    from ..models.create_event_body_type_0_tcf import CreateEventBodyType0Tcf
+    from ..models.create_event_body_type_0_user_data import CreateEventBodyType0UserData
+    from ..models.create_event_body_type_0_value_data import CreateEventBodyType0ValueData
 
 
-T = TypeVar("T", bound="CreateEventBody")
+T = TypeVar("T", bound="CreateEventBodyType0")
 
 
 @_attrs_define
-class CreateEventBody:
+class CreateEventBodyType0:
     """
     Attributes:
         event_name (str): Signal event name; maximum 100 characters.
-        consent_basis (str): Legal basis for processing: consent or legitimate_interest.
+        consent_basis (Literal['consent']): Legal basis for processing. Legitimate-interest revenue lifecycle events are
+            rejected; use an authenticated server adapter.
         event_id (str | Unset): Caller-supplied idempotency key; maximum 128 characters.
         parent_event_id (str | Unset): Optional parent event id; maximum 128 characters.
         event_time (int | str | Unset): Unix timestamp or ISO-8601 date-time. Defaults to receipt time.
         event_source (str | Unset): Optional absolute source URL.
         action_source (str | Unset): Optional action source; defaults to website and is limited to 50 characters.
         visitor_id (str | Unset): Optional visitor identifier; maximum 255 characters.
-        consent (CreateEventBodyConsent | Unset): Consent state supplied with the event.
-        consent_mode (CreateEventBodyConsentMode | Unset): Consent Mode v2 signal values supplied with the event.
-        tcf (CreateEventBodyTcf | Unset): TCF v2 data containing string and optional captured_at.
-        user_data (CreateEventBodyUserData | Unset): Identity fields accepted by the tracker.
-        click_ids (CreateEventBodyClickIds | Unset): Advertising click identifiers.
-        value_data (CreateEventBodyValueData | Unset): Optional commerce data. Contents accepts at most 50 items and 16
-            KB serialized.
+        consent (CreateEventBodyType0Consent | Unset): Consent state supplied with the event.
+        consent_mode (CreateEventBodyType0ConsentMode | Unset): Consent Mode v2 signal values supplied with the event.
+        tcf (CreateEventBodyType0Tcf | Unset): TCF v2 data containing string and optional captured_at.
+        user_data (CreateEventBodyType0UserData | Unset): Identity fields accepted by the tracker.
+        click_ids (CreateEventBodyType0ClickIds | Unset): Advertising click identifiers.
+        value_data (CreateEventBodyType0ValueData | Unset): Optional commerce data. Contents accepts at most 50 items
+            and 16 KB serialized.
     """
 
     event_name: str
-    consent_basis: str
+    consent_basis: Literal["consent"]
     event_id: str | Unset = UNSET
     parent_event_id: str | Unset = UNSET
     event_time: int | str | Unset = UNSET
     event_source: str | Unset = UNSET
     action_source: str | Unset = UNSET
     visitor_id: str | Unset = UNSET
-    consent: CreateEventBodyConsent | Unset = UNSET
-    consent_mode: CreateEventBodyConsentMode | Unset = UNSET
-    tcf: CreateEventBodyTcf | Unset = UNSET
-    user_data: CreateEventBodyUserData | Unset = UNSET
-    click_ids: CreateEventBodyClickIds | Unset = UNSET
-    value_data: CreateEventBodyValueData | Unset = UNSET
+    consent: CreateEventBodyType0Consent | Unset = UNSET
+    consent_mode: CreateEventBodyType0ConsentMode | Unset = UNSET
+    tcf: CreateEventBodyType0Tcf | Unset = UNSET
+    user_data: CreateEventBodyType0UserData | Unset = UNSET
+    click_ids: CreateEventBodyType0ClickIds | Unset = UNSET
+    value_data: CreateEventBodyType0ValueData | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -139,17 +140,19 @@ class CreateEventBody:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.create_event_body_click_ids import CreateEventBodyClickIds
-        from ..models.create_event_body_consent import CreateEventBodyConsent
-        from ..models.create_event_body_consent_mode import CreateEventBodyConsentMode
-        from ..models.create_event_body_tcf import CreateEventBodyTcf
-        from ..models.create_event_body_user_data import CreateEventBodyUserData
-        from ..models.create_event_body_value_data import CreateEventBodyValueData
+        from ..models.create_event_body_type_0_click_ids import CreateEventBodyType0ClickIds
+        from ..models.create_event_body_type_0_consent import CreateEventBodyType0Consent
+        from ..models.create_event_body_type_0_consent_mode import CreateEventBodyType0ConsentMode
+        from ..models.create_event_body_type_0_tcf import CreateEventBodyType0Tcf
+        from ..models.create_event_body_type_0_user_data import CreateEventBodyType0UserData
+        from ..models.create_event_body_type_0_value_data import CreateEventBodyType0ValueData
 
         d = dict(src_dict)
         event_name = d.pop("event_name")
 
-        consent_basis = d.pop("consent_basis")
+        consent_basis = cast(Literal["consent"], d.pop("consent_basis"))
+        if consent_basis != "consent":
+            raise ValueError(f"consent_basis must match const 'consent', got '{consent_basis}'")
 
         event_id = d.pop("event_id", UNSET)
 
@@ -169,48 +172,48 @@ class CreateEventBody:
         visitor_id = d.pop("visitor_id", UNSET)
 
         _consent = d.pop("consent", UNSET)
-        consent: CreateEventBodyConsent | Unset
+        consent: CreateEventBodyType0Consent | Unset
         if isinstance(_consent, Unset):
             consent = UNSET
         else:
-            consent = CreateEventBodyConsent.from_dict(_consent)
+            consent = CreateEventBodyType0Consent.from_dict(_consent)
 
         _consent_mode = d.pop("consent_mode", UNSET)
-        consent_mode: CreateEventBodyConsentMode | Unset
+        consent_mode: CreateEventBodyType0ConsentMode | Unset
         if isinstance(_consent_mode, Unset):
             consent_mode = UNSET
         else:
-            consent_mode = CreateEventBodyConsentMode.from_dict(_consent_mode)
+            consent_mode = CreateEventBodyType0ConsentMode.from_dict(_consent_mode)
 
         _tcf = d.pop("tcf", UNSET)
-        tcf: CreateEventBodyTcf | Unset
+        tcf: CreateEventBodyType0Tcf | Unset
         if isinstance(_tcf, Unset):
             tcf = UNSET
         else:
-            tcf = CreateEventBodyTcf.from_dict(_tcf)
+            tcf = CreateEventBodyType0Tcf.from_dict(_tcf)
 
         _user_data = d.pop("user_data", UNSET)
-        user_data: CreateEventBodyUserData | Unset
+        user_data: CreateEventBodyType0UserData | Unset
         if isinstance(_user_data, Unset):
             user_data = UNSET
         else:
-            user_data = CreateEventBodyUserData.from_dict(_user_data)
+            user_data = CreateEventBodyType0UserData.from_dict(_user_data)
 
         _click_ids = d.pop("click_ids", UNSET)
-        click_ids: CreateEventBodyClickIds | Unset
+        click_ids: CreateEventBodyType0ClickIds | Unset
         if isinstance(_click_ids, Unset):
             click_ids = UNSET
         else:
-            click_ids = CreateEventBodyClickIds.from_dict(_click_ids)
+            click_ids = CreateEventBodyType0ClickIds.from_dict(_click_ids)
 
         _value_data = d.pop("value_data", UNSET)
-        value_data: CreateEventBodyValueData | Unset
+        value_data: CreateEventBodyType0ValueData | Unset
         if isinstance(_value_data, Unset):
             value_data = UNSET
         else:
-            value_data = CreateEventBodyValueData.from_dict(_value_data)
+            value_data = CreateEventBodyType0ValueData.from_dict(_value_data)
 
-        create_event_body = cls(
+        create_event_body_type_0 = cls(
             event_name=event_name,
             consent_basis=consent_basis,
             event_id=event_id,
@@ -227,8 +230,8 @@ class CreateEventBody:
             value_data=value_data,
         )
 
-        create_event_body.additional_properties = d
-        return create_event_body
+        create_event_body_type_0.additional_properties = d
+        return create_event_body_type_0
 
     @property
     def additional_keys(self) -> list[str]:

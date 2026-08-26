@@ -6,12 +6,12 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="CreateEventBodyConsentMode")
+T = TypeVar("T", bound="CreateEventBodyType0Consent")
 
 
 @_attrs_define
-class CreateEventBodyConsentMode:
-    """Consent Mode v2 signal values supplied with the event."""
+class CreateEventBodyType0Consent:
+    """Consent state supplied with the event."""
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -25,10 +25,10 @@ class CreateEventBodyConsentMode:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        create_event_body_consent_mode = cls()
+        create_event_body_type_0_consent = cls()
 
-        create_event_body_consent_mode.additional_properties = d
-        return create_event_body_consent_mode
+        create_event_body_type_0_consent.additional_properties = d
+        return create_event_body_type_0_consent
 
     @property
     def additional_keys(self) -> list[str]:

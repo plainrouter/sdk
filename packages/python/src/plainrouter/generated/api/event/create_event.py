@@ -5,26 +5,33 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.create_event_body import CreateEventBody
+from ...models.create_event_body_type_0 import CreateEventBodyType0
+from ...models.create_event_body_type_1 import CreateEventBodyType1
 from ...models.create_event_response_200 import CreateEventResponse200
 from ...models.create_event_response_202 import CreateEventResponse202
 from ...models.error_message import ErrorMessage
 from ...models.validation_error import ValidationError
-from ...types import Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
-    body: CreateEventBody,
+    body: CreateEventBodyType0 | CreateEventBodyType1,
+    idempotency_key: str | Unset = UNSET,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
+    if not isinstance(idempotency_key, Unset):
+        headers["Idempotency-Key"] = idempotency_key
 
     _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/events",
     }
 
-    _kwargs["json"] = body.to_dict()
+    if isinstance(body, CreateEventBodyType0):
+        _kwargs["json"] = body.to_dict()
+    else:
+        _kwargs["json"] = body.to_dict()
 
     headers["Content-Type"] = "application/json"
 
@@ -75,11 +82,17 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
-    body: CreateEventBody,
+    body: CreateEventBodyType0 | CreateEventBodyType1,
+    idempotency_key: str | Unset = UNSET,
 ) -> Response[CreateEventResponse200 | CreateEventResponse202 | ErrorMessage | ValidationError]:
-    """
+    """Submit a conversion event
+
+     Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or
+    Idempotency-Key in the request headers to make retries idempotent.
+
     Args:
-        body (CreateEventBody):
+        idempotency_key (str | Unset):
+        body (CreateEventBodyType0 | CreateEventBodyType1):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -91,6 +104,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         body=body,
+        idempotency_key=idempotency_key,
     )
 
     response = client.get_httpx_client().request(
@@ -103,11 +117,17 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient | Client,
-    body: CreateEventBody,
+    body: CreateEventBodyType0 | CreateEventBodyType1,
+    idempotency_key: str | Unset = UNSET,
 ) -> CreateEventResponse200 | CreateEventResponse202 | ErrorMessage | ValidationError | None:
-    """
+    """Submit a conversion event
+
+     Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or
+    Idempotency-Key in the request headers to make retries idempotent.
+
     Args:
-        body (CreateEventBody):
+        idempotency_key (str | Unset):
+        body (CreateEventBodyType0 | CreateEventBodyType1):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -120,17 +140,24 @@ def sync(
     return sync_detailed(
         client=client,
         body=body,
+        idempotency_key=idempotency_key,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
-    body: CreateEventBody,
+    body: CreateEventBodyType0 | CreateEventBodyType1,
+    idempotency_key: str | Unset = UNSET,
 ) -> Response[CreateEventResponse200 | CreateEventResponse202 | ErrorMessage | ValidationError]:
-    """
+    """Submit a conversion event
+
+     Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or
+    Idempotency-Key in the request headers to make retries idempotent.
+
     Args:
-        body (CreateEventBody):
+        idempotency_key (str | Unset):
+        body (CreateEventBodyType0 | CreateEventBodyType1):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -142,6 +169,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         body=body,
+        idempotency_key=idempotency_key,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -152,11 +180,17 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient | Client,
-    body: CreateEventBody,
+    body: CreateEventBodyType0 | CreateEventBodyType1,
+    idempotency_key: str | Unset = UNSET,
 ) -> CreateEventResponse200 | CreateEventResponse202 | ErrorMessage | ValidationError | None:
-    """
+    """Submit a conversion event
+
+     Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or
+    Idempotency-Key in the request headers to make retries idempotent.
+
     Args:
-        body (CreateEventBody):
+        idempotency_key (str | Unset):
+        body (CreateEventBodyType0 | CreateEventBodyType1):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -170,5 +204,6 @@ async def asyncio(
         await asyncio_detailed(
             client=client,
             body=body,
+            idempotency_key=idempotency_key,
         )
     ).parsed

@@ -5,6 +5,10 @@ behavior: every API command delegates to one generated SDK operation.
 The interface is unstable and carries no support promise yet.
 This package is unrelated to the npm package `plain-router`.
 
+Official project: [plainrouter.com](https://plainrouter.com) ·
+[documentation](https://docs.plainrouter.com) ·
+[source](https://github.com/wudaku/plainrouter-sdk/tree/main/packages/cli)
+
 ## Installation
 
 Install the canonical scoped package globally:
@@ -17,6 +21,12 @@ Or run it without a global installation:
 
 ```sh
 npx @plainrouter/cli --help
+```
+
+Or install it from the official Homebrew tap:
+
+```sh
+brew install wudaku/tap/plainrouter
 ```
 
 Authentication uses `PLAINROUTER_TOKEN` first, then

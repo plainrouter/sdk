@@ -6,12 +6,12 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="CreateEventBodyUserData")
+T = TypeVar("T", bound="CreateEventBodyType0Tcf")
 
 
 @_attrs_define
-class CreateEventBodyUserData:
-    """Identity fields accepted by the tracker."""
+class CreateEventBodyType0Tcf:
+    """TCF v2 data containing string and optional captured_at."""
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -25,10 +25,10 @@ class CreateEventBodyUserData:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        create_event_body_user_data = cls()
+        create_event_body_type_0_tcf = cls()
 
-        create_event_body_user_data.additional_properties = d
-        return create_event_body_user_data
+        create_event_body_type_0_tcf.additional_properties = d
+        return create_event_body_type_0_tcf
 
     @property
     def additional_keys(self) -> list[str]:

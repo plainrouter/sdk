@@ -6,12 +6,12 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="CreateEventBodyTcf")
+T = TypeVar("T", bound="ListEventsByCursorResponse200EventsDataItemUserDataHashedType0")
 
 
 @_attrs_define
-class CreateEventBodyTcf:
-    """TCF v2 data containing string and optional captured_at."""
+class ListEventsByCursorResponse200EventsDataItemUserDataHashedType0:
+    """ """
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -25,10 +25,10 @@ class CreateEventBodyTcf:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        create_event_body_tcf = cls()
+        list_events_by_cursor_response_200_events_data_item_user_data_hashed_type_0 = cls()
 
-        create_event_body_tcf.additional_properties = d
-        return create_event_body_tcf
+        list_events_by_cursor_response_200_events_data_item_user_data_hashed_type_0.additional_properties = d
+        return list_events_by_cursor_response_200_events_data_item_user_data_hashed_type_0
 
     @property
     def additional_keys(self) -> list[str]:

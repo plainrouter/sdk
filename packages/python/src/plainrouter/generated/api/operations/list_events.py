@@ -65,7 +65,10 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     per_page: int | Unset = 25,
 ) -> Response[ErrorMessage | ListEventsResponse200]:
-    """
+    """List recent events
+
+     Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+
     Args:
         per_page (int | Unset):  Default: 25.
 
@@ -93,7 +96,10 @@ def sync(
     client: AuthenticatedClient | Client,
     per_page: int | Unset = 25,
 ) -> ErrorMessage | ListEventsResponse200 | None:
-    """
+    """List recent events
+
+     Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+
     Args:
         per_page (int | Unset):  Default: 25.
 
@@ -116,7 +122,10 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     per_page: int | Unset = 25,
 ) -> Response[ErrorMessage | ListEventsResponse200]:
-    """
+    """List recent events
+
+     Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+
     Args:
         per_page (int | Unset):  Default: 25.
 
@@ -142,7 +151,10 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     per_page: int | Unset = 25,
 ) -> ErrorMessage | ListEventsResponse200 | None:
-    """
+    """List recent events
+
+     Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+
     Args:
         per_page (int | Unset):  Default: 25.
 

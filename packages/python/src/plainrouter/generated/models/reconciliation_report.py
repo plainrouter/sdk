@@ -27,6 +27,7 @@ class ReconciliationReport:
         status (str):
         created_at (datetime.datetime | None):
         updated_at (datetime.datetime | None):
+        claimed_clicks (int | None):
     """
 
     id: int
@@ -42,6 +43,7 @@ class ReconciliationReport:
     status: str
     created_at: datetime.datetime | None
     updated_at: datetime.datetime | None
+    claimed_clicks: int | None
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -79,6 +81,9 @@ class ReconciliationReport:
         else:
             updated_at = self.updated_at
 
+        claimed_clicks: int | None
+        claimed_clicks = self.claimed_clicks
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -96,6 +101,7 @@ class ReconciliationReport:
                 "status": status,
                 "created_at": created_at,
                 "updated_at": updated_at,
+                "claimed_clicks": claimed_clicks,
             }
         )
 
@@ -156,6 +162,13 @@ class ReconciliationReport:
 
         updated_at = _parse_updated_at(d.pop("updated_at"))
 
+        def _parse_claimed_clicks(data: object) -> int | None:
+            if data is None:
+                return data
+            return cast(int | None, data)
+
+        claimed_clicks = _parse_claimed_clicks(d.pop("claimed_clicks"))
+
         reconciliation_report = cls(
             id=id,
             signal_tracker_id=signal_tracker_id,
@@ -170,6 +183,7 @@ class ReconciliationReport:
             status=status,
             created_at=created_at,
             updated_at=updated_at,
+            claimed_clicks=claimed_clicks,
         )
 
         reconciliation_report.additional_properties = d
