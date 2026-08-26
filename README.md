@@ -1,6 +1,8 @@
-# Plainrouter SDK
+# PlainRouter SDK
 
-Generated from Plainrouter's signed OpenAPI contract.
+Generated from PlainRouter's signed OpenAPI contract.
+
+Official developer resources: [PlainRouter developer index](https://plainrouter.com/developers.md), [API documentation](https://plainrouter.com/docs/api-reference/introduction), and [OpenAPI specification](https://plainrouter.com/openapi.json).
 
 This repository is in `0.x` development. Stability and support are not yet
 promised.
@@ -69,3 +71,20 @@ export PLAINROUTER_TOKEN
 plainrouter events list
 unset PLAINROUTER_TOKEN
 ```
+
+## AI agents
+
+This is PlainRouter's public repository for agent integrations and generated SDKs. It includes:
+
+- repository guidance for Claude Code, Codex, Cursor, and Windsurf;
+- Agent Plugin manifests for Claude Code and Codex;
+- a Streamable HTTP MCP configuration for `https://plainrouter.com/mcp`; and
+- the official `get-ad-account-context` Agent Skill.
+
+Install the skill with the open Agent Skills CLI:
+
+```sh
+npx skills add wudaku/plainrouter-sdk
+```
+
+The MCP server uses OAuth 2.1 with the `mcp:use` scope. Review [authentication](https://plainrouter.com/auth.md) before connecting an agent. Account access remains limited to the advertising account approved by the human user.

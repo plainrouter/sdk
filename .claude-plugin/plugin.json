@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "plainrouter",
+  "displayName": "PlainRouter",
+  "version": "0.1.0",
+  "description": "Connect agents to approved advertising account context through PlainRouter.",
+  "author": {
+    "name": "PlainRouter",
+    "url": "https://plainrouter.com"
+  },
+  "homepage": "https://plainrouter.com/developers.md",
+  "repository": "https://github.com/wudaku/plainrouter-sdk",
+  "license": "MIT",
+  "keywords": [
+    "advertising",
+    "analytics",
+    "mcp",
+    "plainrouter"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}

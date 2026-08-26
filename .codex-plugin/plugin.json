@@ -1,0 +1,38 @@
+{
+  "name": "plainrouter",
+  "version": "0.1.0",
+  "description": "Connect agents to approved advertising account context through PlainRouter.",
+  "author": {
+    "name": "PlainRouter",
+    "url": "https://plainrouter.com"
+  },
+  "homepage": "https://plainrouter.com/developers.md",
+  "repository": "https://github.com/wudaku/plainrouter-sdk",
+  "license": "MIT",
+  "keywords": [
+    "advertising",
+    "analytics",
+    "mcp",
+    "plainrouter"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "PlainRouter",
+    "shortDescription": "Read approved advertising account context.",
+    "longDescription": "Connect PlainRouter's MCP server to inspect the approved advertising account, first-party signal health, and verified performance.",
+    "developerName": "PlainRouter",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "websiteURL": "https://plainrouter.com",
+    "privacyPolicyURL": "https://plainrouter.com/privacy",
+    "termsOfServiceURL": "https://plainrouter.com/terms",
+    "defaultPrompt": [
+      "Review my approved ad account and signal health.",
+      "Compare verified and platform-reported performance."
+    ]
+  }
+}

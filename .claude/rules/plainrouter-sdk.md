@@ -1,0 +1,3 @@
+# PlainRouter SDK repository rules
+
+Follow the repository-wide instructions in `AGENTS.md`. Preserve the signed OpenAPI contract as the source of truth, do not hand-edit generated SDK output, and never run production smoke tests without explicit human authorization.

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "plainrouter": {
+      "type": "http",
+      "url": "https://plainrouter.com/mcp",
+      "oauth": {
+        "scopes": "mcp:use"
+      }
+    }
+  }
+}
