@@ -4,9 +4,11 @@
   "groupings": [
     {
       "title": "PlainRouter",
-      "description": "Official skills for working with PlainRouter advertising context.",
+      "description": "Official skills for PlainRouter account context, Signal verification, and governed advertising proposals.",
       "skills": [
-        "get-ad-account-context"
+        "get-ad-account-context",
+        "verify-signal-ingestion",
+        "propose-governed-ad-actions"
       ]
     }
   ]

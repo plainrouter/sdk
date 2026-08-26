@@ -1,0 +1,13 @@
+interface:
+  display_name: "Propose Governed Ad Actions"
+  short_description: "Prepare policy-gated advertising proposals"
+  default_prompt: "Use $propose-governed-ad-actions to prepare my requested advertising change for policy and human review."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "plainrouter"
+      description: "PlainRouter performance evidence and governed action tools"
+      transport: "streamable_http"
+      url: "https://plainrouter.com/mcp"
+policy:
+  allow_implicit_invocation: true

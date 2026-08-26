@@ -18,7 +18,7 @@ npm install @plainrouter/sdk
 Inject a Signal Tracker secret explicitly, then call a generated operation:
 
 ```ts
-import { configurePlainrouter, listEvents } from '@plainrouter/sdk';
+import { configurePlainrouter, listEvents } from "@plainrouter/sdk";
 
 configurePlainrouter({
   signalTrackerSecret: process.env.PLAINROUTER_TOKEN!,
@@ -79,9 +79,12 @@ This is PlainRouter's public repository for agent integrations and generated SDK
 - repository guidance for Claude Code, Codex, Cursor, and Windsurf;
 - Agent Plugin manifests for Claude Code and Codex;
 - a Streamable HTTP MCP configuration for `https://plainrouter.com/mcp`; and
-- the official `get-ad-account-context` Agent Skill.
+- three official Agent Skills:
+  - [`get-ad-account-context`](skills/get-ad-account-context/SKILL.md) for approved account context and read-only measurements;
+  - [`verify-signal-ingestion`](skills/verify-signal-ingestion/SKILL.md) for an idempotent identity-free onboarding check; and
+  - [`propose-governed-ad-actions`](skills/propose-governed-ad-actions/SKILL.md) for evidence-backed proposals subject to policy and human approval.
 
-Install the skill with the open Agent Skills CLI:
+Install the skills with the open Agent Skills CLI:
 
 ```sh
 npx skills add wudaku/plainrouter-sdk
