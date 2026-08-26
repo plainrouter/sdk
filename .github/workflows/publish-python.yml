@@ -25,12 +25,15 @@ jobs:
         run: python -m pip install --disable-pip-version-check -r requirements-dev.txt
       - name: Verify release tag, versions, and signed contract
         run: python scripts/verify-python-release.py
+      - name: Verify official package metadata
+        run: python scripts/verify-python-metadata.py
       - name: Lint
         working-directory: packages/python
         run: >-
           ruff check .
           ../../scripts/post-publish-python-smoke.py
           ../../scripts/verify-python-dist.py
+          ../../scripts/verify-python-metadata.py
           ../../scripts/verify-python-release.py
       - name: Strict typecheck
         working-directory: packages/python
@@ -38,6 +41,7 @@ jobs:
           mypy src tests
           ../../scripts/post-publish-python-smoke.py
           ../../scripts/verify-python-dist.py
+          ../../scripts/verify-python-metadata.py
           ../../scripts/verify-python-release.py
       - name: Test without network
         working-directory: packages/python

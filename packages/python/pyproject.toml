@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "plainrouter"
-version = "0.3.1"
+version = "0.5.0"
 description = "Python SDK generated from the signed Plainrouter OpenAPI contract"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
-authors = [{ name = "Plainrouter" }]
+authors = [{ name = "PlainRouter" }]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
@@ -24,7 +24,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/wudaku/plainrouter-sdk"
+Homepage = "https://plainrouter.com"
+Documentation = "https://docs.plainrouter.com/sdk/python"
 Repository = "https://github.com/wudaku/plainrouter-sdk"
 
 [tool.hatch.build.targets.wheel]

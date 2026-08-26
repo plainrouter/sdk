@@ -4,6 +4,10 @@ Generated from PlainRouter's signed OpenAPI contract.
 
 Official developer resources: [PlainRouter developer index](https://plainrouter.com/developers.md), [API documentation](https://plainrouter.com/docs/api-reference/introduction), and [OpenAPI specification](https://plainrouter.com/openapi.json).
 
+Official project: [plainrouter.com](https://plainrouter.com) ·
+[documentation](https://docs.plainrouter.com) ·
+[source](https://github.com/wudaku/plainrouter-sdk)
+
 This repository is in `0.x` development. Stability and support are not yet
 promised.
 
@@ -72,6 +76,20 @@ plainrouter events list
 unset PLAINROUTER_TOKEN
 ```
 
+The same CLI is also available from the official Homebrew tap:
+
+```sh
+brew install plainrouter/tap/plainrouter
+```
+
+## Go SDK
+
+The generated Go client is published as its own standard Go module:
+
+```sh
+go get github.com/plainrouter/sdk-go@v0.5.0
+```
+
 ## AI agents
 
 This is PlainRouter's public repository for agent integrations and generated SDKs. It includes:
@@ -87,7 +105,7 @@ This is PlainRouter's public repository for agent integrations and generated SDK
 Install the skills with the open Agent Skills CLI:
 
 ```sh
-npx skills add wudaku/plainrouter-sdk
+npx skills add plainrouter/sdk
 ```
 
 The MCP server uses OAuth 2.1 with the `mcp:use` scope. Review [authentication](https://plainrouter.com/auth.md) before connecting an agent. Account access remains limited to the advertising account approved by the human user.

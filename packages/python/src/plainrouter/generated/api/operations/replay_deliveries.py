@@ -72,7 +72,10 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     body: ReplayDeliveriesBody | Unset = UNSET,
 ) -> Response[ErrorMessage | ReplayDeliveriesResponse202 | ValidationError]:
-    """
+    """Replay eligible deliveries
+
+     Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+
     Args:
         body (ReplayDeliveriesBody | Unset):
 
@@ -100,7 +103,10 @@ def sync(
     client: AuthenticatedClient | Client,
     body: ReplayDeliveriesBody | Unset = UNSET,
 ) -> ErrorMessage | ReplayDeliveriesResponse202 | ValidationError | None:
-    """
+    """Replay eligible deliveries
+
+     Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+
     Args:
         body (ReplayDeliveriesBody | Unset):
 
@@ -123,7 +129,10 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     body: ReplayDeliveriesBody | Unset = UNSET,
 ) -> Response[ErrorMessage | ReplayDeliveriesResponse202 | ValidationError]:
-    """
+    """Replay eligible deliveries
+
+     Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+
     Args:
         body (ReplayDeliveriesBody | Unset):
 
@@ -149,7 +158,10 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     body: ReplayDeliveriesBody | Unset = UNSET,
 ) -> ErrorMessage | ReplayDeliveriesResponse202 | ValidationError | None:
-    """
+    """Replay eligible deliveries
+
+     Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+
     Args:
         body (ReplayDeliveriesBody | Unset):
 

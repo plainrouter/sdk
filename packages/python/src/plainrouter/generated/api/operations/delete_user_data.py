@@ -71,7 +71,10 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     body: DeleteUserDataBody,
 ) -> Response[DeleteUserDataResponse200 | ErrorMessage | ValidationError]:
-    """
+    """Delete user data by hashed identifier
+
+     Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+
     Args:
         body (DeleteUserDataBody):
 
@@ -99,7 +102,10 @@ def sync(
     client: AuthenticatedClient | Client,
     body: DeleteUserDataBody,
 ) -> DeleteUserDataResponse200 | ErrorMessage | ValidationError | None:
-    """
+    """Delete user data by hashed identifier
+
+     Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+
     Args:
         body (DeleteUserDataBody):
 
@@ -122,7 +128,10 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     body: DeleteUserDataBody,
 ) -> Response[DeleteUserDataResponse200 | ErrorMessage | ValidationError]:
-    """
+    """Delete user data by hashed identifier
+
+     Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+
     Args:
         body (DeleteUserDataBody):
 
@@ -148,7 +157,10 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     body: DeleteUserDataBody,
 ) -> DeleteUserDataResponse200 | ErrorMessage | ValidationError | None:
-    """
+    """Delete user data by hashed identifier
+
+     Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+
     Args:
         body (DeleteUserDataBody):
 

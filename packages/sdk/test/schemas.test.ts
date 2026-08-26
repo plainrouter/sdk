@@ -59,6 +59,8 @@ describe('generated response schemas', () => {
       measurement_class: 'advertising',
       attribution_join: 'allowed',
       enforcement_scope: 'event',
+      policy_class: 'global',
+      traffic_class: 'valid',
       consent_normalization_version: '1',
       consent: '{}',
       user_data_hashed: '{}',

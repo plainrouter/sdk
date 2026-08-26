@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
 import sys
 import tarfile
 import zipfile
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def main() -> None:
@@ -14,6 +17,8 @@ def main() -> None:
     sdist = Path(sys.argv[2])
     with zipfile.ZipFile(wheel) as archive:
         wheel_files = sorted(name for name in archive.namelist() if not name.endswith("/"))
+        metadata_name = require_single_suffix(wheel_files, ".dist-info/METADATA", "wheel")
+        metadata = archive.read(metadata_name).decode()
     with tarfile.open(sdist, "r:gz") as archive:
         sdist_files = sorted(member.name for member in archive.getmembers() if member.isfile())
 
@@ -26,6 +31,7 @@ def main() -> None:
     require_suffix(sdist_files, "/src/plainrouter/py.typed", "sdist")
     require_suffix(sdist_files, "/README.md", "sdist")
     require_suffix(sdist_files, "/LICENSE", "sdist")
+    require_metadata(metadata)
 
     print(f"Verified wheel contents ({len(wheel_files)} files):")
     print("\n".join(wheel_files))
@@ -43,6 +49,28 @@ def assert_distribution_is_clean(files: list[str], label: str) -> None:
 def require_suffix(files: list[str], suffix: str, label: str) -> None:
     if not any(name.endswith(suffix) for name in files):
         raise RuntimeError(f"{label} is missing required file ending in {suffix}")
+
+
+def require_single_suffix(files: list[str], suffix: str, label: str) -> str:
+    matches = [name for name in files if name.endswith(suffix)]
+    if len(matches) != 1:
+        raise RuntimeError(f"{label} must contain exactly one file ending in {suffix}")
+    return matches[0]
+
+
+def require_metadata(metadata: str) -> None:
+    version = json.loads((ROOT / "spec/openapi.json").read_text())["info"]["version"]
+    required_lines = {
+        "Name: plainrouter",
+        f"Version: {version}",
+        "Project-URL: Homepage, https://plainrouter.com",
+        "Project-URL: Documentation, https://docs.plainrouter.com/sdk/python",
+        "Project-URL: Repository, https://github.com/wudaku/plainrouter-sdk",
+    }
+    lines = set(metadata.splitlines())
+    missing = sorted(required_lines - lines)
+    if missing:
+        raise RuntimeError(f"wheel metadata is missing official project identity: {', '.join(missing)}")
 
 
 if __name__ == "__main__":

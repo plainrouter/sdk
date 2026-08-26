@@ -73,6 +73,42 @@ export const zErrorMessage = z.object({
 });
 
 /**
+ * JurisdictionPolicyClass
+ *
+ * The two policy classes used by the single Signals collector. The enum intentionally has no country or region members. Country evidence is an edge input used to derive a policy class and is never a ledger value.
+ *
+ */
+export const zJurisdictionPolicyClass = z.enum(['strict_eu', 'global']);
+
+/**
+ * ReconciliationReport
+ */
+export const zReconciliationReport = z.object({
+    id: z.int(),
+    signal_tracker_id: z.string(),
+    destination_id: z.string(),
+    report_date: z.iso.datetime(),
+    accepted_count: z.int(),
+    meta_count: z.int(),
+    observed_gap: z.int(),
+    event_counts: z.array(z.unknown()),
+    buckets: z.array(z.unknown()),
+    unexplained_residual: z.int(),
+    status: z.string(),
+    created_at: z.iso.datetime().nullable(),
+    updated_at: z.iso.datetime().nullable(),
+    claimed_clicks: z.int().nullable()
+});
+
+/**
+ * TrafficClass
+ *
+ * The only persisted traffic verdicts for passive document arrivals. Request facts and classifier reasons never cross the stripping boundary.
+ *
+ */
+export const zTrafficClass = z.enum(['valid', 'invalid']);
+
+/**
  * Event
  */
 export const zEvent = z.object({
@@ -92,6 +128,8 @@ export const zEvent = z.object({
     attribution_join: z.string(),
     enforcement_scope: z.string(),
     consent_normalization_version: z.string(),
+    policy_class: zJurisdictionPolicyClass,
+    traffic_class: zTrafficClass,
     consent: z.string(),
     user_data_hashed: z.string(),
     click_ids: z.string(),
@@ -103,25 +141,6 @@ export const zEvent = z.object({
 });
 
 /**
- * ReconciliationReport
- */
-export const zReconciliationReport = z.object({
-    id: z.int(),
-    signal_tracker_id: z.string(),
-    destination_id: z.string(),
-    report_date: z.iso.datetime(),
-    accepted_count: z.int(),
-    meta_count: z.int(),
-    observed_gap: z.int(),
-    event_counts: z.array(z.unknown()),
-    buckets: z.array(z.unknown()),
-    unexplained_residual: z.int(),
-    status: z.string(),
-    created_at: z.iso.datetime().nullable(),
-    updated_at: z.iso.datetime().nullable()
-});
-
-/**
  * ValidationError
  */
 export const zValidationError = z.object({
@@ -129,30 +148,61 @@ export const zValidationError = z.object({
     errors: z.record(z.string(), z.array(z.string()))
 });
 
-export const zCreateEventBody = z.object({
-    event_id: z.string().optional(),
-    event_name: z.string(),
-    parent_event_id: z.string().optional(),
-    event_time: z.union([
-        z.int(),
-        z.string()
-    ]).optional(),
-    event_source: z.url().optional(),
-    action_source: z.string().optional(),
-    visitor_id: z.string().optional(),
-    consent_basis: z.string(),
-    consent: z.record(z.string(), z.unknown()).optional(),
-    consent_mode: z.record(z.string(), z.unknown()).optional(),
-    tcf: z.record(z.string(), z.unknown()).optional(),
-    user_data: z.record(z.string(), z.unknown()).optional(),
-    click_ids: z.record(z.string(), z.unknown()).optional(),
-    value_data: z.object({
-        value: z.string().optional(),
-        currency: z.string().optional(),
-        order_id: z.string().optional(),
-        contents: z.array(z.unknown()).optional(),
-        num_items: z.int().optional()
-    }).optional()
+export const zCreateEventBody = z.union([
+    z.object({
+        event_id: z.string().optional(),
+        event_name: z.string(),
+        parent_event_id: z.string().optional(),
+        event_time: z.union([
+            z.int(),
+            z.string()
+        ]).optional(),
+        event_source: z.url().optional(),
+        action_source: z.string().optional(),
+        visitor_id: z.string().optional(),
+        consent_basis: z.literal('consent'),
+        consent: z.record(z.string(), z.unknown()).optional(),
+        consent_mode: z.record(z.string(), z.unknown()).optional(),
+        tcf: z.record(z.string(), z.unknown()).optional(),
+        user_data: z.record(z.string(), z.unknown()).optional(),
+        click_ids: z.record(z.string(), z.unknown()).optional(),
+        value_data: z.object({
+            value: z.string().optional(),
+            currency: z.string().optional(),
+            order_id: z.string().optional(),
+            contents: z.array(z.unknown()).optional(),
+            num_items: z.int().optional()
+        }).optional()
+    }),
+    z.object({
+        event_id: z.string().optional(),
+        event_name: z.enum(['signal_verification', 'consent_withdrawal']),
+        parent_event_id: z.string().optional(),
+        event_time: z.union([
+            z.int(),
+            z.string()
+        ]).optional(),
+        event_source: z.url().optional(),
+        action_source: z.string().optional(),
+        visitor_id: z.string().optional(),
+        consent_basis: z.literal('legitimate_interest'),
+        consent: z.record(z.string(), z.unknown()).optional(),
+        consent_mode: z.record(z.string(), z.unknown()).optional(),
+        tcf: z.record(z.string(), z.unknown()).optional(),
+        user_data: z.record(z.string(), z.unknown()).optional(),
+        click_ids: z.record(z.string(), z.unknown()).optional(),
+        value_data: z.object({
+            value: z.string().optional(),
+            currency: z.string().optional(),
+            order_id: z.string().optional(),
+            contents: z.array(z.unknown()).optional(),
+            num_items: z.int().optional()
+        }).optional()
+    })
+]);
+
+export const zCreateEventHeaders = z.object({
+    'Idempotency-Key': z.string().optional()
 });
 
 export const zCreateEventResponse = z.union([
@@ -358,7 +408,7 @@ export const zListEventsQuery = z.object({
 });
 
 /**
- * Paginated events and delivery acceptance metrics.
+ * Page-number-paginated events and delivery acceptance metrics.
  */
 export const zListEventsResponse = z.object({
     events: z.object({
@@ -439,6 +489,92 @@ export const zListEventsResponse = z.object({
         prev_page_url: z.string().nullable(),
         to: z.int().nullable(),
         total: z.int()
+    }),
+    metrics: z.object({
+        accepted: z.int(),
+        total_deliveries: z.int(),
+        acceptance_rate: z.number().nullable(),
+        acceptance_rate_window: z.string()
+    })
+});
+
+export const zListEventsByCursorQuery = z.object({
+    per_page: z.int().optional().default(25),
+    cursor: z.string().optional()
+});
+
+/**
+ * Cursor-paginated events and delivery acceptance metrics.
+ */
+export const zListEventsByCursorResponse = z.object({
+    events: z.object({
+        data: z.array(z.object({
+            id: z.string(),
+            signal_tracker_id: z.string(),
+            parent_event_id: z.string().nullable(),
+            event_name: z.string(),
+            event_time: z.string(),
+            action_source: z.string(),
+            event_class: z.string(),
+            order_id: z.string().nullable(),
+            value_amount: z.int().nullable(),
+            value_currency: z.string().nullable(),
+            created_at: z.string(),
+            consent_basis: z.string(),
+            measurement_class: z.string(),
+            attribution_join: z.string(),
+            enforcement_scope: z.string(),
+            consent_normalization_version: z.string(),
+            consent: z.union([
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown())
+            ]).nullable(),
+            user_data_hashed: z.union([
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown())
+            ]).nullable(),
+            click_ids: z.union([
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown())
+            ]).nullable(),
+            session: z.union([
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown())
+            ]).nullable(),
+            value_data: z.union([
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown())
+            ]).nullable(),
+            event_source: z.string().nullable(),
+            payload_expired: z.boolean(),
+            deliveries: z.array(z.object({
+                id: z.int(),
+                signal_tracker_id: z.string(),
+                event_id: z.string(),
+                destination_id: z.string().nullable(),
+                status: zDeliveryStatus,
+                is_test: z.boolean(),
+                attempt_count: z.int(),
+                last_error: z.union([
+                    z.record(z.string(), z.unknown()),
+                    z.array(z.unknown())
+                ]).nullable(),
+                platform_response: z.union([
+                    z.record(z.string(), z.unknown()),
+                    z.array(z.unknown())
+                ]).nullable(),
+                platform_trace_id: z.string().nullable(),
+                next_attempt_at: z.string().nullable(),
+                created_at: z.string(),
+                updated_at: z.string().nullable()
+            }))
+        })),
+        path: z.string().nullable(),
+        per_page: z.int(),
+        next_cursor: z.string().nullable(),
+        next_page_url: z.string().nullable(),
+        prev_cursor: z.string().nullable(),
+        prev_page_url: z.string().nullable()
     }),
     metrics: z.object({
         accepted: z.int(),
@@ -605,4 +741,103 @@ export const zDeleteUserDataResponse = z.object({
     events_updated: z.int(),
     sessions_updated: z.int(),
     completed_at: z.string()
+});
+
+/**
+ * Sandbox capabilities and a ready-to-run example.
+ */
+export const zGetSandboxResponse = z.object({
+    environment: z.string(),
+    authentication_required: z.boolean(),
+    account_required: z.boolean(),
+    production_data: z.boolean(),
+    persists_data: z.boolean(),
+    provider_delivery: z.boolean(),
+    description: z.string(),
+    self_serve_key: z.object({
+        method: z.string(),
+        url: z.string(),
+        authentication_required: z.boolean(),
+        description: z.string()
+    }),
+    try: z.object({
+        method: z.string(),
+        url: z.string(),
+        content_type: z.string(),
+        body: z.object({
+            event_id: z.string(),
+            event_name: z.string(),
+            action_source: z.string(),
+            value_data: z.object({
+                value: z.string(),
+                currency: z.string(),
+                order_id: z.string()
+            })
+        })
+    })
+});
+
+/**
+ * Short-lived sandbox API key issued.
+ */
+export const zCreateSandboxKeyResponse = z.object({
+    api_key: z.string(),
+    token_type: z.string(),
+    expires_in: z.int(),
+    expires_at: z.string(),
+    scope: z.string(),
+    production_access: z.boolean(),
+    use: z.object({
+        method: z.string(),
+        url: z.string(),
+        authorization: z.string()
+    })
+});
+
+export const zValidateSandboxEventBody = z.object({
+    event_id: z.string().optional(),
+    event_name: z.string(),
+    action_source: z.string().optional(),
+    value_data: z.object({
+        value: z.string().optional(),
+        currency: z.string().optional(),
+        order_id: z.string().optional()
+    }).optional()
+});
+
+/**
+ * Synthetic event validated and discarded.
+ */
+export const zValidateSandboxEventResponse = z.object({
+    sandbox: z.boolean(),
+    accepted: z.boolean(),
+    event_id: z.string(),
+    status: z.string(),
+    persisted: z.boolean(),
+    provider_delivery: z.boolean(),
+    message: z.string()
+});
+
+export const zValidateSandboxEventWithKeyBody = z.object({
+    event_id: z.string().optional(),
+    event_name: z.string(),
+    action_source: z.string().optional(),
+    value_data: z.object({
+        value: z.string().optional(),
+        currency: z.string().optional(),
+        order_id: z.string().optional()
+    }).optional()
+});
+
+/**
+ * Synthetic event validated with a sandbox key and discarded.
+ */
+export const zValidateSandboxEventWithKeyResponse = z.object({
+    sandbox: z.boolean(),
+    accepted: z.boolean(),
+    event_id: z.string(),
+    status: z.string(),
+    persisted: z.boolean(),
+    provider_delivery: z.boolean(),
+    message: z.string()
 });
