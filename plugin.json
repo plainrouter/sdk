@@ -8,7 +8,7 @@
     "url": "https://plainrouter.com"
   },
   "homepage": "https://plainrouter.com/developers.md",
-  "repository": "https://github.com/wudaku/plainrouter-sdk",
+  "repository": "https://github.com/plainrouter/sdk",
   "license": "MIT",
   "keywords": [
     "advertising",
