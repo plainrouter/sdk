@@ -1,0 +1,36 @@
+# frozen_string_literal: true
+
+require "rake/testtask"
+require "rubygems/package_task"
+
+Rake::TestTask.new do |task|
+  task.libs << "lib" << "test"
+  task.pattern = "test/**/*_test.rb"
+  task.warning = false
+end
+
+specification = Gem::Specification.load("plainrouter.gemspec")
+Gem::PackageTask.new(specification).define
+task build: :gem
+
+desc "Verify the built gem contains the curated and generated clients"
+task verify_package: :gem do
+  gem_file = Dir["pkg/plainrouter-sdk-*.gem"].fetch(0)
+  expected = %w[
+    lib/plainrouter.rb
+    lib/plainrouter/client.rb
+    lib/plainrouter/openapi.rb
+    lib/plainrouter/openapi/api/event_api.rb
+    lib/plainrouter/openapi/api/operations_api.rb
+    lib/plainrouter/openapi/api/sandbox_api.rb
+    lib/plainrouter/version.rb
+  ]
+
+  files = Gem::Package.new(gem_file).spec.files
+  missing = expected - files
+  raise "gem is missing: #{missing.join(', ')}" unless missing.empty?
+
+  puts "Verified #{File.basename(gem_file)} (#{files.length} files)"
+end
+
+task default: :test

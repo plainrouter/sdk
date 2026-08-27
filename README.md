@@ -52,6 +52,30 @@ response = list_events.sync(client=client)
 Python 3.11 or newer is required. The package version stays aligned with the
 signed OpenAPI contract.
 
+## Ruby SDK
+
+Install the Ruby gem:
+
+```sh
+gem install plainrouter-sdk
+```
+
+Use the compact client facade for the three API areas:
+
+```ruby
+require "plainrouter"
+
+client = PlainRouter::Client.new(
+  token: ENV.fetch("PLAINROUTER_TOKEN")
+)
+
+events = client.operations.list_events(per_page: 25)
+```
+
+Ruby 3.2 or newer is required. The complete generated models and HTTP-aware
+methods remain available under `PlainRouter::OpenAPI` without crowding the
+top-level SDK documentation.
+
 ## CLI
 
 Install the canonical scoped CLI globally:

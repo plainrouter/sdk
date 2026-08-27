@@ -1,12 +1,13 @@
 # PlainRouter SDK agent guide
 
-This public repository contains the generated TypeScript and Python SDKs, the CLI, and agent integration metadata for PlainRouter.
+This public repository contains the generated TypeScript, Python, and Ruby SDKs, the CLI, and agent integration metadata for PlainRouter.
 
 ## Source of truth
 
 - `spec/openapi.json` is the checked-in copy of PlainRouter's signed OpenAPI contract.
 - Keep `spec/CHECKSUM` aligned with that contract.
 - Do not hand-edit generated SDK output. Change or refresh the contract, then use the repository generation workflow.
+- Ruby files below `packages/ruby/lib/plainrouter/openapi/` and `packages/ruby/lib/plainrouter/openapi.rb` are generated. Keep the curated `PlainRouter::Client` facade outside that path.
 - Never add API tokens, Signal Tracker secrets, OAuth credentials, or captured customer data.
 
 ## Verification
