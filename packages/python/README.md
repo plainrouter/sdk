@@ -1,4 +1,4 @@
-# Plainrouter Python SDK
+# PlainRouter Python SDK and CLI
 
 Generated from Plainrouter's signed OpenAPI contract. The package is in 0.x and its API may change between minor releases. No support guarantees are made yet.
 
@@ -13,6 +13,18 @@ python -m pip install plainrouter
 ```
 
 Python 3.11 or newer is required.
+
+For command-line use, install the same package in an isolated environment:
+
+```bash
+pipx install plainrouter
+plainrouter --help
+```
+
+You can also run the CLI from an active Python environment with
+`python -m plainrouter`. The PyPI CLI provides the same command tree, config
+path, environment variables, JSON output, and safety prompts as
+[`@plainrouter/cli`](https://www.npmjs.com/package/@plainrouter/cli).
 
 ## Use
 

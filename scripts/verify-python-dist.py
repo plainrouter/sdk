@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import json
 import sys
 import tarfile
+import tomllib
 import zipfile
 from pathlib import Path
 
@@ -19,19 +19,27 @@ def main() -> None:
         wheel_files = sorted(name for name in archive.namelist() if not name.endswith("/"))
         metadata_name = require_single_suffix(wheel_files, ".dist-info/METADATA", "wheel")
         metadata = archive.read(metadata_name).decode()
+        entry_points_name = require_single_suffix(wheel_files, ".dist-info/entry_points.txt", "wheel")
+        entry_points = archive.read(entry_points_name).decode()
     with tarfile.open(sdist, "r:gz") as archive:
         sdist_files = sorted(member.name for member in archive.getmembers() if member.isfile())
 
     assert_distribution_is_clean(wheel_files, "wheel")
     assert_distribution_is_clean(sdist_files, "sdist")
     require_suffix(wheel_files, "plainrouter/__init__.py", "wheel")
+    require_suffix(wheel_files, "plainrouter/__main__.py", "wheel")
+    require_suffix(wheel_files, "plainrouter/cli.py", "wheel")
     require_suffix(wheel_files, "plainrouter/client.py", "wheel")
     require_suffix(wheel_files, "plainrouter/py.typed", "wheel")
     require_suffix(wheel_files, ".dist-info/licenses/LICENSE", "wheel")
     require_suffix(sdist_files, "/src/plainrouter/py.typed", "sdist")
+    require_suffix(sdist_files, "/src/plainrouter/__main__.py", "sdist")
+    require_suffix(sdist_files, "/src/plainrouter/cli.py", "sdist")
     require_suffix(sdist_files, "/README.md", "sdist")
     require_suffix(sdist_files, "/LICENSE", "sdist")
     require_metadata(metadata)
+    if "plainrouter = plainrouter.cli:main" not in entry_points.splitlines():
+        raise RuntimeError("wheel entry points do not expose plainrouter.cli:main")
 
     print(f"Verified wheel contents ({len(wheel_files)} files):")
     print("\n".join(wheel_files))
@@ -59,7 +67,8 @@ def require_single_suffix(files: list[str], suffix: str, label: str) -> str:
 
 
 def require_metadata(metadata: str) -> None:
-    version = json.loads((ROOT / "spec/openapi.json").read_text())["info"]["version"]
+    package = tomllib.loads((ROOT / "packages/python/pyproject.toml").read_text())
+    version = package["project"]["version"]
     required_lines = {
         "Name: plainrouter",
         f"Version: {version}",

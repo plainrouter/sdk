@@ -33,22 +33,29 @@ def main() -> None:
     checksum = parse_checksum(ROOT / "spec/CHECKSUM")
     actual_hash = hashlib.sha256(spec_bytes).hexdigest()
 
-    versions = {
+    release_versions = {
         "packages/python/pyproject.toml": package["project"]["version"],
         "packages/python/openapi-python-client.json": generator_config["package_version_override"],
+    }
+    for source, version in release_versions.items():
+        if version != release_version:
+            raise RuntimeError(f"{source} version {version} does not match tag {tag}.")
+
+    contract_versions = {
         "spec/openapi.json": specification["info"]["version"],
         "spec/CHECKSUM": checksum["info.version"],
     }
-    for source, version in versions.items():
-        if version != release_version:
-            raise RuntimeError(f"{source} version {version} does not match tag {tag}.")
+    if len(set(contract_versions.values())) != 1:
+        details = ", ".join(f"{source}={version}" for source, version in contract_versions.items())
+        raise RuntimeError(f"Signed OpenAPI contract versions do not match: {details}.")
 
     if specification.get("x-signed") is not True:
         raise RuntimeError("The vendored OpenAPI contract is not signed.")
     if checksum["sha256"] != actual_hash:
         raise RuntimeError(f"Vendored spec hash {actual_hash} does not match spec/CHECKSUM {checksum['sha256']}.")
 
-    print(f"Verified {tag} against Python package {release_version} and the signed OpenAPI contract.")
+    contract_version = specification["info"]["version"]
+    print(f"Verified {tag} against Python package {release_version} and signed OpenAPI {contract_version}.")
 
 
 def parse_checksum(path: Path) -> dict[str, str]:

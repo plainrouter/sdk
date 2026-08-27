@@ -49,8 +49,9 @@ client = create_client("your-signal-tracker-secret")
 response = list_events.sync(client=client)
 ```
 
-Python 3.11 or newer is required. The package version stays aligned with the
-signed OpenAPI contract.
+Python 3.11 or newer is required. Python package releases are versioned
+independently from the API contract and are verified against the vendored,
+signed OpenAPI contract before publication.
 
 ## Ruby SDK
 
@@ -90,6 +91,17 @@ Or run the scoped package without installing it globally:
 ```sh
 npx @plainrouter/cli --help
 ```
+
+Python users can install the equivalent CLI from
+[PyPI](https://pypi.org/project/plainrouter/) with `pipx`:
+
+```sh
+pipx install plainrouter
+plainrouter --help
+```
+
+Both distributions expose the `plainrouter` command. Keep only one global
+installation on your `PATH` to avoid selecting an unintended executable.
 
 Provide a Signal Tracker secret without placing it in shell history:
 
