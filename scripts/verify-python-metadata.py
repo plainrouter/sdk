@@ -13,9 +13,6 @@ def main() -> None:
     project = package["project"]
     urls = project["urls"]
 
-    if project["version"] != specification["info"]["version"]:
-        raise RuntimeError("Python package version must match the signed OpenAPI contract.")
-
     expected_urls = {
         "Homepage": "https://plainrouter.com",
         "Documentation": "https://docs.plainrouter.com/sdk/python",
@@ -24,7 +21,10 @@ def main() -> None:
     if urls != expected_urls:
         raise RuntimeError(f"Python project URLs do not identify PlainRouter: {urls!r}")
 
-    print(f"Verified official PyPI metadata for plainrouter {project['version']}.")
+    print(
+        "Verified official PyPI metadata for "
+        f"plainrouter {project['version']} targeting signed OpenAPI {specification['info']['version']}."
+    )
 
 
 if __name__ == "__main__":

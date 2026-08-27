@@ -60,6 +60,9 @@ def main() -> None:
                 [python, "-c", IMPORT_SMOKE],
                 check=True,
             )
+            executable = directory / "venv/bin/plainrouter"
+            subprocess.run([executable, "--help"], check=True)
+            subprocess.run([python, "-m", "plainrouter", "--help"], check=True)
             print(f"Verified published plainrouter {version} from PyPI.")
             return
         except subprocess.CalledProcessError as error:
