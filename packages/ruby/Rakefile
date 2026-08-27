@@ -16,6 +16,7 @@ Bundler::GemHelper.tag_prefix = "ruby-"
 desc "Verify the built gem contains the curated and generated clients"
 task verify_package: :build do
   gem_file = Dir["pkg/plainrouter-sdk-*.gem"].fetch(0)
+  gem_specification = Gem::Package.new(gem_file).spec
   expected = %w[
     lib/plainrouter.rb
     lib/plainrouter/client.rb
@@ -26,9 +27,13 @@ task verify_package: :build do
     lib/plainrouter/version.rb
   ]
 
-  files = Gem::Package.new(gem_file).spec.files
+  files = gem_specification.files
   missing = expected - files
   raise "gem is missing: #{missing.join(', ')}" unless missing.empty?
+  raise "gem homepage must identify https://plainrouter.com" unless gem_specification.homepage == "https://plainrouter.com"
+  unless gem_specification.metadata["homepage_uri"] == "https://plainrouter.com"
+    raise "gem homepage_uri must identify https://plainrouter.com"
+  end
 
   puts "Verified #{File.basename(gem_file)} (#{files.length} files)"
 end

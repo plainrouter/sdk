@@ -35,7 +35,7 @@ node "$ROOT/scripts/verify-spec.mjs"
   -i "$ROOT/spec/openapi.json" \
   -o "$OUTPUT" \
   --global-property=models,apis,supportingFiles,modelDocs=false,apiDocs=false,modelTests=false,apiTests=false \
-  --additional-properties="gemName=plainrouter/openapi,moduleName=PlainRouter::OpenAPI,gemVersion=0.1.0,gemRequiredRubyVersion=>= 3.2,library=faraday,gemAuthor=PlainRouter,gemLicense=Apache-2.0,gemHomepage=https://github.com/plainrouter/sdk,gemSummary=Official PlainRouter Ruby SDK,gemDescription=Ruby SDK generated from the signed PlainRouter OpenAPI contract,hideGenerationTimestamp=true,disallowAdditionalPropertiesIfNotPresent=false"
+  --additional-properties="gemName=plainrouter/openapi,moduleName=PlainRouter::OpenAPI,gemVersion=0.1.1,gemRequiredRubyVersion=>= 3.2,library=faraday,gemAuthor=PlainRouter,gemLicense=Apache-2.0,gemHomepage=https://plainrouter.com,gemSummary=Official PlainRouter Ruby SDK,gemDescription=Ruby SDK generated from the signed PlainRouter OpenAPI contract,hideGenerationTimestamp=true,disallowAdditionalPropertiesIfNotPresent=false"
 
 find "$OUTPUT/lib/plainrouter" -type f -name '*.rb' -print0 \
   | xargs -0 perl -pi -e 's/[ \t]+$//'
