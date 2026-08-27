@@ -7,9 +7,12 @@ on:
       - packages/cli/**
       - packages/sdk/**
       - packages/python/**
+      - packages/ruby/**
       - openapi-ts.config.ts
       - package.json
       - package-lock.json
+      - scripts/generate-ruby.sh
+      - scripts/check-ruby-generated.sh
 
 permissions:
   contents: read
@@ -57,3 +60,22 @@ jobs:
           --overwrite
           --fail-on-warning
       - run: git diff --exit-code -- packages/python/src/plainrouter/generated
+
+  ruby-generate-drift:
+    name: Generated Ruby SDK is current
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Set up Java
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Verify generated Ruby SDK drift
+        run: scripts/check-ruby-generated.sh
