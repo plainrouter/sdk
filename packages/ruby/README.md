@@ -54,4 +54,6 @@ Generated files live in `lib/plainrouter/openapi/` and `lib/plainrouter/openapi.
 scripts/check-ruby-generated.sh
 ```
 
+Releases use `ruby-v<version>` tags so they remain separate from the npm and Python package tags in this repository. RubyGems publication is performed only by the trusted `publish-ruby.yml` workflow.
+
 Licensed under Apache-2.0.

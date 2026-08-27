@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require "rake/testtask"
-require "rubygems/package_task"
+require "bundler/gem_helper"
+require "rubygems/package"
 
 Rake::TestTask.new do |task|
   task.libs << "lib" << "test"
@@ -9,12 +10,11 @@ Rake::TestTask.new do |task|
   task.warning = false
 end
 
-specification = Gem::Specification.load("plainrouter.gemspec")
-Gem::PackageTask.new(specification).define
-task build: :gem
+Bundler::GemHelper.install_tasks
+Bundler::GemHelper.tag_prefix = "ruby-"
 
 desc "Verify the built gem contains the curated and generated clients"
-task verify_package: :gem do
+task verify_package: :build do
   gem_file = Dir["pkg/plainrouter-sdk-*.gem"].fetch(0)
   expected = %w[
     lib/plainrouter.rb
