@@ -17,7 +17,7 @@ Glama:
 | Transport | Streamable HTTP |
 | Endpoint | `https://plainrouter.com/mcp` |
 | Repository | `https://github.com/plainrouter/sdk` |
-| Developer documentation | `https://plainrouter.com/developers.md` |
+| Developer documentation | `https://plainrouter.com/docs` |
 | Authentication | OAuth 2.1; request only `mcp:use`; access is limited to the human-approved ad account. |
 
 The endpoint is the only endpoint value to publish. Do not put an OAuth token
@@ -168,7 +168,7 @@ does not execute those commands.
 - Transport: Streamable HTTP
 - Authentication note: OAuth 2.1; request only `mcp:use`; the human-approved ad account is the access boundary.
 - Repository: `https://github.com/plainrouter/sdk`
-- Documentation: `https://plainrouter.com/developers.md`
+- Documentation: `https://plainrouter.com/docs`
 
 ## Glama
 
@@ -209,7 +209,7 @@ listing. Robin verifies the resulting listing and reports any metadata mismatch.
 - Transport: Streamable HTTP
 - Authentication: OAuth 2.1; request only `mcp:use`; access is limited to the human-approved ad account.
 - Repository: `https://github.com/plainrouter/sdk`
-- Documentation: `https://plainrouter.com/developers.md`
+- Documentation: `https://plainrouter.com/docs`
 
 The lane does not authenticate with GitHub/Glama, provide scan credentials, or
 submit a directory listing.

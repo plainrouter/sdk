@@ -10,7 +10,7 @@ Use this skill when a human asks to prepare a budget, status, asset-upload, or c
 ## Connect
 
 1. Connect to the Streamable HTTP MCP endpoint at `https://plainrouter.com/mcp`.
-2. Follow the OAuth 2.1 flow documented at `https://plainrouter.com/auth.md`.
+2. Follow the OAuth 2.1 flow documented at `https://plainrouter.com/docs/auth`.
 3. Request only the `mcp:use` scope and let the human choose an advertising account.
 
 ## Prepare evidence

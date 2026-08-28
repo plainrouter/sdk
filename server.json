@@ -8,7 +8,7 @@
     "url": "https://github.com/plainrouter/sdk",
     "source": "github"
   },
-  "websiteUrl": "https://plainrouter.com/developers.md",
+  "websiteUrl": "https://plainrouter.com/docs",
   "remotes": [
     {
       "type": "streamable-http",

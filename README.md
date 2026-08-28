@@ -8,7 +8,7 @@ PlainRouter is an independent arrival ledger and spend enforcement under the ad 
 
 PlainRouter exposes a remote Streamable HTTP MCP server at [https://plainrouter.com/mcp](https://plainrouter.com/mcp).
 
-The server uses OAuth 2.1. Request only the `mcp:use` scope. Account access is limited to the advertising account approved by the human user. Complete OAuth authorization in your client's normal flow; do not place credentials in the endpoint URL. Review [authentication](https://plainrouter.com/auth.md) before connecting an agent.
+The server uses OAuth 2.1. Request only the `mcp:use` scope. Account access is limited to the advertising account approved by the human user. Complete OAuth authorization in your client's normal flow; do not place credentials in the endpoint URL. Review [authentication](https://plainrouter.com/docs/auth) before connecting an agent.
 
 ### Claude (integrations UI)
 
@@ -191,10 +191,10 @@ brew install plainrouter/tap/plainrouter
 
 ## Developer resources
 
-Official developer resources: [PlainRouter developer index](https://plainrouter.com/developers.md), [API documentation](https://plainrouter.com/docs/api-reference/introduction), and [OpenAPI specification](https://plainrouter.com/openapi.json).
+Official developer resources: [PlainRouter developer index](https://plainrouter.com/developers.md), [API documentation](https://plainrouter.com/docs/reference/conversion-api), and [OpenAPI specification](https://plainrouter.com/openapi.json).
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
-[documentation](https://docs.plainrouter.com) ·
+[documentation](https://plainrouter.com/docs) ·
 [source](https://github.com/plainrouter/sdk)
 
 This repository is in `0.x` development. Stability and support are not yet
