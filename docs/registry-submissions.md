@@ -1,8 +1,11 @@
 # Registry submissions
 
-Prepared 2026-08-28 for SDK-FUNNEL-1. This file prepares metadata and
-submission instructions only. No registry or directory account was used, no
-listing was submitted, and no credentials were added to the repository.
+Reconciled 2026-08-28 for SDK-FUNNEL-2. PlainRouter is already published in
+the official MCP Registry as `com.plainrouter/mcp`; versions `0.3.0`, `0.3.1`,
+and `0.3.2` are present, and `0.3.2` is current. This file prepares future
+version updates and third-party directory submissions only. No registry or
+directory account was used, no listing was submitted, and no credentials were
+added to the repository.
 
 ## Shared listing copy
 
@@ -12,23 +15,26 @@ Glama:
 | Field | Prepared value |
 | --- | --- |
 | Display name | PlainRouter |
-| MCP server name | `com.plainrouter/plainrouter` |
-| Description | Independent arrival ledger and structural spend enforcement for a human-approved ad account. |
+| MCP server name | `com.plainrouter/mcp` |
+| Description | Inspect an approved ad account and first-party signal health, then propose policy-gated actions. |
 | Transport | Streamable HTTP |
-| Endpoint | `https://plainrouter.com/mcp` |
+| Production endpoint | `https://plainrouter.com/mcp` |
+| Sandbox endpoint | `https://plainrouter.com/mcp/sandbox` |
 | Repository | `https://github.com/plainrouter/sdk` |
 | Developer documentation | `https://plainrouter.com/developers.md` |
-| Authentication | OAuth 2.1; request only `mcp:use`; access is limited to the human-approved ad account. |
+| Authentication | Production uses OAuth 2.1 with only `mcp:use` and the human-approved ad-account boundary. The sandbox accepts no credentials and returns synthetic data only. |
 
-The endpoint is the only endpoint value to publish. Do not put an OAuth token
-in the URL. Do not add a tool list to third-party directory copy; tools must be
-discovered from the live MCP server rather than inferred here.
+Publish both remotes in the official Registry. For a third-party production
+listing, use `https://plainrouter.com/mcp` unless the directory explicitly
+supports a separate sandbox remote. Do not put an OAuth token in either URL.
+Do not add a tool list to third-party directory copy; tools must be discovered
+from the live MCP server rather than inferred here.
 
 The exact README ownership marker, if the README is used as a package
 verification surface, is:
 
 ```html
-<!-- mcp-name: com.plainrouter/plainrouter -->
+<!-- mcp-name: com.plainrouter/mcp -->
 ```
 
 The current repository is an npm SDK/CLI workspace. The official Registry's
@@ -39,81 +45,92 @@ verification is performed through their rendered README.
 
 ## Official MCP Registry
 
-### Namespace decision
+### Live identity and update boundary
 
-The current registry authentication documentation says:
-
-> “If you choose domain-based authentication, your server's name in `server.json` MUST be of the form `com.example.*/*`.”
-
-`plainrouter.com` therefore maps to the authenticated reverse-DNS namespace
-`com.plainrouter`, and the prepared name is `com.plainrouter/plainrouter`.
-`plainrouter/plainrouter` may match the schema's broad name pattern, but it is
-not the domain-authenticated form described by the current registry rules.
+The [live Registry query](https://registry.modelcontextprotocol.io/v0/servers?search=plainrouter)
+is authoritative for the existing identity `com.plainrouter/mcp`. A remote URL
+cannot be claimed by another server name, and published versions are immutable:
+publishing `0.3.2` again is not an update. `/server.json` is reconciled to the
+current live `0.3.2` record for source control, but Robin must set a new server
+version that matches the deployed MCP server before the next publish. This
+lane does not perform that version bump.
 
 Sources used:
 
+- [Live official Registry record](https://registry.modelcontextprotocol.io/v0/servers?search=plainrouter)
+- [Official mcp-publisher 1.8.1 release](https://github.com/modelcontextprotocol/registry/releases/tag/v1.8.1)
 - [Current official server schema in the registry repository](https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/server-json/draft/server.schema.json)
 - [Official authentication and namespace rules](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/authentication.mdx)
 - [Official registry requirements](https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/server-json/official-registry-requirements.md)
 - [Official publisher quickstart](https://modelcontextprotocol.io/registry/quickstart)
 - [Official publisher CLI commands](https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/cli/commands.md)
 
-The current `main` schema was fetched from the registry repository on
-2026-08-28 (registry commit
-`6036804f1c62633b5e7d2927f411a6f4127f148a`). `server.json` uses the current
-stable schema identifier `2025-12-11` shown by the official quickstart.
+The schema fetched on 2026-08-28 has identifier
+`https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json`.
+The commands below were checked against the official macOS arm64
+`mcp-publisher` 1.8.1 binary. Its DNS login flags use the single-dash forms
+shown here.
 
-### Prepared artifact
+### Robin-side version-update checklist
 
-`/server.json` is the submission file. It declares the hosted remote only; it
-does not claim a local package or invent a server implementation. Its `0.3.2`
-version matches the hosted server's `serverInfo.version` returned by the live
-MCP `initialize` response on 2026-08-28; it is independent of SDK package
-versions.
+1. Retain the existing P-384 `key.pem` securely for every future publish under
+   this DNS identity. It is ignored by Git and must never be committed, pasted
+   into an issue, or replaced unless Robin intentionally rotates the DNS proof.
+   Confirm publisher version 1.8.1:
 
-### Robin-side submission checklist
+   ```bash
+   chmod 600 key.pem
+   mcp-publisher --version
+   ```
 
-1. Install the official `mcp-publisher` binary using the [official quickstart](https://modelcontextprotocol.io/registry/quickstart), then run:
+2. Update `server.json` to the next deployed MCP server version, then validate
+   the file. Reusing `0.3.2` fails because that Registry version already exists.
 
    ```bash
    mcp-publisher validate server.json
    ```
 
-2. Authenticate the `com.plainrouter` domain namespace. Choose one of the
-   official domain proof methods, DNS or HTTP. These commands require Robin's
-   private signing key and account access; the key must never be committed:
+3. Derive the compressed P-384 public key and publish exactly one MCP proof TXT
+   record at the DNS apex `plainrouter.com`:
 
    ```bash
-   mcp-publisher login dns --domain "plainrouter.com" --private-key "<PRIVATE_KEY_HEX>"
+   openssl ec -in key.pem -text -noout -conv_form compressed \
+     | grep -A4 "pub:" | tail -n +2 | tr -d ' :\n' | xxd -r -p | base64
    ```
 
-   or:
+   The apex TXT value is:
+
+   ```text
+   v=MCPv1; k=ecdsap384; p=<PUBLIC_KEY_BASE64>
+   ```
+
+   Remove superseded MCP proof values before authenticating. There must be one
+   `v=MCPv1` TXT record at the apex, not multiple records and not a record under
+   `_mcp-auth` or another subdomain. `[Robin DNS auth]`
+
+4. Extract the 48-byte P-384 private scalar and authenticate. Version 1.8.1
+   defaults to Ed25519, so `-algorithm ecdsap384` is required. Omitting it
+   produces `invalid seed length: expected 32 bytes, got 48`.
 
    ```bash
-   mcp-publisher login http --domain "plainrouter.com" --private-key "<PRIVATE_KEY_HEX>"
+   PRIVATE_KEY_HEX="$(openssl ec -in key.pem -noout -text \
+     | grep -A4 "priv:" | tail -n +2 | tr -d ' :\n')"
+   mcp-publisher login dns -domain plainrouter.com \
+     -private-key "$PRIVATE_KEY_HEX" -algorithm ecdsap384
+   unset PRIVATE_KEY_HEX
    ```
 
-   For DNS, publish the proof TXT record printed by the CLI. For HTTP, host
-   the proof at `https://plainrouter.com/.well-known/mcp-registry-auth` before
-   retrying the login. Follow the current authentication documentation for
-   key generation and propagation details.
+   `[Robin auth]` is required for DNS management and publisher login.
 
-3. After validation and domain login, Robin submits the prepared artifact:
+5. Publish the new version and verify that it is the latest record:
 
    ```bash
    mcp-publisher publish server.json
+   curl "https://registry.modelcontextprotocol.io/v0/servers?search=plainrouter"
    ```
 
-4. Robin verifies the listing through the official API, using the exact
-   published name:
-
-   ```bash
-   curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=com.plainrouter/plainrouter"
-   ```
-
-`[Robin auth]` is required for domain ownership proof and publisher login.
-`[Robin submit]` is required for the publish command. The lane does not run
-either account action.
+   `[Robin submit]` is required for the publish command. The lane does not run
+   any authentication, DNS, or publish action.
 
 ## LobeHub
 
@@ -162,8 +179,8 @@ does not execute those commands.
 ### Prepared listing copy
 
 - Name/title: `PlainRouter`
-- MCP identity: `com.plainrouter/plainrouter`
-- Description: `Independent arrival ledger and structural spend enforcement for a human-approved ad account.`
+- MCP identity: `com.plainrouter/mcp`
+- Description: `Inspect an approved ad account and first-party signal health, then propose policy-gated actions.`
 - MCP endpoint: `https://plainrouter.com/mcp`
 - Transport: Streamable HTTP
 - Authentication note: OAuth 2.1; request only `mcp:use`; the human-approved ad account is the access boundary.
@@ -181,8 +198,8 @@ submitted repository and hosted remote connectors as separate paths.
 
 ### Preferred path: official Registry ingestion
 
-Publish the official MCP Registry entry first, then search Glama for
-`com.plainrouter/plainrouter` and the endpoint. Glama's methodology describes
+Keep the official MCP Registry entry current, then search Glama for
+`com.plainrouter/mcp` and the endpoint. Glama's methodology describes
 ingestion of the official Registry; this avoids creating a duplicate manual
 listing. Robin verifies the resulting listing and reports any metadata mismatch.
 
@@ -203,8 +220,8 @@ listing. Robin verifies the resulting listing and reports any metadata mismatch.
 ### Prepared listing copy
 
 - Name/title: `PlainRouter`
-- MCP identity: `com.plainrouter/plainrouter`
-- Description: `Independent arrival ledger and structural spend enforcement for a human-approved ad account.`
+- MCP identity: `com.plainrouter/mcp`
+- Description: `Inspect an approved ad account and first-party signal health, then propose policy-gated actions.`
 - Endpoint: `https://plainrouter.com/mcp`
 - Transport: Streamable HTTP
 - Authentication: OAuth 2.1; request only `mcp:use`; access is limited to the human-approved ad account.

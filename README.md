@@ -1,6 +1,6 @@
 # PlainRouter SDK
 
-<!-- mcp-name: com.plainrouter/plainrouter -->
+<!-- mcp-name: com.plainrouter/mcp -->
 
 PlainRouter is an independent arrival ledger and spend enforcement under the ad account. Agents can trust its reads because the platform being measured does not produce them, and its enforcement is structural, not advisory.
 
@@ -33,6 +33,10 @@ When Cursor prompts you, complete OAuth 2.1 and grant only `mcp:use`; the connec
 ### Generic Streamable HTTP client
 
 Configure the client's Streamable HTTP transport with endpoint `https://plainrouter.com/mcp`. Use its OAuth 2.1 flow to request only `mcp:use`, and send the resulting authorization through the client's standard HTTP authentication mechanism. Account access remains limited to the human-approved advertising account.
+
+### Sandbox remote
+
+Use `https://plainrouter.com/mcp/sandbox` to test an MCP integration without credentials or an advertising account. Every response is synthetic and marked as sandbox data; the remote cannot read production data, persist events, contact an advertising provider, or expose production-only tools that propose, write, or affect spend. Move to `https://plainrouter.com/mcp` and complete OAuth only when the integration is ready for real account data.
 
 ## Agent Skills
 
@@ -191,10 +195,10 @@ brew install plainrouter/tap/plainrouter
 
 ## Developer resources
 
-Official developer resources: [PlainRouter developer index](https://plainrouter.com/developers.md), [API documentation](https://plainrouter.com/docs/api-reference/introduction), and [OpenAPI specification](https://plainrouter.com/openapi.json).
+Official developer resources: [PlainRouter developer index](https://plainrouter.com/developers.md), [API documentation](https://plainrouter.com/developers.md), and [OpenAPI specification](https://plainrouter.com/openapi.json).
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
-[documentation](https://docs.plainrouter.com) ·
+[documentation](https://plainrouter.com/developers.md) ·
 [source](https://github.com/plainrouter/sdk)
 
 This repository is in `0.x` development. Stability and support are not yet

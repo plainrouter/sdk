@@ -1,18 +1,30 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "com.plainrouter/plainrouter",
+  "name": "com.plainrouter/mcp",
   "title": "PlainRouter",
-  "description": "Independent arrival ledger and structural spend enforcement for a human-approved ad account.",
+  "description": "Inspect an approved ad account and first-party signal health, then propose policy-gated actions.",
   "version": "0.3.2",
   "repository": {
     "url": "https://github.com/plainrouter/sdk",
     "source": "github"
   },
-  "websiteUrl": "https://plainrouter.com/developers.md",
+  "websiteUrl": "https://plainrouter.com",
   "remotes": [
     {
       "type": "streamable-http",
       "url": "https://plainrouter.com/mcp"
+    },
+    {
+      "type": "streamable-http",
+      "url": "https://plainrouter.com/mcp/sandbox"
     }
-  ]
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "capabilities": {
+        "io.modelcontextprotocol/ui": {}
+      },
+      "serverCardUrl": "https://plainrouter.com/.well-known/mcp.json"
+    }
+  }
 }
