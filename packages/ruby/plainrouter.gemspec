@@ -14,7 +14,7 @@ Gem::Specification.new do |specification|
 
   specification.metadata = {
     "bug_tracker_uri" => "https://github.com/plainrouter/sdk/issues",
-    "documentation_uri" => "https://github.com/plainrouter/sdk/tree/main/packages/ruby",
+    "documentation_uri" => "https://plainrouter.com/docs/sdk/ruby",
     "homepage_uri" => specification.homepage,
     "rubygems_mfa_required" => "true",
     "source_code_uri" => "https://github.com/plainrouter/sdk/tree/ruby-v#{specification.version}/packages/ruby"

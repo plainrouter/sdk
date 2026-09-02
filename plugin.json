@@ -1,13 +1,13 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "plainrouter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Connect agents to approved advertising account context through PlainRouter.",
   "author": {
     "name": "PlainRouter",
     "url": "https://plainrouter.com"
   },
-  "homepage": "https://plainrouter.com/developers.md",
+  "homepage": "https://plainrouter.com/docs",
   "repository": "https://github.com/plainrouter/sdk",
   "license": "MIT",
   "keywords": [

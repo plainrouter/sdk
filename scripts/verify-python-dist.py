@@ -73,7 +73,7 @@ def require_metadata(metadata: str) -> None:
         "Name: plainrouter",
         f"Version: {version}",
         "Project-URL: Homepage, https://plainrouter.com",
-        "Project-URL: Documentation, https://docs.plainrouter.com/sdk/python",
+        "Project-URL: Documentation, https://plainrouter.com/docs/sdk/python",
         "Project-URL: Repository, https://github.com/plainrouter/sdk",
     }
     lines = set(metadata.splitlines())

@@ -6,7 +6,7 @@ The interface is unstable and carries no support promise yet.
 This package is unrelated to the npm package `plain-router`.
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
-[documentation](https://plainrouter.com/developers.md) ·
+[documentation](https://plainrouter.com/docs/cli/quickstart) ·
 [source](https://github.com/plainrouter/sdk/tree/main/packages/cli)
 
 Report CLI issues in the [PlainRouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).

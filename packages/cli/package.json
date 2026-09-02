@@ -1,6 +1,6 @@
 {
   "name": "@plainrouter/cli",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Command-line interface for the PlainRouter API.",
   "homepage": "https://plainrouter.com",
   "license": "Apache-2.0",
@@ -40,7 +40,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
-    "@plainrouter/sdk": "0.5.0",
+    "@plainrouter/sdk": "0.5.1",
     "commander": "15.0.0"
   }
 }

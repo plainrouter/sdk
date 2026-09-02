@@ -33,4 +33,4 @@ Treat the returned context as read-only. Never infer access to another advertisi
 
 When `actions.propose` is present, changes may only be submitted through `propose-actions`. PlainRouter workspace policy and every required human approval remain authoritative. Describe a proposal as proposed, not applied, until the tool result proves otherwise.
 
-For endpoint schemas or direct API integration, use the signed OpenAPI specification at `https://plainrouter.com/openapi.json` and the developer index at `https://plainrouter.com/developers.md`.
+For endpoint schemas or direct API integration, use the signed OpenAPI specification at `https://plainrouter.com/openapi.json` and the Conversion API documentation at `https://plainrouter.com/docs/reference/conversion-api`.

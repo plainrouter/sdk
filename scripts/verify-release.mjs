@@ -30,7 +30,6 @@ const [cliPackage, sdkPackage, specification] = await Promise.all(
 const versions = {
   '@plainrouter/cli': cliPackage.version,
   '@plainrouter/sdk': sdkPackage.version,
-  'spec/openapi.json': specification.info?.version,
 };
 
 for (const [source, version] of Object.entries(versions)) {
@@ -39,4 +38,10 @@ for (const [source, version] of Object.entries(versions)) {
   }
 }
 
-console.log(`Verified ${tag} for both packages and the signed OpenAPI contract.`);
+if (specification['x-signed'] !== true) {
+  throw new Error('The vendored OpenAPI contract is not signed.');
+}
+
+console.log(
+  `Verified ${tag} for both npm packages targeting signed OpenAPI ${String(specification.info?.version)}.`,
+);

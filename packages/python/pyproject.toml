@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "plainrouter"
-version = "0.5.1"
+version = "0.5.2"
 description = "Python SDK and command-line interface for the signed PlainRouter OpenAPI contract"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -28,7 +28,7 @@ plainrouter = "plainrouter.cli:main"
 
 [project.urls]
 Homepage = "https://plainrouter.com"
-Documentation = "https://docs.plainrouter.com/sdk/python"
+Documentation = "https://plainrouter.com/docs/sdk/python"
 Repository = "https://github.com/plainrouter/sdk"
 
 [tool.hatch.build.targets.wheel]

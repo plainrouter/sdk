@@ -195,10 +195,10 @@ brew install plainrouter/tap/plainrouter
 
 ## Developer resources
 
-Official developer resources: [PlainRouter developer index](https://plainrouter.com/developers.md), [API documentation](https://plainrouter.com/developers.md), and [OpenAPI specification](https://plainrouter.com/openapi.json).
+Official developer resources: [documentation](https://plainrouter.com/docs), [API documentation](https://plainrouter.com/docs/reference/conversion-api), and [OpenAPI specification](https://plainrouter.com/openapi.json).
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
-[documentation](https://plainrouter.com/developers.md) ·
+[documentation](https://plainrouter.com/docs) ·
 [source](https://github.com/plainrouter/sdk)
 
 This repository is in `0.x` development. Stability and support are not yet

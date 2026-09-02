@@ -25,4 +25,4 @@ Report success only when the tool confirms ledger receipt. If it reports a missi
 
 The verification event contains no customer identity or conversion value. It proves PlainRouter ingestion and ledger receipt only. It does not prove downstream ad-platform delivery, attribution, campaign access, or permission to spend.
 
-For endpoint schemas or direct API integration, use the signed OpenAPI specification at `https://plainrouter.com/openapi.json` and the developer index at `https://plainrouter.com/developers.md`.
+For endpoint schemas or direct API integration, use the signed OpenAPI specification at `https://plainrouter.com/openapi.json` and the Conversion API documentation at `https://plainrouter.com/docs/reference/conversion-api`.

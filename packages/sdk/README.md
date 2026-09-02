@@ -4,7 +4,7 @@ Generated TypeScript client and Zod schemas for PlainRouter's signed OpenAPI
 contract.
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
-[documentation](https://plainrouter.com/developers.md) ·
+[documentation](https://plainrouter.com/docs/sdk/typescript) ·
 [source](https://github.com/plainrouter/sdk/tree/main/packages/sdk)
 
 Report SDK issues in the [PlainRouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).

@@ -37,4 +37,4 @@ Supported actions are budget adjustment, status change, asset upload, and creati
 
 Describe the outcome using the tool's actual status. Workspace policy may reject the proposal or place it in a human approval queue. Never describe a proposal as approved, executed, or reflected on an ad platform unless a later authoritative result proves that state. No ad-activation action is exposed.
 
-For the complete payload schema, use the tool definition returned by the MCP server. For direct API integration, use `https://plainrouter.com/openapi.json` and `https://plainrouter.com/developers.md`.
+For the complete payload schema, use the tool definition returned by the MCP server. For direct API integration, use `https://plainrouter.com/openapi.json` and `https://plainrouter.com/docs/reference/conversion-api`.

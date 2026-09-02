@@ -8,20 +8,28 @@ const [workspace, sdk, cli, specification] = await Promise.all([
   readJson('../spec/openapi.json'),
 ]);
 
-const expectedVersion = specification.info?.version;
+const packageVersion = sdk.version;
 
 for (const [name, packageMetadata] of [
   ['workspace', workspace],
   ['@plainrouter/sdk', sdk],
   ['@plainrouter/cli', cli],
 ]) {
-  if (packageMetadata.version !== expectedVersion) {
-    throw new Error(`${name} version ${packageMetadata.version} does not match signed contract ${expectedVersion}.`);
+  if (packageMetadata.version !== packageVersion) {
+    throw new Error(`${name} version ${packageMetadata.version} does not match npm package ${packageVersion}.`);
   }
 
   if (packageMetadata.engines?.node !== '>=22.22.2') {
     throw new Error(`${name} must declare the verified Node range >=22.22.2.`);
   }
+}
+
+if (cli.dependencies?.['@plainrouter/sdk'] !== packageVersion) {
+  throw new Error(`@plainrouter/cli must depend on @plainrouter/sdk ${packageVersion}.`);
+}
+
+if (specification['x-signed'] !== true) {
+  throw new Error('The vendored OpenAPI contract is not signed.');
 }
 
 for (const [name, packageMetadata, directory] of [
@@ -45,4 +53,6 @@ if (cli.bin?.plainrouter !== './bin/plainrouter.js') {
   throw new Error('@plainrouter/cli must publish the plainrouter executable.');
 }
 
-console.log(`Verified official npm metadata for SDK and CLI ${expectedVersion}.`);
+console.log(
+  `Verified official npm metadata for SDK and CLI ${packageVersion} targeting signed OpenAPI ${String(specification.info?.version)}.`,
+);

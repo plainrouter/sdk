@@ -15,7 +15,7 @@ def main() -> None:
 
     expected_urls = {
         "Homepage": "https://plainrouter.com",
-        "Documentation": "https://docs.plainrouter.com/sdk/python",
+        "Documentation": "https://plainrouter.com/docs/sdk/python",
         "Repository": "https://github.com/plainrouter/sdk",
     }
     if urls != expected_urls:
