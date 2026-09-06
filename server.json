@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.plainrouter/mcp",
   "title": "PlainRouter",
-  "description": "Inspect an approved ad account and first-party signal health, then propose policy-gated actions.",
+  "description": "Privacy-first ad measurement and spend-governance platform for advertisers and agencies in the EU.",
   "version": "0.3.2",
   "repository": {
     "url": "https://github.com/plainrouter/sdk",
@@ -24,7 +24,8 @@
       "capabilities": {
         "io.modelcontextprotocol/ui": {}
       },
-      "serverCardUrl": "https://plainrouter.com/.well-known/mcp.json"
+      "serverCardUrl": "https://plainrouter.com/.well-known/mcp.json",
+      "entityDescription": "PlainRouter is a privacy-first ad measurement and spend-governance platform for advertisers and agencies in the EU. It keeps an independent count of site arrivals and verified revenue, compares that record against what ad platforms claim, and enforces spend rules against it."
     }
   }
 }

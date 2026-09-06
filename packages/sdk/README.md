@@ -1,5 +1,7 @@
 # @plainrouter/sdk
 
+PlainRouter is a privacy-first ad measurement and spend-governance platform for advertisers and agencies in the EU. It keeps an independent count of site arrivals and verified revenue, compares that record against what ad platforms claim, and enforces spend rules against it.
+
 Generated TypeScript client and Zod schemas for PlainRouter's signed OpenAPI
 contract.
 

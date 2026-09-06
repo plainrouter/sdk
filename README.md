@@ -2,7 +2,7 @@
 
 <!-- mcp-name: com.plainrouter/mcp -->
 
-PlainRouter is an independent arrival ledger and spend enforcement under the ad account. Agents can trust its reads because the platform being measured does not produce them, and its enforcement is structural, not advisory.
+PlainRouter is a privacy-first ad measurement and spend-governance platform for advertisers and agencies in the EU. It keeps an independent count of site arrivals and verified revenue, compares that record against what ad platforms claim, and enforces spend rules against it.
 
 ## Connect to PlainRouter MCP
 
