@@ -17,13 +17,13 @@ That distinction matters when deciding what to investigate and whether to change
 
 ## Different evidence can answer different questions
 
-A reported click, an observed arrival, and a conversion are different events. Comparing them requires clear definitions, compatible scopes, and an explanation of what each source can observe. A difference alone does not establish that either source is wrong.
+Platform-reported clicks and spend are the platform’s claims. An arrival recorded from a document request and a server-observed conversion are observations of different events. A modeled estimate must be labeled as a model and kept distinct from those observations. Comparing them requires clear definitions, compatible scopes, and an explanation of what each source can observe. A difference alone does not establish that either source is wrong.
 
-The value of a separate evidence source depends on those semantics being correct and explicit.
+Target state, gated on DR-34-IMPL merging: a reader could inspect the arrival definition, the eligibility rule, and the provenance value behind an observed count, then compare that count with the platform’s claim. This is a target-state requirement, not a description of evidence PlainRouter currently exposes. Inspectability does not promise agreement on a number.
 
 ## Editorial hold: not for publication
 
-This SDK docs draft and the related comparison page are held pending DR-34-IMPL and the arrival-semantics verification under Engineering item 1. Neither gate has been confirmed in this task. Do not publish either page until both are confirmed.
+This SDK docs draft and the related comparison page are held pending DR-34-IMPL merging and the arrival-semantics verification under Engineering item 1. Neither gate has been confirmed in this task. Do not publish either page until both are confirmed.
 
 The structural claim concerns the source of the official connector’s reporting. This draft does not claim that PlainRouter currently shows independent evidence. Any sentence claiming that PlainRouter shows that evidence is a DR-34 claim and remains gated on DR-34-IMPL, including the working sentence.
 
