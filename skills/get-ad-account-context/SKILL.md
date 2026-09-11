@@ -31,6 +31,6 @@ Call `get_performance` to compare Meta-reported conversions with gateway-verifie
 
 Treat the returned context as read-only. Never infer access to another advertising account or claim direct campaign mutation.
 
-When `actions.propose` is present, changes may only be submitted through `propose-actions`. PlainRouter workspace policy and every required human approval remain authoritative. Describe a proposal as proposed, not applied, until the tool result proves otherwise.
+When `actions.propose` is present, changes may only be submitted through `propose-actions`. PlainRouter workspace policy and every required human approval remain authoritative. Budget and status proposals cannot execute in this release. Supported creative execution requires human approval; new ad copies are created paused. Describe a proposal as proposed, not applied, until the tool result proves otherwise.
 
 For endpoint schemas or direct API integration, use the signed OpenAPI specification at `https://plainrouter.com/openapi.json` and the Conversion API documentation at `https://plainrouter.com/docs/reference/conversion-api`.

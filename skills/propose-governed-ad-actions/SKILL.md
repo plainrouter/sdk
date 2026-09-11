@@ -31,7 +31,9 @@ Call `propose-actions` with:
 - one to three exact evidence declarations; and
 - `target_source` set to `human_supplied`.
 
-Supported actions are budget adjustment, status change, asset upload, and creative duplication. Creative duplication must create the new ad paused.
+Accepted proposal types are budget adjustment, status change, asset upload, and creative duplication. Budget and status proposals are recommendations only; their execution is disabled in this release. The accepted schema does not imply that a proposal type can execute.
+
+Only supported JPEG/PNG uploads and creative duplication into paused ad copies can execute, after human approval and workspace policy checks. Human approval is required in every execution mode. Suggest-only mode records approval without execution.
 
 ## Boundaries
 

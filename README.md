@@ -2,7 +2,7 @@
 
 <!-- mcp-name: com.plainrouter/mcp -->
 
-PlainRouter is a privacy-first ad measurement and spend-governance platform for advertisers and agencies in the EU. It keeps an independent count of site arrivals and verified revenue, compares that record against what ad platforms claim, and enforces spend rules against it.
+PlainRouter connects first-party conversion signals and Meta account data with AI agents. Agents can inspect account context and propose changes. Supported JPEG and PNG uploads and paused ad copies require human approval. Budget and status changes are recommendations only; their execution is disabled in this release.
 
 ## Connect to PlainRouter MCP
 
@@ -66,7 +66,7 @@ The live MCP server advertises these tools. Availability remains limited by the 
 | `get_signal_health` | Diagnoses stored event flow, Meta delivery outcomes, match quality, and reconciliation gaps. Read-only and idempotent; it does not call the Marketing API and is not evidence for spend-affecting proposals. |
 | `get_performance` | Returns admissible proposal evidence comparing Meta-reported conversions with gateway-verified accepted conversions. Read-only and idempotent; `days` accepts 1–90 and defaults to 7. |
 | `verify_signal_ingestion` | Writes one identity-free onboarding verification event and confirms ledger receipt. Idempotent and has no spend capability. |
-| `propose-actions` | Proposes 1–25 budget, status, upload, or creative-duplication actions. Idempotent; every proposal passes workspace policy, and suggest-only approval never executes it. |
+| `propose-actions` | Proposes 1–25 actions. Budget and status proposals are recommendations only and cannot execute in this release. JPEG/PNG uploads and paused ad copies require human approval and workspace policy checks; suggest-only approval never executes them. |
 | `get-creative-library` | Reads Meta image and video assets, historically associated ads, and 30-day performance. Read-only; results can be filtered and paginated. |
 | `upload-asset` | Stages a JPEG or PNG image and submits a canonical upload action. Idempotent and non-destructive; the action remains policy- and approval-gated. |
 | `duplicate-ad-with-creative` | Proposes duplicating a source Meta ad with a selected creative asset. Idempotent and non-destructive; approved copies are always created paused. |
@@ -76,7 +76,7 @@ The live MCP server advertises these tools. Availability remains limited by the 
 | `launcher.execute_batch` | Enters execution for a token-bound Launch batch. Every mutation is proposed through Actions rather than applied outside the governed lane. |
 | `show_spend_cap_approval` | Renders the static spend-cap approval preview card. Read-only and idempotent; it reads and writes nothing. |
 
-Generated from PlainRouter's signed OpenAPI contract.
+The SDK clients below are generated from PlainRouter's signed OpenAPI contract. MCP tool availability and input schemas come from the connected server. See the [current Actions execution limits](https://plainrouter.com/product/actions) and [MCP setup guide](https://plainrouter.com/docs/actions/connect-agent).
 
 ## TypeScript SDK
 
