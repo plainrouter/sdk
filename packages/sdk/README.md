@@ -1,5 +1,7 @@
 # @plainrouter/sdk
 
+PlainRouter connects first-party conversion signals and Meta account data with AI agents. Agents can inspect account context and propose changes. Supported JPEG and PNG uploads and paused ad copies require human approval. Budget and status changes are recommendations only; their execution is disabled in this release.
+
 Generated TypeScript client and Zod schemas for PlainRouter's signed OpenAPI
 contract.
 
