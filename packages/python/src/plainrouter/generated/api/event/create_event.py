@@ -87,8 +87,8 @@ def sync_detailed(
 ) -> Response[CreateEventResponse200 | CreateEventResponse202 | ErrorMessage | ValidationError]:
     """Submit a conversion event
 
-     Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or
-    Idempotency-Key in the request headers to make retries idempotent.
+     Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make
+    retries idempotent.
 
     Args:
         idempotency_key (str | Unset):
@@ -122,8 +122,8 @@ def sync(
 ) -> CreateEventResponse200 | CreateEventResponse202 | ErrorMessage | ValidationError | None:
     """Submit a conversion event
 
-     Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or
-    Idempotency-Key in the request headers to make retries idempotent.
+     Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make
+    retries idempotent.
 
     Args:
         idempotency_key (str | Unset):
@@ -152,8 +152,8 @@ async def asyncio_detailed(
 ) -> Response[CreateEventResponse200 | CreateEventResponse202 | ErrorMessage | ValidationError]:
     """Submit a conversion event
 
-     Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or
-    Idempotency-Key in the request headers to make retries idempotent.
+     Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make
+    retries idempotent.
 
     Args:
         idempotency_key (str | Unset):
@@ -185,8 +185,8 @@ async def asyncio(
 ) -> CreateEventResponse200 | CreateEventResponse202 | ErrorMessage | ValidationError | None:
     """Submit a conversion event
 
-     Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or
-    Idempotency-Key in the request headers to make retries idempotent.
+     Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make
+    retries idempotent.
 
     Args:
         idempotency_key (str | Unset):

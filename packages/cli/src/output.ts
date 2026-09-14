@@ -77,6 +77,30 @@ export const writeResponse = (
   write(`${asJson ? JSON.stringify(data, null, 2) : formatHuman(data)}\n`);
 };
 
+export const writeIngestionWarnings = (
+  data: unknown,
+  status: number | undefined,
+  write: TextWriter,
+): void => {
+  if (
+    (status !== undefined && status !== 202) ||
+    !isRecord(data) ||
+    !Array.isArray(data.warnings)
+  ) {
+    return;
+  }
+
+  for (const warning of data.warnings) {
+    if (!isRecord(warning)) {
+      continue;
+    }
+
+    write(
+      `Warning: ${printableValue(warning.code)} (${printableValue(warning.field)}): ${printableValue(warning.message)}\n`,
+    );
+  }
+};
+
 export const formatApiError = (error: unknown): string => {
   if (isRecord(error) && typeof error.message === 'string') {
     if (isRecord(error.errors)) {

@@ -48,8 +48,8 @@ def sync_detailed(
 ) -> Response[GetSandboxResponse200]:
     """Discover the zero-auth sandbox
 
-     Returns a ready-to-run synthetic event example. The sandbox requires no account or API key and
-    cannot read production data, persist events, or contact an advertising provider.
+     Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist
+    data or contact an advertising provider.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -74,8 +74,8 @@ def sync(
 ) -> GetSandboxResponse200 | None:
     """Discover the zero-auth sandbox
 
-     Returns a ready-to-run synthetic event example. The sandbox requires no account or API key and
-    cannot read production data, persist events, or contact an advertising provider.
+     Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist
+    data or contact an advertising provider.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -96,8 +96,8 @@ async def asyncio_detailed(
 ) -> Response[GetSandboxResponse200]:
     """Discover the zero-auth sandbox
 
-     Returns a ready-to-run synthetic event example. The sandbox requires no account or API key and
-    cannot read production data, persist events, or contact an advertising provider.
+     Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist
+    data or contact an advertising provider.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -120,8 +120,8 @@ async def asyncio(
 ) -> GetSandboxResponse200 | None:
     """Discover the zero-auth sandbox
 
-     Returns a ready-to-run synthetic event example. The sandbox requires no account or API key and
-    cannot read production data, persist events, or contact an advertising provider.
+     Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist
+    data or contact an advertising provider.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

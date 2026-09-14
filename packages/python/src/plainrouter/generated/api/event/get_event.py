@@ -67,7 +67,8 @@ def sync_detailed(
 ) -> Response[ErrorMessage | GetEventResponse200]:
     """Get an event and delivery trace
 
-     Returns one retained customer-readable event with lineage and destination delivery state.
+     Returns one retained customer-readable event with lineage and destination delivery state for scoped
+    troubleshooting and acceptance checks.
 
     Args:
         event (str):
@@ -98,7 +99,8 @@ def sync(
 ) -> ErrorMessage | GetEventResponse200 | None:
     """Get an event and delivery trace
 
-     Returns one retained customer-readable event with lineage and destination delivery state.
+     Returns one retained customer-readable event with lineage and destination delivery state for scoped
+    troubleshooting and acceptance checks.
 
     Args:
         event (str):
@@ -124,7 +126,8 @@ async def asyncio_detailed(
 ) -> Response[ErrorMessage | GetEventResponse200]:
     """Get an event and delivery trace
 
-     Returns one retained customer-readable event with lineage and destination delivery state.
+     Returns one retained customer-readable event with lineage and destination delivery state for scoped
+    troubleshooting and acceptance checks.
 
     Args:
         event (str):
@@ -153,7 +156,8 @@ async def asyncio(
 ) -> ErrorMessage | GetEventResponse200 | None:
     """Get an event and delivery trace
 
-     Returns one retained customer-readable event with lineage and destination delivery state.
+     Returns one retained customer-readable event with lineage and destination delivery state for scoped
+    troubleshooting and acceptance checks.
 
     Args:
         event (str):

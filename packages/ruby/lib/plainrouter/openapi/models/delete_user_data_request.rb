@@ -1,7 +1,7 @@
 =begin
-#PlainRouter Conversion API
+#Plainrouter Conversion API
 
-#PlainRouter public Signals Conversion API.
+#Plainrouter public Signals Conversion API.
 
 The version of the OpenAPI document: 0.5.0
 
@@ -19,33 +19,14 @@ module PlainRouter::OpenAPI
 
     attr_accessor :identifier_hash
 
-    class EnumAttributeValidator
-      attr_reader :datatype
-      attr_reader :allowable_values
-
-      def initialize(datatype, allowable_values)
-        @allowable_values = allowable_values.map do |value|
-          case datatype.to_s
-          when /Integer/i
-            value.to_i
-          when /Float/i
-            value.to_f
-          else
-            value
-          end
-        end
-      end
-
-      def valid?(value)
-        !value || allowable_values.include?(value)
-      end
-    end
+    attr_accessor :identifier
 
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
         :'identifier_type' => :'identifier_type',
-        :'identifier_hash' => :'identifier_hash'
+        :'identifier_hash' => :'identifier_hash',
+        :'identifier' => :'identifier'
       }
     end
 
@@ -63,7 +44,8 @@ module PlainRouter::OpenAPI
     def self.openapi_types
       {
         :'identifier_type' => :'String',
-        :'identifier_hash' => :'String'
+        :'identifier_hash' => :'String',
+        :'identifier' => :'String'
       }
     end
 
@@ -97,8 +79,10 @@ module PlainRouter::OpenAPI
 
       if attributes.key?(:'identifier_hash')
         self.identifier_hash = attributes[:'identifier_hash']
-      else
-        self.identifier_hash = nil
+      end
+
+      if attributes.key?(:'identifier')
+        self.identifier = attributes[:'identifier']
       end
     end
 
@@ -111,13 +95,13 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "identifier_type", identifier_type cannot be nil.')
       end
 
-      if @identifier_hash.nil?
-        invalid_properties.push('invalid value for "identifier_hash", identifier_hash cannot be nil.')
+      pattern = Regexp.new(/^[a-fA-F0-9]{64}$/)
+      if !@identifier_hash.nil? && @identifier_hash !~ pattern
+        invalid_properties.push("invalid value for \"identifier_hash\", must conform to the pattern #{pattern}.")
       end
 
-      pattern = Regexp.new(/^[a-fA-F0-9]{64}$/)
-      if @identifier_hash !~ pattern
-        invalid_properties.push("invalid value for \"identifier_hash\", must conform to the pattern #{pattern}.")
+      if !@identifier.nil? && @identifier.to_s.length > 512
+        invalid_properties.push('invalid value for "identifier", the character length must be smaller than or equal to 512.')
       end
 
       invalid_properties
@@ -130,8 +114,8 @@ module PlainRouter::OpenAPI
       return false if @identifier_type.nil?
       identifier_type_validator = EnumAttributeValidator.new('String', ["email", "phone", "external_id"])
       return false unless identifier_type_validator.valid?(@identifier_type)
-      return false if @identifier_hash.nil?
-      return false if @identifier_hash !~ Regexp.new(/^[a-fA-F0-9]{64}$/)
+      return false if !@identifier_hash.nil? && @identifier_hash !~ Regexp.new(/^[a-fA-F0-9]{64}$/)
+      return false if !@identifier.nil? && @identifier.to_s.length > 512
       true
     end
 
@@ -160,13 +144,28 @@ module PlainRouter::OpenAPI
       @identifier_hash = identifier_hash
     end
 
+    # Custom attribute writer method with validation
+    # @param [Object] identifier Value to be assigned
+    def identifier=(identifier)
+      if identifier.nil?
+        fail ArgumentError, 'identifier cannot be nil'
+      end
+
+      if identifier.to_s.length > 512
+        fail ArgumentError, 'invalid value for "identifier", the character length must be smaller than or equal to 512.'
+      end
+
+      @identifier = identifier
+    end
+
     # Checks equality by comparing each attribute.
     # @param [Object] Object to be compared
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
           identifier_type == o.identifier_type &&
-          identifier_hash == o.identifier_hash
+          identifier_hash == o.identifier_hash &&
+          identifier == o.identifier
     end
 
     # @see the `==` method
@@ -178,7 +177,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [identifier_type, identifier_hash].hash
+      [identifier_type, identifier_hash, identifier].hash
     end
 
     # Builds the object from hash

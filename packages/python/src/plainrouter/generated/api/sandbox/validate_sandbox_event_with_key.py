@@ -73,8 +73,8 @@ def sync_detailed(
 ) -> Response[ErrorMessage | ValidateSandboxEventWithKeyResponse200 | ValidationError]:
     """Validate a synthetic event with a sandbox key
 
-     Validates a synthetic event using the short-lived key returned by the self-serve sandbox key
-    endpoint. It never persists data or contacts an advertising provider.
+     Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data
+    or contacting an advertising provider.
 
     Args:
         body (ValidateSandboxEventWithKeyBody):
@@ -105,8 +105,8 @@ def sync(
 ) -> ErrorMessage | ValidateSandboxEventWithKeyResponse200 | ValidationError | None:
     """Validate a synthetic event with a sandbox key
 
-     Validates a synthetic event using the short-lived key returned by the self-serve sandbox key
-    endpoint. It never persists data or contacts an advertising provider.
+     Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data
+    or contacting an advertising provider.
 
     Args:
         body (ValidateSandboxEventWithKeyBody):
@@ -132,8 +132,8 @@ async def asyncio_detailed(
 ) -> Response[ErrorMessage | ValidateSandboxEventWithKeyResponse200 | ValidationError]:
     """Validate a synthetic event with a sandbox key
 
-     Validates a synthetic event using the short-lived key returned by the self-serve sandbox key
-    endpoint. It never persists data or contacts an advertising provider.
+     Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data
+    or contacting an advertising provider.
 
     Args:
         body (ValidateSandboxEventWithKeyBody):
@@ -162,8 +162,8 @@ async def asyncio(
 ) -> ErrorMessage | ValidateSandboxEventWithKeyResponse200 | ValidationError | None:
     """Validate a synthetic event with a sandbox key
 
-     Validates a synthetic event using the short-lived key returned by the self-serve sandbox key
-    endpoint. It never persists data or contacts an advertising provider.
+     Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data
+    or contacting an advertising provider.
 
     Args:
         body (ValidateSandboxEventWithKeyBody):

@@ -1,7 +1,7 @@
 =begin
-#PlainRouter Conversion API
+#Plainrouter Conversion API
 
-#PlainRouter public Signals Conversion API.
+#Plainrouter public Signals Conversion API.
 
 The version of the OpenAPI document: 0.5.0
 
@@ -23,13 +23,16 @@ module PlainRouter::OpenAPI
 
     attr_accessor :description
 
+    attr_accessor :issued_key
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
         :'method' => :'method',
         :'url' => :'url',
         :'authentication_required' => :'authentication_required',
-        :'description' => :'description'
+        :'description' => :'description',
+        :'issued_key' => :'issued_key'
       }
     end
 
@@ -49,7 +52,8 @@ module PlainRouter::OpenAPI
         :'method' => :'String',
         :'url' => :'String',
         :'authentication_required' => :'Boolean',
-        :'description' => :'String'
+        :'description' => :'String',
+        :'issued_key' => :'GetSandbox200ResponseSelfServeKeyIssuedKey'
       }
     end
 
@@ -98,6 +102,12 @@ module PlainRouter::OpenAPI
       else
         self.description = nil
       end
+
+      if attributes.key?(:'issued_key')
+        self.issued_key = attributes[:'issued_key']
+      else
+        self.issued_key = nil
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -121,6 +131,10 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "description", description cannot be nil.')
       end
 
+      if @issued_key.nil?
+        invalid_properties.push('invalid value for "issued_key", issued_key cannot be nil.')
+      end
+
       invalid_properties
     end
 
@@ -132,6 +146,7 @@ module PlainRouter::OpenAPI
       return false if @url.nil?
       return false if @authentication_required.nil?
       return false if @description.nil?
+      return false if @issued_key.nil?
       true
     end
 
@@ -175,6 +190,16 @@ module PlainRouter::OpenAPI
       @description = description
     end
 
+    # Custom attribute writer method with validation
+    # @param [Object] issued_key Value to be assigned
+    def issued_key=(issued_key)
+      if issued_key.nil?
+        fail ArgumentError, 'issued_key cannot be nil'
+      end
+
+      @issued_key = issued_key
+    end
+
     # Checks equality by comparing each attribute.
     # @param [Object] Object to be compared
     def ==(o)
@@ -183,7 +208,8 @@ module PlainRouter::OpenAPI
           method == o.method &&
           url == o.url &&
           authentication_required == o.authentication_required &&
-          description == o.description
+          description == o.description &&
+          issued_key == o.issued_key
     end
 
     # @see the `==` method
@@ -195,7 +221,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [method, url, authentication_required, description].hash
+      [method, url, authentication_required, description, issued_key].hash
     end
 
     # Builds the object from hash

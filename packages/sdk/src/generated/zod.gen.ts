@@ -39,6 +39,7 @@ export const zDestinationType = z.enum(['meta']);
  */
 export const zDestination = z.object({
     id: z.string(),
+    workspace_id: z.int(),
     signal_tracker_id: z.string(),
     platform_ad_account_id: z.int().nullable(),
     type: zDestinationType,
@@ -54,6 +55,7 @@ export const zDestination = z.object({
  */
 export const zEmqSnapshot = z.object({
     id: z.int(),
+    workspace_id: z.int(),
     signal_tracker_id: z.string(),
     destination_id: z.string(),
     score: z.number(),
@@ -73,6 +75,14 @@ export const zErrorMessage = z.object({
 });
 
 /**
+ * IngestionWarningCode
+ *
+ * The closed set of non-rejection warnings returned by authenticated ingestion.
+ *
+ */
+export const zIngestionWarningCode = z.enum(['consent_captured_at_invalid']);
+
+/**
  * JurisdictionPolicyClass
  *
  * The two policy classes used by the single Signals collector. The enum intentionally has no country or region members. Country evidence is an edge input used to derive a policy class and is never a ledger value.
@@ -85,6 +95,7 @@ export const zJurisdictionPolicyClass = z.enum(['strict_eu', 'global']);
  */
 export const zReconciliationReport = z.object({
     id: z.int(),
+    workspace_id: z.int(),
     signal_tracker_id: z.string(),
     destination_id: z.string(),
     report_date: z.iso.datetime(),
@@ -113,7 +124,6 @@ export const zTrafficClass = z.enum(['valid', 'invalid']);
  */
 export const zEvent = z.object({
     id: z.string(),
-    signal_tracker_id: z.string(),
     parent_event_id: z.string().nullable(),
     event_name: z.string(),
     event_time: z.iso.datetime(),
@@ -130,13 +140,29 @@ export const zEvent = z.object({
     consent_normalization_version: z.string(),
     policy_class: zJurisdictionPolicyClass,
     traffic_class: zTrafficClass,
+    workspace_id: z.int(),
     consent: z.string(),
-    user_data_hashed: z.string(),
+    user_data_hashed: z.union([
+        z.record(z.string(), z.unknown()),
+        z.array(z.unknown())
+    ]).nullable(),
     click_ids: z.string(),
     session: z.string(),
     value_data: z.string(),
     event_source: z.string(),
     payload_expired: z.boolean(),
+    consent_source: z.enum([
+        'explicit',
+        'tcf',
+        'consent_mode',
+        'plainrouter',
+        'cmp:cookiebot',
+        'cmp:usercentrics',
+        'cmp:cookieyes',
+        'cmp:consentstack',
+        'cmp:iubenda'
+    ]).optional(),
+    consent_ui_version: z.int().gte(1).lte(999999).optional(),
     deliveries: z.array(z.unknown())
 });
 
@@ -148,6 +174,9 @@ export const zValidationError = z.object({
     errors: z.record(z.string(), z.array(z.string()))
 });
 
+/**
+ * Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.
+ */
 export const zCreateEventBody = z.union([
     z.object({
         event_id: z.string().optional(),
@@ -212,7 +241,12 @@ export const zCreateEventResponse = z.union([
     }),
     z.object({
         event_id: z.string(),
-        duplicate: z.boolean()
+        duplicate: z.boolean(),
+        warnings: z.array(z.object({
+            code: zIngestionWarningCode,
+            field: z.literal('consent.captured_at'),
+            message: z.string()
+        }))
     })
 ]);
 
@@ -237,6 +271,7 @@ export const zGetEventPath = z.object({
 export const zGetEventResponse = z.object({
     event: z.object({
         id: z.string(),
+        workspace_id: z.int(),
         signal_tracker_id: z.string(),
         parent_event_id: z.string().nullable(),
         event_name: z.string(),
@@ -276,6 +311,7 @@ export const zGetEventResponse = z.object({
         payload_expired: z.boolean(),
         deliveries: z.array(z.object({
             id: z.int(),
+            workspace_id: z.int(),
             signal_tracker_id: z.string(),
             event_id: z.string(),
             destination_id: z.string().nullable(),
@@ -299,6 +335,7 @@ export const zGetEventResponse = z.object({
     lineage: z.object({
         parent: z.object({
             id: z.string(),
+            workspace_id: z.int(),
             signal_tracker_id: z.string(),
             parent_event_id: z.string().nullable(),
             event_name: z.string(),
@@ -339,6 +376,7 @@ export const zGetEventResponse = z.object({
         }).nullable(),
         children: z.array(z.object({
             id: z.string(),
+            workspace_id: z.int(),
             signal_tracker_id: z.string(),
             parent_event_id: z.string().nullable(),
             event_name: z.string(),
@@ -380,6 +418,7 @@ export const zGetEventResponse = z.object({
     }),
     deliveries: z.array(z.object({
         id: z.int(),
+        workspace_id: z.int(),
         signal_tracker_id: z.string(),
         event_id: z.string(),
         destination_id: z.string().nullable(),
@@ -415,6 +454,7 @@ export const zListEventsResponse = z.object({
         current_page: z.int(),
         data: z.array(z.object({
             id: z.string(),
+            workspace_id: z.int(),
             signal_tracker_id: z.string(),
             parent_event_id: z.string().nullable(),
             event_name: z.string(),
@@ -454,6 +494,7 @@ export const zListEventsResponse = z.object({
             payload_expired: z.boolean(),
             deliveries: z.array(z.object({
                 id: z.int(),
+                workspace_id: z.int(),
                 signal_tracker_id: z.string(),
                 event_id: z.string(),
                 destination_id: z.string().nullable(),
@@ -510,6 +551,7 @@ export const zListEventsByCursorResponse = z.object({
     events: z.object({
         data: z.array(z.object({
             id: z.string(),
+            workspace_id: z.int(),
             signal_tracker_id: z.string(),
             parent_event_id: z.string().nullable(),
             event_name: z.string(),
@@ -549,6 +591,7 @@ export const zListEventsByCursorResponse = z.object({
             payload_expired: z.boolean(),
             deliveries: z.array(z.object({
                 id: z.int(),
+                workspace_id: z.int(),
                 signal_tracker_id: z.string(),
                 event_id: z.string(),
                 destination_id: z.string().nullable(),
@@ -599,6 +642,7 @@ export const zSetDestinationTestModePath = z.object({
 export const zSetDestinationTestModeResponse = z.object({
     destination: z.object({
         id: z.string(),
+        workspace_id: z.int(),
         signal_tracker_id: z.string(),
         platform_ad_account_id: z.int().nullable(),
         type: zDestinationType,
@@ -660,6 +704,7 @@ export const zGetReconciliationReportResponse = z.object({
     date: z.string(),
     reports: z.array(z.object({
         id: z.int(),
+        workspace_id: z.int(),
         signal_tracker_id: z.string(),
         destination_id: z.string(),
         report_date: z.string(),
@@ -687,6 +732,7 @@ export const zGetReconciliationReportResponse = z.object({
         updated_at: z.string().nullable(),
         destination: z.object({
             id: z.string(),
+            workspace_id: z.int(),
             signal_tracker_id: z.string(),
             platform_ad_account_id: z.int().nullable(),
             type: zDestinationType,
@@ -708,6 +754,7 @@ export const zGetReconciliationReportResponse = z.object({
 export const zGetEmqReportResponse = z.object({
     snapshots: z.array(z.object({
         id: z.int(),
+        workspace_id: z.int(),
         signal_tracker_id: z.string(),
         destination_id: z.string(),
         score: z.number(),
@@ -723,14 +770,15 @@ export const zGetEmqReportResponse = z.object({
     }))
 });
 
-export const zDeleteUserDataBody = z.object({
+export const zDeleteUserDataBody = z.intersection(z.unknown(), z.object({
     identifier_type: z.enum([
         'email',
         'phone',
         'external_id'
     ]),
-    identifier_hash: z.string().regex(/^[a-fA-F0-9]{64}$/)
-});
+    identifier_hash: z.string().regex(/^[a-fA-F0-9]{64}$/).optional(),
+    identifier: z.string().max(512).optional()
+}));
 
 /**
  * Completed idempotent deletion request.
@@ -758,7 +806,20 @@ export const zGetSandboxResponse = z.object({
         method: z.string(),
         url: z.string(),
         authentication_required: z.boolean(),
-        description: z.string()
+        description: z.string(),
+        issued_key: z.object({
+            api_key: z.string(),
+            token_type: z.string(),
+            expires_in: z.int(),
+            expires_at: z.string(),
+            scope: z.string(),
+            production_access: z.boolean(),
+            use: z.object({
+                method: z.string(),
+                url: z.string(),
+                authorization: z.string()
+            })
+        })
     }),
     try: z.object({
         method: z.string(),
@@ -774,6 +835,23 @@ export const zGetSandboxResponse = z.object({
                 order_id: z.string()
             })
         })
+    })
+});
+
+/**
+ * Short-lived sandbox API key issued.
+ */
+export const zGetSandboxKeyResponse = z.object({
+    api_key: z.string(),
+    token_type: z.string(),
+    expires_in: z.int(),
+    expires_at: z.string(),
+    scope: z.string(),
+    production_access: z.boolean(),
+    use: z.object({
+        method: z.string(),
+        url: z.string(),
+        authorization: z.string()
     })
 });
 

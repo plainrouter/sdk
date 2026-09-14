@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+
+if TYPE_CHECKING:
+    from ..models.create_event_response_202_warnings_item import CreateEventResponse202WarningsItem
+
 
 T = TypeVar("T", bound="CreateEventResponse202")
 
@@ -15,10 +19,12 @@ class CreateEventResponse202:
     Attributes:
         event_id (str):
         duplicate (bool):
+        warnings (list[CreateEventResponse202WarningsItem]):
     """
 
     event_id: str
     duplicate: bool
+    warnings: list[CreateEventResponse202WarningsItem]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -26,12 +32,18 @@ class CreateEventResponse202:
 
         duplicate = self.duplicate
 
+        warnings = []
+        for warnings_item_data in self.warnings:
+            warnings_item = warnings_item_data.to_dict()
+            warnings.append(warnings_item)
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "event_id": event_id,
                 "duplicate": duplicate,
+                "warnings": warnings,
             }
         )
 
@@ -39,14 +51,24 @@ class CreateEventResponse202:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.create_event_response_202_warnings_item import CreateEventResponse202WarningsItem
+
         d = dict(src_dict)
         event_id = d.pop("event_id")
 
         duplicate = d.pop("duplicate")
 
+        warnings = []
+        _warnings = d.pop("warnings")
+        for warnings_item_data in _warnings:
+            warnings_item = CreateEventResponse202WarningsItem.from_dict(warnings_item_data)
+
+            warnings.append(warnings_item)
+
         create_event_response_202 = cls(
             event_id=event_id,
             duplicate=duplicate,
+            warnings=warnings,
         )
 
         create_event_response_202.additional_properties = d

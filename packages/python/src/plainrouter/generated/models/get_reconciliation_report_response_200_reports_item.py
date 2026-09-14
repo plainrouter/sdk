@@ -26,7 +26,8 @@ class GetReconciliationReportResponse200ReportsItem:
     """
     Attributes:
         id (int):
-        signal_tracker_id (str):
+        workspace_id (int):
+        signal_tracker_id (str): Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
         destination_id (str):
         report_date (str):
         accepted_count (int):
@@ -42,6 +43,7 @@ class GetReconciliationReportResponse200ReportsItem:
     """
 
     id: int
+    workspace_id: int
     signal_tracker_id: str
     destination_id: str
     report_date: str
@@ -59,6 +61,8 @@ class GetReconciliationReportResponse200ReportsItem:
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
+
+        workspace_id = self.workspace_id
 
         signal_tracker_id = self.signal_tracker_id
 
@@ -93,6 +97,7 @@ class GetReconciliationReportResponse200ReportsItem:
         field_dict.update(
             {
                 "id": id,
+                "workspace_id": workspace_id,
                 "signal_tracker_id": signal_tracker_id,
                 "destination_id": destination_id,
                 "report_date": report_date,
@@ -125,6 +130,8 @@ class GetReconciliationReportResponse200ReportsItem:
 
         d = dict(src_dict)
         id = d.pop("id")
+
+        workspace_id = d.pop("workspace_id")
 
         signal_tracker_id = d.pop("signal_tracker_id")
 
@@ -164,6 +171,7 @@ class GetReconciliationReportResponse200ReportsItem:
 
         get_reconciliation_report_response_200_reports_item = cls(
             id=id,
+            workspace_id=workspace_id,
             signal_tracker_id=signal_tracker_id,
             destination_id=destination_id,
             report_date=report_date,

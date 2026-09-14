@@ -67,7 +67,8 @@ def sync_detailed(
 ) -> Response[ErrorMessage | ListEventsResponse200]:
     """List recent events
 
-     Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+     Returns retained customer-readable events with stable pagination and aggregate destination-delivery
+    acceptance metrics for the workspace.
 
     Args:
         per_page (int | Unset):  Default: 25.
@@ -98,7 +99,8 @@ def sync(
 ) -> ErrorMessage | ListEventsResponse200 | None:
     """List recent events
 
-     Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+     Returns retained customer-readable events with stable pagination and aggregate destination-delivery
+    acceptance metrics for the workspace.
 
     Args:
         per_page (int | Unset):  Default: 25.
@@ -124,7 +126,8 @@ async def asyncio_detailed(
 ) -> Response[ErrorMessage | ListEventsResponse200]:
     """List recent events
 
-     Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+     Returns retained customer-readable events with stable pagination and aggregate destination-delivery
+    acceptance metrics for the workspace.
 
     Args:
         per_page (int | Unset):  Default: 25.
@@ -153,7 +156,8 @@ async def asyncio(
 ) -> ErrorMessage | ListEventsResponse200 | None:
     """List recent events
 
-     Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+     Returns retained customer-readable events with stable pagination and aggregate destination-delivery
+    acceptance metrics for the workspace.
 
     Args:
         per_page (int | Unset):  Default: 25.

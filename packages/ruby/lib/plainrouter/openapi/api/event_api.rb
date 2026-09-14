@@ -1,7 +1,7 @@
 =begin
-#PlainRouter Conversion API
+#Plainrouter Conversion API
 
-#PlainRouter public Signals Conversion API.
+#Plainrouter public Signals Conversion API.
 
 The version of the OpenAPI document: 0.5.0
 
@@ -20,10 +20,10 @@ module PlainRouter::OpenAPI
       @api_client = api_client
     end
     # Submit a conversion event
-    # Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or Idempotency-Key in the request headers to make retries idempotent.
-    # @param create_event_request [CreateEventRequest]
+    # Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make retries idempotent.
+    # @param create_event_request [CreateEventRequest] Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.
     # @param [Hash] opts the optional parameters
-    # @option opts [String] :idempotency_key Optional idempotency key. When event_id is omitted, PlainRouter uses this value as event_id. If both are supplied, they must match.
+    # @option opts [String] :idempotency_key Optional idempotency key. When event_id is omitted, Plainrouter uses this value as event_id. If both are supplied, they must match.
     # @return [CreateEvent200Response]
     def create_event(create_event_request, opts = {})
       data, _status_code, _headers = create_event_with_http_info(create_event_request, opts)
@@ -31,10 +31,10 @@ module PlainRouter::OpenAPI
     end
 
     # Submit a conversion event
-    # Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or Idempotency-Key in the request headers to make retries idempotent.
-    # @param create_event_request [CreateEventRequest]
+    # Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make retries idempotent.
+    # @param create_event_request [CreateEventRequest] Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.
     # @param [Hash] opts the optional parameters
-    # @option opts [String] :idempotency_key Optional idempotency key. When event_id is omitted, PlainRouter uses this value as event_id. If both are supplied, they must match.
+    # @option opts [String] :idempotency_key Optional idempotency key. When event_id is omitted, Plainrouter uses this value as event_id. If both are supplied, they must match.
     # @return [Array<(CreateEvent200Response, Integer, Hash)>] CreateEvent200Response data, response status code and response headers
     def create_event_with_http_info(create_event_request, opts = {})
       if @api_client.config.debugging
@@ -71,7 +71,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'CreateEvent200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"EventApi.create_event",
@@ -91,7 +91,7 @@ module PlainRouter::OpenAPI
     end
 
     # Get an event and delivery trace
-    # Returns one retained customer-readable event with lineage and destination delivery state.
+    # Returns one retained customer-readable event with lineage and destination delivery state for scoped troubleshooting and acceptance checks.
     # @param event [String]
     # @param [Hash] opts the optional parameters
     # @return [GetEvent200Response]
@@ -101,7 +101,7 @@ module PlainRouter::OpenAPI
     end
 
     # Get an event and delivery trace
-    # Returns one retained customer-readable event with lineage and destination delivery state.
+    # Returns one retained customer-readable event with lineage and destination delivery state for scoped troubleshooting and acceptance checks.
     # @param event [String]
     # @param [Hash] opts the optional parameters
     # @return [Array<(GetEvent200Response, Integer, Hash)>] GetEvent200Response data, response status code and response headers
@@ -134,7 +134,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'GetEvent200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"EventApi.get_event",
@@ -154,7 +154,7 @@ module PlainRouter::OpenAPI
     end
 
     # Verify server-side Signal ingestion
-    # Writes one identity-free verification event for onboarding and returns the existing event on retry.
+    # Records one idempotent, identity-free modeled event to confirm workspace-scoped ingestion. It does not count as real arrival evidence or complete onboarding.
     # @param [Hash] opts the optional parameters
     # @return [CreateEvent200Response]
     def verify_signal_ingestion(opts = {})
@@ -163,7 +163,7 @@ module PlainRouter::OpenAPI
     end
 
     # Verify server-side Signal ingestion
-    # Writes one identity-free verification event for onboarding and returns the existing event on retry.
+    # Records one idempotent, identity-free modeled event to confirm workspace-scoped ingestion. It does not count as real arrival evidence or complete onboarding.
     # @param [Hash] opts the optional parameters
     # @return [Array<(CreateEvent200Response, Integer, Hash)>] CreateEvent200Response data, response status code and response headers
     def verify_signal_ingestion_with_http_info(opts = {})
@@ -191,7 +191,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'CreateEvent200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"EventApi.verify_signal_ingestion",

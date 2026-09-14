@@ -1,7 +1,7 @@
 =begin
-#PlainRouter Conversion API
+#Plainrouter Conversion API
 
-#PlainRouter public Signals Conversion API.
+#Plainrouter public Signals Conversion API.
 
 The version of the OpenAPI document: 0.5.0
 
@@ -16,8 +16,6 @@ require 'time'
 module PlainRouter::OpenAPI
   class Event < ApiModelBase
     attr_accessor :id
-
-    attr_accessor :signal_tracker_id
 
     attr_accessor :parent_event_id
 
@@ -51,6 +49,8 @@ module PlainRouter::OpenAPI
 
     attr_accessor :traffic_class
 
+    attr_accessor :workspace_id
+
     attr_accessor :consent
 
     attr_accessor :user_data_hashed
@@ -64,6 +64,10 @@ module PlainRouter::OpenAPI
     attr_accessor :event_source
 
     attr_accessor :payload_expired
+
+    attr_accessor :consent_source
+
+    attr_accessor :consent_ui_version
 
     attr_accessor :deliveries
 
@@ -93,7 +97,6 @@ module PlainRouter::OpenAPI
     def self.attribute_map
       {
         :'id' => :'id',
-        :'signal_tracker_id' => :'signal_tracker_id',
         :'parent_event_id' => :'parent_event_id',
         :'event_name' => :'event_name',
         :'event_time' => :'event_time',
@@ -110,6 +113,7 @@ module PlainRouter::OpenAPI
         :'consent_normalization_version' => :'consent_normalization_version',
         :'policy_class' => :'policy_class',
         :'traffic_class' => :'traffic_class',
+        :'workspace_id' => :'workspace_id',
         :'consent' => :'consent',
         :'user_data_hashed' => :'user_data_hashed',
         :'click_ids' => :'click_ids',
@@ -117,6 +121,8 @@ module PlainRouter::OpenAPI
         :'value_data' => :'value_data',
         :'event_source' => :'event_source',
         :'payload_expired' => :'payload_expired',
+        :'consent_source' => :'consent_source',
+        :'consent_ui_version' => :'consent_ui_version',
         :'deliveries' => :'deliveries'
       }
     end
@@ -135,7 +141,6 @@ module PlainRouter::OpenAPI
     def self.openapi_types
       {
         :'id' => :'String',
-        :'signal_tracker_id' => :'String',
         :'parent_event_id' => :'String',
         :'event_name' => :'String',
         :'event_time' => :'Time',
@@ -152,13 +157,16 @@ module PlainRouter::OpenAPI
         :'consent_normalization_version' => :'String',
         :'policy_class' => :'JurisdictionPolicyClass',
         :'traffic_class' => :'TrafficClass',
+        :'workspace_id' => :'Integer',
         :'consent' => :'String',
-        :'user_data_hashed' => :'String',
+        :'user_data_hashed' => :'GetEvent200ResponseEventUserDataHashed',
         :'click_ids' => :'String',
         :'session' => :'String',
         :'value_data' => :'String',
         :'event_source' => :'String',
         :'payload_expired' => :'Boolean',
+        :'consent_source' => :'String',
+        :'consent_ui_version' => :'Integer',
         :'deliveries' => :'Array<Object>'
       }
     end
@@ -170,6 +178,7 @@ module PlainRouter::OpenAPI
         :'order_id',
         :'value_amount',
         :'value_currency',
+        :'user_data_hashed',
       ])
     end
 
@@ -193,12 +202,6 @@ module PlainRouter::OpenAPI
         self.id = attributes[:'id']
       else
         self.id = nil
-      end
-
-      if attributes.key?(:'signal_tracker_id')
-        self.signal_tracker_id = attributes[:'signal_tracker_id']
-      else
-        self.signal_tracker_id = nil
       end
 
       if attributes.key?(:'parent_event_id')
@@ -297,6 +300,12 @@ module PlainRouter::OpenAPI
         self.traffic_class = nil
       end
 
+      if attributes.key?(:'workspace_id')
+        self.workspace_id = attributes[:'workspace_id']
+      else
+        self.workspace_id = nil
+      end
+
       if attributes.key?(:'consent')
         self.consent = attributes[:'consent']
       else
@@ -339,6 +348,14 @@ module PlainRouter::OpenAPI
         self.payload_expired = nil
       end
 
+      if attributes.key?(:'consent_source')
+        self.consent_source = attributes[:'consent_source']
+      end
+
+      if attributes.key?(:'consent_ui_version')
+        self.consent_ui_version = attributes[:'consent_ui_version']
+      end
+
       if attributes.key?(:'deliveries')
         if (value = attributes[:'deliveries']).is_a?(Array)
           self.deliveries = value
@@ -355,10 +372,6 @@ module PlainRouter::OpenAPI
       invalid_properties = Array.new
       if @id.nil?
         invalid_properties.push('invalid value for "id", id cannot be nil.')
-      end
-
-      if @signal_tracker_id.nil?
-        invalid_properties.push('invalid value for "signal_tracker_id", signal_tracker_id cannot be nil.')
       end
 
       if @event_name.nil?
@@ -409,12 +422,12 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "traffic_class", traffic_class cannot be nil.')
       end
 
-      if @consent.nil?
-        invalid_properties.push('invalid value for "consent", consent cannot be nil.')
+      if @workspace_id.nil?
+        invalid_properties.push('invalid value for "workspace_id", workspace_id cannot be nil.')
       end
 
-      if @user_data_hashed.nil?
-        invalid_properties.push('invalid value for "user_data_hashed", user_data_hashed cannot be nil.')
+      if @consent.nil?
+        invalid_properties.push('invalid value for "consent", consent cannot be nil.')
       end
 
       if @click_ids.nil?
@@ -437,6 +450,14 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "payload_expired", payload_expired cannot be nil.')
       end
 
+      if !@consent_ui_version.nil? && @consent_ui_version > 999999
+        invalid_properties.push('invalid value for "consent_ui_version", must be smaller than or equal to 999999.')
+      end
+
+      if !@consent_ui_version.nil? && @consent_ui_version < 1
+        invalid_properties.push('invalid value for "consent_ui_version", must be greater than or equal to 1.')
+      end
+
       if @deliveries.nil?
         invalid_properties.push('invalid value for "deliveries", deliveries cannot be nil.')
       end
@@ -449,7 +470,6 @@ module PlainRouter::OpenAPI
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
       return false if @id.nil?
-      return false if @signal_tracker_id.nil?
       return false if @event_name.nil?
       return false if @event_time.nil?
       return false if @action_source.nil?
@@ -462,13 +482,17 @@ module PlainRouter::OpenAPI
       return false if @consent_normalization_version.nil?
       return false if @policy_class.nil?
       return false if @traffic_class.nil?
+      return false if @workspace_id.nil?
       return false if @consent.nil?
-      return false if @user_data_hashed.nil?
       return false if @click_ids.nil?
       return false if @session.nil?
       return false if @value_data.nil?
       return false if @event_source.nil?
       return false if @payload_expired.nil?
+      consent_source_validator = EnumAttributeValidator.new('String', ["explicit", "tcf", "consent_mode", "plainrouter", "cmp:cookiebot", "cmp:usercentrics", "cmp:cookieyes", "cmp:consentstack", "cmp:iubenda"])
+      return false unless consent_source_validator.valid?(@consent_source)
+      return false if !@consent_ui_version.nil? && @consent_ui_version > 999999
+      return false if !@consent_ui_version.nil? && @consent_ui_version < 1
       return false if @deliveries.nil?
       true
     end
@@ -481,16 +505,6 @@ module PlainRouter::OpenAPI
       end
 
       @id = id
-    end
-
-    # Custom attribute writer method with validation
-    # @param [Object] signal_tracker_id Value to be assigned
-    def signal_tracker_id=(signal_tracker_id)
-      if signal_tracker_id.nil?
-        fail ArgumentError, 'signal_tracker_id cannot be nil'
-      end
-
-      @signal_tracker_id = signal_tracker_id
     end
 
     # Custom attribute writer method with validation
@@ -614,6 +628,16 @@ module PlainRouter::OpenAPI
     end
 
     # Custom attribute writer method with validation
+    # @param [Object] workspace_id Value to be assigned
+    def workspace_id=(workspace_id)
+      if workspace_id.nil?
+        fail ArgumentError, 'workspace_id cannot be nil'
+      end
+
+      @workspace_id = workspace_id
+    end
+
+    # Custom attribute writer method with validation
     # @param [Object] consent Value to be assigned
     def consent=(consent)
       if consent.nil?
@@ -621,16 +645,6 @@ module PlainRouter::OpenAPI
       end
 
       @consent = consent
-    end
-
-    # Custom attribute writer method with validation
-    # @param [Object] user_data_hashed Value to be assigned
-    def user_data_hashed=(user_data_hashed)
-      if user_data_hashed.nil?
-        fail ArgumentError, 'user_data_hashed cannot be nil'
-      end
-
-      @user_data_hashed = user_data_hashed
     end
 
     # Custom attribute writer method with validation
@@ -683,6 +697,34 @@ module PlainRouter::OpenAPI
       @payload_expired = payload_expired
     end
 
+    # Custom attribute writer method checking allowed values (enum).
+    # @param [Object] consent_source Object to be assigned
+    def consent_source=(consent_source)
+      validator = EnumAttributeValidator.new('String', ["explicit", "tcf", "consent_mode", "plainrouter", "cmp:cookiebot", "cmp:usercentrics", "cmp:cookieyes", "cmp:consentstack", "cmp:iubenda"])
+      unless validator.valid?(consent_source)
+        fail ArgumentError, "invalid value for \"consent_source\", must be one of #{validator.allowable_values}."
+      end
+      @consent_source = consent_source
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] consent_ui_version Value to be assigned
+    def consent_ui_version=(consent_ui_version)
+      if consent_ui_version.nil?
+        fail ArgumentError, 'consent_ui_version cannot be nil'
+      end
+
+      if consent_ui_version > 999999
+        fail ArgumentError, 'invalid value for "consent_ui_version", must be smaller than or equal to 999999.'
+      end
+
+      if consent_ui_version < 1
+        fail ArgumentError, 'invalid value for "consent_ui_version", must be greater than or equal to 1.'
+      end
+
+      @consent_ui_version = consent_ui_version
+    end
+
     # Custom attribute writer method with validation
     # @param [Object] deliveries Value to be assigned
     def deliveries=(deliveries)
@@ -699,7 +741,6 @@ module PlainRouter::OpenAPI
       return true if self.equal?(o)
       self.class == o.class &&
           id == o.id &&
-          signal_tracker_id == o.signal_tracker_id &&
           parent_event_id == o.parent_event_id &&
           event_name == o.event_name &&
           event_time == o.event_time &&
@@ -716,6 +757,7 @@ module PlainRouter::OpenAPI
           consent_normalization_version == o.consent_normalization_version &&
           policy_class == o.policy_class &&
           traffic_class == o.traffic_class &&
+          workspace_id == o.workspace_id &&
           consent == o.consent &&
           user_data_hashed == o.user_data_hashed &&
           click_ids == o.click_ids &&
@@ -723,6 +765,8 @@ module PlainRouter::OpenAPI
           value_data == o.value_data &&
           event_source == o.event_source &&
           payload_expired == o.payload_expired &&
+          consent_source == o.consent_source &&
+          consent_ui_version == o.consent_ui_version &&
           deliveries == o.deliveries
     end
 
@@ -735,7 +779,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, signal_tracker_id, parent_event_id, event_name, event_time, action_source, event_class, order_id, value_amount, value_currency, created_at, consent_basis, measurement_class, attribution_join, enforcement_scope, consent_normalization_version, policy_class, traffic_class, consent, user_data_hashed, click_ids, session, value_data, event_source, payload_expired, deliveries].hash
+      [id, parent_event_id, event_name, event_time, action_source, event_class, order_id, value_amount, value_currency, created_at, consent_basis, measurement_class, attribution_join, enforcement_scope, consent_normalization_version, policy_class, traffic_class, workspace_id, consent, user_data_hashed, click_ids, session, value_data, event_source, payload_expired, consent_source, consent_ui_version, deliveries].hash
     end
 
     # Builds the object from hash

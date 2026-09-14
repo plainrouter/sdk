@@ -27,8 +27,6 @@ from plainrouter.generated.models import (
     CreateEventBodyType0ConsentMode,
     CreateEventBodyType0Tcf,
     CreateEventResponse200,
-    DeleteUserDataBody,
-    DeleteUserDataBodyIdentifierType,
     ErrorMessage,
     Event,
     ReplayDeliveriesBody,
@@ -236,10 +234,10 @@ def test_delete_user_data_calls_generated_operation_with_identifier() -> None:
 
     response = delete_user_data.sync_detailed(
         client=client,
-        body=DeleteUserDataBody(
-            identifier_type=DeleteUserDataBodyIdentifierType.EMAIL,
-            identifier_hash="a" * 64,
-        ),
+        body={
+            "identifier_type": "email",
+            "identifier_hash": "a" * 64,
+        },
     )
 
     assert_error_response(response)
@@ -283,6 +281,7 @@ def test_event_deserializes_consent_decision_fields() -> None:
             "consent_normalization_version": "1",
             "policy_class": "global",
             "traffic_class": "valid",
+            "workspace_id": 1,
             "consent": "{}",
             "user_data_hashed": "{}",
             "click_ids": "{}",

@@ -1,4 +1,4 @@
-"""A client library for accessing PlainRouter Conversion API"""
+"""A client library for accessing Plainrouter Conversion API"""
 
 from .client import AuthenticatedClient, Client
 

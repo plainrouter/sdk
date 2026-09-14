@@ -29,13 +29,12 @@ from .generated.api.operations import (
 from .generated.models import (
     CreateEventBodyType0,
     CreateEventBodyType1,
-    DeleteUserDataBody,
-    DeleteUserDataBodyIdentifierType,
     ReplayDeliveriesBody,
     SendTestPurchaseBody,
     SetDestinationTestModeBody,
 )
 from .generated.types import Response
+from .validation import validate_create_event_body
 
 Operation = Callable[..., Response[Any]]
 ClientFactory = Callable[..., AuthenticatedClient]
@@ -387,7 +386,26 @@ def _execute_api(response: Response[Any], as_json: bool, dependencies: CliDepend
         raise ApiError(_format_api_error(data), status)
     if data is None:
         raise ApiError("API response did not contain data.", status)
+    _write_ingestion_warnings(data, status, dependencies.stderr)
     _write_response(data, as_json, dependencies.stdout)
+
+
+def _write_ingestion_warnings(data: Any, status: int, output: TextIO) -> None:
+    if status != 202 or not isinstance(data, dict):
+        return
+
+    warnings = data.get("warnings")
+    if not isinstance(warnings, list):
+        return
+
+    for warning in warnings:
+        if not isinstance(warning, dict):
+            continue
+        output.write(
+            f"Warning: {_printable_value(warning.get('code'))} "
+            f"({_printable_value(warning.get('field'))}): "
+            f"{_printable_value(warning.get('message'))}\n"
+        )
 
 
 def _api_client(dependencies: CliDependencies) -> AuthenticatedClient:
@@ -428,9 +446,10 @@ def _dispatch(arguments: argparse.Namespace, as_json: bool, dependencies: CliDep
 
     raw_event_body: _RawEventBody | None = None
     report_date: datetime.date | None = None
-    identifier_type: DeleteUserDataBodyIdentifierType | None = None
+    identifier_type: str | None = None
     if handler == "events_create":
         raw_event_body = _RawEventBody(_parse_json_object(arguments.data))
+        validate_create_event_body(raw_event_body.data)
     elif handler == "destinations_test_mode" and not arguments.on and not arguments.off:
         raise CliError("Choose exactly one of --on or --off.")
     elif handler == "reports_reconciliation":
@@ -439,10 +458,9 @@ def _dispatch(arguments: argparse.Namespace, as_json: bool, dependencies: CliDep
         except ValueError as error:
             raise CliError("--date must use YYYY-MM-DD format") from error
     elif handler == "user_data_delete":
-        try:
-            identifier_type = DeleteUserDataBodyIdentifierType(arguments.type)
-        except ValueError as error:
-            raise CliError("--type must be email, phone, or external_id") from error
+        if arguments.type not in {"email", "phone", "external_id"}:
+            raise CliError("--type must be email, phone, or external_id")
+        identifier_type = arguments.type
 
     if handler == "user_data_delete" and not arguments.yes:
         if not _confirm_action(f"Delete user data for identifier type {arguments.type}?", dependencies):
@@ -505,7 +523,7 @@ def _dispatch(arguments: argparse.Namespace, as_json: bool, dependencies: CliDep
         assert identifier_type is not None
         response = operations.delete_user_data(
             client=client,
-            body=DeleteUserDataBody(identifier_type=identifier_type, identifier_hash=arguments.hash),
+            body={"identifier_type": identifier_type, "identifier_hash": arguments.hash},
         )
     else:
         raise CliError(f"Unsupported command handler: {handler}")

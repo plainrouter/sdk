@@ -15,7 +15,8 @@ class EmqSnapshot:
     """
     Attributes:
         id (int):
-        signal_tracker_id (str):
+        workspace_id (int):
+        signal_tracker_id (str): Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
         destination_id (str):
         score (float):
         week_over_week_change (float | None):
@@ -27,6 +28,7 @@ class EmqSnapshot:
     """
 
     id: int
+    workspace_id: int
     signal_tracker_id: str
     destination_id: str
     score: float
@@ -40,6 +42,8 @@ class EmqSnapshot:
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
+
+        workspace_id = self.workspace_id
 
         signal_tracker_id = self.signal_tracker_id
 
@@ -78,6 +82,7 @@ class EmqSnapshot:
         field_dict.update(
             {
                 "id": id,
+                "workspace_id": workspace_id,
                 "signal_tracker_id": signal_tracker_id,
                 "destination_id": destination_id,
                 "score": score,
@@ -96,6 +101,8 @@ class EmqSnapshot:
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
         id = d.pop("id")
+
+        workspace_id = d.pop("workspace_id")
 
         signal_tracker_id = d.pop("signal_tracker_id")
 
@@ -161,6 +168,7 @@ class EmqSnapshot:
 
         emq_snapshot = cls(
             id=id,
+            workspace_id=workspace_id,
             signal_tracker_id=signal_tracker_id,
             destination_id=destination_id,
             score=score,

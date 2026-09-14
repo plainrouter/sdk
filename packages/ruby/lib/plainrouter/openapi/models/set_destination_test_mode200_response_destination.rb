@@ -1,7 +1,7 @@
 =begin
-#PlainRouter Conversion API
+#Plainrouter Conversion API
 
-#PlainRouter public Signals Conversion API.
+#Plainrouter public Signals Conversion API.
 
 The version of the OpenAPI document: 0.5.0
 
@@ -17,6 +17,9 @@ module PlainRouter::OpenAPI
   class SetDestinationTestMode200ResponseDestination < ApiModelBase
     attr_accessor :id
 
+    attr_accessor :workspace_id
+
+    # Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
     attr_accessor :signal_tracker_id
 
     attr_accessor :platform_ad_account_id
@@ -59,6 +62,7 @@ module PlainRouter::OpenAPI
     def self.attribute_map
       {
         :'id' => :'id',
+        :'workspace_id' => :'workspace_id',
         :'signal_tracker_id' => :'signal_tracker_id',
         :'platform_ad_account_id' => :'platform_ad_account_id',
         :'type' => :'type',
@@ -84,6 +88,7 @@ module PlainRouter::OpenAPI
     def self.openapi_types
       {
         :'id' => :'String',
+        :'workspace_id' => :'Integer',
         :'signal_tracker_id' => :'String',
         :'platform_ad_account_id' => :'Integer',
         :'type' => :'DestinationType',
@@ -125,6 +130,12 @@ module PlainRouter::OpenAPI
         self.id = attributes[:'id']
       else
         self.id = nil
+      end
+
+      if attributes.key?(:'workspace_id')
+        self.workspace_id = attributes[:'workspace_id']
+      else
+        self.workspace_id = nil
       end
 
       if attributes.key?(:'signal_tracker_id')
@@ -185,6 +196,10 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "id", id cannot be nil.')
       end
 
+      if @workspace_id.nil?
+        invalid_properties.push('invalid value for "workspace_id", workspace_id cannot be nil.')
+      end
+
       if @signal_tracker_id.nil?
         invalid_properties.push('invalid value for "signal_tracker_id", signal_tracker_id cannot be nil.')
       end
@@ -209,6 +224,7 @@ module PlainRouter::OpenAPI
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
       return false if @id.nil?
+      return false if @workspace_id.nil?
       return false if @signal_tracker_id.nil?
       return false if @type.nil?
       return false if @credential_source.nil?
@@ -224,6 +240,16 @@ module PlainRouter::OpenAPI
       end
 
       @id = id
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] workspace_id Value to be assigned
+    def workspace_id=(workspace_id)
+      if workspace_id.nil?
+        fail ArgumentError, 'workspace_id cannot be nil'
+      end
+
+      @workspace_id = workspace_id
     end
 
     # Custom attribute writer method with validation
@@ -272,6 +298,7 @@ module PlainRouter::OpenAPI
       return true if self.equal?(o)
       self.class == o.class &&
           id == o.id &&
+          workspace_id == o.workspace_id &&
           signal_tracker_id == o.signal_tracker_id &&
           platform_ad_account_id == o.platform_ad_account_id &&
           type == o.type &&
@@ -291,7 +318,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, signal_tracker_id, platform_ad_account_id, type, credential_source, config, status, created_at, updated_at].hash
+      [id, workspace_id, signal_tracker_id, platform_ad_account_id, type, credential_source, config, status, created_at, updated_at].hash
     end
 
     # Builds the object from hash

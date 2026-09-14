@@ -62,7 +62,8 @@ def sync_detailed(
 ) -> Response[ErrorMessage | VerifySignalIngestionResponse200 | VerifySignalIngestionResponse202]:
     """Verify server-side Signal ingestion
 
-     Writes one identity-free verification event for onboarding and returns the existing event on retry.
+     Records one idempotent, identity-free modeled event to confirm workspace-scoped ingestion. It does
+    not count as real arrival evidence or complete onboarding.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -87,7 +88,8 @@ def sync(
 ) -> ErrorMessage | VerifySignalIngestionResponse200 | VerifySignalIngestionResponse202 | None:
     """Verify server-side Signal ingestion
 
-     Writes one identity-free verification event for onboarding and returns the existing event on retry.
+     Records one idempotent, identity-free modeled event to confirm workspace-scoped ingestion. It does
+    not count as real arrival evidence or complete onboarding.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -108,7 +110,8 @@ async def asyncio_detailed(
 ) -> Response[ErrorMessage | VerifySignalIngestionResponse200 | VerifySignalIngestionResponse202]:
     """Verify server-side Signal ingestion
 
-     Writes one identity-free verification event for onboarding and returns the existing event on retry.
+     Records one idempotent, identity-free modeled event to confirm workspace-scoped ingestion. It does
+    not count as real arrival evidence or complete onboarding.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -131,7 +134,8 @@ async def asyncio(
 ) -> ErrorMessage | VerifySignalIngestionResponse200 | VerifySignalIngestionResponse202 | None:
     """Verify server-side Signal ingestion
 
-     Writes one identity-free verification event for onboarding and returns the existing event on retry.
+     Records one idempotent, identity-free modeled event to confirm workspace-scoped ingestion. It does
+    not count as real arrival evidence or complete onboarding.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

@@ -5,6 +5,9 @@ require "plainrouter"
 require "faraday/adapter/test"
 
 class PlainRouterClientTest < Minitest::Test
+  VALID_CAPTURED_AT = "2026-08-19T12:34:56.123456+02:00"
+  VALID_CAPTURED_AT_Z = "2026-08-19T10:34:56Z"
+
   def test_keeps_the_root_namespace_curated
     assert_equal(
       %i[CONTRACT_VERSION Client DEFAULT_BASE_URL OpenAPI VERSION],
@@ -31,7 +34,7 @@ class PlainRouterClientTest < Minitest::Test
       operation_names(client.operations)
     )
     assert_equal(
-      %i[create_sandbox_key get_sandbox validate_sandbox_event validate_sandbox_event_with_key],
+      %i[create_sandbox_key get_sandbox get_sandbox_key validate_sandbox_event validate_sandbox_event_with_key],
       operation_names(client.sandbox)
     )
   end
@@ -49,7 +52,7 @@ class PlainRouterClientTest < Minitest::Test
     assert_same api_client, client.sandbox.api_client
     assert_equal "http://localhost:4567/custom/v1", api_client.config.base_url
     assert_equal 12, api_client.config.timeout
-    assert_equal "Bearer tracker-secret", api_client.config.auth_settings.fetch("signalTrackerSecret").fetch(:value)
+    assert_equal "Bearer tracker-secret", api_client.config.auth_settings.fetch("workspaceSecret").fetch(:value)
     assert_equal "test-agent/1", api_client.default_headers.fetch("User-Agent")
   end
 
@@ -105,6 +108,182 @@ class PlainRouterClientTest < Minitest::Test
 
     assert_nil observed_authorization
     stubs.verify_stubbed_calls
+  end
+
+  def test_rejects_visitor_id_without_captured_at_before_making_a_call
+    called = false
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post("/api/v1/events") do
+        called = true
+        [202, { "Content-Type" => "application/json" }, '{"event_id":"unexpected","duplicate":false,"warnings":[]}']
+      end
+    end
+    client = stubbed_client(stubs, token: "tracker-secret")
+
+    error = assert_raises(ArgumentError) do
+      client.events.create_event(
+        "event_name" => "Purchase",
+        "consent_basis" => "consent",
+        "visitor_id" => "visitor-123"
+      )
+    end
+
+    assert_match(/consent\.captured_at/i, error.message)
+    assert_match(/required|missing/i, error.message)
+    refute called
+  end
+
+  def test_rejects_user_data_with_a_space_separator_before_making_a_call
+    called = false
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post("/api/v1/events") do
+        called = true
+        [202, { "Content-Type" => "application/json" }, '{"event_id":"unexpected","duplicate":false,"warnings":[]}']
+      end
+    end
+    client = stubbed_client(stubs, token: "tracker-secret")
+
+    error = assert_raises(ArgumentError) do
+      client.events.create_event(
+        "event_name" => "Purchase",
+        "consent_basis" => "consent",
+        "user_data" => { "em" => "hashed-email" },
+        "consent" => { "captured_at" => "2026-08-19 12:34:56+02:00" }
+      )
+    end
+
+    assert_match(/consent\.captured_at/i, error.message)
+    assert_match(/invalid|format|ISO/i, error.message)
+    refute called
+  end
+
+  def test_sends_a_valid_captured_at_byte_identical_to_input
+    observed_body = nil
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post("/api/v1/events") do |environment|
+        observed_body = environment.body
+        [202, { "Content-Type" => "application/json" }, '{"event_id":"event-123","duplicate":false,"warnings":[]}']
+      end
+    end
+    client = stubbed_client(stubs, token: "tracker-secret")
+
+    client.events.create_event(
+      "event_name" => "Purchase",
+      "consent_basis" => "consent",
+      "visitor_id" => "visitor-123",
+      "consent" => { "captured_at" => VALID_CAPTURED_AT }
+    )
+
+    assert_includes observed_body, "\"captured_at\":\"#{VALID_CAPTURED_AT}\""
+    stubs.verify_stubbed_calls
+  end
+
+  def test_sends_events_without_identity_when_captured_at_is_absent
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post("/api/v1/events") do
+        [202, { "Content-Type" => "application/json" }, '{"event_id":"event-123","duplicate":false,"warnings":[]}']
+      end
+    end
+    client = stubbed_client(stubs, token: "tracker-secret")
+
+    client.events.create_event("event_name" => "Purchase", "consent_basis" => "consent")
+
+    stubs.verify_stubbed_calls
+  end
+
+  def test_treats_explicit_null_identity_fields_as_absent
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post("/api/v1/events") do
+        [202, { "Content-Type" => "application/json" }, '{"event_id":"event-123","duplicate":false,"warnings":[]}']
+      end
+    end
+    client = stubbed_client(stubs, token: "tracker-secret")
+
+    client.events.create_event(
+      "event_name" => "Purchase",
+      "consent_basis" => "consent",
+      "visitor_id" => nil,
+      "user_data" => nil
+    )
+
+    stubs.verify_stubbed_calls
+  end
+
+  def test_returns_a_typed_202_warning_without_throwing
+    warning = {
+      "code" => "consent_captured_at_invalid",
+      "field" => "consent.captured_at",
+      "message" => "Consent capture time must be ISO-8601."
+    }
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post("/api/v1/events") do
+        [202, { "Content-Type" => "application/json" },
+         { "event_id" => "event-warning", "duplicate" => false, "warnings" => [warning] }.to_json]
+      end
+    end
+    client = stubbed_client(stubs, token: "tracker-secret")
+
+    response = client.events.create_event("event_name" => "Purchase", "consent_basis" => "consent")
+
+    assert_instance_of PlainRouter::OpenAPI::CreateEvent202Response, response
+    assert_equal "event-warning", response.event_id
+    assert_equal false, response.duplicate
+    assert_equal 1, response.warnings.length
+    parsed_warning = response.warnings.first
+    assert_instance_of PlainRouter::OpenAPI::CreateEvent202ResponseWarningsInner, parsed_warning
+    assert_equal PlainRouter::OpenAPI::IngestionWarningCode::CONSENT_CAPTURED_AT_INVALID, parsed_warning.code
+    assert_equal "consent.captured_at", parsed_warning.field
+    assert_equal warning["message"], parsed_warning.message
+    stubs.verify_stubbed_calls
+  end
+
+  def test_returns_a_200_duplicate_without_a_warnings_field
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post("/api/v1/events") do
+        [200, { "Content-Type" => "application/json" }, '{"event_id":"event-duplicate","duplicate":true}']
+      end
+    end
+    client = stubbed_client(stubs, token: "tracker-secret")
+
+    response = client.events.create_event("event_name" => "Purchase", "consent_basis" => "consent")
+
+    assert_instance_of PlainRouter::OpenAPI::CreateEvent200Response, response
+    assert_equal "event-duplicate", response.event_id
+    assert_equal true, response.duplicate
+    refute response.respond_to?(:warnings)
+    stubs.verify_stubbed_calls
+  end
+
+  def test_matches_server_captured_at_fixture_parity
+    [
+      [VALID_CAPTURED_AT, true],
+      [VALID_CAPTURED_AT_Z, true],
+      ["2026-08-19 12:34:56+02:00", false],
+      ["2026-08-19T12:34:56", false],
+      ["", false],
+      [nil, false]
+    ].each do |captured_at, valid|
+      stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+        stub.post("/api/v1/events") do
+          [202, { "Content-Type" => "application/json" }, '{"event_id":"event-123","duplicate":false,"warnings":[]}']
+        end
+      end
+      client = stubbed_client(stubs, token: "tracker-secret")
+      request = {
+        "event_name" => "Purchase",
+        "consent_basis" => "consent",
+        "visitor_id" => "visitor-123",
+        "consent" => { "captured_at" => captured_at }
+      }
+
+      if valid
+        client.events.create_event(request)
+        stubs.verify_stubbed_calls
+      else
+        error = assert_raises(ArgumentError) { client.events.create_event(request) }
+        assert_match(/consent\.captured_at/i, error.message)
+      end
+    end
   end
 
   private

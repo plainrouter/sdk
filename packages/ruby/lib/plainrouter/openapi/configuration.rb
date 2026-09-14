@@ -1,7 +1,7 @@
 =begin
-#PlainRouter Conversion API
+#Plainrouter Conversion API
 
-#PlainRouter public Signals Conversion API.
+#Plainrouter public Signals Conversion API.
 
 The version of the OpenAPI document: 0.5.0
 
@@ -248,7 +248,7 @@ module PlainRouter::OpenAPI
     # Returns Auth Settings hash for api client.
     def auth_settings
       {
-        'signalTrackerSecret' =>
+        'workspaceSecret' =>
           {
             type: 'bearer',
             in: 'header',

@@ -25,7 +25,8 @@ class GetEventResponse200EventDeliveriesItem:
     """
     Attributes:
         id (int):
-        signal_tracker_id (str):
+        workspace_id (int):
+        signal_tracker_id (str): Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
         event_id (str):
         destination_id (None | str):
         status (DeliveryStatus):
@@ -40,6 +41,7 @@ class GetEventResponse200EventDeliveriesItem:
     """
 
     id: int
+    workspace_id: int
     signal_tracker_id: str
     event_id: str
     destination_id: None | str
@@ -63,6 +65,8 @@ class GetEventResponse200EventDeliveriesItem:
         )
 
         id = self.id
+
+        workspace_id = self.workspace_id
 
         signal_tracker_id = self.signal_tracker_id
 
@@ -111,6 +115,7 @@ class GetEventResponse200EventDeliveriesItem:
         field_dict.update(
             {
                 "id": id,
+                "workspace_id": workspace_id,
                 "signal_tracker_id": signal_tracker_id,
                 "event_id": event_id,
                 "destination_id": destination_id,
@@ -139,6 +144,8 @@ class GetEventResponse200EventDeliveriesItem:
 
         d = dict(src_dict)
         id = d.pop("id")
+
+        workspace_id = d.pop("workspace_id")
 
         signal_tracker_id = d.pop("signal_tracker_id")
 
@@ -230,6 +237,7 @@ class GetEventResponse200EventDeliveriesItem:
 
         get_event_response_200_event_deliveries_item = cls(
             id=id,
+            workspace_id=workspace_id,
             signal_tracker_id=signal_tracker_id,
             event_id=event_id,
             destination_id=destination_id,

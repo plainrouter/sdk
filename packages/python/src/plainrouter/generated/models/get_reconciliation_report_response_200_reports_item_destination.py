@@ -24,7 +24,8 @@ class GetReconciliationReportResponse200ReportsItemDestination:
     """
     Attributes:
         id (str):
-        signal_tracker_id (str):
+        workspace_id (int):
+        signal_tracker_id (str): Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
         platform_ad_account_id (int | None):
         type_ (DestinationType):
         credential_source (DestinationCredentialSource):
@@ -35,6 +36,7 @@ class GetReconciliationReportResponse200ReportsItemDestination:
     """
 
     id: str
+    workspace_id: int
     signal_tracker_id: str
     platform_ad_account_id: int | None
     type_: DestinationType
@@ -51,6 +53,8 @@ class GetReconciliationReportResponse200ReportsItemDestination:
         )
 
         id = self.id
+
+        workspace_id = self.workspace_id
 
         signal_tracker_id = self.signal_tracker_id
 
@@ -83,6 +87,7 @@ class GetReconciliationReportResponse200ReportsItemDestination:
         field_dict.update(
             {
                 "id": id,
+                "workspace_id": workspace_id,
                 "signal_tracker_id": signal_tracker_id,
                 "platform_ad_account_id": platform_ad_account_id,
                 "type": type_,
@@ -104,6 +109,8 @@ class GetReconciliationReportResponse200ReportsItemDestination:
 
         d = dict(src_dict)
         id = d.pop("id")
+
+        workspace_id = d.pop("workspace_id")
 
         signal_tracker_id = d.pop("signal_tracker_id")
 
@@ -161,6 +168,7 @@ class GetReconciliationReportResponse200ReportsItemDestination:
 
         get_reconciliation_report_response_200_reports_item_destination = cls(
             id=id,
+            workspace_id=workspace_id,
             signal_tracker_id=signal_tracker_id,
             platform_ad_account_id=platform_ad_account_id,
             type_=type_,
