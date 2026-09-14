@@ -32,7 +32,8 @@ class GetEventResponse200LineageChildrenItem:
     """
     Attributes:
         id (str):
-        signal_tracker_id (str):
+        workspace_id (int):
+        signal_tracker_id (str): Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
         parent_event_id (None | str):
         event_name (str):
         event_time (str):
@@ -48,7 +49,8 @@ class GetEventResponse200LineageChildrenItem:
         enforcement_scope (str):
         consent_normalization_version (str):
         consent (GetEventResponse200LineageChildrenItemConsentType0 | list[Any] | None):
-        user_data_hashed (GetEventResponse200LineageChildrenItemUserDataHashedType0 | list[Any] | None):
+        user_data_hashed (GetEventResponse200LineageChildrenItemUserDataHashedType0 | list[Any] | None): Deprecated
+            compatibility field. The value is always null; delivery identity is never returned.
         click_ids (GetEventResponse200LineageChildrenItemClickIdsType0 | list[Any] | None):
         session (GetEventResponse200LineageChildrenItemSessionType0 | list[Any] | None):
         value_data (GetEventResponse200LineageChildrenItemValueDataType0 | list[Any] | None):
@@ -57,6 +59,7 @@ class GetEventResponse200LineageChildrenItem:
     """
 
     id: str
+    workspace_id: int
     signal_tracker_id: str
     parent_event_id: None | str
     event_name: str
@@ -99,6 +102,8 @@ class GetEventResponse200LineageChildrenItem:
         )
 
         id = self.id
+
+        workspace_id = self.workspace_id
 
         signal_tracker_id = self.signal_tracker_id
 
@@ -189,6 +194,7 @@ class GetEventResponse200LineageChildrenItem:
         field_dict.update(
             {
                 "id": id,
+                "workspace_id": workspace_id,
                 "signal_tracker_id": signal_tracker_id,
                 "parent_event_id": parent_event_id,
                 "event_name": event_name,
@@ -236,6 +242,8 @@ class GetEventResponse200LineageChildrenItem:
 
         d = dict(src_dict)
         id = d.pop("id")
+
+        workspace_id = d.pop("workspace_id")
 
         signal_tracker_id = d.pop("signal_tracker_id")
 
@@ -415,6 +423,7 @@ class GetEventResponse200LineageChildrenItem:
 
         get_event_response_200_lineage_children_item = cls(
             id=id,
+            workspace_id=workspace_id,
             signal_tracker_id=signal_tracker_id,
             parent_event_id=parent_event_id,
             event_name=event_name,

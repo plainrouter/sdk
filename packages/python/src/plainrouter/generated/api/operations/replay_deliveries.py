@@ -74,7 +74,8 @@ def sync_detailed(
 ) -> Response[ErrorMessage | ReplayDeliveriesResponse202 | ValidationError]:
     """Replay eligible deliveries
 
-     Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+     Evaluates retained failed deliveries, queues the eligible subset for another delivery attempt, and
+    reports which records were accepted or rejected.
 
     Args:
         body (ReplayDeliveriesBody | Unset):
@@ -105,7 +106,8 @@ def sync(
 ) -> ErrorMessage | ReplayDeliveriesResponse202 | ValidationError | None:
     """Replay eligible deliveries
 
-     Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+     Evaluates retained failed deliveries, queues the eligible subset for another delivery attempt, and
+    reports which records were accepted or rejected.
 
     Args:
         body (ReplayDeliveriesBody | Unset):
@@ -131,7 +133,8 @@ async def asyncio_detailed(
 ) -> Response[ErrorMessage | ReplayDeliveriesResponse202 | ValidationError]:
     """Replay eligible deliveries
 
-     Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+     Evaluates retained failed deliveries, queues the eligible subset for another delivery attempt, and
+    reports which records were accepted or rejected.
 
     Args:
         body (ReplayDeliveriesBody | Unset):
@@ -160,7 +163,8 @@ async def asyncio(
 ) -> ErrorMessage | ReplayDeliveriesResponse202 | ValidationError | None:
     """Replay eligible deliveries
 
-     Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+     Evaluates retained failed deliveries, queues the eligible subset for another delivery attempt, and
+    reports which records were accepted or rejected.
 
     Args:
         body (ReplayDeliveriesBody | Unset):

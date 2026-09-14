@@ -5,7 +5,6 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.delete_user_data_body import DeleteUserDataBody
 from ...models.delete_user_data_response_200 import DeleteUserDataResponse200
 from ...models.error_message import ErrorMessage
 from ...models.validation_error import ValidationError
@@ -14,7 +13,7 @@ from ...types import Response
 
 def _get_kwargs(
     *,
-    body: DeleteUserDataBody,
+    body: Any,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -23,7 +22,7 @@ def _get_kwargs(
         "url": "/user-data",
     }
 
-    _kwargs["json"] = body.to_dict()
+    _kwargs["json"] = body
 
     headers["Content-Type"] = "application/json"
 
@@ -69,14 +68,15 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
-    body: DeleteUserDataBody,
+    body: Any,
 ) -> Response[DeleteUserDataResponse200 | ErrorMessage | ValidationError]:
-    """Delete user data by hashed identifier
+    """Delete user data by verified identifier
 
-     Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+     Idempotently removes retained user data using a verified raw identifier or legacy SHA-256 digest,
+    scoped and keyed to the authenticated workspace.
 
     Args:
-        body (DeleteUserDataBody):
+        body (Any):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -100,14 +100,15 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient | Client,
-    body: DeleteUserDataBody,
+    body: Any,
 ) -> DeleteUserDataResponse200 | ErrorMessage | ValidationError | None:
-    """Delete user data by hashed identifier
+    """Delete user data by verified identifier
 
-     Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+     Idempotently removes retained user data using a verified raw identifier or legacy SHA-256 digest,
+    scoped and keyed to the authenticated workspace.
 
     Args:
-        body (DeleteUserDataBody):
+        body (Any):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -126,14 +127,15 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
-    body: DeleteUserDataBody,
+    body: Any,
 ) -> Response[DeleteUserDataResponse200 | ErrorMessage | ValidationError]:
-    """Delete user data by hashed identifier
+    """Delete user data by verified identifier
 
-     Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+     Idempotently removes retained user data using a verified raw identifier or legacy SHA-256 digest,
+    scoped and keyed to the authenticated workspace.
 
     Args:
-        body (DeleteUserDataBody):
+        body (Any):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -155,14 +157,15 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient | Client,
-    body: DeleteUserDataBody,
+    body: Any,
 ) -> DeleteUserDataResponse200 | ErrorMessage | ValidationError | None:
-    """Delete user data by hashed identifier
+    """Delete user data by verified identifier
 
-     Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+     Idempotently removes retained user data using a verified raw identifier or legacy SHA-256 digest,
+    scoped and keyed to the authenticated workspace.
 
     Args:
-        body (DeleteUserDataBody):
+        body (Any):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

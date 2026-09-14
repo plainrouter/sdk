@@ -2,13 +2,19 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.event_consent_source import EventConsentSource
 from ..models.jurisdiction_policy_class import JurisdictionPolicyClass
 from ..models.traffic_class import TrafficClass
+from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.event_user_data_hashed_type_0 import EventUserDataHashedType0
+
 
 T = TypeVar("T", bound="Event")
 
@@ -18,7 +24,6 @@ class Event:
     """
     Attributes:
         id (str):
-        signal_tracker_id (str):
         parent_event_id (None | str):
         event_name (str):
         event_time (datetime.datetime):
@@ -38,18 +43,21 @@ class Event:
             and is never a ledger value.
         traffic_class (TrafficClass): The only persisted traffic verdicts for passive document arrivals. Request facts
             and classifier reasons never cross the stripping boundary.
+        workspace_id (int):
         consent (str):
-        user_data_hashed (str):
+        user_data_hashed (EventUserDataHashedType0 | list[Any] | None): Deprecated compatibility field. The value is
+            always null; delivery identity is never returned.
         click_ids (str):
         session (str):
         value_data (str):
         event_source (str):
         payload_expired (bool):
         deliveries (list[Any]):
+        consent_source (EventConsentSource | Unset):
+        consent_ui_version (int | Unset):
     """
 
     id: str
-    signal_tracker_id: str
     parent_event_id: None | str
     event_name: str
     event_time: datetime.datetime
@@ -66,20 +74,23 @@ class Event:
     consent_normalization_version: str
     policy_class: JurisdictionPolicyClass
     traffic_class: TrafficClass
+    workspace_id: int
     consent: str
-    user_data_hashed: str
+    user_data_hashed: EventUserDataHashedType0 | list[Any] | None
     click_ids: str
     session: str
     value_data: str
     event_source: str
     payload_expired: bool
     deliveries: list[Any]
+    consent_source: EventConsentSource | Unset = UNSET
+    consent_ui_version: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        id = self.id
+        from ..models.event_user_data_hashed_type_0 import EventUserDataHashedType0
 
-        signal_tracker_id = self.signal_tracker_id
+        id = self.id
 
         parent_event_id: None | str
         parent_event_id = self.parent_event_id
@@ -117,9 +128,18 @@ class Event:
 
         traffic_class = self.traffic_class.value
 
+        workspace_id = self.workspace_id
+
         consent = self.consent
 
-        user_data_hashed = self.user_data_hashed
+        user_data_hashed: dict[str, Any] | list[Any] | None
+        if isinstance(self.user_data_hashed, EventUserDataHashedType0):
+            user_data_hashed = self.user_data_hashed.to_dict()
+        elif isinstance(self.user_data_hashed, list):
+            user_data_hashed = self.user_data_hashed
+
+        else:
+            user_data_hashed = self.user_data_hashed
 
         click_ids = self.click_ids
 
@@ -133,12 +153,17 @@ class Event:
 
         deliveries = self.deliveries
 
+        consent_source: str | Unset = UNSET
+        if not isinstance(self.consent_source, Unset):
+            consent_source = self.consent_source.value
+
+        consent_ui_version = self.consent_ui_version
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "id": id,
-                "signal_tracker_id": signal_tracker_id,
                 "parent_event_id": parent_event_id,
                 "event_name": event_name,
                 "event_time": event_time,
@@ -155,6 +180,7 @@ class Event:
                 "consent_normalization_version": consent_normalization_version,
                 "policy_class": policy_class,
                 "traffic_class": traffic_class,
+                "workspace_id": workspace_id,
                 "consent": consent,
                 "user_data_hashed": user_data_hashed,
                 "click_ids": click_ids,
@@ -165,15 +191,19 @@ class Event:
                 "deliveries": deliveries,
             }
         )
+        if consent_source is not UNSET:
+            field_dict["consent_source"] = consent_source
+        if consent_ui_version is not UNSET:
+            field_dict["consent_ui_version"] = consent_ui_version
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.event_user_data_hashed_type_0 import EventUserDataHashedType0
+
         d = dict(src_dict)
         id = d.pop("id")
-
-        signal_tracker_id = d.pop("signal_tracker_id")
 
         def _parse_parent_event_id(data: object) -> None | str:
             if data is None:
@@ -227,9 +257,32 @@ class Event:
 
         traffic_class = TrafficClass(d.pop("traffic_class"))
 
+        workspace_id = d.pop("workspace_id")
+
         consent = d.pop("consent")
 
-        user_data_hashed = d.pop("user_data_hashed")
+        def _parse_user_data_hashed(data: object) -> EventUserDataHashedType0 | list[Any] | None:
+            if data is None:
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                user_data_hashed_type_0 = EventUserDataHashedType0.from_dict(data)
+
+                return user_data_hashed_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                user_data_hashed_type_1 = cast(list[Any], data)
+
+                return user_data_hashed_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(EventUserDataHashedType0 | list[Any] | None, data)
+
+        user_data_hashed = _parse_user_data_hashed(d.pop("user_data_hashed"))
 
         click_ids = d.pop("click_ids")
 
@@ -243,9 +296,17 @@ class Event:
 
         deliveries = cast(list[Any], d.pop("deliveries"))
 
+        _consent_source = d.pop("consent_source", UNSET)
+        consent_source: EventConsentSource | Unset
+        if isinstance(_consent_source, Unset):
+            consent_source = UNSET
+        else:
+            consent_source = EventConsentSource(_consent_source)
+
+        consent_ui_version = d.pop("consent_ui_version", UNSET)
+
         event = cls(
             id=id,
-            signal_tracker_id=signal_tracker_id,
             parent_event_id=parent_event_id,
             event_name=event_name,
             event_time=event_time,
@@ -262,6 +323,7 @@ class Event:
             consent_normalization_version=consent_normalization_version,
             policy_class=policy_class,
             traffic_class=traffic_class,
+            workspace_id=workspace_id,
             consent=consent,
             user_data_hashed=user_data_hashed,
             click_ids=click_ids,
@@ -270,6 +332,8 @@ class Event:
             event_source=event_source,
             payload_expired=payload_expired,
             deliveries=deliveries,
+            consent_source=consent_source,
+            consent_ui_version=consent_ui_version,
         )
 
         event.additional_properties = d

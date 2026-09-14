@@ -45,7 +45,6 @@ describe('generated response schemas', () => {
   it('deserializes the new event decision fields', () => {
     const event = {
       id: 'event-123',
-      signal_tracker_id: 'tracker-123',
       parent_event_id: null,
       event_name: 'Purchase',
       event_time: '2026-08-19T00:00:00Z',
@@ -62,8 +61,9 @@ describe('generated response schemas', () => {
       policy_class: 'global',
       traffic_class: 'valid',
       consent_normalization_version: '1',
+      workspace_id: 1,
       consent: '{}',
-      user_data_hashed: '{}',
+      user_data_hashed: {},
       click_ids: '{}',
       session: '{}',
       value_data: '{}',

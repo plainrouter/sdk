@@ -35,7 +35,8 @@ class ListEventsByCursorResponse200EventsDataItem:
     """
     Attributes:
         id (str):
-        signal_tracker_id (str):
+        workspace_id (int):
+        signal_tracker_id (str): Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
         parent_event_id (None | str):
         event_name (str):
         event_time (str):
@@ -51,7 +52,8 @@ class ListEventsByCursorResponse200EventsDataItem:
         enforcement_scope (str):
         consent_normalization_version (str):
         consent (list[Any] | ListEventsByCursorResponse200EventsDataItemConsentType0 | None):
-        user_data_hashed (list[Any] | ListEventsByCursorResponse200EventsDataItemUserDataHashedType0 | None):
+        user_data_hashed (list[Any] | ListEventsByCursorResponse200EventsDataItemUserDataHashedType0 | None): Deprecated
+            compatibility field. The value is always null; delivery identity is never returned.
         click_ids (list[Any] | ListEventsByCursorResponse200EventsDataItemClickIdsType0 | None):
         session (list[Any] | ListEventsByCursorResponse200EventsDataItemSessionType0 | None):
         value_data (list[Any] | ListEventsByCursorResponse200EventsDataItemValueDataType0 | None):
@@ -61,6 +63,7 @@ class ListEventsByCursorResponse200EventsDataItem:
     """
 
     id: str
+    workspace_id: int
     signal_tracker_id: str
     parent_event_id: None | str
     event_name: str
@@ -104,6 +107,8 @@ class ListEventsByCursorResponse200EventsDataItem:
         )
 
         id = self.id
+
+        workspace_id = self.workspace_id
 
         signal_tracker_id = self.signal_tracker_id
 
@@ -199,6 +204,7 @@ class ListEventsByCursorResponse200EventsDataItem:
         field_dict.update(
             {
                 "id": id,
+                "workspace_id": workspace_id,
                 "signal_tracker_id": signal_tracker_id,
                 "parent_event_id": parent_event_id,
                 "event_name": event_name,
@@ -250,6 +256,8 @@ class ListEventsByCursorResponse200EventsDataItem:
 
         d = dict(src_dict)
         id = d.pop("id")
+
+        workspace_id = d.pop("workspace_id")
 
         signal_tracker_id = d.pop("signal_tracker_id")
 
@@ -440,6 +448,7 @@ class ListEventsByCursorResponse200EventsDataItem:
 
         list_events_by_cursor_response_200_events_data_item = cls(
             id=id,
+            workspace_id=workspace_id,
             signal_tracker_id=signal_tracker_id,
             parent_event_id=parent_event_id,
             event_name=event_name,

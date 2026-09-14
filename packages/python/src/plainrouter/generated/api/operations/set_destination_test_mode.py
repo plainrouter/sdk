@@ -83,8 +83,8 @@ def sync_detailed(
 ) -> Response[ErrorMessage | SetDestinationTestModeResponse200 | ValidationError]:
     """Configure destination test mode
 
-     Enables or disables Meta Test Events mode for a destination owned by the authenticated Signal
-    tracker.
+     Enables or disables Meta Test Events mode for a destination owned by the authenticated Signals
+    workspace.
 
     Args:
         destination (str):
@@ -118,8 +118,8 @@ def sync(
 ) -> ErrorMessage | SetDestinationTestModeResponse200 | ValidationError | None:
     """Configure destination test mode
 
-     Enables or disables Meta Test Events mode for a destination owned by the authenticated Signal
-    tracker.
+     Enables or disables Meta Test Events mode for a destination owned by the authenticated Signals
+    workspace.
 
     Args:
         destination (str):
@@ -148,8 +148,8 @@ async def asyncio_detailed(
 ) -> Response[ErrorMessage | SetDestinationTestModeResponse200 | ValidationError]:
     """Configure destination test mode
 
-     Enables or disables Meta Test Events mode for a destination owned by the authenticated Signal
-    tracker.
+     Enables or disables Meta Test Events mode for a destination owned by the authenticated Signals
+    workspace.
 
     Args:
         destination (str):
@@ -181,8 +181,8 @@ async def asyncio(
 ) -> ErrorMessage | SetDestinationTestModeResponse200 | ValidationError | None:
     """Configure destination test mode
 
-     Enables or disables Meta Test Events mode for a destination owned by the authenticated Signal
-    tracker.
+     Enables or disables Meta Test Events mode for a destination owned by the authenticated Signals
+    workspace.
 
     Args:
         destination (str):

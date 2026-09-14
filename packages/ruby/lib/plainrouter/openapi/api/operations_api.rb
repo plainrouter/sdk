@@ -1,7 +1,7 @@
 =begin
-#PlainRouter Conversion API
+#Plainrouter Conversion API
 
-#PlainRouter public Signals Conversion API.
+#Plainrouter public Signals Conversion API.
 
 The version of the OpenAPI document: 0.5.0
 
@@ -19,8 +19,8 @@ module PlainRouter::OpenAPI
     def initialize(api_client = ApiClient.default)
       @api_client = api_client
     end
-    # Delete user data by hashed identifier
-    # Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+    # Delete user data by verified identifier
+    # Idempotently removes retained user data using a verified raw identifier or legacy SHA-256 digest, scoped and keyed to the authenticated workspace.
     # @param delete_user_data_request [DeleteUserDataRequest]
     # @param [Hash] opts the optional parameters
     # @return [DeleteUserData200Response]
@@ -29,18 +29,14 @@ module PlainRouter::OpenAPI
       data
     end
 
-    # Delete user data by hashed identifier
-    # Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+    # Delete user data by verified identifier
+    # Idempotently removes retained user data using a verified raw identifier or legacy SHA-256 digest, scoped and keyed to the authenticated workspace.
     # @param delete_user_data_request [DeleteUserDataRequest]
     # @param [Hash] opts the optional parameters
     # @return [Array<(DeleteUserData200Response, Integer, Hash)>] DeleteUserData200Response data, response status code and response headers
     def delete_user_data_with_http_info(delete_user_data_request, opts = {})
       if @api_client.config.debugging
         @api_client.config.logger.debug 'Calling API: OperationsApi.delete_user_data ...'
-      end
-      # verify the required parameter 'delete_user_data_request' is set
-      if @api_client.config.client_side_validation && delete_user_data_request.nil?
-        fail ArgumentError, "Missing the required parameter 'delete_user_data_request' when calling OperationsApi.delete_user_data"
       end
       # resource path
       local_var_path = '/user-data'
@@ -68,7 +64,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'DeleteUserData200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"OperationsApi.delete_user_data",
@@ -88,7 +84,7 @@ module PlainRouter::OpenAPI
     end
 
     # Get Event Match Quality history
-    # Returns recent Meta Event Match Quality snapshots for the authenticated Signal tracker.
+    # Returns recent Meta Event Match Quality snapshots for the authenticated Signals workspace so callers can inspect measured quality changes over time.
     # @param [Hash] opts the optional parameters
     # @return [GetEmqReport200Response]
     def get_emq_report(opts = {})
@@ -97,7 +93,7 @@ module PlainRouter::OpenAPI
     end
 
     # Get Event Match Quality history
-    # Returns recent Meta Event Match Quality snapshots for the authenticated Signal tracker.
+    # Returns recent Meta Event Match Quality snapshots for the authenticated Signals workspace so callers can inspect measured quality changes over time.
     # @param [Hash] opts the optional parameters
     # @return [Array<(GetEmqReport200Response, Integer, Hash)>] GetEmqReport200Response data, response status code and response headers
     def get_emq_report_with_http_info(opts = {})
@@ -125,7 +121,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'GetEmqReport200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"OperationsApi.get_emq_report",
@@ -145,7 +141,7 @@ module PlainRouter::OpenAPI
     end
 
     # Get a reconciliation report
-    # Returns stored delivery-versus-platform reconciliation results for one calendar date.
+    # Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can compare accepted gateway and provider outcomes.
     # @param date [Date]
     # @param [Hash] opts the optional parameters
     # @return [GetReconciliationReport200Response]
@@ -155,7 +151,7 @@ module PlainRouter::OpenAPI
     end
 
     # Get a reconciliation report
-    # Returns stored delivery-versus-platform reconciliation results for one calendar date.
+    # Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can compare accepted gateway and provider outcomes.
     # @param date [Date]
     # @param [Hash] opts the optional parameters
     # @return [Array<(GetReconciliationReport200Response, Integer, Hash)>] GetReconciliationReport200Response data, response status code and response headers
@@ -189,7 +185,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'GetReconciliationReport200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"OperationsApi.get_reconciliation_report",
@@ -209,7 +205,7 @@ module PlainRouter::OpenAPI
     end
 
     # List recent events
-    # Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+    # Returns retained customer-readable events with stable pagination and aggregate destination-delivery acceptance metrics for the workspace.
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :per_page Events per page, capped at 100. (default to 25)
     # @return [ListEvents200Response]
@@ -219,7 +215,7 @@ module PlainRouter::OpenAPI
     end
 
     # List recent events
-    # Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+    # Returns retained customer-readable events with stable pagination and aggregate destination-delivery acceptance metrics for the workspace.
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :per_page Events per page, capped at 100. (default to 25)
     # @return [Array<(ListEvents200Response, Integer, Hash)>] ListEvents200Response data, response status code and response headers
@@ -249,7 +245,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'ListEvents200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"OperationsApi.list_events",
@@ -312,7 +308,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'ListEventsByCursor200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"OperationsApi.list_events_by_cursor",
@@ -332,7 +328,7 @@ module PlainRouter::OpenAPI
     end
 
     # Replay eligible deliveries
-    # Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+    # Evaluates retained failed deliveries, queues the eligible subset for another delivery attempt, and reports which records were accepted or rejected.
     # @param [Hash] opts the optional parameters
     # @option opts [ReplayDeliveriesRequest] :replay_deliveries_request
     # @return [ReplayDeliveries202Response]
@@ -342,7 +338,7 @@ module PlainRouter::OpenAPI
     end
 
     # Replay eligible deliveries
-    # Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+    # Evaluates retained failed deliveries, queues the eligible subset for another delivery attempt, and reports which records were accepted or rejected.
     # @param [Hash] opts the optional parameters
     # @option opts [ReplayDeliveriesRequest] :replay_deliveries_request
     # @return [Array<(ReplayDeliveries202Response, Integer, Hash)>] ReplayDeliveries202Response data, response status code and response headers
@@ -376,7 +372,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'ReplayDeliveries202Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"OperationsApi.replay_deliveries",
@@ -446,7 +442,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'SendTestPurchase200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"OperationsApi.send_test_purchase",
@@ -466,7 +462,7 @@ module PlainRouter::OpenAPI
     end
 
     # Configure destination test mode
-    # Enables or disables Meta Test Events mode for a destination owned by the authenticated Signal tracker.
+    # Enables or disables Meta Test Events mode for a destination owned by the authenticated Signals workspace.
     # @param destination [String] The destination ID
     # @param set_destination_test_mode_request [SetDestinationTestModeRequest]
     # @param [Hash] opts the optional parameters
@@ -477,7 +473,7 @@ module PlainRouter::OpenAPI
     end
 
     # Configure destination test mode
-    # Enables or disables Meta Test Events mode for a destination owned by the authenticated Signal tracker.
+    # Enables or disables Meta Test Events mode for a destination owned by the authenticated Signals workspace.
     # @param destination [String] The destination ID
     # @param set_destination_test_mode_request [SetDestinationTestModeRequest]
     # @param [Hash] opts the optional parameters
@@ -520,7 +516,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'SetDestinationTestMode200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['signalTrackerSecret']
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
 
       new_options = opts.merge(
         :operation => :"OperationsApi.set_destination_test_mode",

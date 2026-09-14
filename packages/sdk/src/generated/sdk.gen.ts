@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
+import type { CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -21,11 +21,11 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * Submit a conversion event
  *
- * Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or Idempotency-Key in the request headers to make retries idempotent.
+ * Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make retries idempotent.
  */
 export const createEvent = <ThrowOnError extends boolean = false>(options: Options<CreateEventData, ThrowOnError>): RequestResult<CreateEventResponses, CreateEventErrors, ThrowOnError> => (options.client ?? client).post<CreateEventResponses, CreateEventErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -40,11 +40,11 @@ export const createEvent = <ThrowOnError extends boolean = false>(options: Optio
 /**
  * Verify server-side Signal ingestion
  *
- * Writes one identity-free verification event for onboarding and returns the existing event on retry.
+ * Records one idempotent, identity-free modeled event to confirm workspace-scoped ingestion. It does not count as real arrival evidence or complete onboarding.
  */
 export const verifySignalIngestion = <ThrowOnError extends boolean = false>(options?: Options<VerifySignalIngestionData, ThrowOnError>): RequestResult<VerifySignalIngestionResponses, VerifySignalIngestionErrors, ThrowOnError> => (options?.client ?? client).post<VerifySignalIngestionResponses, VerifySignalIngestionErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -55,11 +55,11 @@ export const verifySignalIngestion = <ThrowOnError extends boolean = false>(opti
 /**
  * Get an event and delivery trace
  *
- * Returns one retained customer-readable event with lineage and destination delivery state.
+ * Returns one retained customer-readable event with lineage and destination delivery state for scoped troubleshooting and acceptance checks.
  */
 export const getEvent = <ThrowOnError extends boolean = false>(options: Options<GetEventData, ThrowOnError>): RequestResult<GetEventResponses, GetEventErrors, ThrowOnError> => (options.client ?? client).get<GetEventResponses, GetEventErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -70,11 +70,11 @@ export const getEvent = <ThrowOnError extends boolean = false>(options: Options<
 /**
  * List recent events
  *
- * Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.
+ * Returns retained customer-readable events with stable pagination and aggregate destination-delivery acceptance metrics for the workspace.
  */
 export const listEvents = <ThrowOnError extends boolean = false>(options?: Options<ListEventsData, ThrowOnError>): RequestResult<ListEventsResponses, ListEventsErrors, ThrowOnError> => (options?.client ?? client).get<ListEventsResponses, ListEventsErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -89,7 +89,7 @@ export const listEvents = <ThrowOnError extends boolean = false>(options?: Optio
  */
 export const listEventsByCursor = <ThrowOnError extends boolean = false>(options?: Options<ListEventsByCursorData, ThrowOnError>): RequestResult<ListEventsByCursorResponses, ListEventsByCursorErrors, ThrowOnError> => (options?.client ?? client).get<ListEventsByCursorResponses, ListEventsByCursorErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -100,11 +100,11 @@ export const listEventsByCursor = <ThrowOnError extends boolean = false>(options
 /**
  * Configure destination test mode
  *
- * Enables or disables Meta Test Events mode for a destination owned by the authenticated Signal tracker.
+ * Enables or disables Meta Test Events mode for a destination owned by the authenticated Signals workspace.
  */
 export const setDestinationTestMode = <ThrowOnError extends boolean = false>(options: Options<SetDestinationTestModeData, ThrowOnError>): RequestResult<SetDestinationTestModeResponses, SetDestinationTestModeErrors, ThrowOnError> => (options.client ?? client).patch<SetDestinationTestModeResponses, SetDestinationTestModeErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -123,7 +123,7 @@ export const setDestinationTestMode = <ThrowOnError extends boolean = false>(opt
  */
 export const sendTestPurchase = <ThrowOnError extends boolean = false>(options: Options<SendTestPurchaseData, ThrowOnError>): RequestResult<SendTestPurchaseResponses, SendTestPurchaseErrors, ThrowOnError> => (options.client ?? client).post<SendTestPurchaseResponses, SendTestPurchaseErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -138,11 +138,11 @@ export const sendTestPurchase = <ThrowOnError extends boolean = false>(options: 
 /**
  * Replay eligible deliveries
  *
- * Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.
+ * Evaluates retained failed deliveries, queues the eligible subset for another delivery attempt, and reports which records were accepted or rejected.
  */
 export const replayDeliveries = <ThrowOnError extends boolean = false>(options?: Options<ReplayDeliveriesData, ThrowOnError>): RequestResult<ReplayDeliveriesResponses, ReplayDeliveriesErrors, ThrowOnError> => (options?.client ?? client).post<ReplayDeliveriesResponses, ReplayDeliveriesErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -157,11 +157,11 @@ export const replayDeliveries = <ThrowOnError extends boolean = false>(options?:
 /**
  * Get a reconciliation report
  *
- * Returns stored delivery-versus-platform reconciliation results for one calendar date.
+ * Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can compare accepted gateway and provider outcomes.
  */
 export const getReconciliationReport = <ThrowOnError extends boolean = false>(options: Options<GetReconciliationReportData, ThrowOnError>): RequestResult<GetReconciliationReportResponses, GetReconciliationReportErrors, ThrowOnError> => (options.client ?? client).get<GetReconciliationReportResponses, GetReconciliationReportErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -172,11 +172,11 @@ export const getReconciliationReport = <ThrowOnError extends boolean = false>(op
 /**
  * Get Event Match Quality history
  *
- * Returns recent Meta Event Match Quality snapshots for the authenticated Signal tracker.
+ * Returns recent Meta Event Match Quality snapshots for the authenticated Signals workspace so callers can inspect measured quality changes over time.
  */
 export const getEmqReport = <ThrowOnError extends boolean = false>(options?: Options<GetEmqReportData, ThrowOnError>): RequestResult<GetEmqReportResponses, GetEmqReportErrors, ThrowOnError> => (options?.client ?? client).get<GetEmqReportResponses, GetEmqReportErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -185,13 +185,13 @@ export const getEmqReport = <ThrowOnError extends boolean = false>(options?: Opt
 });
 
 /**
- * Delete user data by hashed identifier
+ * Delete user data by verified identifier
  *
- * Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.
+ * Idempotently removes retained user data using a verified raw identifier or legacy SHA-256 digest, scoped and keyed to the authenticated workspace.
  */
 export const deleteUserData = <ThrowOnError extends boolean = false>(options: Options<DeleteUserDataData, ThrowOnError>): RequestResult<DeleteUserDataResponses, DeleteUserDataErrors, ThrowOnError> => (options.client ?? client).delete<DeleteUserDataResponses, DeleteUserDataErrors, ThrowOnError>({
     security: [{
-            key: 'signalTrackerSecret',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
@@ -206,9 +206,16 @@ export const deleteUserData = <ThrowOnError extends boolean = false>(options: Op
 /**
  * Discover the zero-auth sandbox
  *
- * Returns a ready-to-run synthetic event example. The sandbox requires no account or API key and cannot read production data, persist events, or contact an advertising provider.
+ * Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist data or contact an advertising provider.
  */
 export const getSandbox = <ThrowOnError extends boolean = false>(options?: Options<GetSandboxData, ThrowOnError>): RequestResult<GetSandboxResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetSandboxResponses, unknown, ThrowOnError>({ url: '/sandbox', ...options });
+
+/**
+ * Get a sandbox API key
+ *
+ * Returns a short-lived sandbox-only bearer key over GET so a read-only agent can obtain working credentials without issuing a write request.
+ */
+export const getSandboxKey = <ThrowOnError extends boolean = false>(options?: Options<GetSandboxKeyData, ThrowOnError>): RequestResult<GetSandboxKeyResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetSandboxKeyResponses, unknown, ThrowOnError>({ url: '/sandbox/keys', ...options });
 
 /**
  * Create a sandbox API key
@@ -234,7 +241,7 @@ export const validateSandboxEvent = <ThrowOnError extends boolean = false>(optio
 /**
  * Validate a synthetic event with a sandbox key
  *
- * Validates a synthetic event using the short-lived key returned by the self-serve sandbox key endpoint. It never persists data or contacts an advertising provider.
+ * Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data or contacting an advertising provider.
  */
 export const validateSandboxEventWithKey = <ThrowOnError extends boolean = false>(options: Options<ValidateSandboxEventWithKeyData, ThrowOnError>): RequestResult<ValidateSandboxEventWithKeyResponses, ValidateSandboxEventWithKeyErrors, ThrowOnError> => (options.client ?? client).post<ValidateSandboxEventWithKeyResponses, ValidateSandboxEventWithKeyErrors, ThrowOnError>({
     security: [{

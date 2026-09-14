@@ -20,7 +20,8 @@ class GetEmqReportResponse200SnapshotsItem:
     """
     Attributes:
         id (int):
-        signal_tracker_id (str):
+        workspace_id (int):
+        signal_tracker_id (str): Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
         destination_id (str):
         score (float):
         week_over_week_change (float | None):
@@ -32,6 +33,7 @@ class GetEmqReportResponse200SnapshotsItem:
     """
 
     id: int
+    workspace_id: int
     signal_tracker_id: str
     destination_id: str
     score: float
@@ -49,6 +51,8 @@ class GetEmqReportResponse200SnapshotsItem:
         )
 
         id = self.id
+
+        workspace_id = self.workspace_id
 
         signal_tracker_id = self.signal_tracker_id
 
@@ -83,6 +87,7 @@ class GetEmqReportResponse200SnapshotsItem:
         field_dict.update(
             {
                 "id": id,
+                "workspace_id": workspace_id,
                 "signal_tracker_id": signal_tracker_id,
                 "destination_id": destination_id,
                 "score": score,
@@ -105,6 +110,8 @@ class GetEmqReportResponse200SnapshotsItem:
 
         d = dict(src_dict)
         id = d.pop("id")
+
+        workspace_id = d.pop("workspace_id")
 
         signal_tracker_id = d.pop("signal_tracker_id")
 
@@ -164,6 +171,7 @@ class GetEmqReportResponse200SnapshotsItem:
 
         get_emq_report_response_200_snapshots_item = cls(
             id=id,
+            workspace_id=workspace_id,
             signal_tracker_id=signal_tracker_id,
             destination_id=destination_id,
             score=score,

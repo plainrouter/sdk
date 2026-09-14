@@ -1,9 +1,10 @@
 {
+    "x-signed": true,
     "openapi": "3.1.0",
     "info": {
-        "title": "PlainRouter Conversion API",
+        "title": "Plainrouter Conversion API",
         "version": "0.5.0",
-        "description": "PlainRouter public Signals Conversion API."
+        "description": "Plainrouter public Signals Conversion API."
     },
     "servers": [
         {
@@ -13,14 +14,14 @@
     ],
     "security": [
         {
-            "signalTrackerSecret": []
+            "workspaceSecret": []
         }
     ],
     "paths": {
         "/events": {
             "post": {
                 "operationId": "createEvent",
-                "description": "Accepts a consent-aware server-side conversion event. Supply either event_id in the JSON body or Idempotency-Key in the request headers to make retries idempotent.",
+                "description": "Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make retries idempotent.",
                 "summary": "Submit a conversion event",
                 "tags": [
                     "Event"
@@ -29,13 +30,14 @@
                     {
                         "name": "Idempotency-Key",
                         "in": "header",
-                        "description": "Optional idempotency key. When event_id is omitted, PlainRouter uses this value as event_id. If both are supplied, they must match.",
+                        "description": "Optional idempotency key. When event_id is omitted, Plainrouter uses this value as event_id. If both are supplied, they must match.",
                         "schema": {
                             "type": "string"
                         }
                     }
                 ],
                 "requestBody": {
+                    "description": "Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -294,11 +296,35 @@
                                         },
                                         "duplicate": {
                                             "type": "boolean"
+                                        },
+                                        "warnings": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "code": {
+                                                        "$ref": "#/components/schemas/IngestionWarningCode"
+                                                    },
+                                                    "field": {
+                                                        "type": "string",
+                                                        "const": "consent.captured_at"
+                                                    },
+                                                    "message": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "code",
+                                                    "field",
+                                                    "message"
+                                                ]
+                                            }
                                         }
                                     },
                                     "required": [
                                         "event_id",
-                                        "duplicate"
+                                        "duplicate",
+                                        "warnings"
                                     ]
                                 }
                             }
@@ -320,7 +346,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -345,7 +371,7 @@
         "/verification-events": {
             "post": {
                 "operationId": "verifySignalIngestion",
-                "description": "Writes one identity-free verification event for onboarding and returns the existing event on retry.",
+                "description": "Records one idempotent, identity-free modeled event to confirm workspace-scoped ingestion. It does not count as real arrival evidence or complete onboarding.",
                 "summary": "Verify server-side Signal ingestion",
                 "tags": [
                     "Event"
@@ -414,7 +440,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -429,7 +455,7 @@
         "/events/{event}": {
             "get": {
                 "operationId": "getEvent",
-                "description": "Returns one retained customer-readable event with lineage and destination delivery state.",
+                "description": "Returns one retained customer-readable event with lineage and destination delivery state for scoped troubleshooting and acceptance checks.",
                 "summary": "Get an event and delivery trace",
                 "tags": [
                     "Event"
@@ -458,8 +484,13 @@
                                                 "id": {
                                                     "type": "string"
                                                 },
+                                                "workspace_id": {
+                                                    "type": "integer"
+                                                },
                                                 "signal_tracker_id": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                    "deprecated": true
                                                 },
                                                 "parent_event_id": {
                                                     "type": [
@@ -531,6 +562,7 @@
                                                     ]
                                                 },
                                                 "user_data_hashed": {
+                                                    "description": "Deprecated compatibility field. The value is always null; delivery identity is never returned.",
                                                     "anyOf": [
                                                         {
                                                             "type": "object",
@@ -607,8 +639,13 @@
                                                             "id": {
                                                                 "type": "integer"
                                                             },
+                                                            "workspace_id": {
+                                                                "type": "integer"
+                                                            },
                                                             "signal_tracker_id": {
-                                                                "type": "string"
+                                                                "type": "string",
+                                                                "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                                "deprecated": true
                                                             },
                                                             "event_id": {
                                                                 "type": "string"
@@ -682,6 +719,7 @@
                                                         },
                                                         "required": [
                                                             "id",
+                                                            "workspace_id",
                                                             "signal_tracker_id",
                                                             "event_id",
                                                             "destination_id",
@@ -700,6 +738,7 @@
                                             },
                                             "required": [
                                                 "id",
+                                                "workspace_id",
                                                 "signal_tracker_id",
                                                 "parent_event_id",
                                                 "event_name",
@@ -737,8 +776,13 @@
                                                         "id": {
                                                             "type": "string"
                                                         },
+                                                        "workspace_id": {
+                                                            "type": "integer"
+                                                        },
                                                         "signal_tracker_id": {
-                                                            "type": "string"
+                                                            "type": "string",
+                                                            "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                            "deprecated": true
                                                         },
                                                         "parent_event_id": {
                                                             "type": [
@@ -810,6 +854,7 @@
                                                             ]
                                                         },
                                                         "user_data_hashed": {
+                                                            "description": "Deprecated compatibility field. The value is always null; delivery identity is never returned.",
                                                             "anyOf": [
                                                                 {
                                                                     "type": "object",
@@ -881,6 +926,7 @@
                                                     },
                                                     "required": [
                                                         "id",
+                                                        "workspace_id",
                                                         "signal_tracker_id",
                                                         "parent_event_id",
                                                         "event_name",
@@ -913,8 +959,13 @@
                                                             "id": {
                                                                 "type": "string"
                                                             },
+                                                            "workspace_id": {
+                                                                "type": "integer"
+                                                            },
                                                             "signal_tracker_id": {
-                                                                "type": "string"
+                                                                "type": "string",
+                                                                "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                                "deprecated": true
                                                             },
                                                             "parent_event_id": {
                                                                 "type": [
@@ -986,6 +1037,7 @@
                                                                 ]
                                                             },
                                                             "user_data_hashed": {
+                                                                "description": "Deprecated compatibility field. The value is always null; delivery identity is never returned.",
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "object",
@@ -1057,6 +1109,7 @@
                                                         },
                                                         "required": [
                                                             "id",
+                                                            "workspace_id",
                                                             "signal_tracker_id",
                                                             "parent_event_id",
                                                             "event_name",
@@ -1098,8 +1151,13 @@
                                                             "id": {
                                                                 "type": "integer"
                                                             },
+                                                            "workspace_id": {
+                                                                "type": "integer"
+                                                            },
                                                             "signal_tracker_id": {
-                                                                "type": "string"
+                                                                "type": "string",
+                                                                "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                                "deprecated": true
                                                             },
                                                             "event_id": {
                                                                 "type": "string"
@@ -1173,6 +1231,7 @@
                                                         },
                                                         "required": [
                                                             "id",
+                                                            "workspace_id",
                                                             "signal_tracker_id",
                                                             "event_id",
                                                             "destination_id",
@@ -1212,7 +1271,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1237,7 +1296,7 @@
         "/dashboard/events": {
             "get": {
                 "operationId": "listEvents",
-                "description": "Returns retained customer-readable events and aggregate destination-delivery acceptance metrics.",
+                "description": "Returns retained customer-readable events with stable pagination and aggregate destination-delivery acceptance metrics for the workspace.",
                 "summary": "List recent events",
                 "tags": [
                     "Operations"
@@ -1275,8 +1334,13 @@
                                                             "id": {
                                                                 "type": "string"
                                                             },
+                                                            "workspace_id": {
+                                                                "type": "integer"
+                                                            },
                                                             "signal_tracker_id": {
-                                                                "type": "string"
+                                                                "type": "string",
+                                                                "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                                "deprecated": true
                                                             },
                                                             "parent_event_id": {
                                                                 "type": [
@@ -1348,6 +1412,7 @@
                                                                 ]
                                                             },
                                                             "user_data_hashed": {
+                                                                "description": "Deprecated compatibility field. The value is always null; delivery identity is never returned.",
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "object",
@@ -1424,8 +1489,13 @@
                                                                         "id": {
                                                                             "type": "integer"
                                                                         },
+                                                                        "workspace_id": {
+                                                                            "type": "integer"
+                                                                        },
                                                                         "signal_tracker_id": {
-                                                                            "type": "string"
+                                                                            "type": "string",
+                                                                            "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                                            "deprecated": true
                                                                         },
                                                                         "event_id": {
                                                                             "type": "string"
@@ -1499,6 +1569,7 @@
                                                                     },
                                                                     "required": [
                                                                         "id",
+                                                                        "workspace_id",
                                                                         "signal_tracker_id",
                                                                         "event_id",
                                                                         "destination_id",
@@ -1517,6 +1588,7 @@
                                                         },
                                                         "required": [
                                                             "id",
+                                                            "workspace_id",
                                                             "signal_tracker_id",
                                                             "parent_event_id",
                                                             "event_name",
@@ -1672,7 +1744,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1730,8 +1802,13 @@
                                                             "id": {
                                                                 "type": "string"
                                                             },
+                                                            "workspace_id": {
+                                                                "type": "integer"
+                                                            },
                                                             "signal_tracker_id": {
-                                                                "type": "string"
+                                                                "type": "string",
+                                                                "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                                "deprecated": true
                                                             },
                                                             "parent_event_id": {
                                                                 "type": [
@@ -1803,6 +1880,7 @@
                                                                 ]
                                                             },
                                                             "user_data_hashed": {
+                                                                "description": "Deprecated compatibility field. The value is always null; delivery identity is never returned.",
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "object",
@@ -1879,8 +1957,13 @@
                                                                         "id": {
                                                                             "type": "integer"
                                                                         },
+                                                                        "workspace_id": {
+                                                                            "type": "integer"
+                                                                        },
                                                                         "signal_tracker_id": {
-                                                                            "type": "string"
+                                                                            "type": "string",
+                                                                            "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                                            "deprecated": true
                                                                         },
                                                                         "event_id": {
                                                                             "type": "string"
@@ -1954,6 +2037,7 @@
                                                                     },
                                                                     "required": [
                                                                         "id",
+                                                                        "workspace_id",
                                                                         "signal_tracker_id",
                                                                         "event_id",
                                                                         "destination_id",
@@ -1972,6 +2056,7 @@
                                                         },
                                                         "required": [
                                                             "id",
+                                                            "workspace_id",
                                                             "signal_tracker_id",
                                                             "parent_event_id",
                                                             "event_name",
@@ -2078,7 +2163,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2093,7 +2178,7 @@
         "/destinations/{destination}/test-mode": {
             "patch": {
                 "operationId": "setDestinationTestMode",
-                "description": "Enables or disables Meta Test Events mode for a destination owned by the authenticated Signal tracker.",
+                "description": "Enables or disables Meta Test Events mode for a destination owned by the authenticated Signals workspace.",
                 "summary": "Configure destination test mode",
                 "tags": [
                     "Operations"
@@ -2148,8 +2233,13 @@
                                                 "id": {
                                                     "type": "string"
                                                 },
+                                                "workspace_id": {
+                                                    "type": "integer"
+                                                },
                                                 "signal_tracker_id": {
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                    "deprecated": true
                                                 },
                                                 "platform_ad_account_id": {
                                                     "type": [
@@ -2196,6 +2286,7 @@
                                             },
                                             "required": [
                                                 "id",
+                                                "workspace_id",
                                                 "signal_tracker_id",
                                                 "platform_ad_account_id",
                                                 "type",
@@ -2219,7 +2310,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2363,7 +2454,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2405,7 +2496,7 @@
         "/deliveries/replay": {
             "post": {
                 "operationId": "replayDeliveries",
-                "description": "Evaluates retained failed deliveries and queues the eligible subset for another delivery attempt.",
+                "description": "Evaluates retained failed deliveries, queues the eligible subset for another delivery attempt, and reports which records were accepted or rejected.",
                 "summary": "Replay eligible deliveries",
                 "tags": [
                     "Operations"
@@ -2482,7 +2573,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2507,7 +2598,7 @@
         "/reports/reconciliation": {
             "get": {
                 "operationId": "getReconciliationReport",
-                "description": "Returns stored delivery-versus-platform reconciliation results for one calendar date.",
+                "description": "Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can compare accepted gateway and provider outcomes.",
                 "summary": "Get a reconciliation report",
                 "tags": [
                     "Operations"
@@ -2542,8 +2633,13 @@
                                                     "id": {
                                                         "type": "integer"
                                                     },
+                                                    "workspace_id": {
+                                                        "type": "integer"
+                                                    },
                                                     "signal_tracker_id": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                        "deprecated": true
                                                     },
                                                     "destination_id": {
                                                         "type": "string"
@@ -2643,8 +2739,13 @@
                                                             "id": {
                                                                 "type": "string"
                                                             },
+                                                            "workspace_id": {
+                                                                "type": "integer"
+                                                            },
                                                             "signal_tracker_id": {
-                                                                "type": "string"
+                                                                "type": "string",
+                                                                "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                                "deprecated": true
                                                             },
                                                             "platform_ad_account_id": {
                                                                 "type": [
@@ -2691,6 +2792,7 @@
                                                         },
                                                         "required": [
                                                             "id",
+                                                            "workspace_id",
                                                             "signal_tracker_id",
                                                             "platform_ad_account_id",
                                                             "type",
@@ -2704,6 +2806,7 @@
                                                 },
                                                 "required": [
                                                     "id",
+                                                    "workspace_id",
                                                     "signal_tracker_id",
                                                     "destination_id",
                                                     "report_date",
@@ -2730,7 +2833,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2755,7 +2858,7 @@
         "/reports/emq": {
             "get": {
                 "operationId": "getEmqReport",
-                "description": "Returns recent Meta Event Match Quality snapshots for the authenticated Signal tracker.",
+                "description": "Returns recent Meta Event Match Quality snapshots for the authenticated Signals workspace so callers can inspect measured quality changes over time.",
                 "summary": "Get Event Match Quality history",
                 "tags": [
                     "Operations"
@@ -2776,8 +2879,13 @@
                                                     "id": {
                                                         "type": "integer"
                                                     },
+                                                    "workspace_id": {
+                                                        "type": "integer"
+                                                    },
                                                     "signal_tracker_id": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                                                        "deprecated": true
                                                     },
                                                     "destination_id": {
                                                         "type": "string"
@@ -2827,6 +2935,7 @@
                                                 },
                                                 "required": [
                                                     "id",
+                                                    "workspace_id",
                                                     "signal_tracker_id",
                                                     "destination_id",
                                                     "score",
@@ -2848,7 +2957,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2863,8 +2972,8 @@
         "/user-data": {
             "delete": {
                 "operationId": "deleteUserData",
-                "description": "Idempotently removes retained user data matching one caller-supplied SHA-256 identifier digest.",
-                "summary": "Delete user data by hashed identifier",
+                "description": "Idempotently removes retained user data using a verified raw identifier or legacy SHA-256 digest, scoped and keyed to the authenticated workspace.",
+                "summary": "Delete user data by verified identifier",
                 "tags": [
                     "Operations"
                 ],
@@ -2886,11 +2995,26 @@
                                     "identifier_hash": {
                                         "type": "string",
                                         "pattern": "^[a-fA-F0-9]{64}$"
+                                    },
+                                    "identifier": {
+                                        "type": "string",
+                                        "maxLength": 512
                                     }
                                 },
                                 "required": [
-                                    "identifier_type",
-                                    "identifier_hash"
+                                    "identifier_type"
+                                ],
+                                "oneOf": [
+                                    {
+                                        "required": [
+                                            "identifier_hash"
+                                        ]
+                                    },
+                                    {
+                                        "required": [
+                                            "identifier"
+                                        ]
+                                    }
                                 ]
                             }
                         }
@@ -2932,7 +3056,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signal tracker secret.",
+                        "description": "Invalid or missing Signals workspace secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2957,7 +3081,7 @@
         "/sandbox": {
             "get": {
                 "operationId": "getSandbox",
-                "description": "Returns a ready-to-run synthetic event example. The sandbox requires no account or API key and cannot read production data, persist events, or contact an advertising provider.",
+                "description": "Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist data or contact an advertising provider.",
                 "summary": "Discover the zero-auth sandbox",
                 "tags": [
                     "Sandbox"
@@ -3005,13 +3129,65 @@
                                                 },
                                                 "description": {
                                                     "type": "string"
+                                                },
+                                                "issued_key": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "api_key": {
+                                                            "type": "string"
+                                                        },
+                                                        "token_type": {
+                                                            "type": "string"
+                                                        },
+                                                        "expires_in": {
+                                                            "type": "integer"
+                                                        },
+                                                        "expires_at": {
+                                                            "type": "string"
+                                                        },
+                                                        "scope": {
+                                                            "type": "string"
+                                                        },
+                                                        "production_access": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "use": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "method": {
+                                                                    "type": "string"
+                                                                },
+                                                                "url": {
+                                                                    "type": "string"
+                                                                },
+                                                                "authorization": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "method",
+                                                                "url",
+                                                                "authorization"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "api_key",
+                                                        "token_type",
+                                                        "expires_in",
+                                                        "expires_at",
+                                                        "scope",
+                                                        "production_access",
+                                                        "use"
+                                                    ]
                                                 }
                                             },
                                             "required": [
                                                 "method",
                                                 "url",
                                                 "authentication_required",
-                                                "description"
+                                                "description",
+                                                "issued_key"
                                             ]
                                         },
                                         "try": {
@@ -3114,6 +3290,95 @@
             }
         },
         "/sandbox/keys": {
+            "get": {
+                "operationId": "getSandboxKey",
+                "description": "Returns a short-lived sandbox-only bearer key over GET so a read-only agent can obtain working credentials without issuing a write request.",
+                "summary": "Get a sandbox API key",
+                "tags": [
+                    "Sandbox"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Short-lived sandbox API key issued.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "api_key": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer"
+                                        },
+                                        "expires_at": {
+                                            "type": "string"
+                                        },
+                                        "scope": {
+                                            "type": "string"
+                                        },
+                                        "production_access": {
+                                            "type": "boolean"
+                                        },
+                                        "use": {
+                                            "type": "object",
+                                            "properties": {
+                                                "method": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "authorization": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "method",
+                                                "url",
+                                                "authorization"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "api_key",
+                                        "token_type",
+                                        "expires_in",
+                                        "expires_at",
+                                        "scope",
+                                        "production_access",
+                                        "use"
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Access-Control-Allow-Origin": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "*"
+                                }
+                            },
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
+                                }
+                            },
+                            "X-Content-Type-Options": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "nosniff"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            },
             "post": {
                 "operationId": "createSandboxKey",
                 "description": "Issues a short-lived sandbox-only bearer key without an account, human approval, or production access.",
@@ -3337,7 +3602,7 @@
         "/sandbox/keyed-events": {
             "post": {
                 "operationId": "validateSandboxEventWithKey",
-                "description": "Validates a synthetic event using the short-lived key returned by the self-serve sandbox key endpoint. It never persists data or contacts an advertising provider.",
+                "description": "Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data or contacting an advertising provider.",
                 "summary": "Validate a synthetic event with a sandbox key",
                 "tags": [
                     "Sandbox"
@@ -3461,9 +3726,9 @@
     },
     "components": {
         "securitySchemes": {
-            "signalTrackerSecret": {
+            "workspaceSecret": {
                 "type": "http",
-                "description": "Per-tracker bearer secret. It authenticates only the Signal tracker represented by the credential.",
+                "description": "Per-workspace bearer secret. It authenticates only the Signals workspace represented by the credential.",
                 "scheme": "bearer"
             },
             "sandboxCredential": {
@@ -3496,8 +3761,13 @@
                     "id": {
                         "type": "string"
                     },
+                    "workspace_id": {
+                        "type": "integer"
+                    },
                     "signal_tracker_id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                        "deprecated": true
                     },
                     "platform_ad_account_id": {
                         "type": [
@@ -3535,6 +3805,7 @@
                 },
                 "required": [
                     "id",
+                    "workspace_id",
                     "signal_tracker_id",
                     "platform_ad_account_id",
                     "type",
@@ -3575,8 +3846,13 @@
                     "id": {
                         "type": "integer"
                     },
+                    "workspace_id": {
+                        "type": "integer"
+                    },
                     "signal_tracker_id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                        "deprecated": true
                     },
                     "destination_id": {
                         "type": "string"
@@ -3621,6 +3897,7 @@
                 },
                 "required": [
                     "id",
+                    "workspace_id",
                     "signal_tracker_id",
                     "destination_id",
                     "score",
@@ -3649,9 +3926,6 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "string"
-                    },
-                    "signal_tracker_id": {
                         "type": "string"
                     },
                     "parent_event_id": {
@@ -3716,11 +3990,27 @@
                     "traffic_class": {
                         "$ref": "#/components/schemas/TrafficClass"
                     },
+                    "workspace_id": {
+                        "type": "integer"
+                    },
                     "consent": {
                         "type": "string"
                     },
                     "user_data_hashed": {
-                        "type": "string"
+                        "description": "Deprecated compatibility field. The value is always null; delivery identity is never returned.",
+                        "anyOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": {}
+                            },
+                            {
+                                "type": "array",
+                                "items": {}
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "click_ids": {
                         "type": "string"
@@ -3737,6 +4027,25 @@
                     "payload_expired": {
                         "type": "boolean"
                     },
+                    "consent_source": {
+                        "type": "string",
+                        "enum": [
+                            "explicit",
+                            "tcf",
+                            "consent_mode",
+                            "plainrouter",
+                            "cmp:cookiebot",
+                            "cmp:usercentrics",
+                            "cmp:cookieyes",
+                            "cmp:consentstack",
+                            "cmp:iubenda"
+                        ]
+                    },
+                    "consent_ui_version": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 999999
+                    },
                     "deliveries": {
                         "type": "array",
                         "items": {}
@@ -3744,7 +4053,6 @@
                 },
                 "required": [
                     "id",
-                    "signal_tracker_id",
                     "parent_event_id",
                     "event_name",
                     "event_time",
@@ -3761,6 +4069,7 @@
                     "consent_normalization_version",
                     "policy_class",
                     "traffic_class",
+                    "workspace_id",
                     "consent",
                     "user_data_hashed",
                     "click_ids",
@@ -3771,6 +4080,14 @@
                     "deliveries"
                 ],
                 "title": "Event"
+            },
+            "IngestionWarningCode": {
+                "type": "string",
+                "description": "The closed set of non-rejection warnings returned by authenticated ingestion.\n",
+                "enum": [
+                    "consent_captured_at_invalid"
+                ],
+                "title": "IngestionWarningCode"
             },
             "JurisdictionPolicyClass": {
                 "type": "string",
@@ -3787,8 +4104,13 @@
                     "id": {
                         "type": "integer"
                     },
+                    "workspace_id": {
+                        "type": "integer"
+                    },
                     "signal_tracker_id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Deprecated alias of workspace_id; contains the workspace ID in decimal string form.",
+                        "deprecated": true
                     },
                     "destination_id": {
                         "type": "string"
@@ -3843,6 +4165,7 @@
                 },
                 "required": [
                     "id",
+                    "workspace_id",
                     "signal_tracker_id",
                     "destination_id",
                     "report_date",
@@ -3891,6 +4214,5 @@
                 "title": "ValidationError"
             }
         }
-    },
-    "x-signed": true
+    }
 }

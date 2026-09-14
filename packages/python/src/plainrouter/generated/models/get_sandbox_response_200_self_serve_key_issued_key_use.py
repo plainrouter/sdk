@@ -6,34 +6,37 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-from ..models.delete_user_data_body_identifier_type import DeleteUserDataBodyIdentifierType
-
-T = TypeVar("T", bound="DeleteUserDataBody")
+T = TypeVar("T", bound="GetSandboxResponse200SelfServeKeyIssuedKeyUse")
 
 
 @_attrs_define
-class DeleteUserDataBody:
+class GetSandboxResponse200SelfServeKeyIssuedKeyUse:
     """
     Attributes:
-        identifier_type (DeleteUserDataBodyIdentifierType):
-        identifier_hash (str):
+        method (str):
+        url (str):
+        authorization (str):
     """
 
-    identifier_type: DeleteUserDataBodyIdentifierType
-    identifier_hash: str
+    method: str
+    url: str
+    authorization: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        identifier_type = self.identifier_type.value
+        method = self.method
 
-        identifier_hash = self.identifier_hash
+        url = self.url
+
+        authorization = self.authorization
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "identifier_type": identifier_type,
-                "identifier_hash": identifier_hash,
+                "method": method,
+                "url": url,
+                "authorization": authorization,
             }
         )
 
@@ -42,17 +45,20 @@ class DeleteUserDataBody:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        identifier_type = DeleteUserDataBodyIdentifierType(d.pop("identifier_type"))
+        method = d.pop("method")
 
-        identifier_hash = d.pop("identifier_hash")
+        url = d.pop("url")
 
-        delete_user_data_body = cls(
-            identifier_type=identifier_type,
-            identifier_hash=identifier_hash,
+        authorization = d.pop("authorization")
+
+        get_sandbox_response_200_self_serve_key_issued_key_use = cls(
+            method=method,
+            url=url,
+            authorization=authorization,
         )
 
-        delete_user_data_body.additional_properties = d
-        return delete_user_data_body
+        get_sandbox_response_200_self_serve_key_issued_key_use.additional_properties = d
+        return get_sandbox_response_200_self_serve_key_issued_key_use
 
     @property
     def additional_keys(self) -> list[str]:

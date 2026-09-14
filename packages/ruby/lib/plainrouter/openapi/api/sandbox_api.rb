@@ -1,7 +1,7 @@
 =begin
-#PlainRouter Conversion API
+#Plainrouter Conversion API
 
-#PlainRouter public Signals Conversion API.
+#Plainrouter public Signals Conversion API.
 
 The version of the OpenAPI document: 0.5.0
 
@@ -22,7 +22,7 @@ module PlainRouter::OpenAPI
     # Create a sandbox API key
     # Issues a short-lived sandbox-only bearer key without an account, human approval, or production access.
     # @param [Hash] opts the optional parameters
-    # @return [CreateSandboxKey201Response]
+    # @return [GetSandbox200ResponseSelfServeKeyIssuedKey]
     def create_sandbox_key(opts = {})
       data, _status_code, _headers = create_sandbox_key_with_http_info(opts)
       data
@@ -31,7 +31,7 @@ module PlainRouter::OpenAPI
     # Create a sandbox API key
     # Issues a short-lived sandbox-only bearer key without an account, human approval, or production access.
     # @param [Hash] opts the optional parameters
-    # @return [Array<(CreateSandboxKey201Response, Integer, Hash)>] CreateSandboxKey201Response data, response status code and response headers
+    # @return [Array<(GetSandbox200ResponseSelfServeKeyIssuedKey, Integer, Hash)>] GetSandbox200ResponseSelfServeKeyIssuedKey data, response status code and response headers
     def create_sandbox_key_with_http_info(opts = {})
       if @api_client.config.debugging
         @api_client.config.logger.debug 'Calling API: SandboxApi.create_sandbox_key ...'
@@ -54,7 +54,7 @@ module PlainRouter::OpenAPI
       post_body = opts[:debug_body]
 
       # return_type
-      return_type = opts[:debug_return_type] || 'CreateSandboxKey201Response'
+      return_type = opts[:debug_return_type] || 'GetSandbox200ResponseSelfServeKeyIssuedKey'
 
       # auth_names
       auth_names = opts[:debug_auth_names] || []
@@ -77,7 +77,7 @@ module PlainRouter::OpenAPI
     end
 
     # Discover the zero-auth sandbox
-    # Returns a ready-to-run synthetic event example. The sandbox requires no account or API key and cannot read production data, persist events, or contact an advertising provider.
+    # Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist data or contact an advertising provider.
     # @param [Hash] opts the optional parameters
     # @return [GetSandbox200Response]
     def get_sandbox(opts = {})
@@ -86,7 +86,7 @@ module PlainRouter::OpenAPI
     end
 
     # Discover the zero-auth sandbox
-    # Returns a ready-to-run synthetic event example. The sandbox requires no account or API key and cannot read production data, persist events, or contact an advertising provider.
+    # Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist data or contact an advertising provider.
     # @param [Hash] opts the optional parameters
     # @return [Array<(GetSandbox200Response, Integer, Hash)>] GetSandbox200Response data, response status code and response headers
     def get_sandbox_with_http_info(opts = {})
@@ -129,6 +129,63 @@ module PlainRouter::OpenAPI
       data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
       if @api_client.config.debugging
         @api_client.config.logger.debug "API called: SandboxApi#get_sandbox\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Get a sandbox API key
+    # Returns a short-lived sandbox-only bearer key over GET so a read-only agent can obtain working credentials without issuing a write request.
+    # @param [Hash] opts the optional parameters
+    # @return [GetSandbox200ResponseSelfServeKeyIssuedKey]
+    def get_sandbox_key(opts = {})
+      data, _status_code, _headers = get_sandbox_key_with_http_info(opts)
+      data
+    end
+
+    # Get a sandbox API key
+    # Returns a short-lived sandbox-only bearer key over GET so a read-only agent can obtain working credentials without issuing a write request.
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(GetSandbox200ResponseSelfServeKeyIssuedKey, Integer, Hash)>] GetSandbox200ResponseSelfServeKeyIssuedKey data, response status code and response headers
+    def get_sandbox_key_with_http_info(opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: SandboxApi.get_sandbox_key ...'
+      end
+      # resource path
+      local_var_path = '/sandbox/keys'
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'GetSandbox200ResponseSelfServeKeyIssuedKey'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || []
+
+      new_options = opts.merge(
+        :operation => :"SandboxApi.get_sandbox_key",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: SandboxApi#get_sandbox_key\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
       end
       return data, status_code, headers
     end
@@ -202,7 +259,7 @@ module PlainRouter::OpenAPI
     end
 
     # Validate a synthetic event with a sandbox key
-    # Validates a synthetic event using the short-lived key returned by the self-serve sandbox key endpoint. It never persists data or contacts an advertising provider.
+    # Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data or contacting an advertising provider.
     # @param validate_sandbox_event_request [ValidateSandboxEventRequest]
     # @param [Hash] opts the optional parameters
     # @return [ValidateSandboxEvent200Response]
@@ -212,7 +269,7 @@ module PlainRouter::OpenAPI
     end
 
     # Validate a synthetic event with a sandbox key
-    # Validates a synthetic event using the short-lived key returned by the self-serve sandbox key endpoint. It never persists data or contacts an advertising provider.
+    # Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data or contacting an advertising provider.
     # @param validate_sandbox_event_request [ValidateSandboxEventRequest]
     # @param [Hash] opts the optional parameters
     # @return [Array<(ValidateSandboxEvent200Response, Integer, Hash)>] ValidateSandboxEvent200Response data, response status code and response headers

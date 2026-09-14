@@ -14,6 +14,12 @@ export type DeliveryStatus = 'queued' | 'sent' | 'accepted' | 'retrying' | 'fail
  */
 export type Destination = {
     id: string;
+    workspace_id: number;
+    /**
+     * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+     *
+     * @deprecated
+     */
     signal_tracker_id: string;
     platform_ad_account_id: number | null;
     type: DestinationType;
@@ -44,6 +50,12 @@ export type DestinationType = 'meta';
  */
 export type EmqSnapshot = {
     id: number;
+    workspace_id: number;
+    /**
+     * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+     *
+     * @deprecated
+     */
     signal_tracker_id: string;
     destination_id: string;
     score: number;
@@ -67,7 +79,6 @@ export type ErrorMessage = {
  */
 export type Event = {
     id: string;
-    signal_tracker_id: string;
     parent_event_id: string | null;
     event_name: string;
     event_time: string;
@@ -84,15 +95,31 @@ export type Event = {
     consent_normalization_version: string;
     policy_class: JurisdictionPolicyClass;
     traffic_class: TrafficClass;
+    workspace_id: number;
     consent: string;
-    user_data_hashed: string;
+    /**
+     * Deprecated compatibility field. The value is always null; delivery identity is never returned.
+     */
+    user_data_hashed: {
+        [key: string]: unknown;
+    } | Array<unknown> | null;
     click_ids: string;
     session: string;
     value_data: string;
     event_source: string;
     payload_expired: boolean;
+    consent_source?: 'explicit' | 'tcf' | 'consent_mode' | 'plainrouter' | 'cmp:cookiebot' | 'cmp:usercentrics' | 'cmp:cookieyes' | 'cmp:consentstack' | 'cmp:iubenda';
+    consent_ui_version?: number;
     deliveries: Array<unknown>;
 };
+
+/**
+ * IngestionWarningCode
+ *
+ * The closed set of non-rejection warnings returned by authenticated ingestion.
+ *
+ */
+export type IngestionWarningCode = 'consent_captured_at_invalid';
 
 /**
  * JurisdictionPolicyClass
@@ -107,6 +134,12 @@ export type JurisdictionPolicyClass = 'strict_eu' | 'global';
  */
 export type ReconciliationReport = {
     id: number;
+    workspace_id: number;
+    /**
+     * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+     *
+     * @deprecated
+     */
     signal_tracker_id: string;
     destination_id: string;
     report_date: string;
@@ -141,6 +174,9 @@ export type ValidationError = {
 };
 
 export type CreateEventData = {
+    /**
+     * Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.
+     */
     body: {
         /**
          * Caller-supplied idempotency key; maximum 128 characters.
@@ -290,7 +326,7 @@ export type CreateEventData = {
     };
     headers?: {
         /**
-         * Optional idempotency key. When event_id is omitted, PlainRouter uses this value as event_id. If both are supplied, they must match.
+         * Optional idempotency key. When event_id is omitted, Plainrouter uses this value as event_id. If both are supplied, they must match.
          */
         'Idempotency-Key'?: string;
     };
@@ -301,7 +337,7 @@ export type CreateEventData = {
 
 export type CreateEventErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
     /**
@@ -326,6 +362,11 @@ export type CreateEventResponses = {
     202: {
         event_id: string;
         duplicate: boolean;
+        warnings: Array<{
+            code: IngestionWarningCode;
+            field: 'consent.captured_at';
+            message: string;
+        }>;
     };
 };
 
@@ -340,7 +381,7 @@ export type VerifySignalIngestionData = {
 
 export type VerifySignalIngestionErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
 };
@@ -377,7 +418,7 @@ export type GetEventData = {
 
 export type GetEventErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
     /**
@@ -395,6 +436,12 @@ export type GetEventResponses = {
     200: {
         event: {
             id: string;
+            workspace_id: number;
+            /**
+             * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+             *
+             * @deprecated
+             */
             signal_tracker_id: string;
             parent_event_id: string | null;
             event_name: string;
@@ -413,6 +460,9 @@ export type GetEventResponses = {
             consent: {
                 [key: string]: unknown;
             } | Array<unknown> | null;
+            /**
+             * Deprecated compatibility field. The value is always null; delivery identity is never returned.
+             */
             user_data_hashed: {
                 [key: string]: unknown;
             } | Array<unknown> | null;
@@ -429,6 +479,12 @@ export type GetEventResponses = {
             payload_expired: boolean;
             deliveries: Array<{
                 id: number;
+                workspace_id: number;
+                /**
+                 * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+                 *
+                 * @deprecated
+                 */
                 signal_tracker_id: string;
                 event_id: string;
                 destination_id: string | null;
@@ -450,6 +506,12 @@ export type GetEventResponses = {
         lineage: {
             parent: {
                 id: string;
+                workspace_id: number;
+                /**
+                 * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+                 *
+                 * @deprecated
+                 */
                 signal_tracker_id: string;
                 parent_event_id: string | null;
                 event_name: string;
@@ -468,6 +530,9 @@ export type GetEventResponses = {
                 consent: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
+                /**
+                 * Deprecated compatibility field. The value is always null; delivery identity is never returned.
+                 */
                 user_data_hashed: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
@@ -485,6 +550,12 @@ export type GetEventResponses = {
             } | null;
             children: Array<{
                 id: string;
+                workspace_id: number;
+                /**
+                 * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+                 *
+                 * @deprecated
+                 */
                 signal_tracker_id: string;
                 parent_event_id: string | null;
                 event_name: string;
@@ -503,6 +574,9 @@ export type GetEventResponses = {
                 consent: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
+                /**
+                 * Deprecated compatibility field. The value is always null; delivery identity is never returned.
+                 */
                 user_data_hashed: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
@@ -521,6 +595,12 @@ export type GetEventResponses = {
         };
         deliveries: Array<{
             id: number;
+            workspace_id: number;
+            /**
+             * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+             *
+             * @deprecated
+             */
             signal_tracker_id: string;
             event_id: string;
             destination_id: string | null;
@@ -559,7 +639,7 @@ export type ListEventsData = {
 
 export type ListEventsErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
 };
@@ -575,6 +655,12 @@ export type ListEventsResponses = {
             current_page: number;
             data: Array<{
                 id: string;
+                workspace_id: number;
+                /**
+                 * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+                 *
+                 * @deprecated
+                 */
                 signal_tracker_id: string;
                 parent_event_id: string | null;
                 event_name: string;
@@ -593,6 +679,9 @@ export type ListEventsResponses = {
                 consent: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
+                /**
+                 * Deprecated compatibility field. The value is always null; delivery identity is never returned.
+                 */
                 user_data_hashed: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
@@ -609,6 +698,12 @@ export type ListEventsResponses = {
                 payload_expired: boolean;
                 deliveries: Array<{
                     id: number;
+                    workspace_id: number;
+                    /**
+                     * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+                     *
+                     * @deprecated
+                     */
                     signal_tracker_id: string;
                     event_id: string;
                     destination_id: string | null;
@@ -672,7 +767,7 @@ export type ListEventsByCursorData = {
 
 export type ListEventsByCursorErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
 };
@@ -687,6 +782,12 @@ export type ListEventsByCursorResponses = {
         events: {
             data: Array<{
                 id: string;
+                workspace_id: number;
+                /**
+                 * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+                 *
+                 * @deprecated
+                 */
                 signal_tracker_id: string;
                 parent_event_id: string | null;
                 event_name: string;
@@ -705,6 +806,9 @@ export type ListEventsByCursorResponses = {
                 consent: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
+                /**
+                 * Deprecated compatibility field. The value is always null; delivery identity is never returned.
+                 */
                 user_data_hashed: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;
@@ -721,6 +825,12 @@ export type ListEventsByCursorResponses = {
                 payload_expired: boolean;
                 deliveries: Array<{
                     id: number;
+                    workspace_id: number;
+                    /**
+                     * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+                     *
+                     * @deprecated
+                     */
                     signal_tracker_id: string;
                     event_id: string;
                     destination_id: string | null;
@@ -774,7 +884,7 @@ export type SetDestinationTestModeData = {
 
 export type SetDestinationTestModeErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
     /**
@@ -796,6 +906,12 @@ export type SetDestinationTestModeResponses = {
     200: {
         destination: {
             id: string;
+            workspace_id: number;
+            /**
+             * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+             *
+             * @deprecated
+             */
             signal_tracker_id: string;
             platform_ad_account_id: number | null;
             type: DestinationType;
@@ -831,7 +947,7 @@ export type SendTestPurchaseData = {
 
 export type SendTestPurchaseErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
     /**
@@ -880,7 +996,7 @@ export type ReplayDeliveriesData = {
 
 export type ReplayDeliveriesErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
     /**
@@ -916,7 +1032,7 @@ export type GetReconciliationReportData = {
 
 export type GetReconciliationReportErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
     /**
@@ -935,6 +1051,12 @@ export type GetReconciliationReportResponses = {
         date: string;
         reports: Array<{
             id: number;
+            workspace_id: number;
+            /**
+             * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+             *
+             * @deprecated
+             */
             signal_tracker_id: string;
             destination_id: string;
             report_date: string;
@@ -962,6 +1084,12 @@ export type GetReconciliationReportResponses = {
             updated_at: string | null;
             destination: {
                 id: string;
+                workspace_id: number;
+                /**
+                 * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+                 *
+                 * @deprecated
+                 */
                 signal_tracker_id: string;
                 platform_ad_account_id: number | null;
                 type: DestinationType;
@@ -988,7 +1116,7 @@ export type GetEmqReportData = {
 
 export type GetEmqReportErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
 };
@@ -1002,6 +1130,12 @@ export type GetEmqReportResponses = {
     200: {
         snapshots: Array<{
             id: number;
+            workspace_id: number;
+            /**
+             * Deprecated alias of workspace_id; contains the workspace ID in decimal string form.
+             *
+             * @deprecated
+             */
             signal_tracker_id: string;
             destination_id: string;
             score: number;
@@ -1020,9 +1154,10 @@ export type GetEmqReportResponses = {
 export type GetEmqReportResponse = GetEmqReportResponses[keyof GetEmqReportResponses];
 
 export type DeleteUserDataData = {
-    body: {
+    body: unknown & {
         identifier_type: 'email' | 'phone' | 'external_id';
-        identifier_hash: string;
+        identifier_hash?: string;
+        identifier?: string;
     };
     path?: never;
     query?: never;
@@ -1031,7 +1166,7 @@ export type DeleteUserDataData = {
 
 export type DeleteUserDataErrors = {
     /**
-     * Invalid or missing Signal tracker secret.
+     * Invalid or missing Signals workspace secret.
      */
     401: ErrorMessage;
     /**
@@ -1081,6 +1216,19 @@ export type GetSandboxResponses = {
             url: string;
             authentication_required: boolean;
             description: string;
+            issued_key: {
+                api_key: string;
+                token_type: string;
+                expires_in: number;
+                expires_at: string;
+                scope: string;
+                production_access: boolean;
+                use: {
+                    method: string;
+                    url: string;
+                    authorization: string;
+                };
+            };
         };
         try: {
             method: string;
@@ -1101,6 +1249,34 @@ export type GetSandboxResponses = {
 };
 
 export type GetSandboxResponse = GetSandboxResponses[keyof GetSandboxResponses];
+
+export type GetSandboxKeyData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/sandbox/keys';
+};
+
+export type GetSandboxKeyResponses = {
+    /**
+     * Short-lived sandbox API key issued.
+     */
+    200: {
+        api_key: string;
+        token_type: string;
+        expires_in: number;
+        expires_at: string;
+        scope: string;
+        production_access: boolean;
+        use: {
+            method: string;
+            url: string;
+            authorization: string;
+        };
+    };
+};
+
+export type GetSandboxKeyResponse = GetSandboxKeyResponses[keyof GetSandboxKeyResponses];
 
 export type CreateSandboxKeyData = {
     body?: never;

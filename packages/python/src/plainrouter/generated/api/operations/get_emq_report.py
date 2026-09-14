@@ -56,7 +56,8 @@ def sync_detailed(
 ) -> Response[ErrorMessage | GetEmqReportResponse200]:
     """Get Event Match Quality history
 
-     Returns recent Meta Event Match Quality snapshots for the authenticated Signal tracker.
+     Returns recent Meta Event Match Quality snapshots for the authenticated Signals workspace so callers
+    can inspect measured quality changes over time.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -81,7 +82,8 @@ def sync(
 ) -> ErrorMessage | GetEmqReportResponse200 | None:
     """Get Event Match Quality history
 
-     Returns recent Meta Event Match Quality snapshots for the authenticated Signal tracker.
+     Returns recent Meta Event Match Quality snapshots for the authenticated Signals workspace so callers
+    can inspect measured quality changes over time.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -102,7 +104,8 @@ async def asyncio_detailed(
 ) -> Response[ErrorMessage | GetEmqReportResponse200]:
     """Get Event Match Quality history
 
-     Returns recent Meta Event Match Quality snapshots for the authenticated Signal tracker.
+     Returns recent Meta Event Match Quality snapshots for the authenticated Signals workspace so callers
+    can inspect measured quality changes over time.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -125,7 +128,8 @@ async def asyncio(
 ) -> ErrorMessage | GetEmqReportResponse200 | None:
     """Get Event Match Quality history
 
-     Returns recent Meta Event Match Quality snapshots for the authenticated Signal tracker.
+     Returns recent Meta Event Match Quality snapshots for the authenticated Signals workspace so callers
+    can inspect measured quality changes over time.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

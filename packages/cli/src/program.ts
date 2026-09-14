@@ -9,6 +9,7 @@ import {
   replayDeliveries,
   sendTestPurchase,
   setDestinationTestMode,
+  validateCreateEventBody,
   type CreateEventData,
   type DeleteUserDataData,
   type GetReconciliationReportData,
@@ -32,6 +33,7 @@ import {
 import {
   formatApiError,
   maskToken,
+  writeIngestionWarnings,
   writeResponse,
   type TextWriter,
 } from './output.js';
@@ -201,6 +203,7 @@ const executeApi = async (
     throw new ApiError('API response did not contain data.');
   }
 
+  writeIngestionWarnings(result.data, result.response?.status, dependencies.writeErr);
   writeResponse(result.data, globalJson(command), dependencies.writeOut);
 };
 
@@ -283,6 +286,8 @@ export const createProgram = (dependencies: CliDependencies): Command => {
     .description('submit a Signal event')
     .requiredOption('--data <json>', 'event request body as a JSON object', parseJsonObject)
     .action(async (options: { data: Record<string, unknown> }, command: Command) => {
+      validateCreateEventBody(options.data as CreateEventData['body']);
+
       await executeApi(dependencies, command, () =>
         dependencies.sdk.createEvent({
           body: options.data as CreateEventData['body'],

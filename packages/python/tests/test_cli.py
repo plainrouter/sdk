@@ -216,7 +216,7 @@ def test_report_and_deletion_commands_preserve_types(tmp_path: Path) -> None:
     assert (
         run_cli(["user-data", "delete", "--type", "email", "--hash", "hashed_identifier", "--yes"], dependencies) == 0
     )
-    assert recorded["delete_user_data"].calls[0][1]["body"].to_dict() == {
+    assert recorded["delete_user_data"].calls[0][1]["body"] == {
         "identifier_type": "email",
         "identifier_hash": "hashed_identifier",
     }
