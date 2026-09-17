@@ -1,9 +1,10 @@
 # Registry submissions
 
-Reconciled 2026-08-28 for SDK-FUNNEL-2. PlainRouter is already published in
-the official MCP Registry as `com.plainrouter/mcp`; versions `0.3.0`, `0.3.1`,
-and `0.3.2` are present, and `0.3.2` is current. This file prepares future
-version updates and third-party directory submissions only. No registry or
+Prepared 2026-09-17 for the Laravel MCP 1.0 server release. As last confirmed
+on 2026-08-28, PlainRouter is published in the official MCP Registry as
+`com.plainrouter/mcp`; versions `0.3.0`, `0.3.1`, and `0.3.2` were present, and
+`0.3.2` was current. The repository's `server.json` prepares `0.4.0` for
+publication only after the matching server version is deployed. No registry or
 directory account was used, no listing was submitted, and no credentials were
 added to the repository.
 
@@ -50,10 +51,9 @@ verification is performed through their rendered README.
 The [live Registry query](https://registry.modelcontextprotocol.io/v0/servers?search=plainrouter)
 is authoritative for the existing identity `com.plainrouter/mcp`. A remote URL
 cannot be claimed by another server name, and published versions are immutable:
-publishing `0.3.2` again is not an update. `/server.json` is reconciled to the
-current live `0.3.2` record for source control, but Robin must set a new server
-version that matches the deployed MCP server before the next publish. This
-lane does not perform that version bump.
+publishing `0.3.2` again is not an update. `/server.json` prepares `0.4.0`, but
+it must not be published until the deployed MCP server reports `0.4.0`. This
+lane does not deploy the application or publish the Registry entry.
 
 Sources used:
 
@@ -83,8 +83,9 @@ shown here.
    mcp-publisher --version
    ```
 
-2. Update `server.json` to the next deployed MCP server version, then validate
-   the file. Reusing `0.3.2` fails because that Registry version already exists.
+2. Confirm the deployed MCP server reports the same version as `server.json`,
+   then validate the file. Reusing `0.3.2` fails because that Registry version
+   already exists.
 
    ```bash
    mcp-publisher validate server.json
