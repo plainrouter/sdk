@@ -3,7 +3,7 @@
   "name": "com.plainrouter/mcp",
   "title": "PlainRouter",
   "description": "Inspect an approved ad account and first-party signal health, then propose policy-gated actions.",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "repository": {
     "url": "https://github.com/plainrouter/sdk",
     "source": "github"
