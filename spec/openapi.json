@@ -4555,7 +4555,8 @@
                                     "failed",
                                     "rolled_back",
                                     "rollback_incomplete",
-                                    "blocked"
+                                    "blocked",
+                                    "halted"
                                 ]
                             },
                             "batch_status": {
@@ -4574,7 +4575,8 @@
                                     "failed",
                                     "rolled_back",
                                     "rollback_incomplete",
-                                    "blocked"
+                                    "blocked",
+                                    "halted"
                                 ]
                             },
                             "restoration_summary": {
@@ -4774,7 +4776,8 @@
                             "failed",
                             "rolled_back",
                             "rollback_incomplete",
-                            "blocked"
+                            "blocked",
+                            "halted"
                         ]
                     },
                     "disposition": {
@@ -5208,7 +5211,8 @@
                         "type": [
                             "integer",
                             "null"
-                        ]
+                        ],
+                        "description": "Meta outbound clicks. Days before 2026-06-29, or not re-read by the daily sync since 2026-09-27, may still hold Meta link clicks or all clicks."
                     }
                 },
                 "required": [

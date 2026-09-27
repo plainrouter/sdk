@@ -9,8 +9,8 @@ export type ClientOptions = {
  */
 export type ActionBatchRead = {
     data: {
-        status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked';
-        batch_status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked';
+        status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked' | 'halted';
+        batch_status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked' | 'halted';
         restoration_summary: 'all_receipts_compensated_late' | null;
         actions: Array<ActionReadItem>;
     };
@@ -65,7 +65,7 @@ export type ActionListRead = {
  * ActionReadItem
  */
 export type ActionReadItem = {
-    batch_status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked';
+    batch_status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked' | 'halted';
     disposition: ActionCurrentDisposition;
 };
 
@@ -217,6 +217,9 @@ export type ReconciliationReport = {
     status: string;
     created_at: string | null;
     updated_at: string | null;
+    /**
+     * Meta outbound clicks. Days before 2026-06-29, or not re-read by the daily sync since 2026-09-27, may still hold Meta link clicks or all clicks.
+     */
     claimed_clicks: number | null;
 };
 

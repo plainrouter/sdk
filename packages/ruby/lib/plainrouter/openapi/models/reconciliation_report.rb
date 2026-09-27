@@ -44,6 +44,7 @@ module PlainRouter::OpenAPI
 
     attr_accessor :updated_at
 
+    # Meta outbound clicks. Days before 2026-06-29, or not re-read by the daily sync since 2026-09-27, may still hold Meta link clicks or all clicks.
     attr_accessor :claimed_clicks
 
     # Attribute mapping from ruby-style variable name to JSON key.

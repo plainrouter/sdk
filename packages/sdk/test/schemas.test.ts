@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  zActionBatchRead,
+  zActionReadItem,
   zCreateEventBody,
   zCreateEventResponse,
   zEvent,
@@ -9,6 +11,35 @@ import {
 } from '../src/index.js';
 
 describe('generated response schemas', () => {
+  it('accepts halted Actions statuses and rejects an unknown status', () => {
+    const disposition = {
+      receipt_status: null,
+      outcome_status: null,
+      outcome_reason_code: null,
+      outcome_checked_at: null,
+      compensation_reason_code: null,
+      recovery_disposition: null,
+      late_restored: false,
+    };
+    const action = { batch_status: 'halted', disposition };
+    const batch = {
+      data: {
+        status: 'halted',
+        batch_status: 'halted',
+        restoration_summary: null,
+        actions: [action],
+      },
+    };
+
+    expect(zActionBatchRead.parse(batch)).toEqual(batch);
+    expect(zActionReadItem.parse(action)).toEqual(action);
+    expect(() =>
+      zActionBatchRead.parse({
+        data: { ...batch.data, status: 'unknown_status' },
+      }),
+    ).toThrow();
+  });
+
   it('round-trips a valid POST /events response and rejects a broken response', () => {
     const response = {
       event_id: '01JTESTEVENT00000000000000',

@@ -6,6 +6,7 @@ from collections.abc import Callable
 from typing import TypeVar
 
 import httpx
+import pytest
 
 from plainrouter import (
     create_client,
@@ -22,6 +23,7 @@ from plainrouter import (
 )
 from plainrouter.generated import AuthenticatedClient
 from plainrouter.generated.models import (
+    ActionBatchReadData,
     CreateEventBodyType0,
     CreateEventBodyType0Consent,
     CreateEventBodyType0ConsentMode,
@@ -38,6 +40,34 @@ from plainrouter.generated.models import (
 from plainrouter.generated.types import Response
 
 T = TypeVar("T")
+
+
+def test_actions_models_parse_halted_status_and_reject_unknown_status() -> None:
+    batch = {
+        "status": "halted",
+        "batch_status": "halted",
+        "restoration_summary": None,
+        "actions": [
+            {
+                "batch_status": "halted",
+                "disposition": {
+                    "receipt_status": None,
+                    "outcome_status": None,
+                    "outcome_reason_code": None,
+                    "outcome_checked_at": None,
+                    "compensation_reason_code": None,
+                    "recovery_disposition": None,
+                    "late_restored": False,
+                },
+            }
+        ],
+    }
+
+    parsed = ActionBatchReadData.from_dict(batch)
+
+    assert parsed.to_dict() == batch
+    with pytest.raises(ValueError):
+        ActionBatchReadData.from_dict({**batch, "status": "unknown_status"})
 
 
 def make_client(
