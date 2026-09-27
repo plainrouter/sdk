@@ -1,5 +1,18 @@
 {
     "x-signed": true,
+    "x-action-types": [
+        "increase_budget",
+        "decrease_budget",
+        "pause",
+        "resume",
+        "replace_creative",
+        "shift_spend",
+        "rollback",
+        "create_campaign",
+        "create_ad_set",
+        "create_ad",
+        "upload_asset"
+    ],
     "openapi": "3.1.0",
     "info": {
         "title": "Plainrouter Conversion API",
@@ -18,6 +31,783 @@
         }
     ],
     "paths": {
+        "/agent/workspaces/{workspace}/actions/dry-run": {
+            "post": {
+                "operationId": "actions.api.dry-run",
+                "description": "Evaluate a governed proposal for the approved account and preview each policy decision and execution diff without creating a batch or action.",
+                "summary": "Preview actions",
+                "tags": [
+                    "ActionDryRunApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "actions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "minItems": 1,
+                                        "maxItems": 25
+                                    },
+                                    "rationale": {
+                                        "type": "string",
+                                        "maxLength": 4000
+                                    },
+                                    "idempotency_key": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "evidence": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "source_tool": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "get_account_state",
+                                                        "get_signal_health",
+                                                        "get_performance",
+                                                        "get-creative-library",
+                                                        "staged-asset-manifest"
+                                                    ]
+                                                },
+                                                "fields_used": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "maxLength": 255
+                                                    },
+                                                    "minItems": 1,
+                                                    "maxItems": 50
+                                                },
+                                                "action_index": {
+                                                    "type": "integer",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "source_tool",
+                                                "fields_used"
+                                            ]
+                                        },
+                                        "minItems": 1,
+                                        "maxItems": 3,
+                                        "uniqueItems": true
+                                    },
+                                    "target_source": {
+                                        "type": "string",
+                                        "enum": [
+                                            "human_supplied"
+                                        ]
+                                    },
+                                    "account_id": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    }
+                                },
+                                "required": [
+                                    "actions",
+                                    "rationale",
+                                    "idempotency_key",
+                                    "evidence",
+                                    "target_source"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Evaluated dry-run preview.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, or expired workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The key lacks the propose-actions grant.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account, or Actions resource not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "workspaceActionKey": []
+                    }
+                ]
+            }
+        },
+        "/agent/workspaces/{workspace}/actions": {
+            "post": {
+                "operationId": "actions.api.propose",
+                "description": "Submit a governed proposal for an advertising account available to this workspace key. A matching idempotency key returns the saved batch.",
+                "summary": "Propose actions",
+                "tags": [
+                    "ActionProposalApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "actions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "minItems": 1,
+                                        "maxItems": 25
+                                    },
+                                    "rationale": {
+                                        "type": "string",
+                                        "maxLength": 4000
+                                    },
+                                    "idempotency_key": {
+                                        "type": "string",
+                                        "maxLength": 64
+                                    },
+                                    "evidence": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "source_tool": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "get_account_state",
+                                                        "get_signal_health",
+                                                        "get_performance",
+                                                        "get-creative-library",
+                                                        "staged-asset-manifest"
+                                                    ]
+                                                },
+                                                "fields_used": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "maxLength": 255
+                                                    },
+                                                    "minItems": 1,
+                                                    "maxItems": 50
+                                                },
+                                                "action_index": {
+                                                    "type": "integer",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "source_tool",
+                                                "fields_used"
+                                            ]
+                                        },
+                                        "minItems": 1,
+                                        "maxItems": 3,
+                                        "uniqueItems": true
+                                    },
+                                    "target_source": {
+                                        "type": "string",
+                                        "enum": [
+                                            "human_supplied"
+                                        ]
+                                    },
+                                    "account_id": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    }
+                                },
+                                "required": [
+                                    "actions",
+                                    "rationale",
+                                    "idempotency_key",
+                                    "evidence",
+                                    "target_source"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Saved idempotent proposal.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "New proposal created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, or expired workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The key lacks the propose-actions grant.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account, or Actions resource not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "workspaceActionKey": []
+                    }
+                ]
+            },
+            "get": {
+                "operationId": "actions.api.index",
+                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "summary": "Read Actions data",
+                "tags": [
+                    "ActionReadApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "approved_without_execution",
+                                "rejected",
+                                "executing",
+                                "executed_pending_verification",
+                                "compensating",
+                                "measuring",
+                                "verified",
+                                "failed",
+                                "execution_uncertain",
+                                "rolled_back",
+                                "blocked"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Authorized Actions resource.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ActionListRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, or expired workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The key lacks the propose-actions grant.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account, or Actions resource not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "workspaceActionKey": []
+                    }
+                ]
+            }
+        },
+        "/agent/workspaces/{workspace}/actions/policy": {
+            "get": {
+                "operationId": "actions.api.policy",
+                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "summary": "Read Actions data",
+                "tags": [
+                    "ActionReadApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Authorized Actions resource.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, or expired workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The key lacks the propose-actions grant.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account, or Actions resource not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "workspaceActionKey": []
+                    }
+                ]
+            }
+        },
+        "/agent/workspaces/{workspace}/actions/{action}/decision-receipt": {
+            "get": {
+                "operationId": "actions.api.decision-receipt",
+                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "summary": "Read Actions data",
+                "tags": [
+                    "ActionReadApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Authorized Actions resource.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ActionDecisionReceiptRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, or expired workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The key lacks the propose-actions grant.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account, or Actions resource not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "workspaceActionKey": []
+                    }
+                ]
+            }
+        },
+        "/agent/workspaces/{workspace}/actions/{action}": {
+            "get": {
+                "operationId": "actions.api.show",
+                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "summary": "Read Actions data",
+                "tags": [
+                    "ActionReadApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Authorized Actions resource.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ActionDetailRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, or expired workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The key lacks the propose-actions grant.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account, or Actions resource not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "workspaceActionKey": []
+                    }
+                ]
+            }
+        },
+        "/agent/workspaces/{workspace}/action-batches/{actionBatch}": {
+            "get": {
+                "operationId": "actions.api.batch",
+                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "summary": "Read Actions data",
+                "tags": [
+                    "ActionReadApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "actionBatch",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Authorized Actions resource.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ActionBatchRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, or expired workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The key lacks the propose-actions grant.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account, or Actions resource not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "workspaceActionKey": []
+                    }
+                ]
+            }
+        },
         "/events": {
             "post": {
                 "operationId": "createEvent",
@@ -37,7 +827,7 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.",
+                    "description": "Authenticated callers using the Server secret may supply client_ip_address and client_user_agent in user_data; browser traffic using the Publishable key takes those fields only from the configured edge.",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -346,7 +1136,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -440,7 +1230,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1271,7 +2061,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1744,7 +2534,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2163,7 +2953,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2310,7 +3100,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2454,7 +3244,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2573,7 +3363,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2598,7 +3388,7 @@
         "/reports/reconciliation": {
             "get": {
                 "operationId": "getReconciliationReport",
-                "description": "Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can compare accepted gateway and provider outcomes.",
+                "description": "Returns stored delivery-versus-platform reconciliation results for one date. Dates before the workspace read bound return 422.",
                 "summary": "Get a reconciliation report",
                 "tags": [
                     "Operations"
@@ -2833,7 +3623,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2957,7 +3747,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3056,7 +3846,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid or missing Signals workspace secret.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3081,7 +3871,7 @@
         "/sandbox": {
             "get": {
                 "operationId": "getSandbox",
-                "description": "Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist data or contact an advertising provider.",
+                "description": "Returns a ready-to-run synthetic event example that needs no account or key and cannot persist data or contact an advertising provider.",
                 "summary": "Discover the zero-auth sandbox",
                 "tags": [
                     "Sandbox"
@@ -3292,14 +4082,14 @@
         "/sandbox/keys": {
             "get": {
                 "operationId": "getSandboxKey",
-                "description": "Returns a short-lived sandbox-only bearer key over GET so a read-only agent can obtain working credentials without issuing a write request.",
-                "summary": "Get a sandbox API key",
+                "description": "Returns a short-lived Sandbox key over GET so a read-only agent can obtain working credentials without issuing a write request.",
+                "summary": "Get a Sandbox key",
                 "tags": [
                     "Sandbox"
                 ],
                 "responses": {
                     "200": {
-                        "description": "Short-lived sandbox API key issued.",
+                        "description": "Short-lived Sandbox key issued.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3381,14 +4171,14 @@
             },
             "post": {
                 "operationId": "createSandboxKey",
-                "description": "Issues a short-lived sandbox-only bearer key without an account, human approval, or production access.",
-                "summary": "Create a sandbox API key",
+                "description": "Issues a short-lived Sandbox key without an account, human approval, or production access. It is valid for synthetic events only.",
+                "summary": "Create a Sandbox key",
                 "tags": [
                     "Sandbox"
                 ],
                 "responses": {
                     "201": {
-                        "description": "Short-lived sandbox API key issued.",
+                        "description": "Short-lived Sandbox key issued.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3472,7 +4262,7 @@
         "/sandbox/events": {
             "post": {
                 "operationId": "validateSandboxEvent",
-                "description": "Validates and immediately discards one identity-free synthetic event. It requires no account or API key and never writes to the ledger or contacts Meta.",
+                "description": "Validates and immediately discards one identity-free synthetic event. It requires no account or key and never writes to the ledger or contacts Meta.",
                 "summary": "Validate a synthetic event",
                 "tags": [
                     "Sandbox"
@@ -3602,8 +4392,8 @@
         "/sandbox/keyed-events": {
             "post": {
                 "operationId": "validateSandboxEventWithKey",
-                "description": "Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data or contacting an advertising provider.",
-                "summary": "Validate a synthetic event with a sandbox key",
+                "description": "Validates a synthetic event with a short-lived Sandbox key, then discards it without persisting data or contacting an advertising provider.",
+                "summary": "Validate a synthetic event with a Sandbox key",
                 "tags": [
                     "Sandbox"
                 ],
@@ -3654,7 +4444,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Synthetic event validated with a sandbox key and discarded.",
+                        "description": "Synthetic event validated with a Sandbox key and discarded.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3728,16 +4518,275 @@
         "securitySchemes": {
             "workspaceSecret": {
                 "type": "http",
-                "description": "Per-workspace bearer secret. It authenticates only the Signals workspace represented by the credential.",
+                "description": "Per-workspace Server secret. It authenticates only the Signals workspace represented by the credential.",
                 "scheme": "bearer"
             },
             "sandboxCredential": {
                 "type": "http",
-                "description": "Short-lived sandbox-only key issued by POST /sandbox/keys.",
+                "description": "Short-lived Sandbox key issued by POST /sandbox/keys.",
+                "scheme": "bearer"
+            },
+            "workspaceActionKey": {
+                "type": "http",
+                "description": "Workspace execution key with the propose-actions grant. Unbound keys select an available advertising account with account_id.",
                 "scheme": "bearer"
             }
         },
         "schemas": {
+            "ActionBatchRead": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "pending",
+                                    "approved",
+                                    "approved_without_execution",
+                                    "auto_approved",
+                                    "rejected",
+                                    "executing",
+                                    "executed_pending_verification",
+                                    "compensating",
+                                    "measuring",
+                                    "completed",
+                                    "failed",
+                                    "rolled_back",
+                                    "rollback_incomplete",
+                                    "blocked"
+                                ]
+                            },
+                            "batch_status": {
+                                "type": "string",
+                                "enum": [
+                                    "pending",
+                                    "approved",
+                                    "approved_without_execution",
+                                    "auto_approved",
+                                    "rejected",
+                                    "executing",
+                                    "executed_pending_verification",
+                                    "compensating",
+                                    "measuring",
+                                    "completed",
+                                    "failed",
+                                    "rolled_back",
+                                    "rollback_incomplete",
+                                    "blocked"
+                                ]
+                            },
+                            "restoration_summary": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "enum": [
+                                    "all_receipts_compensated_late",
+                                    null
+                                ]
+                            },
+                            "actions": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/ActionReadItem"
+                                }
+                            }
+                        },
+                        "required": [
+                            "status",
+                            "batch_status",
+                            "restoration_summary",
+                            "actions"
+                        ]
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "ActionBatchRead"
+            },
+            "ActionCurrentDisposition": {
+                "type": "object",
+                "properties": {
+                    "receipt_status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "pending",
+                            "attempting",
+                            "reconciliation_required",
+                            "committed",
+                            "executed_pending_verification",
+                            "measuring",
+                            "verified",
+                            "compensating",
+                            "compensated",
+                            "compensation_failed",
+                            "irreversible",
+                            "failed",
+                            "reconciliation_exhausted",
+                            null
+                        ]
+                    },
+                    "outcome_status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "measurable",
+                            "not_measurable",
+                            "unavailable",
+                            null
+                        ]
+                    },
+                    "outcome_reason_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "outcome_checked_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "compensation_reason_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "recovery_disposition": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "no_compensation",
+                            "restored",
+                            "unrestored",
+                            "contradictory",
+                            "irreversible",
+                            "uncertain",
+                            null
+                        ]
+                    },
+                    "late_restored": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "receipt_status",
+                    "outcome_status",
+                    "outcome_reason_code",
+                    "outcome_checked_at",
+                    "compensation_reason_code",
+                    "recovery_disposition",
+                    "late_restored"
+                ],
+                "title": "ActionCurrentDisposition"
+            },
+            "ActionDecisionReceiptRead": {
+                "type": "object",
+                "properties": {
+                    "document": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "document_sha256": {
+                        "type": "string"
+                    },
+                    "chain_entry": {
+                        "type": "object",
+                        "properties": {
+                            "sequence": {},
+                            "hash": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "disposition": {
+                        "$ref": "#/components/schemas/ActionCurrentDisposition"
+                    }
+                },
+                "required": [
+                    "document",
+                    "document_sha256",
+                    "chain_entry",
+                    "disposition"
+                ],
+                "title": "ActionDecisionReceiptRead"
+            },
+            "ActionDetailRead": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/ActionReadItem"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "ActionDetailRead"
+            },
+            "ActionListRead": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ActionReadItem"
+                        }
+                    },
+                    "meta": {
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "data",
+                    "meta"
+                ],
+                "title": "ActionListRead"
+            },
+            "ActionReadItem": {
+                "type": "object",
+                "properties": {
+                    "batch_status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "approved",
+                            "approved_without_execution",
+                            "auto_approved",
+                            "rejected",
+                            "executing",
+                            "executed_pending_verification",
+                            "compensating",
+                            "measuring",
+                            "completed",
+                            "failed",
+                            "rolled_back",
+                            "rollback_incomplete",
+                            "blocked"
+                        ]
+                    },
+                    "disposition": {
+                        "$ref": "#/components/schemas/ActionCurrentDisposition"
+                    }
+                },
+                "required": [
+                    "batch_status",
+                    "disposition"
+                ],
+                "title": "ActionReadItem"
+            },
             "DeliveryStatus": {
                 "type": "string",
                 "enum": [
@@ -3820,8 +4869,7 @@
             "DestinationCredentialSource": {
                 "type": "string",
                 "enum": [
-                    "oauth_connection",
-                    "managed_token"
+                    "oauth_connection"
                 ],
                 "title": "DestinationCredentialSource"
             },

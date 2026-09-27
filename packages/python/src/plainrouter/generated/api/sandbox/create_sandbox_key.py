@@ -48,10 +48,10 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[CreateSandboxKeyResponse201]:
-    """Create a sandbox API key
+    """Create a Sandbox key
 
-     Issues a short-lived sandbox-only bearer key without an account, human approval, or production
-    access.
+     Issues a short-lived Sandbox key without an account, human approval, or production access. It is
+    valid for synthetic events only.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -74,10 +74,10 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
 ) -> CreateSandboxKeyResponse201 | None:
-    """Create a sandbox API key
+    """Create a Sandbox key
 
-     Issues a short-lived sandbox-only bearer key without an account, human approval, or production
-    access.
+     Issues a short-lived Sandbox key without an account, human approval, or production access. It is
+    valid for synthetic events only.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -96,10 +96,10 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[CreateSandboxKeyResponse201]:
-    """Create a sandbox API key
+    """Create a Sandbox key
 
-     Issues a short-lived sandbox-only bearer key without an account, human approval, or production
-    access.
+     Issues a short-lived Sandbox key without an account, human approval, or production access. It is
+    valid for synthetic events only.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -120,10 +120,10 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
 ) -> CreateSandboxKeyResponse201 | None:
-    """Create a sandbox API key
+    """Create a Sandbox key
 
-     Issues a short-lived sandbox-only bearer key without an account, human approval, or production
-    access.
+     Issues a short-lived Sandbox key without an account, human approval, or production access. It is
+    valid for synthetic events only.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

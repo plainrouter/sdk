@@ -19,8 +19,8 @@ module PlainRouter::OpenAPI
     def initialize(api_client = ApiClient.default)
       @api_client = api_client
     end
-    # Create a sandbox API key
-    # Issues a short-lived sandbox-only bearer key without an account, human approval, or production access.
+    # Create a Sandbox key
+    # Issues a short-lived Sandbox key without an account, human approval, or production access. It is valid for synthetic events only.
     # @param [Hash] opts the optional parameters
     # @return [GetSandbox200ResponseSelfServeKeyIssuedKey]
     def create_sandbox_key(opts = {})
@@ -28,8 +28,8 @@ module PlainRouter::OpenAPI
       data
     end
 
-    # Create a sandbox API key
-    # Issues a short-lived sandbox-only bearer key without an account, human approval, or production access.
+    # Create a Sandbox key
+    # Issues a short-lived Sandbox key without an account, human approval, or production access. It is valid for synthetic events only.
     # @param [Hash] opts the optional parameters
     # @return [Array<(GetSandbox200ResponseSelfServeKeyIssuedKey, Integer, Hash)>] GetSandbox200ResponseSelfServeKeyIssuedKey data, response status code and response headers
     def create_sandbox_key_with_http_info(opts = {})
@@ -77,7 +77,7 @@ module PlainRouter::OpenAPI
     end
 
     # Discover the zero-auth sandbox
-    # Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist data or contact an advertising provider.
+    # Returns a ready-to-run synthetic event example that needs no account or key and cannot persist data or contact an advertising provider.
     # @param [Hash] opts the optional parameters
     # @return [GetSandbox200Response]
     def get_sandbox(opts = {})
@@ -86,7 +86,7 @@ module PlainRouter::OpenAPI
     end
 
     # Discover the zero-auth sandbox
-    # Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist data or contact an advertising provider.
+    # Returns a ready-to-run synthetic event example that needs no account or key and cannot persist data or contact an advertising provider.
     # @param [Hash] opts the optional parameters
     # @return [Array<(GetSandbox200Response, Integer, Hash)>] GetSandbox200Response data, response status code and response headers
     def get_sandbox_with_http_info(opts = {})
@@ -133,8 +133,8 @@ module PlainRouter::OpenAPI
       return data, status_code, headers
     end
 
-    # Get a sandbox API key
-    # Returns a short-lived sandbox-only bearer key over GET so a read-only agent can obtain working credentials without issuing a write request.
+    # Get a Sandbox key
+    # Returns a short-lived Sandbox key over GET so a read-only agent can obtain working credentials without issuing a write request.
     # @param [Hash] opts the optional parameters
     # @return [GetSandbox200ResponseSelfServeKeyIssuedKey]
     def get_sandbox_key(opts = {})
@@ -142,8 +142,8 @@ module PlainRouter::OpenAPI
       data
     end
 
-    # Get a sandbox API key
-    # Returns a short-lived sandbox-only bearer key over GET so a read-only agent can obtain working credentials without issuing a write request.
+    # Get a Sandbox key
+    # Returns a short-lived Sandbox key over GET so a read-only agent can obtain working credentials without issuing a write request.
     # @param [Hash] opts the optional parameters
     # @return [Array<(GetSandbox200ResponseSelfServeKeyIssuedKey, Integer, Hash)>] GetSandbox200ResponseSelfServeKeyIssuedKey data, response status code and response headers
     def get_sandbox_key_with_http_info(opts = {})
@@ -191,7 +191,7 @@ module PlainRouter::OpenAPI
     end
 
     # Validate a synthetic event
-    # Validates and immediately discards one identity-free synthetic event. It requires no account or API key and never writes to the ledger or contacts Meta.
+    # Validates and immediately discards one identity-free synthetic event. It requires no account or key and never writes to the ledger or contacts Meta.
     # @param validate_sandbox_event_request [ValidateSandboxEventRequest]
     # @param [Hash] opts the optional parameters
     # @return [ValidateSandboxEvent200Response]
@@ -201,7 +201,7 @@ module PlainRouter::OpenAPI
     end
 
     # Validate a synthetic event
-    # Validates and immediately discards one identity-free synthetic event. It requires no account or API key and never writes to the ledger or contacts Meta.
+    # Validates and immediately discards one identity-free synthetic event. It requires no account or key and never writes to the ledger or contacts Meta.
     # @param validate_sandbox_event_request [ValidateSandboxEventRequest]
     # @param [Hash] opts the optional parameters
     # @return [Array<(ValidateSandboxEvent200Response, Integer, Hash)>] ValidateSandboxEvent200Response data, response status code and response headers
@@ -258,8 +258,8 @@ module PlainRouter::OpenAPI
       return data, status_code, headers
     end
 
-    # Validate a synthetic event with a sandbox key
-    # Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data or contacting an advertising provider.
+    # Validate a synthetic event with a Sandbox key
+    # Validates a synthetic event with a short-lived Sandbox key, then discards it without persisting data or contacting an advertising provider.
     # @param validate_sandbox_event_request [ValidateSandboxEventRequest]
     # @param [Hash] opts the optional parameters
     # @return [ValidateSandboxEvent200Response]
@@ -268,8 +268,8 @@ module PlainRouter::OpenAPI
       data
     end
 
-    # Validate a synthetic event with a sandbox key
-    # Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data or contacting an advertising provider.
+    # Validate a synthetic event with a Sandbox key
+    # Validates a synthetic event with a short-lived Sandbox key, then discards it without persisting data or contacting an advertising provider.
     # @param validate_sandbox_event_request [ValidateSandboxEventRequest]
     # @param [Hash] opts the optional parameters
     # @return [Array<(ValidateSandboxEvent200Response, Integer, Hash)>] ValidateSandboxEvent200Response data, response status code and response headers

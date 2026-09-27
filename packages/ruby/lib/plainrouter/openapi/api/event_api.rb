@@ -21,7 +21,7 @@ module PlainRouter::OpenAPI
     end
     # Submit a conversion event
     # Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make retries idempotent.
-    # @param create_event_request [CreateEventRequest] Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.
+    # @param create_event_request [CreateEventRequest] Authenticated callers using the Server secret may supply client_ip_address and client_user_agent in user_data; browser traffic using the Publishable key takes those fields only from the configured edge.
     # @param [Hash] opts the optional parameters
     # @option opts [String] :idempotency_key Optional idempotency key. When event_id is omitted, Plainrouter uses this value as event_id. If both are supplied, they must match.
     # @return [CreateEvent200Response]
@@ -32,7 +32,7 @@ module PlainRouter::OpenAPI
 
     # Submit a conversion event
     # Accepts a consent-aware server-side conversion event and uses event_id or Idempotency-Key to make retries idempotent.
-    # @param create_event_request [CreateEventRequest] Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.
+    # @param create_event_request [CreateEventRequest] Authenticated callers using the Server secret may supply client_ip_address and client_user_agent in user_data; browser traffic using the Publishable key takes those fields only from the configured edge.
     # @param [Hash] opts the optional parameters
     # @option opts [String] :idempotency_key Optional idempotency key. When event_id is omitted, Plainrouter uses this value as event_id. If both are supplied, they must match.
     # @return [Array<(CreateEvent200Response, Integer, Hash)>] CreateEvent200Response data, response status code and response headers

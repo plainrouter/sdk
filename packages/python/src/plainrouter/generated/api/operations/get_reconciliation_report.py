@@ -75,8 +75,8 @@ def sync_detailed(
 ) -> Response[ErrorMessage | GetReconciliationReportResponse200 | ValidationError]:
     """Get a reconciliation report
 
-     Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can
-    compare accepted gateway and provider outcomes.
+     Returns stored delivery-versus-platform reconciliation results for one date. Dates before the
+    workspace read bound return 422.
 
     Args:
         date (datetime.date):
@@ -107,8 +107,8 @@ def sync(
 ) -> ErrorMessage | GetReconciliationReportResponse200 | ValidationError | None:
     """Get a reconciliation report
 
-     Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can
-    compare accepted gateway and provider outcomes.
+     Returns stored delivery-versus-platform reconciliation results for one date. Dates before the
+    workspace read bound return 422.
 
     Args:
         date (datetime.date):
@@ -134,8 +134,8 @@ async def asyncio_detailed(
 ) -> Response[ErrorMessage | GetReconciliationReportResponse200 | ValidationError]:
     """Get a reconciliation report
 
-     Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can
-    compare accepted gateway and provider outcomes.
+     Returns stored delivery-versus-platform reconciliation results for one date. Dates before the
+    workspace read bound return 422.
 
     Args:
         date (datetime.date):
@@ -164,8 +164,8 @@ async def asyncio(
 ) -> ErrorMessage | GetReconciliationReportResponse200 | ValidationError | None:
     """Get a reconciliation report
 
-     Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can
-    compare accepted gateway and provider outcomes.
+     Returns stored delivery-versus-platform reconciliation results for one date. Dates before the
+    workspace read bound return 422.
 
     Args:
         date (datetime.date):
