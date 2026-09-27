@@ -71,9 +71,9 @@ def sync_detailed(
     client: AuthenticatedClient,
     body: ValidateSandboxEventWithKeyBody,
 ) -> Response[ErrorMessage | ValidateSandboxEventWithKeyResponse200 | ValidationError]:
-    """Validate a synthetic event with a sandbox key
+    """Validate a synthetic event with a Sandbox key
 
-     Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data
+     Validates a synthetic event with a short-lived Sandbox key, then discards it without persisting data
     or contacting an advertising provider.
 
     Args:
@@ -103,9 +103,9 @@ def sync(
     client: AuthenticatedClient,
     body: ValidateSandboxEventWithKeyBody,
 ) -> ErrorMessage | ValidateSandboxEventWithKeyResponse200 | ValidationError | None:
-    """Validate a synthetic event with a sandbox key
+    """Validate a synthetic event with a Sandbox key
 
-     Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data
+     Validates a synthetic event with a short-lived Sandbox key, then discards it without persisting data
     or contacting an advertising provider.
 
     Args:
@@ -130,9 +130,9 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     body: ValidateSandboxEventWithKeyBody,
 ) -> Response[ErrorMessage | ValidateSandboxEventWithKeyResponse200 | ValidationError]:
-    """Validate a synthetic event with a sandbox key
+    """Validate a synthetic event with a Sandbox key
 
-     Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data
+     Validates a synthetic event with a short-lived Sandbox key, then discards it without persisting data
     or contacting an advertising provider.
 
     Args:
@@ -160,9 +160,9 @@ async def asyncio(
     client: AuthenticatedClient,
     body: ValidateSandboxEventWithKeyBody,
 ) -> ErrorMessage | ValidateSandboxEventWithKeyResponse200 | ValidationError | None:
-    """Validate a synthetic event with a sandbox key
+    """Validate a synthetic event with a Sandbox key
 
-     Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data
+     Validates a synthetic event with a short-lived Sandbox key, then discards it without persisting data
     or contacting an advertising provider.
 
     Args:

@@ -3,6 +3,137 @@
 import * as z from 'zod';
 
 /**
+ * ActionCurrentDisposition
+ */
+export const zActionCurrentDisposition = z.object({
+    receipt_status: z.enum([
+        'pending',
+        'attempting',
+        'reconciliation_required',
+        'committed',
+        'executed_pending_verification',
+        'measuring',
+        'verified',
+        'compensating',
+        'compensated',
+        'compensation_failed',
+        'irreversible',
+        'failed',
+        'reconciliation_exhausted'
+    ]).nullable(),
+    outcome_status: z.enum([
+        'measurable',
+        'not_measurable',
+        'unavailable'
+    ]).nullable(),
+    outcome_reason_code: z.string().nullable(),
+    outcome_checked_at: z.iso.datetime().nullable(),
+    compensation_reason_code: z.string().nullable(),
+    recovery_disposition: z.enum([
+        'no_compensation',
+        'restored',
+        'unrestored',
+        'contradictory',
+        'irreversible',
+        'uncertain'
+    ]).nullable(),
+    late_restored: z.boolean()
+});
+
+/**
+ * ActionDecisionReceiptRead
+ */
+export const zActionDecisionReceiptRead = z.object({
+    document: z.record(z.string(), z.unknown()),
+    document_sha256: z.string(),
+    chain_entry: z.object({
+        sequence: z.unknown().optional(),
+        hash: z.string().optional()
+    }),
+    disposition: zActionCurrentDisposition
+});
+
+/**
+ * ActionReadItem
+ */
+export const zActionReadItem = z.object({
+    batch_status: z.enum([
+        'pending',
+        'approved',
+        'approved_without_execution',
+        'auto_approved',
+        'rejected',
+        'executing',
+        'executed_pending_verification',
+        'compensating',
+        'measuring',
+        'completed',
+        'failed',
+        'rolled_back',
+        'rollback_incomplete',
+        'blocked'
+    ]),
+    disposition: zActionCurrentDisposition
+});
+
+/**
+ * ActionBatchRead
+ */
+export const zActionBatchRead = z.object({
+    data: z.object({
+        status: z.enum([
+            'pending',
+            'approved',
+            'approved_without_execution',
+            'auto_approved',
+            'rejected',
+            'executing',
+            'executed_pending_verification',
+            'compensating',
+            'measuring',
+            'completed',
+            'failed',
+            'rolled_back',
+            'rollback_incomplete',
+            'blocked'
+        ]),
+        batch_status: z.enum([
+            'pending',
+            'approved',
+            'approved_without_execution',
+            'auto_approved',
+            'rejected',
+            'executing',
+            'executed_pending_verification',
+            'compensating',
+            'measuring',
+            'completed',
+            'failed',
+            'rolled_back',
+            'rollback_incomplete',
+            'blocked'
+        ]),
+        restoration_summary: z.enum(['all_receipts_compensated_late']).nullable(),
+        actions: z.array(zActionReadItem)
+    })
+});
+
+/**
+ * ActionDetailRead
+ */
+export const zActionDetailRead = z.object({
+    data: zActionReadItem
+});
+
+/**
+ * ActionListRead
+ */
+export const zActionListRead = z.object({
+    data: z.array(zActionReadItem),
+    meta: z.record(z.string(), z.unknown())
+});
+
+/**
  * DeliveryStatus
  */
 export const zDeliveryStatus = z.enum([
@@ -22,7 +153,7 @@ export const zDeliveryStatus = z.enum([
 /**
  * DestinationCredentialSource
  */
-export const zDestinationCredentialSource = z.enum(['oauth_connection', 'managed_token']);
+export const zDestinationCredentialSource = z.enum(['oauth_connection']);
 
 /**
  * DestinationStatus
@@ -174,8 +305,130 @@ export const zValidationError = z.object({
     errors: z.record(z.string(), z.array(z.string()))
 });
 
+export const zActionsApiDryRunBody = z.object({
+    actions: z.array(z.string()).min(1).max(25),
+    rationale: z.string().max(4000),
+    idempotency_key: z.string().max(64),
+    evidence: z.array(z.object({
+        source_tool: z.enum([
+            'get_account_state',
+            'get_signal_health',
+            'get_performance',
+            'get-creative-library',
+            'staged-asset-manifest'
+        ]),
+        fields_used: z.array(z.string().max(255)).min(1).max(50),
+        action_index: z.int().gte(0).optional()
+    })).min(1).max(3),
+    target_source: z.enum(['human_supplied']),
+    account_id: z.int().gte(1).optional()
+});
+
+export const zActionsApiDryRunPath = z.object({
+    workspace: z.int()
+});
+
 /**
- * Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.
+ * Evaluated dry-run preview.
+ */
+export const zActionsApiDryRunResponse = z.record(z.string(), z.unknown());
+
+export const zActionsApiIndexPath = z.object({
+    workspace: z.int()
+});
+
+export const zActionsApiIndexQuery = z.object({
+    status: z.enum([
+        'pending',
+        'approved_without_execution',
+        'rejected',
+        'executing',
+        'executed_pending_verification',
+        'compensating',
+        'measuring',
+        'verified',
+        'failed',
+        'execution_uncertain',
+        'rolled_back',
+        'blocked'
+    ]).optional(),
+    page: z.int().gte(1).optional()
+});
+
+/**
+ * Authorized Actions resource.
+ */
+export const zActionsApiIndexResponse = zActionListRead;
+
+export const zActionsApiProposeBody = z.object({
+    actions: z.array(z.string()).min(1).max(25),
+    rationale: z.string().max(4000),
+    idempotency_key: z.string().max(64),
+    evidence: z.array(z.object({
+        source_tool: z.enum([
+            'get_account_state',
+            'get_signal_health',
+            'get_performance',
+            'get-creative-library',
+            'staged-asset-manifest'
+        ]),
+        fields_used: z.array(z.string().max(255)).min(1).max(50),
+        action_index: z.int().gte(0).optional()
+    })).min(1).max(3),
+    target_source: z.enum(['human_supplied']),
+    account_id: z.int().gte(1).optional()
+});
+
+export const zActionsApiProposePath = z.object({
+    workspace: z.int()
+});
+
+export const zActionsApiProposeResponse = z.union([
+    z.record(z.string(), z.unknown()),
+    z.record(z.string(), z.unknown())
+]);
+
+export const zActionsApiPolicyPath = z.object({
+    workspace: z.int()
+});
+
+/**
+ * Authorized Actions resource.
+ */
+export const zActionsApiPolicyResponse = z.record(z.string(), z.unknown());
+
+export const zActionsApiDecisionReceiptPath = z.object({
+    workspace: z.int(),
+    action: z.string()
+});
+
+/**
+ * Authorized Actions resource.
+ */
+export const zActionsApiDecisionReceiptResponse = zActionDecisionReceiptRead;
+
+export const zActionsApiShowPath = z.object({
+    workspace: z.int(),
+    action: z.string()
+});
+
+/**
+ * Authorized Actions resource.
+ */
+export const zActionsApiShowResponse = zActionDetailRead;
+
+export const zActionsApiBatchPath = z.object({
+    workspace: z.int(),
+    actionBatch: z.string()
+});
+
+/**
+ * Authorized Actions resource.
+ */
+export const zActionsApiBatchResponse = zActionBatchRead;
+
+/**
+ * Authenticated callers using the Server secret may supply client_ip_address and client_user_agent in user_data; browser traffic using the Publishable key takes those fields only from the configured edge.
  */
 export const zCreateEventBody = z.union([
     z.object({
@@ -839,7 +1092,7 @@ export const zGetSandboxResponse = z.object({
 });
 
 /**
- * Short-lived sandbox API key issued.
+ * Short-lived Sandbox key issued.
  */
 export const zGetSandboxKeyResponse = z.object({
     api_key: z.string(),
@@ -856,7 +1109,7 @@ export const zGetSandboxKeyResponse = z.object({
 });
 
 /**
- * Short-lived sandbox API key issued.
+ * Short-lived Sandbox key issued.
  */
 export const zCreateSandboxKeyResponse = z.object({
     api_key: z.string(),
@@ -908,7 +1161,7 @@ export const zValidateSandboxEventWithKeyBody = z.object({
 });
 
 /**
- * Synthetic event validated with a sandbox key and discarded.
+ * Synthetic event validated with a Sandbox key and discarded.
  */
 export const zValidateSandboxEventWithKeyResponse = z.object({
     sandbox: z.boolean(),

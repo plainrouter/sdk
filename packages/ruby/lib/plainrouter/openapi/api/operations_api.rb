@@ -141,7 +141,7 @@ module PlainRouter::OpenAPI
     end
 
     # Get a reconciliation report
-    # Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can compare accepted gateway and provider outcomes.
+    # Returns stored delivery-versus-platform reconciliation results for one date. Dates before the workspace read bound return 422.
     # @param date [Date]
     # @param [Hash] opts the optional parameters
     # @return [GetReconciliationReport200Response]
@@ -151,7 +151,7 @@ module PlainRouter::OpenAPI
     end
 
     # Get a reconciliation report
-    # Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can compare accepted gateway and provider outcomes.
+    # Returns stored delivery-versus-platform reconciliation results for one date. Dates before the workspace read bound return 422.
     # @param date [Date]
     # @param [Hash] opts the optional parameters
     # @return [Array<(GetReconciliationReport200Response, Integer, Hash)>] GetReconciliationReport200Response data, response status code and response headers

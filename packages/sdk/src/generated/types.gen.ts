@@ -5,6 +5,71 @@ export type ClientOptions = {
 };
 
 /**
+ * ActionBatchRead
+ */
+export type ActionBatchRead = {
+    data: {
+        status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked';
+        batch_status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked';
+        restoration_summary: 'all_receipts_compensated_late' | null;
+        actions: Array<ActionReadItem>;
+    };
+};
+
+/**
+ * ActionCurrentDisposition
+ */
+export type ActionCurrentDisposition = {
+    receipt_status: 'pending' | 'attempting' | 'reconciliation_required' | 'committed' | 'executed_pending_verification' | 'measuring' | 'verified' | 'compensating' | 'compensated' | 'compensation_failed' | 'irreversible' | 'failed' | 'reconciliation_exhausted' | null;
+    outcome_status: 'measurable' | 'not_measurable' | 'unavailable' | null;
+    outcome_reason_code: string | null;
+    outcome_checked_at: string | null;
+    compensation_reason_code: string | null;
+    recovery_disposition: 'no_compensation' | 'restored' | 'unrestored' | 'contradictory' | 'irreversible' | 'uncertain' | null;
+    late_restored: boolean;
+};
+
+/**
+ * ActionDecisionReceiptRead
+ */
+export type ActionDecisionReceiptRead = {
+    document: {
+        [key: string]: unknown;
+    };
+    document_sha256: string;
+    chain_entry: {
+        sequence?: unknown;
+        hash?: string;
+    };
+    disposition: ActionCurrentDisposition;
+};
+
+/**
+ * ActionDetailRead
+ */
+export type ActionDetailRead = {
+    data: ActionReadItem;
+};
+
+/**
+ * ActionListRead
+ */
+export type ActionListRead = {
+    data: Array<ActionReadItem>;
+    meta: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * ActionReadItem
+ */
+export type ActionReadItem = {
+    batch_status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked';
+    disposition: ActionCurrentDisposition;
+};
+
+/**
  * DeliveryStatus
  */
 export type DeliveryStatus = 'queued' | 'sent' | 'accepted' | 'retrying' | 'failed:auth' | 'failed:permanent' | 'failed:unknown' | 'expired' | 'skipped:consent' | 'skipped:no_destination' | 'skipped:duplicate';
@@ -33,7 +98,7 @@ export type Destination = {
 /**
  * DestinationCredentialSource
  */
-export type DestinationCredentialSource = 'oauth_connection' | 'managed_token';
+export type DestinationCredentialSource = 'oauth_connection';
 
 /**
  * DestinationStatus
@@ -173,9 +238,343 @@ export type ValidationError = {
     };
 };
 
+export type ActionsApiDryRunData = {
+    body: {
+        actions: Array<string>;
+        rationale: string;
+        idempotency_key: string;
+        evidence: Array<{
+            source_tool: 'get_account_state' | 'get_signal_health' | 'get_performance' | 'get-creative-library' | 'staged-asset-manifest';
+            fields_used: Array<string>;
+            action_index?: number;
+        }>;
+        target_source: 'human_supplied';
+        account_id?: number;
+    };
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/actions/dry-run';
+};
+
+export type ActionsApiDryRunErrors = {
+    /**
+     * Missing, invalid, or expired workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * The key lacks the propose-actions grant.
+     */
+    403: ErrorMessage;
+    /**
+     * Workspace, account, or Actions resource not found.
+     */
+    404: ErrorMessage;
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type ActionsApiDryRunError = ActionsApiDryRunErrors[keyof ActionsApiDryRunErrors];
+
+export type ActionsApiDryRunResponses = {
+    /**
+     * Evaluated dry-run preview.
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type ActionsApiDryRunResponse = ActionsApiDryRunResponses[keyof ActionsApiDryRunResponses];
+
+export type ActionsApiIndexData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: {
+        status?: 'pending' | 'approved_without_execution' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'verified' | 'failed' | 'execution_uncertain' | 'rolled_back' | 'blocked';
+        page?: number;
+    };
+    url: '/agent/workspaces/{workspace}/actions';
+};
+
+export type ActionsApiIndexErrors = {
+    /**
+     * Missing, invalid, or expired workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * The key lacks the propose-actions grant.
+     */
+    403: ErrorMessage;
+    /**
+     * Workspace, account, or Actions resource not found.
+     */
+    404: ErrorMessage;
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type ActionsApiIndexError = ActionsApiIndexErrors[keyof ActionsApiIndexErrors];
+
+export type ActionsApiIndexResponses = {
+    /**
+     * Authorized Actions resource.
+     */
+    200: ActionListRead;
+};
+
+export type ActionsApiIndexResponse = ActionsApiIndexResponses[keyof ActionsApiIndexResponses];
+
+export type ActionsApiProposeData = {
+    body: {
+        actions: Array<string>;
+        rationale: string;
+        idempotency_key: string;
+        evidence: Array<{
+            source_tool: 'get_account_state' | 'get_signal_health' | 'get_performance' | 'get-creative-library' | 'staged-asset-manifest';
+            fields_used: Array<string>;
+            action_index?: number;
+        }>;
+        target_source: 'human_supplied';
+        account_id?: number;
+    };
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/actions';
+};
+
+export type ActionsApiProposeErrors = {
+    /**
+     * Missing, invalid, or expired workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * The key lacks the propose-actions grant.
+     */
+    403: ErrorMessage;
+    /**
+     * Workspace, account, or Actions resource not found.
+     */
+    404: ErrorMessage;
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type ActionsApiProposeError = ActionsApiProposeErrors[keyof ActionsApiProposeErrors];
+
+export type ActionsApiProposeResponses = {
+    /**
+     * Saved idempotent proposal.
+     */
+    200: {
+        [key: string]: unknown;
+    };
+    /**
+     * New proposal created.
+     */
+    201: {
+        [key: string]: unknown;
+    };
+};
+
+export type ActionsApiProposeResponse = ActionsApiProposeResponses[keyof ActionsApiProposeResponses];
+
+export type ActionsApiPolicyData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/actions/policy';
+};
+
+export type ActionsApiPolicyErrors = {
+    /**
+     * Missing, invalid, or expired workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * The key lacks the propose-actions grant.
+     */
+    403: ErrorMessage;
+    /**
+     * Workspace, account, or Actions resource not found.
+     */
+    404: ErrorMessage;
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type ActionsApiPolicyError = ActionsApiPolicyErrors[keyof ActionsApiPolicyErrors];
+
+export type ActionsApiPolicyResponses = {
+    /**
+     * Authorized Actions resource.
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type ActionsApiPolicyResponse = ActionsApiPolicyResponses[keyof ActionsApiPolicyResponses];
+
+export type ActionsApiDecisionReceiptData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        action: string;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/actions/{action}/decision-receipt';
+};
+
+export type ActionsApiDecisionReceiptErrors = {
+    /**
+     * Missing, invalid, or expired workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * The key lacks the propose-actions grant.
+     */
+    403: ErrorMessage;
+    /**
+     * Workspace, account, or Actions resource not found.
+     */
+    404: ErrorMessage;
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type ActionsApiDecisionReceiptError = ActionsApiDecisionReceiptErrors[keyof ActionsApiDecisionReceiptErrors];
+
+export type ActionsApiDecisionReceiptResponses = {
+    /**
+     * Authorized Actions resource.
+     */
+    200: ActionDecisionReceiptRead;
+};
+
+export type ActionsApiDecisionReceiptResponse = ActionsApiDecisionReceiptResponses[keyof ActionsApiDecisionReceiptResponses];
+
+export type ActionsApiShowData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        action: string;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/actions/{action}';
+};
+
+export type ActionsApiShowErrors = {
+    /**
+     * Missing, invalid, or expired workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * The key lacks the propose-actions grant.
+     */
+    403: ErrorMessage;
+    /**
+     * Workspace, account, or Actions resource not found.
+     */
+    404: ErrorMessage;
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type ActionsApiShowError = ActionsApiShowErrors[keyof ActionsApiShowErrors];
+
+export type ActionsApiShowResponses = {
+    /**
+     * Authorized Actions resource.
+     */
+    200: ActionDetailRead;
+};
+
+export type ActionsApiShowResponse = ActionsApiShowResponses[keyof ActionsApiShowResponses];
+
+export type ActionsApiBatchData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        actionBatch: string;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/action-batches/{actionBatch}';
+};
+
+export type ActionsApiBatchErrors = {
+    /**
+     * Missing, invalid, or expired workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * The key lacks the propose-actions grant.
+     */
+    403: ErrorMessage;
+    /**
+     * Workspace, account, or Actions resource not found.
+     */
+    404: ErrorMessage;
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type ActionsApiBatchError = ActionsApiBatchErrors[keyof ActionsApiBatchErrors];
+
+export type ActionsApiBatchResponses = {
+    /**
+     * Authorized Actions resource.
+     */
+    200: ActionBatchRead;
+};
+
+export type ActionsApiBatchResponse = ActionsApiBatchResponses[keyof ActionsApiBatchResponses];
+
 export type CreateEventData = {
     /**
-     * Authenticated secret-key server callers may supply client_ip_address and client_user_agent in user_data; publishable-key browser traffic takes those fields only from the trusted edge.
+     * Authenticated callers using the Server secret may supply client_ip_address and client_user_agent in user_data; browser traffic using the Publishable key takes those fields only from the configured edge.
      */
     body: {
         /**
@@ -337,7 +736,7 @@ export type CreateEventData = {
 
 export type CreateEventErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
     /**
@@ -381,7 +780,7 @@ export type VerifySignalIngestionData = {
 
 export type VerifySignalIngestionErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
 };
@@ -418,7 +817,7 @@ export type GetEventData = {
 
 export type GetEventErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
     /**
@@ -639,7 +1038,7 @@ export type ListEventsData = {
 
 export type ListEventsErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
 };
@@ -767,7 +1166,7 @@ export type ListEventsByCursorData = {
 
 export type ListEventsByCursorErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
 };
@@ -884,7 +1283,7 @@ export type SetDestinationTestModeData = {
 
 export type SetDestinationTestModeErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
     /**
@@ -947,7 +1346,7 @@ export type SendTestPurchaseData = {
 
 export type SendTestPurchaseErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
     /**
@@ -996,7 +1395,7 @@ export type ReplayDeliveriesData = {
 
 export type ReplayDeliveriesErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
     /**
@@ -1032,7 +1431,7 @@ export type GetReconciliationReportData = {
 
 export type GetReconciliationReportErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
     /**
@@ -1116,7 +1515,7 @@ export type GetEmqReportData = {
 
 export type GetEmqReportErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
 };
@@ -1166,7 +1565,7 @@ export type DeleteUserDataData = {
 
 export type DeleteUserDataErrors = {
     /**
-     * Invalid or missing Signals workspace secret.
+     * Invalid or missing Server secret.
      */
     401: ErrorMessage;
     /**
@@ -1259,7 +1658,7 @@ export type GetSandboxKeyData = {
 
 export type GetSandboxKeyResponses = {
     /**
-     * Short-lived sandbox API key issued.
+     * Short-lived Sandbox key issued.
      */
     200: {
         api_key: string;
@@ -1287,7 +1686,7 @@ export type CreateSandboxKeyData = {
 
 export type CreateSandboxKeyResponses = {
     /**
-     * Short-lived sandbox API key issued.
+     * Short-lived Sandbox key issued.
      */
     201: {
         api_key: string;
@@ -1403,7 +1802,7 @@ export type ValidateSandboxEventWithKeyError = ValidateSandboxEventWithKeyErrors
 
 export type ValidateSandboxEventWithKeyResponses = {
     /**
-     * Synthetic event validated with a sandbox key and discarded.
+     * Synthetic event validated with a Sandbox key and discarded.
      */
     200: {
         sandbox: boolean;

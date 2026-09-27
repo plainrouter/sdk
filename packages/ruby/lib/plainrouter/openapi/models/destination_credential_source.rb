@@ -16,10 +16,9 @@ require 'time'
 module PlainRouter::OpenAPI
   class DestinationCredentialSource
     OAUTH_CONNECTION = "oauth_connection".freeze
-    MANAGED_TOKEN = "managed_token".freeze
 
     def self.all_vars
-      @all_vars ||= [OAUTH_CONNECTION, MANAGED_TOKEN].freeze
+      @all_vars ||= [OAUTH_CONNECTION].freeze
     end
 
     # Builds the enum from string

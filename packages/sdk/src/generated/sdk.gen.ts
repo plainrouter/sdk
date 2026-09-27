@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
+import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -17,6 +17,119 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
+
+/**
+ * Preview actions
+ *
+ * Evaluate a governed proposal for the approved account and preview each policy decision and execution diff without creating a batch or action.
+ */
+export const actionsApiDryRun = <ThrowOnError extends boolean = false>(options: Options<ActionsApiDryRunData, ThrowOnError>): RequestResult<ActionsApiDryRunResponses, ActionsApiDryRunErrors, ThrowOnError> => (options.client ?? client).post<ActionsApiDryRunResponses, ActionsApiDryRunErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceActionKey',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/actions/dry-run',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Read Actions data
+ *
+ * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ */
+export const actionsApiIndex = <ThrowOnError extends boolean = false>(options: Options<ActionsApiIndexData, ThrowOnError>): RequestResult<ActionsApiIndexResponses, ActionsApiIndexErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiIndexResponses, ActionsApiIndexErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceActionKey',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/actions',
+    ...options
+});
+
+/**
+ * Propose actions
+ *
+ * Submit a governed proposal for an advertising account available to this workspace key. A matching idempotency key returns the saved batch.
+ */
+export const actionsApiPropose = <ThrowOnError extends boolean = false>(options: Options<ActionsApiProposeData, ThrowOnError>): RequestResult<ActionsApiProposeResponses, ActionsApiProposeErrors, ThrowOnError> => (options.client ?? client).post<ActionsApiProposeResponses, ActionsApiProposeErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceActionKey',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/actions',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Read Actions data
+ *
+ * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ */
+export const actionsApiPolicy = <ThrowOnError extends boolean = false>(options: Options<ActionsApiPolicyData, ThrowOnError>): RequestResult<ActionsApiPolicyResponses, ActionsApiPolicyErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiPolicyResponses, ActionsApiPolicyErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceActionKey',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/actions/policy',
+    ...options
+});
+
+/**
+ * Read Actions data
+ *
+ * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ */
+export const actionsApiDecisionReceipt = <ThrowOnError extends boolean = false>(options: Options<ActionsApiDecisionReceiptData, ThrowOnError>): RequestResult<ActionsApiDecisionReceiptResponses, ActionsApiDecisionReceiptErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiDecisionReceiptResponses, ActionsApiDecisionReceiptErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceActionKey',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/actions/{action}/decision-receipt',
+    ...options
+});
+
+/**
+ * Read Actions data
+ *
+ * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ */
+export const actionsApiShow = <ThrowOnError extends boolean = false>(options: Options<ActionsApiShowData, ThrowOnError>): RequestResult<ActionsApiShowResponses, ActionsApiShowErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiShowResponses, ActionsApiShowErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceActionKey',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/actions/{action}',
+    ...options
+});
+
+/**
+ * Read Actions data
+ *
+ * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ */
+export const actionsApiBatch = <ThrowOnError extends boolean = false>(options: Options<ActionsApiBatchData, ThrowOnError>): RequestResult<ActionsApiBatchResponses, ActionsApiBatchErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiBatchResponses, ActionsApiBatchErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceActionKey',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/action-batches/{actionBatch}',
+    ...options
+});
 
 /**
  * Submit a conversion event
@@ -157,7 +270,7 @@ export const replayDeliveries = <ThrowOnError extends boolean = false>(options?:
 /**
  * Get a reconciliation report
  *
- * Returns stored delivery-versus-platform reconciliation results for one calendar date so callers can compare accepted gateway and provider outcomes.
+ * Returns stored delivery-versus-platform reconciliation results for one date. Dates before the workspace read bound return 422.
  */
 export const getReconciliationReport = <ThrowOnError extends boolean = false>(options: Options<GetReconciliationReportData, ThrowOnError>): RequestResult<GetReconciliationReportResponses, GetReconciliationReportErrors, ThrowOnError> => (options.client ?? client).get<GetReconciliationReportResponses, GetReconciliationReportErrors, ThrowOnError>({
     security: [{
@@ -206,28 +319,28 @@ export const deleteUserData = <ThrowOnError extends boolean = false>(options: Op
 /**
  * Discover the zero-auth sandbox
  *
- * Returns a ready-to-run synthetic event example that needs no account or API key and cannot persist data or contact an advertising provider.
+ * Returns a ready-to-run synthetic event example that needs no account or key and cannot persist data or contact an advertising provider.
  */
 export const getSandbox = <ThrowOnError extends boolean = false>(options?: Options<GetSandboxData, ThrowOnError>): RequestResult<GetSandboxResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetSandboxResponses, unknown, ThrowOnError>({ url: '/sandbox', ...options });
 
 /**
- * Get a sandbox API key
+ * Get a Sandbox key
  *
- * Returns a short-lived sandbox-only bearer key over GET so a read-only agent can obtain working credentials without issuing a write request.
+ * Returns a short-lived Sandbox key over GET so a read-only agent can obtain working credentials without issuing a write request.
  */
 export const getSandboxKey = <ThrowOnError extends boolean = false>(options?: Options<GetSandboxKeyData, ThrowOnError>): RequestResult<GetSandboxKeyResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetSandboxKeyResponses, unknown, ThrowOnError>({ url: '/sandbox/keys', ...options });
 
 /**
- * Create a sandbox API key
+ * Create a Sandbox key
  *
- * Issues a short-lived sandbox-only bearer key without an account, human approval, or production access.
+ * Issues a short-lived Sandbox key without an account, human approval, or production access. It is valid for synthetic events only.
  */
 export const createSandboxKey = <ThrowOnError extends boolean = false>(options?: Options<CreateSandboxKeyData, ThrowOnError>): RequestResult<CreateSandboxKeyResponses, unknown, ThrowOnError> => (options?.client ?? client).post<CreateSandboxKeyResponses, unknown, ThrowOnError>({ url: '/sandbox/keys', ...options });
 
 /**
  * Validate a synthetic event
  *
- * Validates and immediately discards one identity-free synthetic event. It requires no account or API key and never writes to the ledger or contacts Meta.
+ * Validates and immediately discards one identity-free synthetic event. It requires no account or key and never writes to the ledger or contacts Meta.
  */
 export const validateSandboxEvent = <ThrowOnError extends boolean = false>(options: Options<ValidateSandboxEventData, ThrowOnError>): RequestResult<ValidateSandboxEventResponses, ValidateSandboxEventErrors, ThrowOnError> => (options.client ?? client).post<ValidateSandboxEventResponses, ValidateSandboxEventErrors, ThrowOnError>({
     url: '/sandbox/events',
@@ -239,9 +352,9 @@ export const validateSandboxEvent = <ThrowOnError extends boolean = false>(optio
 });
 
 /**
- * Validate a synthetic event with a sandbox key
+ * Validate a synthetic event with a Sandbox key
  *
- * Validates a synthetic event with a short-lived sandbox key, then discards it without persisting data or contacting an advertising provider.
+ * Validates a synthetic event with a short-lived Sandbox key, then discards it without persisting data or contacting an advertising provider.
  */
 export const validateSandboxEventWithKey = <ThrowOnError extends boolean = false>(options: Options<ValidateSandboxEventWithKeyData, ThrowOnError>): RequestResult<ValidateSandboxEventWithKeyResponses, ValidateSandboxEventWithKeyErrors, ThrowOnError> => (options.client ?? client).post<ValidateSandboxEventWithKeyResponses, ValidateSandboxEventWithKeyErrors, ThrowOnError>({
     security: [{

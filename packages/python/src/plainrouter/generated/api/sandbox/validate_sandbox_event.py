@@ -67,8 +67,8 @@ def sync_detailed(
 ) -> Response[ValidateSandboxEventResponse200 | ValidationError]:
     """Validate a synthetic event
 
-     Validates and immediately discards one identity-free synthetic event. It requires no account or API
-    key and never writes to the ledger or contacts Meta.
+     Validates and immediately discards one identity-free synthetic event. It requires no account or key
+    and never writes to the ledger or contacts Meta.
 
     Args:
         body (ValidateSandboxEventBody):
@@ -99,8 +99,8 @@ def sync(
 ) -> ValidateSandboxEventResponse200 | ValidationError | None:
     """Validate a synthetic event
 
-     Validates and immediately discards one identity-free synthetic event. It requires no account or API
-    key and never writes to the ledger or contacts Meta.
+     Validates and immediately discards one identity-free synthetic event. It requires no account or key
+    and never writes to the ledger or contacts Meta.
 
     Args:
         body (ValidateSandboxEventBody):
@@ -126,8 +126,8 @@ async def asyncio_detailed(
 ) -> Response[ValidateSandboxEventResponse200 | ValidationError]:
     """Validate a synthetic event
 
-     Validates and immediately discards one identity-free synthetic event. It requires no account or API
-    key and never writes to the ledger or contacts Meta.
+     Validates and immediately discards one identity-free synthetic event. It requires no account or key
+    and never writes to the ledger or contacts Meta.
 
     Args:
         body (ValidateSandboxEventBody):
@@ -156,8 +156,8 @@ async def asyncio(
 ) -> ValidateSandboxEventResponse200 | ValidationError | None:
     """Validate a synthetic event
 
-     Validates and immediately discards one identity-free synthetic event. It requires no account or API
-    key and never writes to the ledger or contacts Meta.
+     Validates and immediately discards one identity-free synthetic event. It requires no account or key
+    and never writes to the ledger or contacts Meta.
 
     Args:
         body (ValidateSandboxEventBody):
