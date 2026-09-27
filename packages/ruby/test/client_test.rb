@@ -8,6 +8,23 @@ class PlainRouterClientTest < Minitest::Test
   VALID_CAPTURED_AT = "2026-08-19T12:34:56.123456+02:00"
   VALID_CAPTURED_AT_Z = "2026-08-19T10:34:56Z"
 
+  def test_actions_models_accept_halted_and_reject_unknown_status
+    batch = PlainRouter::OpenAPI::ActionBatchReadData.new(
+      status: "halted",
+      batch_status: "halted",
+      actions: []
+    )
+    action = PlainRouter::OpenAPI::ActionReadItem.new(
+      batch_status: "halted",
+      disposition: PlainRouter::OpenAPI::ActionCurrentDisposition.new(late_restored: false)
+    )
+
+    assert_equal "halted", batch.status
+    assert_equal "halted", batch.batch_status
+    assert_equal "halted", action.batch_status
+    assert_raises(ArgumentError) { batch.status = "unknown_status" }
+  end
+
   def test_keeps_the_root_namespace_curated
     assert_equal(
       %i[CONTRACT_VERSION Client DEFAULT_BASE_URL OpenAPI VERSION],

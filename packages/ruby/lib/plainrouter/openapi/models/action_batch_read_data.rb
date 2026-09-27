@@ -150,10 +150,10 @@ module PlainRouter::OpenAPI
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
       return false if @status.nil?
-      status_validator = EnumAttributeValidator.new('String', ["pending", "approved", "approved_without_execution", "auto_approved", "rejected", "executing", "executed_pending_verification", "compensating", "measuring", "completed", "failed", "rolled_back", "rollback_incomplete", "blocked"])
+      status_validator = EnumAttributeValidator.new('String', ["pending", "approved", "approved_without_execution", "auto_approved", "rejected", "executing", "executed_pending_verification", "compensating", "measuring", "completed", "failed", "rolled_back", "rollback_incomplete", "blocked", "halted"])
       return false unless status_validator.valid?(@status)
       return false if @batch_status.nil?
-      batch_status_validator = EnumAttributeValidator.new('String', ["pending", "approved", "approved_without_execution", "auto_approved", "rejected", "executing", "executed_pending_verification", "compensating", "measuring", "completed", "failed", "rolled_back", "rollback_incomplete", "blocked"])
+      batch_status_validator = EnumAttributeValidator.new('String', ["pending", "approved", "approved_without_execution", "auto_approved", "rejected", "executing", "executed_pending_verification", "compensating", "measuring", "completed", "failed", "rolled_back", "rollback_incomplete", "blocked", "halted"])
       return false unless batch_status_validator.valid?(@batch_status)
       restoration_summary_validator = EnumAttributeValidator.new('String', ["all_receipts_compensated_late"])
       return false unless restoration_summary_validator.valid?(@restoration_summary)
@@ -164,7 +164,7 @@ module PlainRouter::OpenAPI
     # Custom attribute writer method checking allowed values (enum).
     # @param [Object] status Object to be assigned
     def status=(status)
-      validator = EnumAttributeValidator.new('String', ["pending", "approved", "approved_without_execution", "auto_approved", "rejected", "executing", "executed_pending_verification", "compensating", "measuring", "completed", "failed", "rolled_back", "rollback_incomplete", "blocked"])
+      validator = EnumAttributeValidator.new('String', ["pending", "approved", "approved_without_execution", "auto_approved", "rejected", "executing", "executed_pending_verification", "compensating", "measuring", "completed", "failed", "rolled_back", "rollback_incomplete", "blocked", "halted"])
       unless validator.valid?(status)
         fail ArgumentError, "invalid value for \"status\", must be one of #{validator.allowable_values}."
       end
@@ -174,7 +174,7 @@ module PlainRouter::OpenAPI
     # Custom attribute writer method checking allowed values (enum).
     # @param [Object] batch_status Object to be assigned
     def batch_status=(batch_status)
-      validator = EnumAttributeValidator.new('String', ["pending", "approved", "approved_without_execution", "auto_approved", "rejected", "executing", "executed_pending_verification", "compensating", "measuring", "completed", "failed", "rolled_back", "rollback_incomplete", "blocked"])
+      validator = EnumAttributeValidator.new('String', ["pending", "approved", "approved_without_execution", "auto_approved", "rejected", "executing", "executed_pending_verification", "compensating", "measuring", "completed", "failed", "rolled_back", "rollback_incomplete", "blocked", "halted"])
       unless validator.valid?(batch_status)
         fail ArgumentError, "invalid value for \"batch_status\", must be one of #{validator.allowable_values}."
       end

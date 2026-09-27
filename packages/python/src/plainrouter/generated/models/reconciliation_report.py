@@ -28,7 +28,8 @@ class ReconciliationReport:
         status (str):
         created_at (datetime.datetime | None):
         updated_at (datetime.datetime | None):
-        claimed_clicks (int | None):
+        claimed_clicks (int | None): Meta outbound clicks. Days before 2026-06-29, or not re-read by the daily sync
+            since 2026-09-27, may still hold Meta link clicks or all clicks.
     """
 
     id: int

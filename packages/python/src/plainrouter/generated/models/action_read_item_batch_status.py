@@ -11,6 +11,7 @@ class ActionReadItemBatchStatus(str, Enum):
     EXECUTED_PENDING_VERIFICATION = "executed_pending_verification"
     EXECUTING = "executing"
     FAILED = "failed"
+    HALTED = "halted"
     MEASURING = "measuring"
     PENDING = "pending"
     REJECTED = "rejected"

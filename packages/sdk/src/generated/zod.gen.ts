@@ -71,7 +71,8 @@ export const zActionReadItem = z.object({
         'failed',
         'rolled_back',
         'rollback_incomplete',
-        'blocked'
+        'blocked',
+        'halted'
     ]),
     disposition: zActionCurrentDisposition
 });
@@ -95,7 +96,8 @@ export const zActionBatchRead = z.object({
             'failed',
             'rolled_back',
             'rollback_incomplete',
-            'blocked'
+            'blocked',
+            'halted'
         ]),
         batch_status: z.enum([
             'pending',
@@ -111,7 +113,8 @@ export const zActionBatchRead = z.object({
             'failed',
             'rolled_back',
             'rollback_incomplete',
-            'blocked'
+            'blocked',
+            'halted'
         ]),
         restoration_summary: z.enum(['all_receipts_compensated_late']).nullable(),
         actions: z.array(zActionReadItem)
