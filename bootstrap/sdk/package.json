@@ -1,7 +1,7 @@
 {
   "name": "@plainrouter/sdk",
   "version": "0.0.0",
-  "description": "Bootstrap placeholder for the PlainRouter TypeScript SDK.",
+  "description": "Bootstrap placeholder for the Plainrouter TypeScript SDK.",
   "homepage": "https://plainrouter.com",
   "license": "Apache-2.0",
   "repository": {

@@ -1,11 +1,11 @@
 ---
 name: verify-signal-ingestion
-description: Verify end-to-end server-side Signal ingestion through PlainRouter with one idempotent identity-free event. Use for Signal onboarding verification; use get_signal_health instead for read-only diagnostics.
+description: Verify end-to-end server-side Signal ingestion through Plainrouter with one idempotent identity-free event. Use for Signal onboarding verification; use get_signal_health instead for read-only diagnostics.
 ---
 
 # Verify Signal Ingestion
 
-Use this skill when a human asks to verify that a newly installed PlainRouter Signal can accept a server-side event. The verification writes one identity-free test event and confirms its receipt in the Signal ledger; it has no advertising-spend capability.
+Use this skill when a human asks to verify that a newly installed Plainrouter Signal can accept a server-side event. The verification writes one identity-free test event and confirms its receipt in the Signal ledger; it has no advertising-spend capability.
 
 ## Connect
 
@@ -23,6 +23,6 @@ Report success only when the tool confirms ledger receipt. If it reports a missi
 
 ## Boundaries
 
-The verification event contains no customer identity or conversion value. It proves PlainRouter ingestion and ledger receipt only. It does not prove downstream ad-platform delivery, attribution, campaign access, or permission to spend.
+The verification event contains no customer identity or conversion value. It proves Plainrouter ingestion and ledger receipt only. It does not prove downstream ad-platform delivery, attribution, campaign access, or permission to spend.
 
 For endpoint schemas or direct API integration, use the signed OpenAPI specification at `https://plainrouter.com/openapi.json` and the Conversion API documentation at `https://plainrouter.com/docs/reference/conversion-api`.

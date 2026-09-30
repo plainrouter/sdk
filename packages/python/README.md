@@ -1,10 +1,10 @@
-# PlainRouter Python SDK and CLI
+# Plainrouter Python SDK and CLI
 
 Generated from Plainrouter's signed OpenAPI contract. The package is in 0.x and its API may change between minor releases. No support guarantees are made yet.
 
 Official project: [plainrouter.com](https://plainrouter.com) · [documentation](https://plainrouter.com/docs/sdk/python) · [source](https://github.com/plainrouter/sdk/tree/main/packages/python)
 
-Report Python SDK issues in the [PlainRouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
+Report Python SDK issues in the [Plainrouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
 
 ## Install
 

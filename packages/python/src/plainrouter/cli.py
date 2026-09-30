@@ -201,7 +201,7 @@ def _package_version() -> str:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="plainrouter", description="PlainRouter Signals API command line interface")
+    parser = argparse.ArgumentParser(prog="plainrouter", description="Plainrouter Signals API command line interface")
     parser.add_argument("--version", action="version", version=f"%(prog)s {_package_version()}")
     parser.add_argument("--json", action="store_true", help="emit the API response as JSON")
     commands = parser.add_subparsers(dest="command", required=True)

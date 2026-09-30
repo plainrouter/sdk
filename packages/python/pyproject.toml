@@ -5,11 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "plainrouter"
 version = "0.5.2"
-description = "Python SDK and command-line interface for the signed PlainRouter OpenAPI contract"
+description = "Python SDK and command-line interface for the signed Plainrouter OpenAPI contract"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
-authors = [{ name = "PlainRouter" }]
+authors = [{ name = "Plainrouter" }]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",

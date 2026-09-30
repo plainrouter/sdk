@@ -1,11 +1,11 @@
 ---
 name: propose-governed-ad-actions
-description: Prepare evidence-backed advertising action proposals through PlainRouter. Use for human-requested budget, status, asset, or creative changes; never describe a proposal as applied.
+description: Prepare evidence-backed advertising action proposals through Plainrouter. Use for human-requested budget, status, asset, or creative changes; never describe a proposal as applied.
 ---
 
 # Propose Governed Ad Actions
 
-Use this skill when a human asks to prepare a budget, status, asset-upload, or creative-duplication proposal for the one advertising account approved through PlainRouter. A proposal is not an applied campaign change.
+Use this skill when a human asks to prepare a budget, status, asset-upload, or creative-duplication proposal for the one advertising account approved through Plainrouter. A proposal is not an applied campaign change.
 
 ## Connect
 

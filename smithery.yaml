@@ -1,4 +1,4 @@
-# Smithery configuration for PlainRouter's hosted Streamable HTTP MCP server.
+# Smithery configuration for Plainrouter's hosted Streamable HTTP MCP server.
 # Use Smithery's URL publishing flow; this repository does not contain a
 # local server start command.
 startCommand:

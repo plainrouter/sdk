@@ -263,5 +263,5 @@ def test_help_and_module_entrypoint_contract(tmp_path: Path) -> None:
     dependencies, stdout, stderr, _clients = create_dependencies(tmp_path)
 
     assert run_cli(["--help"], dependencies) == 0
-    assert "PlainRouter Signals API command line interface" in stdout.getvalue()
+    assert "Plainrouter Signals API command line interface" in stdout.getvalue()
     assert stderr.getvalue() == ""

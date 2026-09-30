@@ -1,7 +1,7 @@
 {
   "name": "@plainrouter/cli",
   "version": "0.5.1",
-  "description": "Command-line interface for the PlainRouter API.",
+  "description": "Command-line interface for the Plainrouter API.",
   "homepage": "https://plainrouter.com",
   "license": "Apache-2.0",
   "repository": {

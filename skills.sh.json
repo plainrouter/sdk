@@ -3,8 +3,8 @@
   "notGrouped": "bottom",
   "groupings": [
     {
-      "title": "PlainRouter",
-      "description": "Official skills for PlainRouter account context, Signal verification, and governed advertising proposals.",
+      "title": "Plainrouter",
+      "description": "Official skills for Plainrouter account context, Signal verification, and governed advertising proposals.",
       "skills": [
         "get-ad-account-context",
         "verify-signal-ingestion",
