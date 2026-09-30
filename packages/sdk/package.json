@@ -1,6 +1,6 @@
 {
   "name": "@plainrouter/sdk",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Generated TypeScript client and Zod schemas for the Plainrouter API.",
   "homepage": "https://plainrouter.com",
   "license": "Apache-2.0",
