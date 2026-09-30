@@ -21,12 +21,34 @@ describe('generated response schemas', () => {
       recovery_disposition: null,
       late_restored: false,
     };
-    const action = { batch_status: 'halted', disposition };
+    const action = {
+      id: '01JTESTACTION0000000000000',
+      batch_id: '01JTESTBATCH00000000000000',
+      workspace_id: 1,
+      type: 'pause',
+      target_entity_type: 'ad',
+      target_entity_id: '120000000000001',
+      target_entity_name: null,
+      params: {},
+      rationale: 'Pause the ad while the batch is halted.',
+      status: 'blocked',
+      batch_status: 'halted',
+      disposition,
+      policy_decision: null,
+      policy_reasons: [],
+    };
     const batch = {
       data: {
+        id: '01JTESTBATCH00000000000000',
+        workspace_id: 1,
+        platform_ad_account_id: 1,
         status: 'halted',
         batch_status: 'halted',
         restoration_summary: null,
+        policy_decision: null,
+        policy_reasons: [],
+        rationale: 'Pause the ad while the batch is halted.',
+        idempotency_key: 'test-halted-batch',
         actions: [action],
       },
     };

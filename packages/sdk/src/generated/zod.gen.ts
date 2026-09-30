@@ -47,16 +47,508 @@ export const zActionDecisionReceiptRead = z.object({
     document: z.record(z.string(), z.unknown()),
     document_sha256: z.string(),
     chain_entry: z.object({
-        sequence: z.unknown().optional(),
-        hash: z.string().optional()
+        sequence: z.int(),
+        hash: z.string()
     }),
     disposition: zActionCurrentDisposition
+});
+
+/**
+ * ActionDryRunRead
+ */
+export const zActionDryRunRead = z.object({
+    dry_run: z.object({
+        actions: z.array(z.union([z.object({
+                type: z.enum([
+                    'increase_budget',
+                    'decrease_budget',
+                    'pause',
+                    'resume',
+                    'replace_creative',
+                    'shift_spend',
+                    'rollback',
+                    'create_campaign',
+                    'create_ad_set',
+                    'create_ad',
+                    'upload_asset',
+                    'adjust_budget',
+                    'set_status',
+                    'duplicate_ad_with_creative',
+                    'duplicate_adset',
+                    'duplicate_ad_with_creative_v2'
+                ]),
+                target_entity: z.object({
+                    type: z.string(),
+                    id: z.string(),
+                    name: z.string().optional()
+                }),
+                status: z.enum(['evaluated']),
+                policy_decision: z.enum([
+                    'allow',
+                    'require_approval',
+                    'block'
+                ]),
+                policy_reasons: z.array(z.string()),
+                approval_required: z.boolean(),
+                would_auto_execute: z.boolean(),
+                diff: z.object({
+                    before: z.unknown(),
+                    proposed: z.unknown()
+                })
+            }), z.object({
+                type: z.enum([
+                    'increase_budget',
+                    'decrease_budget',
+                    'pause',
+                    'resume',
+                    'replace_creative',
+                    'shift_spend',
+                    'rollback',
+                    'create_campaign',
+                    'create_ad_set',
+                    'create_ad',
+                    'upload_asset',
+                    'adjust_budget',
+                    'set_status',
+                    'duplicate_ad_with_creative',
+                    'duplicate_adset',
+                    'duplicate_ad_with_creative_v2'
+                ]),
+                target_entity: z.object({
+                    type: z.string(),
+                    id: z.string(),
+                    name: z.string().optional()
+                }),
+                status: z.enum(['dry_run_unavailable']),
+                reason: z.string()
+            })]))
+    })
+});
+
+/**
+ * ActionPolicyRead
+ */
+export const zActionPolicyRead = z.object({
+    data: z.object({
+        id: z.int().nullable(),
+        workspace_id: z.int(),
+        execution_mode: z.enum([
+            'ask',
+            'full',
+            'suggest_only',
+            'auto_with_limits',
+            'full_auto'
+        ]),
+        max_spend_delta_percent: z.string(),
+        hard_account_daily_cap_minor: z.int().nullable(),
+        protected_entities: z.array(z.unknown()).nullable(),
+        quiet_hours_start: z.string().nullable(),
+        quiet_hours_end: z.string().nullable(),
+        protect_learning_phase: z.boolean(),
+        outcome_check_after_hours: z.int(),
+        anomaly_threshold_percent: z.string()
+    })
+});
+
+/**
+ * ActionProposalInput
+ */
+export const zActionProposalInput = z.object({
+    actions: z.array(z.union([
+        z.object({
+            type: z.enum(['increase_budget']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128).regex(/^[0-9]+$/),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.object({
+                new_daily_budget_minor: z.int().gte(1)
+            }),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['decrease_budget']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128).regex(/^[0-9]+$/),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.object({
+                new_daily_budget_minor: z.int().gte(1)
+            }),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['pause']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128).regex(/^[0-9]+$/),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.record(z.string(), z.never()),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['resume']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128).regex(/^[0-9]+$/),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.record(z.string(), z.never()),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['replace_creative']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.record(z.string(), z.unknown()),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['shift_spend']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.record(z.string(), z.unknown()),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['rollback']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.record(z.string(), z.unknown()),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['create_campaign']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.record(z.string(), z.unknown()),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['create_ad_set']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.record(z.string(), z.unknown()),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['create_ad']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.record(z.string(), z.unknown()),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['upload_asset']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.object({
+                staged_asset_id: z.string().max(255).regex(/^stage_[a-f0-9]{40}$/),
+                asset_type: z.enum(['image']),
+                filename: z.string().max(255),
+                content_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+                mime_type: z.string().max(255).nullish(),
+                size_bytes: z.int().gte(1).nullish()
+            }),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['adjust_budget']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.object({
+                new_daily_budget_minor: z.int().gte(1)
+            }),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['set_status']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.object({
+                status: z.enum(['active', 'paused'])
+            }),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        }),
+        z.object({
+            type: z.enum(['duplicate_ad_with_creative']),
+            target_entity: z.object({
+                type: z.enum([
+                    'ad_account',
+                    'campaign',
+                    'ad_set',
+                    'ad'
+                ]),
+                id: z.string().max(128),
+                name: z.string().max(255).nullish()
+            }),
+            params: z.object({
+                asset_id: z.string().max(255).regex(/^(image|video):.+$/),
+                status: z.enum(['paused']),
+                name_suffix: z.string().max(100).nullish()
+            }),
+            rationale: z.string().max(2000),
+            idempotency_key: z.string().max(255).optional()
+        })
+    ])).min(1).max(25),
+    rationale: z.string().max(4000),
+    idempotency_key: z.string().max(64),
+    evidence: z.array(z.object({
+        source_tool: z.enum([
+            'get_account_state',
+            'get_signal_health',
+            'get_performance',
+            'get-creative-library',
+            'staged-asset-manifest'
+        ]),
+        fields_used: z.array(z.string().max(255)).min(1).max(50),
+        action_index: z.int().gte(0).optional()
+    })).min(1).max(3),
+    target_source: z.enum(['human_supplied']),
+    account_id: z.int().gte(1).optional()
+});
+
+/**
+ * ActionProposalRead
+ */
+export const zActionProposalRead = z.object({
+    proposal: z.object({
+        id: z.string(),
+        scope: z.unknown(),
+        evidence_provenance: z.unknown(),
+        status: z.enum([
+            'pending',
+            'approved',
+            'approved_without_execution',
+            'auto_approved',
+            'rejected',
+            'executing',
+            'executed_pending_verification',
+            'compensating',
+            'measuring',
+            'completed',
+            'failed',
+            'rolled_back',
+            'rollback_incomplete',
+            'blocked',
+            'halted'
+        ]),
+        policy_decision: z.enum([
+            'allow',
+            'require_approval',
+            'block'
+        ]),
+        policy_reasons: z.array(z.string()),
+        approval_required: z.boolean(),
+        inbox_url: z.string(),
+        approval_queue_url: z.string(),
+        rationale: z.string(),
+        proposed_by: z.object({
+            type: z.string(),
+            id: z.string(),
+            name: z.string().nullable()
+        }),
+        actions: z.array(z.object({
+            id: z.string(),
+            type: z.enum([
+                'increase_budget',
+                'decrease_budget',
+                'pause',
+                'resume',
+                'replace_creative',
+                'shift_spend',
+                'rollback',
+                'create_campaign',
+                'create_ad_set',
+                'create_ad',
+                'upload_asset',
+                'adjust_budget',
+                'set_status',
+                'duplicate_ad_with_creative',
+                'duplicate_adset',
+                'duplicate_ad_with_creative_v2'
+            ]),
+            target_entity: z.object({
+                type: z.string(),
+                id: z.string(),
+                name: z.string().nullable()
+            }),
+            params: z.union([
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown())
+            ]),
+            rationale: z.string(),
+            proposed_by: z.object({
+                type: z.string(),
+                id: z.string(),
+                name: z.string().nullable()
+            }),
+            policy_decision: z.enum([
+                'allow',
+                'require_approval',
+                'block'
+            ]),
+            policy_reasons: z.array(z.string()),
+            policy_evidence: z.unknown()
+        }))
+    })
 });
 
 /**
  * ActionReadItem
  */
 export const zActionReadItem = z.object({
+    id: z.string(),
+    batch_id: z.string(),
+    workspace_id: z.int(),
+    type: z.enum([
+        'increase_budget',
+        'decrease_budget',
+        'pause',
+        'resume',
+        'replace_creative',
+        'shift_spend',
+        'rollback',
+        'create_campaign',
+        'create_ad_set',
+        'create_ad',
+        'upload_asset',
+        'adjust_budget',
+        'set_status',
+        'duplicate_ad_with_creative',
+        'duplicate_adset',
+        'duplicate_ad_with_creative_v2'
+    ]),
+    target_entity_type: z.string(),
+    target_entity_id: z.string(),
+    target_entity_name: z.string().nullable(),
+    params: z.union([
+        z.record(z.string(), z.unknown()),
+        z.array(z.unknown())
+    ]),
+    rationale: z.string(),
+    status: z.enum([
+        'pending',
+        'approved_without_execution',
+        'rejected',
+        'executing',
+        'executed_pending_verification',
+        'compensating',
+        'measuring',
+        'verified',
+        'failed',
+        'execution_uncertain',
+        'rolled_back',
+        'blocked'
+    ]),
     batch_status: z.enum([
         'pending',
         'approved',
@@ -74,7 +566,13 @@ export const zActionReadItem = z.object({
         'blocked',
         'halted'
     ]),
-    disposition: zActionCurrentDisposition
+    disposition: zActionCurrentDisposition,
+    policy_decision: z.enum([
+        'allow',
+        'require_approval',
+        'block'
+    ]).nullable(),
+    policy_reasons: z.array(z.string())
 });
 
 /**
@@ -82,6 +580,9 @@ export const zActionReadItem = z.object({
  */
 export const zActionBatchRead = z.object({
     data: z.object({
+        id: z.string(),
+        workspace_id: z.int(),
+        platform_ad_account_id: z.int(),
         status: z.enum([
             'pending',
             'approved',
@@ -117,6 +618,14 @@ export const zActionBatchRead = z.object({
             'halted'
         ]),
         restoration_summary: z.enum(['all_receipts_compensated_late']).nullable(),
+        policy_decision: z.enum([
+            'allow',
+            'require_approval',
+            'block'
+        ]).nullable(),
+        policy_reasons: z.array(z.string()),
+        rationale: z.string(),
+        idempotency_key: z.string(),
         actions: z.array(zActionReadItem)
     })
 });
@@ -133,7 +642,12 @@ export const zActionDetailRead = z.object({
  */
 export const zActionListRead = z.object({
     data: z.array(zActionReadItem),
-    meta: z.record(z.string(), z.unknown())
+    meta: z.object({
+        current_page: z.int(),
+        last_page: z.int(),
+        per_page: z.int(),
+        total: z.int()
+    })
 });
 
 /**
@@ -308,24 +822,7 @@ export const zValidationError = z.object({
     errors: z.record(z.string(), z.array(z.string()))
 });
 
-export const zActionsApiDryRunBody = z.object({
-    actions: z.array(z.string()).min(1).max(25),
-    rationale: z.string().max(4000),
-    idempotency_key: z.string().max(64),
-    evidence: z.array(z.object({
-        source_tool: z.enum([
-            'get_account_state',
-            'get_signal_health',
-            'get_performance',
-            'get-creative-library',
-            'staged-asset-manifest'
-        ]),
-        fields_used: z.array(z.string().max(255)).min(1).max(50),
-        action_index: z.int().gte(0).optional()
-    })).min(1).max(3),
-    target_source: z.enum(['human_supplied']),
-    account_id: z.int().gte(1).optional()
-});
+export const zActionsApiDryRunBody = zActionProposalInput;
 
 export const zActionsApiDryRunPath = z.object({
     workspace: z.int()
@@ -334,7 +831,7 @@ export const zActionsApiDryRunPath = z.object({
 /**
  * Evaluated dry-run preview.
  */
-export const zActionsApiDryRunResponse = z.record(z.string(), z.unknown());
+export const zActionsApiDryRunResponse = zActionDryRunRead;
 
 export const zActionsApiIndexPath = z.object({
     workspace: z.int()
@@ -355,7 +852,8 @@ export const zActionsApiIndexQuery = z.object({
         'rolled_back',
         'blocked'
     ]).optional(),
-    page: z.int().gte(1).optional()
+    page: z.int().gte(1).optional(),
+    account_id: z.int().gte(1).optional()
 });
 
 /**
@@ -363,46 +861,37 @@ export const zActionsApiIndexQuery = z.object({
  */
 export const zActionsApiIndexResponse = zActionListRead;
 
-export const zActionsApiProposeBody = z.object({
-    actions: z.array(z.string()).min(1).max(25),
-    rationale: z.string().max(4000),
-    idempotency_key: z.string().max(64),
-    evidence: z.array(z.object({
-        source_tool: z.enum([
-            'get_account_state',
-            'get_signal_health',
-            'get_performance',
-            'get-creative-library',
-            'staged-asset-manifest'
-        ]),
-        fields_used: z.array(z.string().max(255)).min(1).max(50),
-        action_index: z.int().gte(0).optional()
-    })).min(1).max(3),
-    target_source: z.enum(['human_supplied']),
-    account_id: z.int().gte(1).optional()
-});
+export const zActionsApiProposeBody = zActionProposalInput;
 
 export const zActionsApiProposePath = z.object({
     workspace: z.int()
 });
 
-export const zActionsApiProposeResponse = z.union([
-    z.record(z.string(), z.unknown()),
-    z.record(z.string(), z.unknown())
-]);
+/**
+ * Saved idempotent proposal.
+ */
+export const zActionsApiProposeResponse = zActionProposalRead;
 
 export const zActionsApiPolicyPath = z.object({
     workspace: z.int()
 });
 
+export const zActionsApiPolicyQuery = z.object({
+    account_id: z.int().gte(1).optional()
+});
+
 /**
  * Authorized Actions resource.
  */
-export const zActionsApiPolicyResponse = z.record(z.string(), z.unknown());
+export const zActionsApiPolicyResponse = zActionPolicyRead;
 
 export const zActionsApiDecisionReceiptPath = z.object({
     workspace: z.int(),
     action: z.string()
+});
+
+export const zActionsApiDecisionReceiptQuery = z.object({
+    account_id: z.int().gte(1).optional()
 });
 
 /**
@@ -415,6 +904,10 @@ export const zActionsApiShowPath = z.object({
     action: z.string()
 });
 
+export const zActionsApiShowQuery = z.object({
+    account_id: z.int().gte(1).optional()
+});
+
 /**
  * Authorized Actions resource.
  */
@@ -423,6 +916,10 @@ export const zActionsApiShowResponse = zActionDetailRead;
 export const zActionsApiBatchPath = z.object({
     workspace: z.int(),
     actionBatch: z.string()
+});
+
+export const zActionsApiBatchQuery = z.object({
+    account_id: z.int().gte(1).optional()
 });
 
 /**

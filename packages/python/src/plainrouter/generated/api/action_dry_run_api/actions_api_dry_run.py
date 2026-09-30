@@ -6,8 +6,8 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.actions_api_dry_run_body import ActionsApiDryRunBody
-from ...models.actions_api_dry_run_response_200 import ActionsApiDryRunResponse200
+from ...models.action_dry_run_read import ActionDryRunRead
+from ...models.action_proposal_input import ActionProposalInput
 from ...models.error_message import ErrorMessage
 from ...models.validation_error import ValidationError
 from ...types import Response
@@ -16,7 +16,7 @@ from ...types import Response
 def _get_kwargs(
     workspace: int,
     *,
-    body: ActionsApiDryRunBody,
+    body: ActionProposalInput,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -37,9 +37,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ActionsApiDryRunResponse200 | ErrorMessage | ValidationError | None:
+) -> ActionDryRunRead | ErrorMessage | ValidationError | None:
     if response.status_code == 200:
-        response_200 = ActionsApiDryRunResponse200.from_dict(response.json())
+        response_200 = ActionDryRunRead.from_dict(response.json())
 
         return response_200
 
@@ -71,7 +71,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ActionsApiDryRunResponse200 | ErrorMessage | ValidationError]:
+) -> Response[ActionDryRunRead | ErrorMessage | ValidationError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -84,8 +84,8 @@ def sync_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient,
-    body: ActionsApiDryRunBody,
-) -> Response[ActionsApiDryRunResponse200 | ErrorMessage | ValidationError]:
+    body: ActionProposalInput,
+) -> Response[ActionDryRunRead | ErrorMessage | ValidationError]:
     """Preview actions
 
      Evaluate a governed proposal for the approved account and preview each policy decision and execution
@@ -93,14 +93,14 @@ def sync_detailed(
 
     Args:
         workspace (int):
-        body (ActionsApiDryRunBody):
+        body (ActionProposalInput):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionsApiDryRunResponse200 | ErrorMessage | ValidationError]
+        Response[ActionDryRunRead | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -119,8 +119,8 @@ def sync(
     workspace: int,
     *,
     client: AuthenticatedClient,
-    body: ActionsApiDryRunBody,
-) -> ActionsApiDryRunResponse200 | ErrorMessage | ValidationError | None:
+    body: ActionProposalInput,
+) -> ActionDryRunRead | ErrorMessage | ValidationError | None:
     """Preview actions
 
      Evaluate a governed proposal for the approved account and preview each policy decision and execution
@@ -128,14 +128,14 @@ def sync(
 
     Args:
         workspace (int):
-        body (ActionsApiDryRunBody):
+        body (ActionProposalInput):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionsApiDryRunResponse200 | ErrorMessage | ValidationError
+        ActionDryRunRead | ErrorMessage | ValidationError
     """
 
     return sync_detailed(
@@ -149,8 +149,8 @@ async def asyncio_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient,
-    body: ActionsApiDryRunBody,
-) -> Response[ActionsApiDryRunResponse200 | ErrorMessage | ValidationError]:
+    body: ActionProposalInput,
+) -> Response[ActionDryRunRead | ErrorMessage | ValidationError]:
     """Preview actions
 
      Evaluate a governed proposal for the approved account and preview each policy decision and execution
@@ -158,14 +158,14 @@ async def asyncio_detailed(
 
     Args:
         workspace (int):
-        body (ActionsApiDryRunBody):
+        body (ActionProposalInput):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionsApiDryRunResponse200 | ErrorMessage | ValidationError]
+        Response[ActionDryRunRead | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -182,8 +182,8 @@ async def asyncio(
     workspace: int,
     *,
     client: AuthenticatedClient,
-    body: ActionsApiDryRunBody,
-) -> ActionsApiDryRunResponse200 | ErrorMessage | ValidationError | None:
+    body: ActionProposalInput,
+) -> ActionDryRunRead | ErrorMessage | ValidationError | None:
     """Preview actions
 
      Evaluate a governed proposal for the approved account and preview each policy decision and execution
@@ -191,14 +191,14 @@ async def asyncio(
 
     Args:
         workspace (int):
-        body (ActionsApiDryRunBody):
+        body (ActionProposalInput):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionsApiDryRunResponse200 | ErrorMessage | ValidationError
+        ActionDryRunRead | ErrorMessage | ValidationError
     """
 
     return (

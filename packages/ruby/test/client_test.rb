@@ -10,11 +10,27 @@ class PlainRouterClientTest < Minitest::Test
 
   def test_actions_models_accept_halted_and_reject_unknown_status
     batch = PlainRouter::OpenAPI::ActionBatchReadData.new(
+      id: "01JTESTBATCH00000000000000",
+      workspace_id: 1,
+      platform_ad_account_id: 1,
       status: "halted",
       batch_status: "halted",
+      policy_reasons: [],
+      rationale: "Pause the ad while the batch is halted.",
+      idempotency_key: "test-halted-batch",
       actions: []
     )
     action = PlainRouter::OpenAPI::ActionReadItem.new(
+      id: "01JTESTACTION0000000000000",
+      batch_id: "01JTESTBATCH00000000000000",
+      workspace_id: 1,
+      type: "pause",
+      target_entity_type: "ad",
+      target_entity_id: "120000000000001",
+      params: {},
+      rationale: "Pause the ad while the batch is halted.",
+      status: "blocked",
+      policy_reasons: [],
       batch_status: "halted",
       disposition: PlainRouter::OpenAPI::ActionCurrentDisposition.new(late_restored: false)
     )

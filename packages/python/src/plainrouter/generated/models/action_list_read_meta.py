@@ -11,21 +11,59 @@ T = TypeVar("T", bound="ActionListReadMeta")
 
 @_attrs_define
 class ActionListReadMeta:
-    """ """
+    """
+    Attributes:
+        current_page (int):
+        last_page (int):
+        per_page (int):
+        total (int):
+    """
 
+    current_page: int
+    last_page: int
+    per_page: int
+    total: int
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        current_page = self.current_page
+
+        last_page = self.last_page
+
+        per_page = self.per_page
+
+        total = self.total
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "current_page": current_page,
+                "last_page": last_page,
+                "per_page": per_page,
+                "total": total,
+            }
+        )
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        action_list_read_meta = cls()
+        current_page = d.pop("current_page")
+
+        last_page = d.pop("last_page")
+
+        per_page = d.pop("per_page")
+
+        total = d.pop("total")
+
+        action_list_read_meta = cls(
+            current_page=current_page,
+            last_page=last_page,
+            per_page=per_page,
+            total=total,
+        )
 
         action_list_read_meta.additional_properties = d
         return action_list_read_meta

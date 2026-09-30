@@ -22,21 +22,21 @@ module PlainRouter::OpenAPI
     # Preview actions
     # Evaluate a governed proposal for the approved account and preview each policy decision and execution diff without creating a batch or action.
     # @param workspace [Integer] The workspace ID
-    # @param actions_api_dry_run_request [ActionsApiDryRunRequest]
+    # @param action_proposal_input [ActionProposalInput]
     # @param [Hash] opts the optional parameters
-    # @return [Hash<String, Object>]
-    def actions_api_dry_run(workspace, actions_api_dry_run_request, opts = {})
-      data, _status_code, _headers = actions_api_dry_run_with_http_info(workspace, actions_api_dry_run_request, opts)
+    # @return [ActionDryRunRead]
+    def actions_api_dry_run(workspace, action_proposal_input, opts = {})
+      data, _status_code, _headers = actions_api_dry_run_with_http_info(workspace, action_proposal_input, opts)
       data
     end
 
     # Preview actions
     # Evaluate a governed proposal for the approved account and preview each policy decision and execution diff without creating a batch or action.
     # @param workspace [Integer] The workspace ID
-    # @param actions_api_dry_run_request [ActionsApiDryRunRequest]
+    # @param action_proposal_input [ActionProposalInput]
     # @param [Hash] opts the optional parameters
-    # @return [Array<(Hash<String, Object>, Integer, Hash)>] Hash<String, Object> data, response status code and response headers
-    def actions_api_dry_run_with_http_info(workspace, actions_api_dry_run_request, opts = {})
+    # @return [Array<(ActionDryRunRead, Integer, Hash)>] ActionDryRunRead data, response status code and response headers
+    def actions_api_dry_run_with_http_info(workspace, action_proposal_input, opts = {})
       if @api_client.config.debugging
         @api_client.config.logger.debug 'Calling API: ActionDryRunApiApi.actions_api_dry_run ...'
       end
@@ -44,9 +44,9 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && workspace.nil?
         fail ArgumentError, "Missing the required parameter 'workspace' when calling ActionDryRunApiApi.actions_api_dry_run"
       end
-      # verify the required parameter 'actions_api_dry_run_request' is set
-      if @api_client.config.client_side_validation && actions_api_dry_run_request.nil?
-        fail ArgumentError, "Missing the required parameter 'actions_api_dry_run_request' when calling ActionDryRunApiApi.actions_api_dry_run"
+      # verify the required parameter 'action_proposal_input' is set
+      if @api_client.config.client_side_validation && action_proposal_input.nil?
+        fail ArgumentError, "Missing the required parameter 'action_proposal_input' when calling ActionDryRunApiApi.actions_api_dry_run"
       end
       # resource path
       local_var_path = '/agent/workspaces/{workspace}/actions/dry-run'.sub('{workspace}', CGI.escape(workspace.to_s))
@@ -68,10 +68,10 @@ module PlainRouter::OpenAPI
       form_params = opts[:form_params] || {}
 
       # http body (model)
-      post_body = opts[:debug_body] || @api_client.object_to_http_body(actions_api_dry_run_request)
+      post_body = opts[:debug_body] || @api_client.object_to_http_body(action_proposal_input)
 
       # return_type
-      return_type = opts[:debug_return_type] || 'Hash<String, Object>'
+      return_type = opts[:debug_return_type] || 'ActionDryRunRead'
 
       # auth_names
       auth_names = opts[:debug_auth_names] || ['workspaceActionKey']

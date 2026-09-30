@@ -9,9 +9,16 @@ export type ClientOptions = {
  */
 export type ActionBatchRead = {
     data: {
+        id: string;
+        workspace_id: number;
+        platform_ad_account_id: number;
         status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked' | 'halted';
         batch_status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked' | 'halted';
         restoration_summary: 'all_receipts_compensated_late' | null;
+        policy_decision: 'allow' | 'require_approval' | 'block' | null;
+        policy_reasons: Array<string>;
+        rationale: string;
+        idempotency_key: string;
         actions: Array<ActionReadItem>;
     };
 };
@@ -38,8 +45,8 @@ export type ActionDecisionReceiptRead = {
     };
     document_sha256: string;
     chain_entry: {
-        sequence?: unknown;
-        hash?: string;
+        sequence: number;
+        hash: string;
     };
     disposition: ActionCurrentDisposition;
 };
@@ -52,12 +59,303 @@ export type ActionDetailRead = {
 };
 
 /**
+ * ActionDryRunRead
+ */
+export type ActionDryRunRead = {
+    dry_run: {
+        actions: Array<{
+            type: 'increase_budget' | 'decrease_budget' | 'pause' | 'resume' | 'replace_creative' | 'shift_spend' | 'rollback' | 'create_campaign' | 'create_ad_set' | 'create_ad' | 'upload_asset' | 'adjust_budget' | 'set_status' | 'duplicate_ad_with_creative' | 'duplicate_adset' | 'duplicate_ad_with_creative_v2';
+            target_entity: {
+                type: string;
+                id: string;
+                name?: string;
+            };
+            status: 'evaluated';
+            policy_decision: 'allow' | 'require_approval' | 'block';
+            policy_reasons: Array<string>;
+            approval_required: boolean;
+            would_auto_execute: boolean;
+            diff: {
+                before: unknown;
+                proposed: unknown;
+            };
+        } | {
+            type: 'increase_budget' | 'decrease_budget' | 'pause' | 'resume' | 'replace_creative' | 'shift_spend' | 'rollback' | 'create_campaign' | 'create_ad_set' | 'create_ad' | 'upload_asset' | 'adjust_budget' | 'set_status' | 'duplicate_ad_with_creative' | 'duplicate_adset' | 'duplicate_ad_with_creative_v2';
+            target_entity: {
+                type: string;
+                id: string;
+                name?: string;
+            };
+            status: 'dry_run_unavailable';
+            reason: string;
+        }>;
+    };
+};
+
+/**
  * ActionListRead
  */
 export type ActionListRead = {
     data: Array<ActionReadItem>;
     meta: {
-        [key: string]: unknown;
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+    };
+};
+
+/**
+ * ActionPolicyRead
+ */
+export type ActionPolicyRead = {
+    data: {
+        id: number | null;
+        workspace_id: number;
+        execution_mode: 'ask' | 'full' | 'suggest_only' | 'auto_with_limits' | 'full_auto';
+        max_spend_delta_percent: string;
+        hard_account_daily_cap_minor: number | null;
+        protected_entities: Array<unknown> | null;
+        quiet_hours_start: string | null;
+        quiet_hours_end: string | null;
+        protect_learning_phase: boolean;
+        outcome_check_after_hours: number;
+        anomaly_threshold_percent: string;
+    };
+};
+
+/**
+ * ActionProposalInput
+ */
+export type ActionProposalInput = {
+    actions: Array<{
+        type: 'increase_budget';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            new_daily_budget_minor: number;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'decrease_budget';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            new_daily_budget_minor: number;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'pause';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            [key: string]: never;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'resume';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            [key: string]: never;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'replace_creative';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            [key: string]: unknown;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'shift_spend';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            [key: string]: unknown;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'rollback';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            [key: string]: unknown;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'create_campaign';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            [key: string]: unknown;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'create_ad_set';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            [key: string]: unknown;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'create_ad';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            [key: string]: unknown;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'upload_asset';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            staged_asset_id: string;
+            asset_type: 'image';
+            filename: string;
+            content_sha256: string;
+            mime_type?: string | null;
+            size_bytes?: number | null;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'adjust_budget';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            new_daily_budget_minor: number;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'set_status';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            status: 'active' | 'paused';
+        };
+        rationale: string;
+        idempotency_key?: string;
+    } | {
+        type: 'duplicate_ad_with_creative';
+        target_entity: {
+            type: 'ad_account' | 'campaign' | 'ad_set' | 'ad';
+            id: string;
+            name?: string | null;
+        };
+        params: {
+            asset_id: string;
+            status: 'paused';
+            name_suffix?: string | null;
+        };
+        rationale: string;
+        idempotency_key?: string;
+    }>;
+    rationale: string;
+    idempotency_key: string;
+    evidence: Array<{
+        source_tool: 'get_account_state' | 'get_signal_health' | 'get_performance' | 'get-creative-library' | 'staged-asset-manifest';
+        fields_used: Array<string>;
+        action_index?: number;
+    }>;
+    target_source: 'human_supplied';
+    account_id?: number;
+};
+
+/**
+ * ActionProposalRead
+ */
+export type ActionProposalRead = {
+    proposal: {
+        id: string;
+        scope: unknown;
+        evidence_provenance: unknown;
+        status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked' | 'halted';
+        policy_decision: 'allow' | 'require_approval' | 'block';
+        policy_reasons: Array<string>;
+        approval_required: boolean;
+        inbox_url: string;
+        approval_queue_url: string;
+        rationale: string;
+        proposed_by: {
+            type: string;
+            id: string;
+            name: string | null;
+        };
+        actions: Array<{
+            id: string;
+            type: 'increase_budget' | 'decrease_budget' | 'pause' | 'resume' | 'replace_creative' | 'shift_spend' | 'rollback' | 'create_campaign' | 'create_ad_set' | 'create_ad' | 'upload_asset' | 'adjust_budget' | 'set_status' | 'duplicate_ad_with_creative' | 'duplicate_adset' | 'duplicate_ad_with_creative_v2';
+            target_entity: {
+                type: string;
+                id: string;
+                name: string | null;
+            };
+            params: {
+                [key: string]: unknown;
+            } | Array<unknown>;
+            rationale: string;
+            proposed_by: {
+                type: string;
+                id: string;
+                name: string | null;
+            };
+            policy_decision: 'allow' | 'require_approval' | 'block';
+            policy_reasons: Array<string>;
+            policy_evidence: unknown;
+        }>;
     };
 };
 
@@ -65,8 +363,22 @@ export type ActionListRead = {
  * ActionReadItem
  */
 export type ActionReadItem = {
+    id: string;
+    batch_id: string;
+    workspace_id: number;
+    type: 'increase_budget' | 'decrease_budget' | 'pause' | 'resume' | 'replace_creative' | 'shift_spend' | 'rollback' | 'create_campaign' | 'create_ad_set' | 'create_ad' | 'upload_asset' | 'adjust_budget' | 'set_status' | 'duplicate_ad_with_creative' | 'duplicate_adset' | 'duplicate_ad_with_creative_v2';
+    target_entity_type: string;
+    target_entity_id: string;
+    target_entity_name: string | null;
+    params: {
+        [key: string]: unknown;
+    } | Array<unknown>;
+    rationale: string;
+    status: 'pending' | 'approved_without_execution' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'verified' | 'failed' | 'execution_uncertain' | 'rolled_back' | 'blocked';
     batch_status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked' | 'halted';
     disposition: ActionCurrentDisposition;
+    policy_decision: 'allow' | 'require_approval' | 'block' | null;
+    policy_reasons: Array<string>;
 };
 
 /**
@@ -242,18 +554,7 @@ export type ValidationError = {
 };
 
 export type ActionsApiDryRunData = {
-    body: {
-        actions: Array<string>;
-        rationale: string;
-        idempotency_key: string;
-        evidence: Array<{
-            source_tool: 'get_account_state' | 'get_signal_health' | 'get_performance' | 'get-creative-library' | 'staged-asset-manifest';
-            fields_used: Array<string>;
-            action_index?: number;
-        }>;
-        target_source: 'human_supplied';
-        account_id?: number;
-    };
+    body: ActionProposalInput;
     path: {
         /**
          * The workspace ID
@@ -289,9 +590,7 @@ export type ActionsApiDryRunResponses = {
     /**
      * Evaluated dry-run preview.
      */
-    200: {
-        [key: string]: unknown;
-    };
+    200: ActionDryRunRead;
 };
 
 export type ActionsApiDryRunResponse = ActionsApiDryRunResponses[keyof ActionsApiDryRunResponses];
@@ -307,6 +606,10 @@ export type ActionsApiIndexData = {
     query?: {
         status?: 'pending' | 'approved_without_execution' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'verified' | 'failed' | 'execution_uncertain' | 'rolled_back' | 'blocked';
         page?: number;
+        /**
+         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         */
+        account_id?: number;
     };
     url: '/agent/workspaces/{workspace}/actions';
 };
@@ -342,18 +645,7 @@ export type ActionsApiIndexResponses = {
 export type ActionsApiIndexResponse = ActionsApiIndexResponses[keyof ActionsApiIndexResponses];
 
 export type ActionsApiProposeData = {
-    body: {
-        actions: Array<string>;
-        rationale: string;
-        idempotency_key: string;
-        evidence: Array<{
-            source_tool: 'get_account_state' | 'get_signal_health' | 'get_performance' | 'get-creative-library' | 'staged-asset-manifest';
-            fields_used: Array<string>;
-            action_index?: number;
-        }>;
-        target_source: 'human_supplied';
-        account_id?: number;
-    };
+    body: ActionProposalInput;
     path: {
         /**
          * The workspace ID
@@ -389,15 +681,11 @@ export type ActionsApiProposeResponses = {
     /**
      * Saved idempotent proposal.
      */
-    200: {
-        [key: string]: unknown;
-    };
+    200: ActionProposalRead;
     /**
      * New proposal created.
      */
-    201: {
-        [key: string]: unknown;
-    };
+    201: ActionProposalRead;
 };
 
 export type ActionsApiProposeResponse = ActionsApiProposeResponses[keyof ActionsApiProposeResponses];
@@ -410,7 +698,12 @@ export type ActionsApiPolicyData = {
          */
         workspace: number;
     };
-    query?: never;
+    query?: {
+        /**
+         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         */
+        account_id?: number;
+    };
     url: '/agent/workspaces/{workspace}/actions/policy';
 };
 
@@ -439,9 +732,7 @@ export type ActionsApiPolicyResponses = {
     /**
      * Authorized Actions resource.
      */
-    200: {
-        [key: string]: unknown;
-    };
+    200: ActionPolicyRead;
 };
 
 export type ActionsApiPolicyResponse = ActionsApiPolicyResponses[keyof ActionsApiPolicyResponses];
@@ -455,7 +746,12 @@ export type ActionsApiDecisionReceiptData = {
         workspace: number;
         action: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         */
+        account_id?: number;
+    };
     url: '/agent/workspaces/{workspace}/actions/{action}/decision-receipt';
 };
 
@@ -469,7 +765,7 @@ export type ActionsApiDecisionReceiptErrors = {
      */
     403: ErrorMessage;
     /**
-     * Workspace, account, or Actions resource not found.
+     * Workspace, account, or Actions resource not found. A visible action without an execution receipt returns error.code receipt_not_available and error.message "No execution receipt exists for this action because it was not executed."
      */
     404: ErrorMessage;
     /**
@@ -498,7 +794,12 @@ export type ActionsApiShowData = {
         workspace: number;
         action: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         */
+        account_id?: number;
+    };
     url: '/agent/workspaces/{workspace}/actions/{action}';
 };
 
@@ -541,7 +842,12 @@ export type ActionsApiBatchData = {
         workspace: number;
         actionBatch: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         */
+        account_id?: number;
+    };
     url: '/agent/workspaces/{workspace}/action-batches/{actionBatch}';
 };
 

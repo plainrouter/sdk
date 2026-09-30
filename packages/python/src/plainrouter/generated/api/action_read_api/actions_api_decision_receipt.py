@@ -9,13 +9,21 @@ from ...client import AuthenticatedClient, Client
 from ...models.action_decision_receipt_read import ActionDecisionReceiptRead
 from ...models.error_message import ErrorMessage
 from ...models.validation_error import ValidationError
-from ...types import Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     workspace: int,
     action: str,
+    *,
+    account_id: int | Unset = UNSET,
 ) -> dict[str, Any]:
+
+    params: dict[str, Any] = {}
+
+    params["account_id"] = account_id
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     _kwargs: dict[str, Any] = {
         "method": "get",
@@ -23,6 +31,7 @@ def _get_kwargs(
             workspace=quote(str(workspace), safe=""),
             action=quote(str(action), safe=""),
         ),
+        "params": params,
     }
 
     return _kwargs
@@ -78,8 +87,9 @@ def sync_detailed(
     action: str,
     *,
     client: AuthenticatedClient,
+    account_id: int | Unset = UNSET,
 ) -> Response[ActionDecisionReceiptRead | ErrorMessage | ValidationError]:
-    """Read Actions data
+    """Get decision receipt
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
@@ -87,6 +97,7 @@ def sync_detailed(
     Args:
         workspace (int):
         action (str):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -99,6 +110,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         workspace=workspace,
         action=action,
+        account_id=account_id,
     )
 
     response = client.get_httpx_client().request(
@@ -113,8 +125,9 @@ def sync(
     action: str,
     *,
     client: AuthenticatedClient,
+    account_id: int | Unset = UNSET,
 ) -> ActionDecisionReceiptRead | ErrorMessage | ValidationError | None:
-    """Read Actions data
+    """Get decision receipt
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
@@ -122,6 +135,7 @@ def sync(
     Args:
         workspace (int):
         action (str):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -135,6 +149,7 @@ def sync(
         workspace=workspace,
         action=action,
         client=client,
+        account_id=account_id,
     ).parsed
 
 
@@ -143,8 +158,9 @@ async def asyncio_detailed(
     action: str,
     *,
     client: AuthenticatedClient,
+    account_id: int | Unset = UNSET,
 ) -> Response[ActionDecisionReceiptRead | ErrorMessage | ValidationError]:
-    """Read Actions data
+    """Get decision receipt
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
@@ -152,6 +168,7 @@ async def asyncio_detailed(
     Args:
         workspace (int):
         action (str):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -164,6 +181,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         workspace=workspace,
         action=action,
+        account_id=account_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -176,8 +194,9 @@ async def asyncio(
     action: str,
     *,
     client: AuthenticatedClient,
+    account_id: int | Unset = UNSET,
 ) -> ActionDecisionReceiptRead | ErrorMessage | ValidationError | None:
-    """Read Actions data
+    """Get decision receipt
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
@@ -185,6 +204,7 @@ async def asyncio(
     Args:
         workspace (int):
         action (str):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -199,5 +219,6 @@ async def asyncio(
             workspace=workspace,
             action=action,
             client=client,
+            account_id=account_id,
         )
     ).parsed

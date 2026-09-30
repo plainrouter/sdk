@@ -18,6 +18,7 @@ def _get_kwargs(
     *,
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
+    account_id: int | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -29,6 +30,8 @@ def _get_kwargs(
     params["status"] = json_status
 
     params["page"] = page
+
+    params["account_id"] = account_id
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -94,8 +97,9 @@ def sync_detailed(
     client: AuthenticatedClient,
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
+    account_id: int | Unset = UNSET,
 ) -> Response[ActionListRead | ErrorMessage | ValidationError]:
-    """Read Actions data
+    """List actions
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
@@ -104,6 +108,7 @@ def sync_detailed(
         workspace (int):
         status (ActionsApiIndexStatus | Unset):
         page (int | Unset):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -117,6 +122,7 @@ def sync_detailed(
         workspace=workspace,
         status=status,
         page=page,
+        account_id=account_id,
     )
 
     response = client.get_httpx_client().request(
@@ -132,8 +138,9 @@ def sync(
     client: AuthenticatedClient,
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
+    account_id: int | Unset = UNSET,
 ) -> ActionListRead | ErrorMessage | ValidationError | None:
-    """Read Actions data
+    """List actions
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
@@ -142,6 +149,7 @@ def sync(
         workspace (int):
         status (ActionsApiIndexStatus | Unset):
         page (int | Unset):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -156,6 +164,7 @@ def sync(
         client=client,
         status=status,
         page=page,
+        account_id=account_id,
     ).parsed
 
 
@@ -165,8 +174,9 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
+    account_id: int | Unset = UNSET,
 ) -> Response[ActionListRead | ErrorMessage | ValidationError]:
-    """Read Actions data
+    """List actions
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
@@ -175,6 +185,7 @@ async def asyncio_detailed(
         workspace (int):
         status (ActionsApiIndexStatus | Unset):
         page (int | Unset):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -188,6 +199,7 @@ async def asyncio_detailed(
         workspace=workspace,
         status=status,
         page=page,
+        account_id=account_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -201,8 +213,9 @@ async def asyncio(
     client: AuthenticatedClient,
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
+    account_id: int | Unset = UNSET,
 ) -> ActionListRead | ErrorMessage | ValidationError | None:
-    """Read Actions data
+    """List actions
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
@@ -211,6 +224,7 @@ async def asyncio(
         workspace (int):
         status (ActionsApiIndexStatus | Unset):
         page (int | Unset):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -226,5 +240,6 @@ async def asyncio(
             client=client,
             status=status,
             page=page,
+            account_id=account_id,
         )
     ).parsed

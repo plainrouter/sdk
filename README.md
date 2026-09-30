@@ -2,7 +2,9 @@
 
 <!-- mcp-name: com.plainrouter/mcp -->
 
-Plainrouter is an independent arrival ledger and spend enforcement under the ad account. Agents can trust its reads because the platform being measured does not produce them, and its enforcement is structural, not advisory.
+Plainrouter is the paid ads platform for developers and agents. This repository contains its public SDKs, CLI, OpenAPI contract copy, MCP metadata and agent integrations.
+
+Plainrouter keeps its own arrival ledger and spend enforcement under the ad account. Agents can trust its reads because the platform being measured does not produce them, and its enforcement is structural, not advisory.
 
 ## Connect to Plainrouter MCP
 

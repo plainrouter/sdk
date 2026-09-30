@@ -44,11 +44,30 @@ T = TypeVar("T")
 
 def test_actions_models_parse_halted_status_and_reject_unknown_status() -> None:
     batch = {
+        "id": "01JTESTBATCH00000000000000",
+        "workspace_id": 1,
+        "platform_ad_account_id": 1,
         "status": "halted",
         "batch_status": "halted",
         "restoration_summary": None,
+        "policy_decision": None,
+        "policy_reasons": [],
+        "rationale": "Pause the ad while the batch is halted.",
+        "idempotency_key": "test-halted-batch",
         "actions": [
             {
+                "id": "01JTESTACTION0000000000000",
+                "batch_id": "01JTESTBATCH00000000000000",
+                "workspace_id": 1,
+                "type": "pause",
+                "target_entity_type": "ad",
+                "target_entity_id": "120000000000001",
+                "target_entity_name": None,
+                "params": {},
+                "rationale": "Pause the ad while the batch is halted.",
+                "status": "blocked",
+                "policy_decision": None,
+                "policy_reasons": [],
                 "batch_status": "halted",
                 "disposition": {
                     "receipt_status": None,

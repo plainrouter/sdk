@@ -40,7 +40,7 @@ module PlainRouter::OpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
-        :'sequence' => :'Object',
+        :'sequence' => :'Integer',
         :'hash' => :'String'
       }
     end
@@ -48,7 +48,6 @@ module PlainRouter::OpenAPI
     # List of attributes with nullable: true
     def self.openapi_nullable
       Set.new([
-        :'sequence',
       ])
     end
 
@@ -70,10 +69,14 @@ module PlainRouter::OpenAPI
 
       if attributes.key?(:'sequence')
         self.sequence = attributes[:'sequence']
+      else
+        self.sequence = nil
       end
 
       if attributes.key?(:'hash')
         self.hash = attributes[:'hash']
+      else
+        self.hash = nil
       end
     end
 
@@ -82,6 +85,14 @@ module PlainRouter::OpenAPI
     def list_invalid_properties
       warn '[DEPRECATED] the `list_invalid_properties` method is obsolete'
       invalid_properties = Array.new
+      if @sequence.nil?
+        invalid_properties.push('invalid value for "sequence", sequence cannot be nil.')
+      end
+
+      if @hash.nil?
+        invalid_properties.push('invalid value for "hash", hash cannot be nil.')
+      end
+
       invalid_properties
     end
 
@@ -89,7 +100,29 @@ module PlainRouter::OpenAPI
     # @return true if the model is valid
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
+      return false if @sequence.nil?
+      return false if @hash.nil?
       true
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] sequence Value to be assigned
+    def sequence=(sequence)
+      if sequence.nil?
+        fail ArgumentError, 'sequence cannot be nil'
+      end
+
+      @sequence = sequence
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] hash Value to be assigned
+    def hash=(hash)
+      if hash.nil?
+        fail ArgumentError, 'hash cannot be nil'
+      end
+
+      @hash = hash
     end
 
     # Checks equality by comparing each attribute.
