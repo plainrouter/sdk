@@ -38,7 +38,7 @@ export const actionsApiDryRun = <ThrowOnError extends boolean = false>(options: 
 });
 
 /**
- * Read Actions data
+ * List actions
  *
  * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
  */
@@ -72,7 +72,7 @@ export const actionsApiPropose = <ThrowOnError extends boolean = false>(options:
 });
 
 /**
- * Read Actions data
+ * Get action policy
  *
  * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
  */
@@ -87,7 +87,7 @@ export const actionsApiPolicy = <ThrowOnError extends boolean = false>(options: 
 });
 
 /**
- * Read Actions data
+ * Get decision receipt
  *
  * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
  */
@@ -102,7 +102,7 @@ export const actionsApiDecisionReceipt = <ThrowOnError extends boolean = false>(
 });
 
 /**
- * Read Actions data
+ * Get action
  *
  * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
  */
@@ -117,7 +117,7 @@ export const actionsApiShow = <ThrowOnError extends boolean = false>(options: Op
 });
 
 /**
- * Read Actions data
+ * Get action batch
  *
  * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
  */

@@ -19,22 +19,24 @@ module PlainRouter::OpenAPI
     def initialize(api_client = ApiClient.default)
       @api_client = api_client
     end
-    # Read Actions data
+    # Get action batch
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param action_batch [String]
     # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
     # @return [ActionBatchRead]
     def actions_api_batch(workspace, action_batch, opts = {})
       data, _status_code, _headers = actions_api_batch_with_http_info(workspace, action_batch, opts)
       data
     end
 
-    # Read Actions data
+    # Get action batch
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param action_batch [String]
     # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
     # @return [Array<(ActionBatchRead, Integer, Hash)>] ActionBatchRead data, response status code and response headers
     def actions_api_batch_with_http_info(workspace, action_batch, opts = {})
       if @api_client.config.debugging
@@ -48,11 +50,16 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action_batch.nil?
         fail ArgumentError, "Missing the required parameter 'action_batch' when calling ActionReadApiApi.actions_api_batch"
       end
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 1.'
+      end
+
       # resource path
       local_var_path = '/agent/workspaces/{workspace}/action-batches/{actionBatch}'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{actionBatch}', CGI.escape(action_batch.to_s))
 
       # query parameters
       query_params = opts[:query_params] || {}
+      query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}
@@ -88,22 +95,24 @@ module PlainRouter::OpenAPI
       return data, status_code, headers
     end
 
-    # Read Actions data
+    # Get decision receipt
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param action [String]
     # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
     # @return [ActionDecisionReceiptRead]
     def actions_api_decision_receipt(workspace, action, opts = {})
       data, _status_code, _headers = actions_api_decision_receipt_with_http_info(workspace, action, opts)
       data
     end
 
-    # Read Actions data
+    # Get decision receipt
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param action [String]
     # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
     # @return [Array<(ActionDecisionReceiptRead, Integer, Hash)>] ActionDecisionReceiptRead data, response status code and response headers
     def actions_api_decision_receipt_with_http_info(workspace, action, opts = {})
       if @api_client.config.debugging
@@ -117,11 +126,16 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action.nil?
         fail ArgumentError, "Missing the required parameter 'action' when calling ActionReadApiApi.actions_api_decision_receipt"
       end
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_decision_receipt, must be greater than or equal to 1.'
+      end
+
       # resource path
       local_var_path = '/agent/workspaces/{workspace}/actions/{action}/decision-receipt'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{action}', CGI.escape(action.to_s))
 
       # query parameters
       query_params = opts[:query_params] || {}
+      query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}
@@ -157,24 +171,26 @@ module PlainRouter::OpenAPI
       return data, status_code, headers
     end
 
-    # Read Actions data
+    # List actions
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [String] :status
     # @option opts [Integer] :page
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
     # @return [ActionListRead]
     def actions_api_index(workspace, opts = {})
       data, _status_code, _headers = actions_api_index_with_http_info(workspace, opts)
       data
     end
 
-    # Read Actions data
+    # List actions
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [String] :status
     # @option opts [Integer] :page
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
     # @return [Array<(ActionListRead, Integer, Hash)>] ActionListRead data, response status code and response headers
     def actions_api_index_with_http_info(workspace, opts = {})
       if @api_client.config.debugging
@@ -192,6 +208,10 @@ module PlainRouter::OpenAPI
         fail ArgumentError, 'invalid value for "opts[:"page"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
       end
 
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
+      end
+
       # resource path
       local_var_path = '/agent/workspaces/{workspace}/actions'.sub('{workspace}', CGI.escape(workspace.to_s))
 
@@ -199,6 +219,7 @@ module PlainRouter::OpenAPI
       query_params = opts[:query_params] || {}
       query_params[:'status'] = opts[:'status'] if !opts[:'status'].nil?
       query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
+      query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}
@@ -234,21 +255,23 @@ module PlainRouter::OpenAPI
       return data, status_code, headers
     end
 
-    # Read Actions data
+    # Get action policy
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
-    # @return [Hash<String, Object>]
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @return [ActionPolicyRead]
     def actions_api_policy(workspace, opts = {})
       data, _status_code, _headers = actions_api_policy_with_http_info(workspace, opts)
       data
     end
 
-    # Read Actions data
+    # Get action policy
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
-    # @return [Array<(Hash<String, Object>, Integer, Hash)>] Hash<String, Object> data, response status code and response headers
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @return [Array<(ActionPolicyRead, Integer, Hash)>] ActionPolicyRead data, response status code and response headers
     def actions_api_policy_with_http_info(workspace, opts = {})
       if @api_client.config.debugging
         @api_client.config.logger.debug 'Calling API: ActionReadApiApi.actions_api_policy ...'
@@ -257,11 +280,16 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && workspace.nil?
         fail ArgumentError, "Missing the required parameter 'workspace' when calling ActionReadApiApi.actions_api_policy"
       end
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_policy, must be greater than or equal to 1.'
+      end
+
       # resource path
       local_var_path = '/agent/workspaces/{workspace}/actions/policy'.sub('{workspace}', CGI.escape(workspace.to_s))
 
       # query parameters
       query_params = opts[:query_params] || {}
+      query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}
@@ -275,7 +303,7 @@ module PlainRouter::OpenAPI
       post_body = opts[:debug_body]
 
       # return_type
-      return_type = opts[:debug_return_type] || 'Hash<String, Object>'
+      return_type = opts[:debug_return_type] || 'ActionPolicyRead'
 
       # auth_names
       auth_names = opts[:debug_auth_names] || ['workspaceActionKey']
@@ -297,22 +325,24 @@ module PlainRouter::OpenAPI
       return data, status_code, headers
     end
 
-    # Read Actions data
+    # Get action
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param action [String]
     # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
     # @return [ActionDetailRead]
     def actions_api_show(workspace, action, opts = {})
       data, _status_code, _headers = actions_api_show_with_http_info(workspace, action, opts)
       data
     end
 
-    # Read Actions data
+    # Get action
     # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
     # @param workspace [Integer] The workspace ID
     # @param action [String]
     # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
     # @return [Array<(ActionDetailRead, Integer, Hash)>] ActionDetailRead data, response status code and response headers
     def actions_api_show_with_http_info(workspace, action, opts = {})
       if @api_client.config.debugging
@@ -326,11 +356,16 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action.nil?
         fail ArgumentError, "Missing the required parameter 'action' when calling ActionReadApiApi.actions_api_show"
       end
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_show, must be greater than or equal to 1.'
+      end
+
       # resource path
       local_var_path = '/agent/workspaces/{workspace}/actions/{action}'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{action}', CGI.escape(action.to_s))
 
       # query parameters
       query_params = opts[:query_params] || {}
+      query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}

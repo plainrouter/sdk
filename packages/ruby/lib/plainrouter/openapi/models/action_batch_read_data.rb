@@ -15,11 +15,25 @@ require 'time'
 
 module PlainRouter::OpenAPI
   class ActionBatchReadData < ApiModelBase
+    attr_accessor :id
+
+    attr_accessor :workspace_id
+
+    attr_accessor :platform_ad_account_id
+
     attr_accessor :status
 
     attr_accessor :batch_status
 
     attr_accessor :restoration_summary
+
+    attr_accessor :policy_decision
+
+    attr_accessor :policy_reasons
+
+    attr_accessor :rationale
+
+    attr_accessor :idempotency_key
 
     attr_accessor :actions
 
@@ -48,9 +62,16 @@ module PlainRouter::OpenAPI
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
+        :'id' => :'id',
+        :'workspace_id' => :'workspace_id',
+        :'platform_ad_account_id' => :'platform_ad_account_id',
         :'status' => :'status',
         :'batch_status' => :'batch_status',
         :'restoration_summary' => :'restoration_summary',
+        :'policy_decision' => :'policy_decision',
+        :'policy_reasons' => :'policy_reasons',
+        :'rationale' => :'rationale',
+        :'idempotency_key' => :'idempotency_key',
         :'actions' => :'actions'
       }
     end
@@ -68,9 +89,16 @@ module PlainRouter::OpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
+        :'id' => :'String',
+        :'workspace_id' => :'Integer',
+        :'platform_ad_account_id' => :'Integer',
         :'status' => :'String',
         :'batch_status' => :'String',
         :'restoration_summary' => :'String',
+        :'policy_decision' => :'String',
+        :'policy_reasons' => :'Array<String>',
+        :'rationale' => :'String',
+        :'idempotency_key' => :'String',
         :'actions' => :'Array<ActionReadItem>'
       }
     end
@@ -79,6 +107,7 @@ module PlainRouter::OpenAPI
     def self.openapi_nullable
       Set.new([
         :'restoration_summary',
+        :'policy_decision',
       ])
     end
 
@@ -98,6 +127,24 @@ module PlainRouter::OpenAPI
         h[k.to_sym] = v
       }
 
+      if attributes.key?(:'id')
+        self.id = attributes[:'id']
+      else
+        self.id = nil
+      end
+
+      if attributes.key?(:'workspace_id')
+        self.workspace_id = attributes[:'workspace_id']
+      else
+        self.workspace_id = nil
+      end
+
+      if attributes.key?(:'platform_ad_account_id')
+        self.platform_ad_account_id = attributes[:'platform_ad_account_id']
+      else
+        self.platform_ad_account_id = nil
+      end
+
       if attributes.key?(:'status')
         self.status = attributes[:'status']
       else
@@ -116,6 +163,32 @@ module PlainRouter::OpenAPI
         self.restoration_summary = nil
       end
 
+      if attributes.key?(:'policy_decision')
+        self.policy_decision = attributes[:'policy_decision']
+      else
+        self.policy_decision = nil
+      end
+
+      if attributes.key?(:'policy_reasons')
+        if (value = attributes[:'policy_reasons']).is_a?(Array)
+          self.policy_reasons = value
+        end
+      else
+        self.policy_reasons = nil
+      end
+
+      if attributes.key?(:'rationale')
+        self.rationale = attributes[:'rationale']
+      else
+        self.rationale = nil
+      end
+
+      if attributes.key?(:'idempotency_key')
+        self.idempotency_key = attributes[:'idempotency_key']
+      else
+        self.idempotency_key = nil
+      end
+
       if attributes.key?(:'actions')
         if (value = attributes[:'actions']).is_a?(Array)
           self.actions = value
@@ -130,12 +203,36 @@ module PlainRouter::OpenAPI
     def list_invalid_properties
       warn '[DEPRECATED] the `list_invalid_properties` method is obsolete'
       invalid_properties = Array.new
+      if @id.nil?
+        invalid_properties.push('invalid value for "id", id cannot be nil.')
+      end
+
+      if @workspace_id.nil?
+        invalid_properties.push('invalid value for "workspace_id", workspace_id cannot be nil.')
+      end
+
+      if @platform_ad_account_id.nil?
+        invalid_properties.push('invalid value for "platform_ad_account_id", platform_ad_account_id cannot be nil.')
+      end
+
       if @status.nil?
         invalid_properties.push('invalid value for "status", status cannot be nil.')
       end
 
       if @batch_status.nil?
         invalid_properties.push('invalid value for "batch_status", batch_status cannot be nil.')
+      end
+
+      if @policy_reasons.nil?
+        invalid_properties.push('invalid value for "policy_reasons", policy_reasons cannot be nil.')
+      end
+
+      if @rationale.nil?
+        invalid_properties.push('invalid value for "rationale", rationale cannot be nil.')
+      end
+
+      if @idempotency_key.nil?
+        invalid_properties.push('invalid value for "idempotency_key", idempotency_key cannot be nil.')
       end
 
       if @actions.nil?
@@ -149,6 +246,9 @@ module PlainRouter::OpenAPI
     # @return true if the model is valid
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
+      return false if @id.nil?
+      return false if @workspace_id.nil?
+      return false if @platform_ad_account_id.nil?
       return false if @status.nil?
       status_validator = EnumAttributeValidator.new('String', ["pending", "approved", "approved_without_execution", "auto_approved", "rejected", "executing", "executed_pending_verification", "compensating", "measuring", "completed", "failed", "rolled_back", "rollback_incomplete", "blocked", "halted"])
       return false unless status_validator.valid?(@status)
@@ -157,8 +257,43 @@ module PlainRouter::OpenAPI
       return false unless batch_status_validator.valid?(@batch_status)
       restoration_summary_validator = EnumAttributeValidator.new('String', ["all_receipts_compensated_late"])
       return false unless restoration_summary_validator.valid?(@restoration_summary)
+      policy_decision_validator = EnumAttributeValidator.new('String', ["allow", "require_approval", "block"])
+      return false unless policy_decision_validator.valid?(@policy_decision)
+      return false if @policy_reasons.nil?
+      return false if @rationale.nil?
+      return false if @idempotency_key.nil?
       return false if @actions.nil?
       true
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] id Value to be assigned
+    def id=(id)
+      if id.nil?
+        fail ArgumentError, 'id cannot be nil'
+      end
+
+      @id = id
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] workspace_id Value to be assigned
+    def workspace_id=(workspace_id)
+      if workspace_id.nil?
+        fail ArgumentError, 'workspace_id cannot be nil'
+      end
+
+      @workspace_id = workspace_id
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] platform_ad_account_id Value to be assigned
+    def platform_ad_account_id=(platform_ad_account_id)
+      if platform_ad_account_id.nil?
+        fail ArgumentError, 'platform_ad_account_id cannot be nil'
+      end
+
+      @platform_ad_account_id = platform_ad_account_id
     end
 
     # Custom attribute writer method checking allowed values (enum).
@@ -191,6 +326,46 @@ module PlainRouter::OpenAPI
       @restoration_summary = restoration_summary
     end
 
+    # Custom attribute writer method checking allowed values (enum).
+    # @param [Object] policy_decision Object to be assigned
+    def policy_decision=(policy_decision)
+      validator = EnumAttributeValidator.new('String', ["allow", "require_approval", "block"])
+      unless validator.valid?(policy_decision)
+        fail ArgumentError, "invalid value for \"policy_decision\", must be one of #{validator.allowable_values}."
+      end
+      @policy_decision = policy_decision
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] policy_reasons Value to be assigned
+    def policy_reasons=(policy_reasons)
+      if policy_reasons.nil?
+        fail ArgumentError, 'policy_reasons cannot be nil'
+      end
+
+      @policy_reasons = policy_reasons
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] rationale Value to be assigned
+    def rationale=(rationale)
+      if rationale.nil?
+        fail ArgumentError, 'rationale cannot be nil'
+      end
+
+      @rationale = rationale
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] idempotency_key Value to be assigned
+    def idempotency_key=(idempotency_key)
+      if idempotency_key.nil?
+        fail ArgumentError, 'idempotency_key cannot be nil'
+      end
+
+      @idempotency_key = idempotency_key
+    end
+
     # Custom attribute writer method with validation
     # @param [Object] actions Value to be assigned
     def actions=(actions)
@@ -206,9 +381,16 @@ module PlainRouter::OpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
+          id == o.id &&
+          workspace_id == o.workspace_id &&
+          platform_ad_account_id == o.platform_ad_account_id &&
           status == o.status &&
           batch_status == o.batch_status &&
           restoration_summary == o.restoration_summary &&
+          policy_decision == o.policy_decision &&
+          policy_reasons == o.policy_reasons &&
+          rationale == o.rationale &&
+          idempotency_key == o.idempotency_key &&
           actions == o.actions
     end
 
@@ -221,7 +403,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [status, batch_status, restoration_summary, actions].hash
+      [id, workspace_id, platform_ad_account_id, status, batch_status, restoration_summary, policy_decision, policy_reasons, rationale, idempotency_key, actions].hash
     end
 
     # Builds the object from hash

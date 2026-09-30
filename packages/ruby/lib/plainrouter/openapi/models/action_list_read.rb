@@ -41,7 +41,7 @@ module PlainRouter::OpenAPI
     def self.openapi_types
       {
         :'data' => :'Array<ActionReadItem>',
-        :'meta' => :'Object'
+        :'meta' => :'ActionListReadMeta'
       }
     end
 

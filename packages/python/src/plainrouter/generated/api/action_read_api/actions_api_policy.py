@@ -6,21 +6,30 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.actions_api_policy_response_200 import ActionsApiPolicyResponse200
+from ...models.action_policy_read import ActionPolicyRead
 from ...models.error_message import ErrorMessage
 from ...models.validation_error import ValidationError
-from ...types import Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     workspace: int,
+    *,
+    account_id: int | Unset = UNSET,
 ) -> dict[str, Any]:
+
+    params: dict[str, Any] = {}
+
+    params["account_id"] = account_id
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/agent/workspaces/{workspace}/actions/policy".format(
             workspace=quote(str(workspace), safe=""),
         ),
+        "params": params,
     }
 
     return _kwargs
@@ -28,9 +37,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ActionsApiPolicyResponse200 | ErrorMessage | ValidationError | None:
+) -> ActionPolicyRead | ErrorMessage | ValidationError | None:
     if response.status_code == 200:
-        response_200 = ActionsApiPolicyResponse200.from_dict(response.json())
+        response_200 = ActionPolicyRead.from_dict(response.json())
 
         return response_200
 
@@ -62,7 +71,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ActionsApiPolicyResponse200 | ErrorMessage | ValidationError]:
+) -> Response[ActionPolicyRead | ErrorMessage | ValidationError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -75,25 +84,28 @@ def sync_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient,
-) -> Response[ActionsApiPolicyResponse200 | ErrorMessage | ValidationError]:
-    """Read Actions data
+    account_id: int | Unset = UNSET,
+) -> Response[ActionPolicyRead | ErrorMessage | ValidationError]:
+    """Get action policy
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
 
     Args:
         workspace (int):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionsApiPolicyResponse200 | ErrorMessage | ValidationError]
+        Response[ActionPolicyRead | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
         workspace=workspace,
+        account_id=account_id,
     )
 
     response = client.get_httpx_client().request(
@@ -107,26 +119,29 @@ def sync(
     workspace: int,
     *,
     client: AuthenticatedClient,
-) -> ActionsApiPolicyResponse200 | ErrorMessage | ValidationError | None:
-    """Read Actions data
+    account_id: int | Unset = UNSET,
+) -> ActionPolicyRead | ErrorMessage | ValidationError | None:
+    """Get action policy
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
 
     Args:
         workspace (int):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionsApiPolicyResponse200 | ErrorMessage | ValidationError
+        ActionPolicyRead | ErrorMessage | ValidationError
     """
 
     return sync_detailed(
         workspace=workspace,
         client=client,
+        account_id=account_id,
     ).parsed
 
 
@@ -134,25 +149,28 @@ async def asyncio_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient,
-) -> Response[ActionsApiPolicyResponse200 | ErrorMessage | ValidationError]:
-    """Read Actions data
+    account_id: int | Unset = UNSET,
+) -> Response[ActionPolicyRead | ErrorMessage | ValidationError]:
+    """Get action policy
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
 
     Args:
         workspace (int):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionsApiPolicyResponse200 | ErrorMessage | ValidationError]
+        Response[ActionPolicyRead | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
         workspace=workspace,
+        account_id=account_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -164,26 +182,29 @@ async def asyncio(
     workspace: int,
     *,
     client: AuthenticatedClient,
-) -> ActionsApiPolicyResponse200 | ErrorMessage | ValidationError | None:
-    """Read Actions data
+    account_id: int | Unset = UNSET,
+) -> ActionPolicyRead | ErrorMessage | ValidationError | None:
+    """Get action policy
 
      Read persisted Actions data for an account available to this workspace key. An unbound key selects
     account_id; a bound key stays limited to its own account.
 
     Args:
         workspace (int):
+        account_id (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionsApiPolicyResponse200 | ErrorMessage | ValidationError
+        ActionPolicyRead | ErrorMessage | ValidationError
     """
 
     return (
         await asyncio_detailed(
             workspace=workspace,
             client=client,
+            account_id=account_id,
         )
     ).parsed

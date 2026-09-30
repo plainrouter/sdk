@@ -55,80 +55,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "actions": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1,
-                                        "maxItems": 25
-                                    },
-                                    "rationale": {
-                                        "type": "string",
-                                        "maxLength": 4000
-                                    },
-                                    "idempotency_key": {
-                                        "type": "string",
-                                        "maxLength": 64
-                                    },
-                                    "evidence": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "source_tool": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "get_account_state",
-                                                        "get_signal_health",
-                                                        "get_performance",
-                                                        "get-creative-library",
-                                                        "staged-asset-manifest"
-                                                    ]
-                                                },
-                                                "fields_used": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "maxLength": 255
-                                                    },
-                                                    "minItems": 1,
-                                                    "maxItems": 50
-                                                },
-                                                "action_index": {
-                                                    "type": "integer",
-                                                    "minimum": 0
-                                                }
-                                            },
-                                            "required": [
-                                                "source_tool",
-                                                "fields_used"
-                                            ]
-                                        },
-                                        "minItems": 1,
-                                        "maxItems": 3,
-                                        "uniqueItems": true
-                                    },
-                                    "target_source": {
-                                        "type": "string",
-                                        "enum": [
-                                            "human_supplied"
-                                        ]
-                                    },
-                                    "account_id": {
-                                        "type": "integer",
-                                        "minimum": 1
-                                    }
-                                },
-                                "required": [
-                                    "actions",
-                                    "rationale",
-                                    "idempotency_key",
-                                    "evidence",
-                                    "target_source"
-                                ]
+                                "$ref": "#/components/schemas/ActionProposalInput"
                             }
                         }
                     }
@@ -139,8 +66,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/ActionDryRunRead"
                                 }
                             }
                         }
@@ -217,80 +143,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "actions": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 1,
-                                        "maxItems": 25
-                                    },
-                                    "rationale": {
-                                        "type": "string",
-                                        "maxLength": 4000
-                                    },
-                                    "idempotency_key": {
-                                        "type": "string",
-                                        "maxLength": 64
-                                    },
-                                    "evidence": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "source_tool": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "get_account_state",
-                                                        "get_signal_health",
-                                                        "get_performance",
-                                                        "get-creative-library",
-                                                        "staged-asset-manifest"
-                                                    ]
-                                                },
-                                                "fields_used": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string",
-                                                        "maxLength": 255
-                                                    },
-                                                    "minItems": 1,
-                                                    "maxItems": 50
-                                                },
-                                                "action_index": {
-                                                    "type": "integer",
-                                                    "minimum": 0
-                                                }
-                                            },
-                                            "required": [
-                                                "source_tool",
-                                                "fields_used"
-                                            ]
-                                        },
-                                        "minItems": 1,
-                                        "maxItems": 3,
-                                        "uniqueItems": true
-                                    },
-                                    "target_source": {
-                                        "type": "string",
-                                        "enum": [
-                                            "human_supplied"
-                                        ]
-                                    },
-                                    "account_id": {
-                                        "type": "integer",
-                                        "minimum": 1
-                                    }
-                                },
-                                "required": [
-                                    "actions",
-                                    "rationale",
-                                    "idempotency_key",
-                                    "evidence",
-                                    "target_source"
-                                ]
+                                "$ref": "#/components/schemas/ActionProposalInput"
                             }
                         }
                     }
@@ -301,8 +154,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/ActionProposalRead"
                                 }
                             }
                         }
@@ -312,8 +164,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/ActionProposalRead"
                                 }
                             }
                         }
@@ -368,7 +219,7 @@
             "get": {
                 "operationId": "actions.api.index",
                 "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
-                "summary": "Read Actions data",
+                "summary": "List actions",
                 "tags": [
                     "ActionReadApi"
                 ],
@@ -406,6 +257,15 @@
                     {
                         "name": "page",
                         "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "account_id",
+                        "in": "query",
+                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
                         "schema": {
                             "type": "integer",
                             "minimum": 1
@@ -475,7 +335,7 @@
             "get": {
                 "operationId": "actions.api.policy",
                 "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
-                "summary": "Read Actions data",
+                "summary": "Get action policy",
                 "tags": [
                     "ActionReadApi"
                 ],
@@ -488,6 +348,15 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "account_id",
+                        "in": "query",
+                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -496,8 +365,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/ActionPolicyRead"
                                 }
                             }
                         }
@@ -554,7 +422,7 @@
             "get": {
                 "operationId": "actions.api.decision-receipt",
                 "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
-                "summary": "Read Actions data",
+                "summary": "Get decision receipt",
                 "tags": [
                     "ActionReadApi"
                 ],
@@ -574,6 +442,15 @@
                         "required": true,
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "name": "account_id",
+                        "in": "query",
+                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -609,7 +486,7 @@
                         }
                     },
                     "404": {
-                        "description": "Workspace, account, or Actions resource not found.",
+                        "description": "Workspace, account, or Actions resource not found. A visible action without an execution receipt returns error.code receipt_not_available and error.message \"No execution receipt exists for this action because it was not executed.\"",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -640,7 +517,7 @@
             "get": {
                 "operationId": "actions.api.show",
                 "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
-                "summary": "Read Actions data",
+                "summary": "Get action",
                 "tags": [
                     "ActionReadApi"
                 ],
@@ -660,6 +537,15 @@
                         "required": true,
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "name": "account_id",
+                        "in": "query",
+                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -726,7 +612,7 @@
             "get": {
                 "operationId": "actions.api.batch",
                 "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
-                "summary": "Read Actions data",
+                "summary": "Get action batch",
                 "tags": [
                     "ActionReadApi"
                 ],
@@ -746,6 +632,15 @@
                         "required": true,
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "name": "account_id",
+                        "in": "query",
+                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -4539,6 +4434,15 @@
                     "data": {
                         "type": "object",
                         "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "workspace_id": {
+                                "type": "integer"
+                            },
+                            "platform_ad_account_id": {
+                                "type": "integer"
+                            },
                             "status": {
                                 "type": "string",
                                 "enum": [
@@ -4589,6 +4493,30 @@
                                     null
                                 ]
                             },
+                            "policy_decision": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "enum": [
+                                    "allow",
+                                    "require_approval",
+                                    "block",
+                                    null
+                                ]
+                            },
+                            "policy_reasons": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "rationale": {
+                                "type": "string"
+                            },
+                            "idempotency_key": {
+                                "type": "string"
+                            },
                             "actions": {
                                 "type": "array",
                                 "items": {
@@ -4597,9 +4525,16 @@
                             }
                         },
                         "required": [
+                            "id",
+                            "workspace_id",
+                            "platform_ad_account_id",
                             "status",
                             "batch_status",
                             "restoration_summary",
+                            "policy_decision",
+                            "policy_reasons",
+                            "rationale",
+                            "idempotency_key",
                             "actions"
                         ]
                     }
@@ -4708,11 +4643,17 @@
                     "chain_entry": {
                         "type": "object",
                         "properties": {
-                            "sequence": {},
+                            "sequence": {
+                                "type": "integer"
+                            },
                             "hash": {
                                 "type": "string"
                             }
-                        }
+                        },
+                        "required": [
+                            "sequence",
+                            "hash"
+                        ]
                     },
                     "disposition": {
                         "$ref": "#/components/schemas/ActionCurrentDisposition"
@@ -4738,6 +4679,180 @@
                 ],
                 "title": "ActionDetailRead"
             },
+            "ActionDryRunRead": {
+                "type": "object",
+                "properties": {
+                    "dry_run": {
+                        "type": "object",
+                        "properties": {
+                            "actions": {
+                                "type": "array",
+                                "items": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "increase_budget",
+                                                        "decrease_budget",
+                                                        "pause",
+                                                        "resume",
+                                                        "replace_creative",
+                                                        "shift_spend",
+                                                        "rollback",
+                                                        "create_campaign",
+                                                        "create_ad_set",
+                                                        "create_ad",
+                                                        "upload_asset",
+                                                        "adjust_budget",
+                                                        "set_status",
+                                                        "duplicate_ad_with_creative",
+                                                        "duplicate_adset",
+                                                        "duplicate_ad_with_creative_v2"
+                                                    ]
+                                                },
+                                                "target_entity": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string"
+                                                        },
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "type",
+                                                        "id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "evaluated"
+                                                    ]
+                                                },
+                                                "policy_decision": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "allow",
+                                                        "require_approval",
+                                                        "block"
+                                                    ]
+                                                },
+                                                "policy_reasons": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "approval_required": {
+                                                    "type": "boolean"
+                                                },
+                                                "would_auto_execute": {
+                                                    "type": "boolean"
+                                                },
+                                                "diff": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "before": {},
+                                                        "proposed": {}
+                                                    },
+                                                    "required": [
+                                                        "before",
+                                                        "proposed"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "target_entity",
+                                                "status",
+                                                "policy_decision",
+                                                "policy_reasons",
+                                                "approval_required",
+                                                "would_auto_execute",
+                                                "diff"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "increase_budget",
+                                                        "decrease_budget",
+                                                        "pause",
+                                                        "resume",
+                                                        "replace_creative",
+                                                        "shift_spend",
+                                                        "rollback",
+                                                        "create_campaign",
+                                                        "create_ad_set",
+                                                        "create_ad",
+                                                        "upload_asset",
+                                                        "adjust_budget",
+                                                        "set_status",
+                                                        "duplicate_ad_with_creative",
+                                                        "duplicate_adset",
+                                                        "duplicate_ad_with_creative_v2"
+                                                    ]
+                                                },
+                                                "target_entity": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string"
+                                                        },
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "type",
+                                                        "id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "dry_run_unavailable"
+                                                    ]
+                                                },
+                                                "reason": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "target_entity",
+                                                "status",
+                                                "reason"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "actions"
+                        ]
+                    }
+                },
+                "required": [
+                    "dry_run"
+                ],
+                "title": "ActionDryRunRead"
+            },
             "ActionListRead": {
                 "type": "object",
                 "properties": {
@@ -4748,7 +4863,27 @@
                         }
                     },
                     "meta": {
-                        "type": "object"
+                        "type": "object",
+                        "properties": {
+                            "current_page": {
+                                "type": "integer"
+                            },
+                            "last_page": {
+                                "type": "integer"
+                            },
+                            "per_page": {
+                                "type": "integer"
+                            },
+                            "total": {
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "current_page",
+                            "last_page",
+                            "per_page",
+                            "total"
+                        ]
                     }
                 },
                 "required": [
@@ -4757,9 +4892,1400 @@
                 ],
                 "title": "ActionListRead"
             },
+            "ActionPolicyRead": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "workspace_id": {
+                                "type": "integer"
+                            },
+                            "execution_mode": {
+                                "type": "string",
+                                "enum": [
+                                    "ask",
+                                    "full",
+                                    "suggest_only",
+                                    "auto_with_limits",
+                                    "full_auto"
+                                ]
+                            },
+                            "max_spend_delta_percent": {
+                                "type": "string"
+                            },
+                            "hard_account_daily_cap_minor": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "protected_entities": {
+                                "type": [
+                                    "array",
+                                    "null"
+                                ],
+                                "items": {}
+                            },
+                            "quiet_hours_start": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "quiet_hours_end": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "protect_learning_phase": {
+                                "type": "boolean"
+                            },
+                            "outcome_check_after_hours": {
+                                "type": "integer"
+                            },
+                            "anomaly_threshold_percent": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "workspace_id",
+                            "execution_mode",
+                            "max_spend_delta_percent",
+                            "hard_account_daily_cap_minor",
+                            "protected_entities",
+                            "quiet_hours_start",
+                            "quiet_hours_end",
+                            "protect_learning_phase",
+                            "outcome_check_after_hours",
+                            "anomaly_threshold_percent"
+                        ]
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "ActionPolicyRead"
+            },
+            "ActionProposalInput": {
+                "properties": {
+                    "actions": {
+                        "minItems": 1,
+                        "maxItems": 25,
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "increase_budget"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "pattern": "^[0-9]+$",
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "new_daily_budget_minor": {
+                                                    "minimum": 1,
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "new_daily_budget_minor"
+                                            ]
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "decrease_budget"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "pattern": "^[0-9]+$",
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "new_daily_budget_minor": {
+                                                    "minimum": 1,
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "new_daily_budget_minor"
+                                            ]
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "pause"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "pattern": "^[0-9]+$",
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "additionalProperties": false,
+                                            "type": "object"
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "resume"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "pattern": "^[0-9]+$",
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "additionalProperties": false,
+                                            "type": "object"
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "replace_creative"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "type": "object"
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "shift_spend"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "type": "object"
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "rollback"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "type": "object"
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "create_campaign"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "type": "object"
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "create_ad_set"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "type": "object"
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "create_ad"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "type": "object"
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "upload_asset"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "properties": {
+                                                "staged_asset_id": {
+                                                    "maxLength": 255,
+                                                    "pattern": "^stage_[a-f0-9]{40}$",
+                                                    "type": "string"
+                                                },
+                                                "asset_type": {
+                                                    "enum": [
+                                                        "image"
+                                                    ],
+                                                    "type": "string"
+                                                },
+                                                "filename": {
+                                                    "maxLength": 255,
+                                                    "type": "string"
+                                                },
+                                                "content_sha256": {
+                                                    "pattern": "^[a-f0-9]{64}$",
+                                                    "type": "string"
+                                                },
+                                                "mime_type": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "size_bytes": {
+                                                    "minimum": 1,
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "staged_asset_id",
+                                                "asset_type",
+                                                "filename",
+                                                "content_sha256"
+                                            ]
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "adjust_budget"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "properties": {
+                                                "new_daily_budget_minor": {
+                                                    "minimum": 1,
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "new_daily_budget_minor"
+                                            ]
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "set_status"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "properties": {
+                                                "status": {
+                                                    "enum": [
+                                                        "active",
+                                                        "paused"
+                                                    ],
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "status"
+                                            ]
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                },
+                                {
+                                    "properties": {
+                                        "type": {
+                                            "enum": [
+                                                "duplicate_ad_with_creative"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "target_entity": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "type": {
+                                                    "enum": [
+                                                        "ad_account",
+                                                        "campaign",
+                                                        "ad_set",
+                                                        "ad"
+                                                    ],
+                                                    "maxLength": 64,
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "maxLength": 128,
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "maxLength": 255,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "type",
+                                                "id"
+                                            ]
+                                        },
+                                        "params": {
+                                            "properties": {
+                                                "asset_id": {
+                                                    "maxLength": 255,
+                                                    "pattern": "^(image|video):.+$",
+                                                    "type": "string"
+                                                },
+                                                "status": {
+                                                    "enum": [
+                                                        "paused"
+                                                    ],
+                                                    "type": "string"
+                                                },
+                                                "name_suffix": {
+                                                    "maxLength": 100,
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": [
+                                                "asset_id",
+                                                "status"
+                                            ]
+                                        },
+                                        "rationale": {
+                                            "maxLength": 2000,
+                                            "type": "string"
+                                        },
+                                        "idempotency_key": {
+                                            "maxLength": 255,
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "required": [
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale"
+                                    ]
+                                }
+                            ]
+                        },
+                        "type": "array"
+                    },
+                    "rationale": {
+                        "maxLength": 4000,
+                        "type": "string"
+                    },
+                    "idempotency_key": {
+                        "maxLength": 64,
+                        "type": "string"
+                    },
+                    "evidence": {
+                        "minItems": 1,
+                        "maxItems": 3,
+                        "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "source_tool": {
+                                    "enum": [
+                                        "get_account_state",
+                                        "get_signal_health",
+                                        "get_performance",
+                                        "get-creative-library",
+                                        "staged-asset-manifest"
+                                    ],
+                                    "type": "string"
+                                },
+                                "fields_used": {
+                                    "minItems": 1,
+                                    "maxItems": 50,
+                                    "items": {
+                                        "maxLength": 255,
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                },
+                                "action_index": {
+                                    "minimum": 0,
+                                    "type": "integer"
+                                }
+                            },
+                            "type": "object",
+                            "required": [
+                                "source_tool",
+                                "fields_used"
+                            ]
+                        },
+                        "type": "array"
+                    },
+                    "target_source": {
+                        "enum": [
+                            "human_supplied"
+                        ],
+                        "type": "string"
+                    },
+                    "account_id": {
+                        "minimum": 1,
+                        "type": "integer"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "actions",
+                    "rationale",
+                    "idempotency_key",
+                    "evidence",
+                    "target_source"
+                ],
+                "title": "ActionProposalInput"
+            },
+            "ActionProposalRead": {
+                "type": "object",
+                "properties": {
+                    "proposal": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "scope": {},
+                            "evidence_provenance": {},
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "pending",
+                                    "approved",
+                                    "approved_without_execution",
+                                    "auto_approved",
+                                    "rejected",
+                                    "executing",
+                                    "executed_pending_verification",
+                                    "compensating",
+                                    "measuring",
+                                    "completed",
+                                    "failed",
+                                    "rolled_back",
+                                    "rollback_incomplete",
+                                    "blocked",
+                                    "halted"
+                                ]
+                            },
+                            "policy_decision": {
+                                "type": "string",
+                                "enum": [
+                                    "allow",
+                                    "require_approval",
+                                    "block"
+                                ]
+                            },
+                            "policy_reasons": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "approval_required": {
+                                "type": "boolean"
+                            },
+                            "inbox_url": {
+                                "type": "string"
+                            },
+                            "approval_queue_url": {
+                                "type": "string"
+                            },
+                            "rationale": {
+                                "type": "string"
+                            },
+                            "proposed_by": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "type",
+                                    "id",
+                                    "name"
+                                ]
+                            },
+                            "actions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "increase_budget",
+                                                "decrease_budget",
+                                                "pause",
+                                                "resume",
+                                                "replace_creative",
+                                                "shift_spend",
+                                                "rollback",
+                                                "create_campaign",
+                                                "create_ad_set",
+                                                "create_ad",
+                                                "upload_asset",
+                                                "adjust_budget",
+                                                "set_status",
+                                                "duplicate_ad_with_creative",
+                                                "duplicate_adset",
+                                                "duplicate_ad_with_creative_v2"
+                                            ]
+                                        },
+                                        "target_entity": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "id",
+                                                "name"
+                                            ]
+                                        },
+                                        "params": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": {}
+                                                },
+                                                {
+                                                    "type": "array",
+                                                    "items": {}
+                                                }
+                                            ]
+                                        },
+                                        "rationale": {
+                                            "type": "string"
+                                        },
+                                        "proposed_by": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "id",
+                                                "name"
+                                            ]
+                                        },
+                                        "policy_decision": {
+                                            "type": "string",
+                                            "enum": [
+                                                "allow",
+                                                "require_approval",
+                                                "block"
+                                            ]
+                                        },
+                                        "policy_reasons": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "policy_evidence": {}
+                                    },
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "target_entity",
+                                        "params",
+                                        "rationale",
+                                        "proposed_by",
+                                        "policy_decision",
+                                        "policy_reasons",
+                                        "policy_evidence"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "scope",
+                            "evidence_provenance",
+                            "status",
+                            "policy_decision",
+                            "policy_reasons",
+                            "approval_required",
+                            "inbox_url",
+                            "approval_queue_url",
+                            "rationale",
+                            "proposed_by",
+                            "actions"
+                        ]
+                    }
+                },
+                "required": [
+                    "proposal"
+                ],
+                "title": "ActionProposalRead"
+            },
             "ActionReadItem": {
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "batch_id": {
+                        "type": "string"
+                    },
+                    "workspace_id": {
+                        "type": "integer"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "increase_budget",
+                            "decrease_budget",
+                            "pause",
+                            "resume",
+                            "replace_creative",
+                            "shift_spend",
+                            "rollback",
+                            "create_campaign",
+                            "create_ad_set",
+                            "create_ad",
+                            "upload_asset",
+                            "adjust_budget",
+                            "set_status",
+                            "duplicate_ad_with_creative",
+                            "duplicate_adset",
+                            "duplicate_ad_with_creative_v2"
+                        ]
+                    },
+                    "target_entity_type": {
+                        "type": "string"
+                    },
+                    "target_entity_id": {
+                        "type": "string"
+                    },
+                    "target_entity_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "params": {
+                        "anyOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": {}
+                            },
+                            {
+                                "type": "array",
+                                "items": {}
+                            }
+                        ]
+                    },
+                    "rationale": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "approved_without_execution",
+                            "rejected",
+                            "executing",
+                            "executed_pending_verification",
+                            "compensating",
+                            "measuring",
+                            "verified",
+                            "failed",
+                            "execution_uncertain",
+                            "rolled_back",
+                            "blocked"
+                        ]
+                    },
                     "batch_status": {
                         "type": "string",
                         "enum": [
@@ -4782,11 +6308,41 @@
                     },
                     "disposition": {
                         "$ref": "#/components/schemas/ActionCurrentDisposition"
+                    },
+                    "policy_decision": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "allow",
+                            "require_approval",
+                            "block",
+                            null
+                        ]
+                    },
+                    "policy_reasons": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 },
                 "required": [
+                    "id",
+                    "batch_id",
+                    "workspace_id",
+                    "type",
+                    "target_entity_type",
+                    "target_entity_id",
+                    "target_entity_name",
+                    "params",
+                    "rationale",
+                    "status",
                     "batch_status",
-                    "disposition"
+                    "disposition",
+                    "policy_decision",
+                    "policy_reasons"
                 ],
                 "title": "ActionReadItem"
             },

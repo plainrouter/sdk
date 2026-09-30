@@ -6,8 +6,6 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-from ..types import UNSET, Unset
-
 T = TypeVar("T", bound="ActionDecisionReceiptReadChainEntry")
 
 
@@ -15,12 +13,12 @@ T = TypeVar("T", bound="ActionDecisionReceiptReadChainEntry")
 class ActionDecisionReceiptReadChainEntry:
     """
     Attributes:
-        sequence (Any | Unset):
-        hash_ (str | Unset):
+        sequence (int):
+        hash_ (str):
     """
 
-    sequence: Any | Unset = UNSET
-    hash_: str | Unset = UNSET
+    sequence: int
+    hash_: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -30,20 +28,21 @@ class ActionDecisionReceiptReadChainEntry:
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({})
-        if sequence is not UNSET:
-            field_dict["sequence"] = sequence
-        if hash_ is not UNSET:
-            field_dict["hash"] = hash_
+        field_dict.update(
+            {
+                "sequence": sequence,
+                "hash": hash_,
+            }
+        )
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        sequence = d.pop("sequence", UNSET)
+        sequence = d.pop("sequence")
 
-        hash_ = d.pop("hash", UNSET)
+        hash_ = d.pop("hash")
 
         action_decision_receipt_read_chain_entry = cls(
             sequence=sequence,

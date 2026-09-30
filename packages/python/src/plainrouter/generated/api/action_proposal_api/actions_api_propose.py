@@ -6,9 +6,8 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.actions_api_propose_body import ActionsApiProposeBody
-from ...models.actions_api_propose_response_200 import ActionsApiProposeResponse200
-from ...models.actions_api_propose_response_201 import ActionsApiProposeResponse201
+from ...models.action_proposal_input import ActionProposalInput
+from ...models.action_proposal_read import ActionProposalRead
 from ...models.error_message import ErrorMessage
 from ...models.validation_error import ValidationError
 from ...types import Response
@@ -17,7 +16,7 @@ from ...types import Response
 def _get_kwargs(
     workspace: int,
     *,
-    body: ActionsApiProposeBody,
+    body: ActionProposalInput,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -38,14 +37,14 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError | None:
+) -> ActionProposalRead | ErrorMessage | ValidationError | None:
     if response.status_code == 200:
-        response_200 = ActionsApiProposeResponse200.from_dict(response.json())
+        response_200 = ActionProposalRead.from_dict(response.json())
 
         return response_200
 
     if response.status_code == 201:
-        response_201 = ActionsApiProposeResponse201.from_dict(response.json())
+        response_201 = ActionProposalRead.from_dict(response.json())
 
         return response_201
 
@@ -77,7 +76,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError]:
+) -> Response[ActionProposalRead | ErrorMessage | ValidationError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -90,8 +89,8 @@ def sync_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient,
-    body: ActionsApiProposeBody,
-) -> Response[ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError]:
+    body: ActionProposalInput,
+) -> Response[ActionProposalRead | ErrorMessage | ValidationError]:
     """Propose actions
 
      Submit a governed proposal for an advertising account available to this workspace key. A matching
@@ -99,14 +98,14 @@ def sync_detailed(
 
     Args:
         workspace (int):
-        body (ActionsApiProposeBody):
+        body (ActionProposalInput):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError]
+        Response[ActionProposalRead | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -125,8 +124,8 @@ def sync(
     workspace: int,
     *,
     client: AuthenticatedClient,
-    body: ActionsApiProposeBody,
-) -> ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError | None:
+    body: ActionProposalInput,
+) -> ActionProposalRead | ErrorMessage | ValidationError | None:
     """Propose actions
 
      Submit a governed proposal for an advertising account available to this workspace key. A matching
@@ -134,14 +133,14 @@ def sync(
 
     Args:
         workspace (int):
-        body (ActionsApiProposeBody):
+        body (ActionProposalInput):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError
+        ActionProposalRead | ErrorMessage | ValidationError
     """
 
     return sync_detailed(
@@ -155,8 +154,8 @@ async def asyncio_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient,
-    body: ActionsApiProposeBody,
-) -> Response[ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError]:
+    body: ActionProposalInput,
+) -> Response[ActionProposalRead | ErrorMessage | ValidationError]:
     """Propose actions
 
      Submit a governed proposal for an advertising account available to this workspace key. A matching
@@ -164,14 +163,14 @@ async def asyncio_detailed(
 
     Args:
         workspace (int):
-        body (ActionsApiProposeBody):
+        body (ActionProposalInput):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError]
+        Response[ActionProposalRead | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -188,8 +187,8 @@ async def asyncio(
     workspace: int,
     *,
     client: AuthenticatedClient,
-    body: ActionsApiProposeBody,
-) -> ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError | None:
+    body: ActionProposalInput,
+) -> ActionProposalRead | ErrorMessage | ValidationError | None:
     """Propose actions
 
      Submit a governed proposal for an advertising account available to this workspace key. A matching
@@ -197,14 +196,14 @@ async def asyncio(
 
     Args:
         workspace (int):
-        body (ActionsApiProposeBody):
+        body (ActionProposalInput):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionsApiProposeResponse200 | ActionsApiProposeResponse201 | ErrorMessage | ValidationError
+        ActionProposalRead | ErrorMessage | ValidationError
     """
 
     return (
