@@ -1,9 +1,9 @@
 {
   "name": "plainrouter",
   "version": "0.1.1",
-  "description": "Connect agents to approved advertising account context through PlainRouter.",
+  "description": "Connect agents to approved advertising account context through Plainrouter.",
   "author": {
-    "name": "PlainRouter",
+    "name": "Plainrouter",
     "url": "https://plainrouter.com"
   },
   "homepage": "https://plainrouter.com/docs",
@@ -18,10 +18,10 @@
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
-    "displayName": "PlainRouter",
+    "displayName": "Plainrouter",
     "shortDescription": "Read approved advertising account context.",
-    "longDescription": "Connect PlainRouter's MCP server to inspect the approved advertising account, first-party signal health, and verified performance.",
-    "developerName": "PlainRouter",
+    "longDescription": "Connect Plainrouter's MCP server to inspect the approved advertising account, first-party signal health, and verified performance.",
+    "developerName": "Plainrouter",
     "category": "Productivity",
     "capabilities": [
       "Interactive",

@@ -5,9 +5,9 @@ require_relative "lib/plainrouter/version"
 Gem::Specification.new do |specification|
   specification.name = "plainrouter-sdk"
   specification.version = PlainRouter::VERSION
-  specification.authors = ["PlainRouter"]
-  specification.summary = "Official Ruby SDK for the PlainRouter Signals Conversion API"
-  specification.description = "A compact Ruby client generated from PlainRouter's signed OpenAPI contract."
+  specification.authors = ["Plainrouter"]
+  specification.summary = "Official Ruby SDK for the Plainrouter Signals Conversion API"
+  specification.description = "A compact Ruby client generated from Plainrouter's signed OpenAPI contract."
   specification.homepage = "https://plainrouter.com"
   specification.license = "Apache-2.0"
   specification.required_ruby_version = ">= 3.2"

@@ -4,7 +4,7 @@ require "uri"
 require "date"
 
 module PlainRouter
-  # Compact entry point for the PlainRouter API.
+  # Compact entry point for the Plainrouter API.
   class Client
     module EventsValidation
       # Keep this literal identical to app/Domains/Signals/Data/ConsentDecision.php::CAPTURED_AT_PATTERN.

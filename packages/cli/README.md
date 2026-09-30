@@ -9,7 +9,7 @@ Official project: [plainrouter.com](https://plainrouter.com) ·
 [documentation](https://plainrouter.com/docs/cli/quickstart) ·
 [source](https://github.com/plainrouter/sdk/tree/main/packages/cli)
 
-Report CLI issues in the [PlainRouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
+Report CLI issues in the [Plainrouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
 
 ## Installation
 

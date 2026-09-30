@@ -1,12 +1,12 @@
 interface:
-  display_name: "Verify PlainRouter Signal"
+  display_name: "Verify Plainrouter Signal"
   short_description: "Verify identity-free Signal ingestion"
   default_prompt: "Use $verify-signal-ingestion to verify my approved workspace Signal ingestion."
 dependencies:
   tools:
     - type: "mcp"
       value: "plainrouter"
-      description: "PlainRouter Signal verification tools"
+      description: "Plainrouter Signal verification tools"
       transport: "streamable_http"
       url: "https://plainrouter.com/mcp"
 policy:

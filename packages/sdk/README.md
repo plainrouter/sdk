@@ -1,13 +1,13 @@
 # @plainrouter/sdk
 
-Generated TypeScript client and Zod schemas for PlainRouter's signed OpenAPI
+Generated TypeScript client and Zod schemas for Plainrouter's signed OpenAPI
 contract.
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
 [documentation](https://plainrouter.com/docs/sdk/typescript) ·
 [source](https://github.com/plainrouter/sdk/tree/main/packages/sdk)
 
-Report SDK issues in the [PlainRouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
+Report SDK issues in the [Plainrouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
 
 This package is in `0.x` development. Its interface is unstable and carries no
 support promise yet.

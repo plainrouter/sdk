@@ -2,9 +2,9 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "plainrouter",
   "version": "0.1.1",
-  "description": "Connect agents to approved advertising account context through PlainRouter.",
+  "description": "Connect agents to approved advertising account context through Plainrouter.",
   "author": {
-    "name": "PlainRouter",
+    "name": "Plainrouter",
     "url": "https://plainrouter.com"
   },
   "homepage": "https://plainrouter.com/docs",

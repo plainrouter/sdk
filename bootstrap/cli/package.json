@@ -1,7 +1,7 @@
 {
   "name": "@plainrouter/cli",
   "version": "0.0.0",
-  "description": "Bootstrap placeholder for the PlainRouter CLI.",
+  "description": "Bootstrap placeholder for the Plainrouter CLI.",
   "homepage": "https://plainrouter.com",
   "license": "Apache-2.0",
   "repository": {

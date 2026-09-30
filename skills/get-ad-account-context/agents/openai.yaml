@@ -1,12 +1,12 @@
 interface:
-  display_name: "PlainRouter Ad Context"
+  display_name: "Plainrouter Ad Context"
   short_description: "Read approved advertising account context"
   default_prompt: "Use $get-ad-account-context to review my approved ad account and signal health."
 dependencies:
   tools:
     - type: "mcp"
       value: "plainrouter"
-      description: "PlainRouter account context and signal health tools"
+      description: "Plainrouter account context and signal health tools"
       transport: "streamable_http"
       url: "https://plainrouter.com/mcp"
 policy:

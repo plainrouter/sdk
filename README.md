@@ -1,12 +1,12 @@
-# PlainRouter SDK
+# Plainrouter SDK
 
 <!-- mcp-name: com.plainrouter/mcp -->
 
-PlainRouter is an independent arrival ledger and spend enforcement under the ad account. Agents can trust its reads because the platform being measured does not produce them, and its enforcement is structural, not advisory.
+Plainrouter is an independent arrival ledger and spend enforcement under the ad account. Agents can trust its reads because the platform being measured does not produce them, and its enforcement is structural, not advisory.
 
-## Connect to PlainRouter MCP
+## Connect to Plainrouter MCP
 
-PlainRouter exposes a remote Streamable HTTP MCP server at [https://plainrouter.com/mcp](https://plainrouter.com/mcp).
+Plainrouter exposes a remote Streamable HTTP MCP server at [https://plainrouter.com/mcp](https://plainrouter.com/mcp).
 
 The server uses OAuth 2.1. Request only the `mcp:use` scope. Account access is limited to the advertising account approved by the human user. Complete OAuth authorization in your client's normal flow; do not place credentials in the endpoint URL. Review [authentication](https://plainrouter.com/auth.md) before connecting an agent.
 
@@ -40,7 +40,7 @@ Use `https://plainrouter.com/mcp/sandbox` to test an MCP integration without cre
 
 ## Agent Skills
 
-This is PlainRouter's public repository for agent integrations and generated SDKs. It includes:
+This is Plainrouter's public repository for agent integrations and generated SDKs. It includes:
 
 - repository guidance for Claude Code, Codex, Cursor, and Windsurf;
 - Agent Plugin manifests for Claude Code and Codex;
@@ -76,7 +76,7 @@ The live MCP server advertises these tools. Availability remains limited by the 
 | `launcher.execute_batch` | Enters execution for a token-bound Launch batch. Every mutation is proposed through Actions rather than applied outside the governed lane. |
 | `show_spend_cap_approval` | Renders the static spend-cap approval preview card. Read-only and idempotent; it reads and writes nothing. |
 
-Generated from PlainRouter's signed OpenAPI contract.
+Generated from Plainrouter's signed OpenAPI contract.
 
 ## TypeScript SDK
 

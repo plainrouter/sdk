@@ -1,6 +1,6 @@
-# PlainRouter Ruby SDK
+# Plainrouter Ruby SDK
 
-The official Ruby SDK for the PlainRouter Signals Conversion API. It is generated from the repository's signed OpenAPI contract and is currently in `0.x` development.
+The official Ruby SDK for the Plainrouter Signals Conversion API. It is generated from the repository's signed OpenAPI contract and is currently in `0.x` development.
 
 ## Install
 

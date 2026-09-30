@@ -19,7 +19,7 @@ def main() -> None:
         "Repository": "https://github.com/plainrouter/sdk",
     }
     if urls != expected_urls:
-        raise RuntimeError(f"Python project URLs do not identify PlainRouter: {urls!r}")
+        raise RuntimeError(f"Python project URLs do not identify Plainrouter: {urls!r}")
 
     print(
         "Verified official PyPI metadata for "
