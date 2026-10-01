@@ -8,7 +8,7 @@ Plainrouter keeps its own arrival ledger and spend enforcement under the ad acco
 
 ## Connect to Plainrouter MCP
 
-Plainrouter exposes a remote Streamable HTTP MCP server at [https://plainrouter.com/mcp](https://plainrouter.com/mcp).
+Plainrouter exposes a remote Streamable HTTP MCP server at [https://plainrouter.com/mcp](https://plainrouter.com/mcp). For supported clients, account scope and pricing, see the [Meta Ads MCP server overview](https://plainrouter.com/solutions/meta-ads-mcp).
 
 The server uses OAuth 2.1. Request only the `mcp:use` scope. Account access is limited to the advertising account approved by the human user. Complete OAuth authorization in your client's normal flow; do not place credentials in the endpoint URL. Review [authentication](https://plainrouter.com/auth.md) before connecting an agent.
 
@@ -207,7 +207,7 @@ brew install plainrouter/tap/plainrouter
 
 ## Developer resources
 
-Official developer resources: [documentation](https://plainrouter.com/docs), [API documentation](https://plainrouter.com/docs/reference/conversion-api), and [OpenAPI specification](https://plainrouter.com/openapi.json).
+Official developer resources: [documentation](https://plainrouter.com/docs), [API documentation](https://plainrouter.com/docs/api/introduction), and [OpenAPI specification](https://plainrouter.com/openapi.json).
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
 [documentation](https://plainrouter.com/docs) ·
