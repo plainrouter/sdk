@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   zActionBatchRead,
+  zActionPolicyRead,
   zActionReadItem,
   zCreateEventBody,
   zCreateEventResponse,
@@ -11,6 +12,25 @@ import {
 } from '../src/index.js';
 
 describe('generated response schemas', () => {
+  it('parses current policy responses and rejects an invalid execution mode', () => {
+    const response = {
+      data: {
+        id: null,
+        workspace_id: 1,
+        execution_mode: 'full',
+        outcome_check_after_hours: 24,
+        anomaly_threshold_percent: '20.00',
+      },
+    };
+
+    expect(zActionPolicyRead.parse(response)).toEqual(response);
+    expect(() =>
+      zActionPolicyRead.parse({
+        data: { ...response.data, execution_mode: 'unknown_mode' },
+      }),
+    ).toThrow();
+  });
+
   it('accepts halted Actions statuses and rejects an unknown status', () => {
     const disposition = {
       receipt_status: null,

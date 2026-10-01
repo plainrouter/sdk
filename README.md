@@ -50,7 +50,7 @@ This is Plainrouter's public repository for agent integrations and generated SDK
 - three official Agent Skills:
   - [`get-ad-account-context`](skills/get-ad-account-context/SKILL.md) for approved account context and read-only measurements;
   - [`verify-signal-ingestion`](skills/verify-signal-ingestion/SKILL.md) for an idempotent identity-free onboarding check; and
-  - [`propose-governed-ad-actions`](skills/propose-governed-ad-actions/SKILL.md) for evidence-backed proposals subject to policy and human approval.
+  - [`propose-governed-ad-actions`](skills/propose-governed-ad-actions/SKILL.md) for evidence-backed proposals governed by Ask or Full.
 
 Install the skills with the open Agent Skills CLI:
 
@@ -70,13 +70,12 @@ The live MCP server advertises these tools. Availability remains limited by the 
 | `verify_signal_ingestion` | Writes one identity-free onboarding verification event and confirms ledger receipt. Idempotent and has no spend capability. |
 | `propose-actions` | Proposes 1–25 budget, status, upload, or creative-duplication actions. Idempotent; every proposal passes workspace policy, and suggest-only approval never executes it. |
 | `get-creative-library` | Reads Meta image and video assets, historically associated ads, and 30-day performance. Read-only; results can be filtered and paginated. |
-| `upload-asset` | Stages a JPEG or PNG image and submits a canonical upload action. Idempotent and non-destructive; the action remains policy- and approval-gated. |
+| `upload-asset` | Stages a JPEG or PNG image and submits a canonical upload action. Idempotent and non-destructive; Ask requires a person to approve the change; Full queues it automatically. |
 | `duplicate-ad-with-creative` | Proposes duplicating a source Meta ad with a selected creative asset. Idempotent and non-destructive; approved copies are always created paused. |
 | `launcher.draft_batch` | Creates a Launch draft from already-synced Drive assets in the execution token's workspace and ad account. Creates draft state only and accepts no caller-supplied account context. |
 | `launcher.batch_status` | Reads the bounded status projection of a token-bound Launch batch. Read-only and idempotent. |
 | `launcher.preview_batch` | Runs the authoritative Launch gate preview checkpoint for a token-bound batch. Non-destructive; a blocked gate prevents advancement. |
 | `launcher.execute_batch` | Enters execution for a token-bound Launch batch. Every mutation is proposed through Actions rather than applied outside the governed lane. |
-| `show_spend_cap_approval` | Renders the static spend-cap approval preview card. Read-only and idempotent; it reads and writes nothing. |
 
 Generated from Plainrouter's signed OpenAPI contract.
 
@@ -102,6 +101,17 @@ const response = await listEvents();
 
 The default API base URL is `https://plainrouter.com/api/v1`. The SDK never
 embeds credentials.
+
+## Action policy compatibility
+
+The next npm and Python version is `0.7.0`; the next Ruby version is `0.3.0`.
+These breaking `0.x` updates remove retired workspace policy settings from the
+generated clients. Policy reads expose execution mode and outcome-check settings.
+Update integrations to consume the current signed policy response.
+
+In Ask mode, a person approves every change first. In Full mode, the workspace
+lets changes run automatically without a per-change approval. Every change gets
+a receipt, and the kill switch stops all changes. It does not undo earlier changes.
 
 ## Python SDK
 

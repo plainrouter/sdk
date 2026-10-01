@@ -113,12 +113,6 @@ export type ActionPolicyRead = {
         id: number | null;
         workspace_id: number;
         execution_mode: 'ask' | 'full' | 'suggest_only' | 'auto_with_limits' | 'full_auto';
-        max_spend_delta_percent: string;
-        hard_account_daily_cap_minor: number | null;
-        protected_entities: Array<unknown> | null;
-        quiet_hours_start: string | null;
-        quiet_hours_end: string | null;
-        protect_learning_phase: boolean;
         outcome_check_after_hours: number;
         anomaly_threshold_percent: string;
     };

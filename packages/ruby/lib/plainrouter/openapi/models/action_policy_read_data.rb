@@ -21,18 +21,6 @@ module PlainRouter::OpenAPI
 
     attr_accessor :execution_mode
 
-    attr_accessor :max_spend_delta_percent
-
-    attr_accessor :hard_account_daily_cap_minor
-
-    attr_accessor :protected_entities
-
-    attr_accessor :quiet_hours_start
-
-    attr_accessor :quiet_hours_end
-
-    attr_accessor :protect_learning_phase
-
     attr_accessor :outcome_check_after_hours
 
     attr_accessor :anomaly_threshold_percent
@@ -65,12 +53,6 @@ module PlainRouter::OpenAPI
         :'id' => :'id',
         :'workspace_id' => :'workspace_id',
         :'execution_mode' => :'execution_mode',
-        :'max_spend_delta_percent' => :'max_spend_delta_percent',
-        :'hard_account_daily_cap_minor' => :'hard_account_daily_cap_minor',
-        :'protected_entities' => :'protected_entities',
-        :'quiet_hours_start' => :'quiet_hours_start',
-        :'quiet_hours_end' => :'quiet_hours_end',
-        :'protect_learning_phase' => :'protect_learning_phase',
         :'outcome_check_after_hours' => :'outcome_check_after_hours',
         :'anomaly_threshold_percent' => :'anomaly_threshold_percent'
       }
@@ -92,12 +74,6 @@ module PlainRouter::OpenAPI
         :'id' => :'Integer',
         :'workspace_id' => :'Integer',
         :'execution_mode' => :'String',
-        :'max_spend_delta_percent' => :'String',
-        :'hard_account_daily_cap_minor' => :'Integer',
-        :'protected_entities' => :'Array<Object>',
-        :'quiet_hours_start' => :'String',
-        :'quiet_hours_end' => :'String',
-        :'protect_learning_phase' => :'Boolean',
         :'outcome_check_after_hours' => :'Integer',
         :'anomaly_threshold_percent' => :'String'
       }
@@ -107,10 +83,6 @@ module PlainRouter::OpenAPI
     def self.openapi_nullable
       Set.new([
         :'id',
-        :'hard_account_daily_cap_minor',
-        :'protected_entities',
-        :'quiet_hours_start',
-        :'quiet_hours_end',
       ])
     end
 
@@ -148,44 +120,6 @@ module PlainRouter::OpenAPI
         self.execution_mode = nil
       end
 
-      if attributes.key?(:'max_spend_delta_percent')
-        self.max_spend_delta_percent = attributes[:'max_spend_delta_percent']
-      else
-        self.max_spend_delta_percent = nil
-      end
-
-      if attributes.key?(:'hard_account_daily_cap_minor')
-        self.hard_account_daily_cap_minor = attributes[:'hard_account_daily_cap_minor']
-      else
-        self.hard_account_daily_cap_minor = nil
-      end
-
-      if attributes.key?(:'protected_entities')
-        if (value = attributes[:'protected_entities']).is_a?(Array)
-          self.protected_entities = value
-        end
-      else
-        self.protected_entities = nil
-      end
-
-      if attributes.key?(:'quiet_hours_start')
-        self.quiet_hours_start = attributes[:'quiet_hours_start']
-      else
-        self.quiet_hours_start = nil
-      end
-
-      if attributes.key?(:'quiet_hours_end')
-        self.quiet_hours_end = attributes[:'quiet_hours_end']
-      else
-        self.quiet_hours_end = nil
-      end
-
-      if attributes.key?(:'protect_learning_phase')
-        self.protect_learning_phase = attributes[:'protect_learning_phase']
-      else
-        self.protect_learning_phase = nil
-      end
-
       if attributes.key?(:'outcome_check_after_hours')
         self.outcome_check_after_hours = attributes[:'outcome_check_after_hours']
       else
@@ -212,14 +146,6 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "execution_mode", execution_mode cannot be nil.')
       end
 
-      if @max_spend_delta_percent.nil?
-        invalid_properties.push('invalid value for "max_spend_delta_percent", max_spend_delta_percent cannot be nil.')
-      end
-
-      if @protect_learning_phase.nil?
-        invalid_properties.push('invalid value for "protect_learning_phase", protect_learning_phase cannot be nil.')
-      end
-
       if @outcome_check_after_hours.nil?
         invalid_properties.push('invalid value for "outcome_check_after_hours", outcome_check_after_hours cannot be nil.')
       end
@@ -239,8 +165,6 @@ module PlainRouter::OpenAPI
       return false if @execution_mode.nil?
       execution_mode_validator = EnumAttributeValidator.new('String', ["ask", "full", "suggest_only", "auto_with_limits", "full_auto"])
       return false unless execution_mode_validator.valid?(@execution_mode)
-      return false if @max_spend_delta_percent.nil?
-      return false if @protect_learning_phase.nil?
       return false if @outcome_check_after_hours.nil?
       return false if @anomaly_threshold_percent.nil?
       true
@@ -264,26 +188,6 @@ module PlainRouter::OpenAPI
         fail ArgumentError, "invalid value for \"execution_mode\", must be one of #{validator.allowable_values}."
       end
       @execution_mode = execution_mode
-    end
-
-    # Custom attribute writer method with validation
-    # @param [Object] max_spend_delta_percent Value to be assigned
-    def max_spend_delta_percent=(max_spend_delta_percent)
-      if max_spend_delta_percent.nil?
-        fail ArgumentError, 'max_spend_delta_percent cannot be nil'
-      end
-
-      @max_spend_delta_percent = max_spend_delta_percent
-    end
-
-    # Custom attribute writer method with validation
-    # @param [Object] protect_learning_phase Value to be assigned
-    def protect_learning_phase=(protect_learning_phase)
-      if protect_learning_phase.nil?
-        fail ArgumentError, 'protect_learning_phase cannot be nil'
-      end
-
-      @protect_learning_phase = protect_learning_phase
     end
 
     # Custom attribute writer method with validation
@@ -314,12 +218,6 @@ module PlainRouter::OpenAPI
           id == o.id &&
           workspace_id == o.workspace_id &&
           execution_mode == o.execution_mode &&
-          max_spend_delta_percent == o.max_spend_delta_percent &&
-          hard_account_daily_cap_minor == o.hard_account_daily_cap_minor &&
-          protected_entities == o.protected_entities &&
-          quiet_hours_start == o.quiet_hours_start &&
-          quiet_hours_end == o.quiet_hours_end &&
-          protect_learning_phase == o.protect_learning_phase &&
           outcome_check_after_hours == o.outcome_check_after_hours &&
           anomaly_threshold_percent == o.anomaly_threshold_percent
     end
@@ -333,7 +231,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, workspace_id, execution_mode, max_spend_delta_percent, hard_account_daily_cap_minor, protected_entities, quiet_hours_start, quiet_hours_end, protect_learning_phase, outcome_check_after_hours, anomaly_threshold_percent].hash
+      [id, workspace_id, execution_mode, outcome_check_after_hours, anomaly_threshold_percent].hash
     end
 
     # Builds the object from hash

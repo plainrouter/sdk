@@ -8,6 +8,20 @@ class PlainRouterClientTest < Minitest::Test
   VALID_CAPTURED_AT = "2026-08-19T12:34:56.123456+02:00"
   VALID_CAPTURED_AT_Z = "2026-08-19T10:34:56Z"
 
+  def test_policy_model_accepts_current_response_and_rejects_invalid_mode
+    data = {
+      id: nil,
+      workspace_id: 1,
+      execution_mode: "full",
+      outcome_check_after_hours: 24,
+      anomaly_threshold_percent: "20.00"
+    }
+    policy = PlainRouter::OpenAPI::ActionPolicyReadData.new(data)
+
+    assert_equal data, policy.to_hash
+    assert_raises(ArgumentError) { policy.execution_mode = "unknown_mode" }
+  end
+
   def test_actions_models_accept_halted_and_reject_unknown_status
     batch = PlainRouter::OpenAPI::ActionBatchReadData.new(
       id: "01JTESTBATCH00000000000000",

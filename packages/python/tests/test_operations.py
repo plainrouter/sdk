@@ -24,6 +24,7 @@ from plainrouter import (
 from plainrouter.generated import AuthenticatedClient
 from plainrouter.generated.models import (
     ActionBatchReadData,
+    ActionPolicyRead,
     CreateEventBodyType0,
     CreateEventBodyType0Consent,
     CreateEventBodyType0ConsentMode,
@@ -40,6 +41,22 @@ from plainrouter.generated.models import (
 from plainrouter.generated.types import Response
 
 T = TypeVar("T")
+
+
+def test_policy_model_parses_current_response_and_rejects_invalid_mode() -> None:
+    response = {
+        "data": {
+            "id": None,
+            "workspace_id": 1,
+            "execution_mode": "full",
+            "outcome_check_after_hours": 24,
+            "anomaly_threshold_percent": "20.00",
+        }
+    }
+
+    assert ActionPolicyRead.from_dict(response).to_dict() == response
+    with pytest.raises(ValueError):
+        ActionPolicyRead.from_dict({"data": {**response["data"], "execution_mode": "unknown_mode"}})
 
 
 def test_actions_models_parse_halted_status_and_reject_unknown_status() -> None:
