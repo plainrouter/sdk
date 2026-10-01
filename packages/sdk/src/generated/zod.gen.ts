@@ -139,12 +139,6 @@ export const zActionPolicyRead = z.object({
             'auto_with_limits',
             'full_auto'
         ]),
-        max_spend_delta_percent: z.string(),
-        hard_account_daily_cap_minor: z.int().nullable(),
-        protected_entities: z.array(z.unknown()).nullable(),
-        quiet_hours_start: z.string().nullable(),
-        quiet_hours_end: z.string().nullable(),
-        protect_learning_phase: z.boolean(),
         outcome_check_after_hours: z.int(),
         anomaly_threshold_percent: z.string()
     })

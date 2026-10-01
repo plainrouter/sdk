@@ -4917,37 +4917,6 @@
                                     "full_auto"
                                 ]
                             },
-                            "max_spend_delta_percent": {
-                                "type": "string"
-                            },
-                            "hard_account_daily_cap_minor": {
-                                "type": [
-                                    "integer",
-                                    "null"
-                                ]
-                            },
-                            "protected_entities": {
-                                "type": [
-                                    "array",
-                                    "null"
-                                ],
-                                "items": {}
-                            },
-                            "quiet_hours_start": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "quiet_hours_end": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "protect_learning_phase": {
-                                "type": "boolean"
-                            },
                             "outcome_check_after_hours": {
                                 "type": "integer"
                             },
@@ -4959,12 +4928,6 @@
                             "id",
                             "workspace_id",
                             "execution_mode",
-                            "max_spend_delta_percent",
-                            "hard_account_daily_cap_minor",
-                            "protected_entities",
-                            "quiet_hours_start",
-                            "quiet_hours_end",
-                            "protect_learning_phase",
                             "outcome_check_after_hours",
                             "anomaly_threshold_percent"
                         ]
