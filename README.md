@@ -156,6 +156,22 @@ Ruby 3.2 or newer is required. The complete generated models and HTTP-aware
 methods remain available under `PlainRouter::OpenAPI` without crowding the
 top-level SDK documentation.
 
+## PHP SDK
+
+The PHP SDK lives in [`packages/php`](packages/php) and is not yet published to
+Packagist. Use the compact client facade for the three API areas:
+
+```php
+use Plainrouter\Client;
+
+$client = new Client(token: getenv('PLAINROUTER_TOKEN'));
+
+$events = $client->operations->listEvents(25);
+```
+
+PHP 8.2 or newer is required. The complete generated models and HTTP-aware
+methods remain available under `Plainrouter\OpenAPI`.
+
 ## Go SDK
 
 The generated Go client is published as its own standard Go module:
