@@ -1,6 +1,6 @@
 # Plainrouter SDK agent guide
 
-This public repository contains the generated TypeScript, Python, and Ruby SDKs, the CLI, and agent integration metadata for Plainrouter.
+This public repository contains the generated TypeScript, Python, Ruby, and PHP SDKs, the CLI, and agent integration metadata for Plainrouter.
 
 ## Source of truth
 
@@ -8,6 +8,7 @@ This public repository contains the generated TypeScript, Python, and Ruby SDKs,
 - Keep `spec/CHECKSUM` aligned with that contract.
 - Do not hand-edit generated SDK output. Change or refresh the contract, then use the repository generation workflow.
 - Ruby files below `packages/ruby/lib/plainrouter/openapi/` and `packages/ruby/lib/plainrouter/openapi.rb` are generated. Keep the curated `PlainRouter::Client` facade outside that path.
+- PHP files below `packages/php/src/OpenAPI/` are generated. Keep the curated `Plainrouter\Client` facade and `Plainrouter\Events` outside that path.
 - Never add API tokens, Signal Tracker secrets, OAuth credentials, or captured customer data.
 
 ## Verification
@@ -24,6 +25,6 @@ npm run build
 
 Run `npm run smoke:production` only when a human explicitly requests a production smoke test. It is not part of ordinary local verification.
 
-`npm run smoke:live`, `scripts/live-smoke.py`, and `scripts/live-smoke.rb` call the live zero-auth sandbox through each SDK. They persist nothing and need no credentials; CI runs them nightly and before every publish.
+`npm run smoke:live`, `scripts/live-smoke.py`, `scripts/live-smoke.rb`, and `scripts/live-smoke.php` call the live zero-auth sandbox through each SDK. They persist nothing and need no credentials; CI runs them nightly and before every publish.
 
 For agent integration changes, validate every JSON file, validate each `SKILL.md`, and keep the documented MCP endpoint, OAuth scope, developer index, and OpenAPI URL consistent with the public Plainrouter resources.
