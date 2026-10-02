@@ -16,6 +16,8 @@ const checksum = Object.fromEntries(
     }),
 );
 
+const strict = process.env.SPEC_DRIFT_STRICT === '1';
+
 try {
   const response = await fetch(checksum.source);
 
@@ -30,8 +32,12 @@ try {
     console.log(`Live contract matches vendored sha256 ${liveDigest}.`);
   } else {
     console.log(
-      `::warning title=OpenAPI spec drift::Live sha256 ${liveDigest} differs from vendored sha256 ${checksum.sha256}.`,
+      `::${strict ? 'error' : 'warning'} title=OpenAPI spec drift::Live sha256 ${liveDigest} differs from vendored sha256 ${checksum.sha256}.`,
     );
+
+    if (strict) {
+      process.exitCode = 1;
+    }
   }
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);

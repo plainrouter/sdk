@@ -33,6 +33,9 @@ jobs:
       - name: Test without network
         working-directory: packages/ruby
         run: bundle exec rake test
+      - name: Smoke test against the live sandbox
+        working-directory: packages/ruby
+        run: bundle exec ruby -Ilib ../../scripts/live-smoke.rb
       - name: Build and inspect gem
         working-directory: packages/ruby
         run: bundle exec rake build verify_package

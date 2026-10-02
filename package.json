@@ -16,6 +16,7 @@
     "build": "npm run build --workspaces --if-present",
     "generate": "openapi-ts",
     "smoke:cli": "node scripts/cli-smoke.mjs",
+    "smoke:live": "node scripts/live-smoke.mjs",
     "smoke:production": "node scripts/production-smoke.mjs",
     "spec:drift": "node scripts/check-spec-drift.mjs",
     "test": "npm run test --workspaces --if-present",

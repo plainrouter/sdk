@@ -46,6 +46,8 @@ jobs:
       - name: Test without network
         working-directory: packages/python
         run: pytest
+      - name: Smoke test against the live sandbox
+        run: python scripts/live-smoke.py
       - name: Verify generated Python SDK drift
         run: |
           openapi-python-client generate \

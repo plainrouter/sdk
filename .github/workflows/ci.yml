@@ -75,6 +75,7 @@ jobs:
         working-directory: packages/python
         run: >-
           ruff check .
+          ../../scripts/live-smoke.py
           ../../scripts/post-publish-python-smoke.py
           ../../scripts/verify-python-dist.py
           ../../scripts/verify-python-metadata.py
@@ -83,6 +84,7 @@ jobs:
         working-directory: packages/python
         run: >-
           mypy src tests
+          ../../scripts/live-smoke.py
           ../../scripts/post-publish-python-smoke.py
           ../../scripts/verify-python-dist.py
           ../../scripts/verify-python-metadata.py
