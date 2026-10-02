@@ -376,6 +376,33 @@ export type ActionReadItem = {
 };
 
 /**
+ * AgentCredentialError
+ */
+export type AgentCredentialError = {
+    error: 'invalid_token' | 'insufficient_scope';
+    error_description: string;
+};
+
+/**
+ * ApiRouteNotFound
+ */
+export type ApiRouteNotFound = {
+    error: {
+        code: 'api_route_not_found';
+        message: string;
+        resolution: string;
+    };
+    request: {
+        method: string;
+        path: string;
+    };
+    resources: {
+        documentation: string;
+        openapi: string;
+    };
+};
+
+/**
  * DeliveryStatus
  */
 export type DeliveryStatus = 'queued' | 'sent' | 'accepted' | 'retrying' | 'failed:auth' | 'failed:permanent' | 'failed:unknown' | 'expired' | 'skipped:consent' | 'skipped:no_destination' | 'skipped:duplicate';
@@ -485,6 +512,13 @@ export type Event = {
 };
 
 /**
+ * ExecuteDeploymentPlanRequest
+ */
+export type ExecuteDeploymentPlanRequest = {
+    intent_key?: string | null;
+};
+
+/**
  * IngestionWarningCode
  *
  * The closed set of non-rejection warnings returned by authenticated ingestion.
@@ -501,16 +535,48 @@ export type IngestionWarningCode = 'consent_captured_at_invalid';
 export type JurisdictionPolicyClass = 'strict_eu' | 'global';
 
 /**
+ * LaunchIntentRead
+ */
+export type LaunchIntentRead = {
+    intent: {
+        id: string;
+        status: 'approval_required' | 'approved' | 'executing' | 'verified' | 'failed' | 'drifted' | 'partial' | 'blocked';
+        action_batch_id: string | null;
+        policy_reasons: Array<string>;
+        provider_object_ids: unknown;
+        campaign_id: string | null;
+        ad_set_id: string | null;
+        currency: string | null;
+        actions: Array<{
+            id: string;
+            type: 'increase_budget' | 'decrease_budget' | 'pause' | 'resume' | 'replace_creative' | 'shift_spend' | 'rollback' | 'create_campaign' | 'create_ad_set' | 'create_ad' | 'upload_asset' | 'adjust_budget' | 'set_status' | 'duplicate_ad_with_creative' | 'duplicate_adset' | 'duplicate_ad_with_creative_v2';
+            verification_result: string | null;
+            external_ids: unknown;
+        }>;
+    };
+};
+
+/**
  * LaunchIntentStatus
  */
 export type LaunchIntentStatus = 'approval_required' | 'approved' | 'executing' | 'verified' | 'failed' | 'drifted' | 'partial' | 'blocked';
 
 /**
- * PlanCopyError
+ * PlanCopyForbidden
  */
-export type PlanCopyError = {
+export type PlanCopyForbidden = {
     error: {
-        code: string;
+        code: 'insufficient_scope';
+        message: string;
+    };
+};
+
+/**
+ * PlanCopyNotFound
+ */
+export type PlanCopyNotFound = {
+    error: {
+        code: 'plan_not_found';
         message: string;
     };
 };
@@ -527,6 +593,46 @@ export type PlanCopyRead = {
         validation_result: null;
         validated_at: null;
         approval_id: null;
+    };
+};
+
+/**
+ * PlanCopyRejected
+ */
+export type PlanCopyRejected = {
+    error: {
+        code: 'plan_not_failed' | 'platform_ad_account_unavailable' | 'plan_not_found';
+        message: string;
+    };
+};
+
+/**
+ * PlanExecuteConflict
+ */
+export type PlanExecuteConflict = {
+    error: {
+        code: 'launch_submission_key_plan_mismatch';
+        message: string;
+    };
+};
+
+/**
+ * PlanExecuteRejected
+ */
+export type PlanExecuteRejected = {
+    error: {
+        code: 'deployment_plan_not_executable' | 'creative_not_ready' | 'creative_bytes_unavailable' | 'ad_set_daily_budget_invalid' | 'currency_mismatch' | 'currency_unsupported' | 'budget_invalid' | 'deployment_plan_has_no_actions';
+        message: string;
+    };
+};
+
+/**
+ * ProposalReplayConflict
+ */
+export type ProposalReplayConflict = {
+    message: 'idempotency_key_parameters_mismatch: This submission key belongs to a different proposal.';
+    errors: {
+        idempotency_key: Array<'idempotency_key_parameters_mismatch: This submission key belongs to a different proposal.'>;
     };
 };
 
@@ -577,6 +683,16 @@ export type ValidationError = {
     };
 };
 
+/**
+ * WorkspaceLockTimeout
+ */
+export type WorkspaceLockTimeout = {
+    error: {
+        code: 'workspace_lock_timeout';
+        message: string;
+    };
+};
+
 export type ActionsApiDryRunData = {
     body: ActionProposalInput;
     path: {
@@ -591,21 +707,33 @@ export type ActionsApiDryRunData = {
 
 export type ActionsApiDryRunErrors = {
     /**
-     * Missing, invalid, or expired workspace key.
+     * Missing, invalid, revoked or expired credentials return error invalid_token and error_description. Missing principal permissions or an issuer whose current role no longer covers the key return error insufficient_scope and error_description. A management key returns message instead.
      */
-    401: ErrorMessage;
+    401: AgentCredentialError | ErrorMessage;
     /**
-     * The key lacks the propose-actions grant.
+     * A revoked or insufficient workspace grant returns error insufficient_scope and error_description. Missing creative.write permission returns message without a code.
      */
-    403: ErrorMessage;
+    403: AgentCredentialError | ErrorMessage;
     /**
-     * Workspace, account, or Actions resource not found.
+     * A missing or inaccessible workspace or plan, or a disabled Plan surface, returns error.code api_route_not_found with error.message, error.resolution, request and resources.
      */
-    404: ErrorMessage;
+    404: ApiRouteNotFound;
     /**
-     * Request validation failed.
+     * Oversized POST data returns message "The POST data is too large." before route authorization.
+     */
+    413: ErrorMessage;
+    /**
+     * Invalid input, account selection, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.
      */
     422: ValidationError;
+    /**
+     * The shared API rate limit is exceeded; message is "Too Many Attempts." Retry-After gives seconds until a retry is allowed.
+     */
+    429: ErrorMessage;
+    /**
+     * An unexpected server or provider-read fault returns message "Server Error" when debug is disabled.
+     */
+    500: ErrorMessage;
 };
 
 export type ActionsApiDryRunError = ActionsApiDryRunErrors[keyof ActionsApiDryRunErrors];
@@ -682,21 +810,41 @@ export type ActionsApiProposeData = {
 
 export type ActionsApiProposeErrors = {
     /**
-     * Missing, invalid, or expired workspace key.
+     * Missing, invalid, revoked or expired credentials return error invalid_token and error_description. Missing principal permissions or an issuer whose current role no longer covers the key return error insufficient_scope and error_description. A management key returns message instead.
      */
-    401: ErrorMessage;
+    401: AgentCredentialError | ErrorMessage;
     /**
-     * The key lacks the propose-actions grant.
+     * A revoked or insufficient workspace grant returns error insufficient_scope and error_description. Missing creative.write permission returns message without a code.
      */
-    403: ErrorMessage;
+    403: AgentCredentialError | ErrorMessage;
     /**
-     * Workspace, account, or Actions resource not found.
+     * A missing or inaccessible workspace or plan, or a disabled Plan surface, returns error.code api_route_not_found with error.message, error.resolution, request and resources.
      */
-    404: ErrorMessage;
+    404: ApiRouteNotFound;
     /**
-     * Request validation failed.
+     * A replay whose parameters or proposing principal differ returns message and errors.idempotency_key containing idempotency_key_parameters_mismatch: This submission key belongs to a different proposal.
+     */
+    409: ProposalReplayConflict;
+    /**
+     * Oversized POST data returns message "The POST data is too large." before route authorization.
+     */
+    413: ErrorMessage;
+    /**
+     * Invalid input, account selection, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.
      */
     422: ValidationError;
+    /**
+     * The shared API rate limit is exceeded; message is "Too Many Attempts." Retry-After gives seconds until a retry is allowed.
+     */
+    429: ErrorMessage;
+    /**
+     * An unexpected server or provider-read fault returns message "Server Error" when debug is disabled.
+     */
+    500: ErrorMessage;
+    /**
+     * The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message "The workspace is busy. Retry the operation shortly." Retry-After is 1 second.
+     */
+    503: WorkspaceLockTimeout;
 };
 
 export type ActionsApiProposeError = ActionsApiProposeErrors[keyof ActionsApiProposeErrors];
@@ -920,21 +1068,37 @@ export type LaunchPlansCopyData = {
 
 export type LaunchPlansCopyErrors = {
     /**
-     * An active principal is required.
+     * Missing, invalid, revoked or expired credentials, a missing active principal, missing read scope or lost issuer authority return message. No error code is returned.
      */
     401: ErrorMessage;
     /**
-     * The principal lacks workspace, account or write access.
+     * Missing workspace, account or write access returns error.code insufficient_scope and error.message. A revoked grant returns message without a code.
      */
-    403: PlanCopyError;
+    403: PlanCopyForbidden | ErrorMessage;
     /**
-     * The plan is unavailable to this workspace and account.
+     * An inaccessible or missing plan returns error.code plan_not_found and error.message. A missing workspace or disabled Plan surface returns the api_route_not_found envelope with error, request and resources.
      */
-    404: PlanCopyError;
+    404: PlanCopyNotFound | ApiRouteNotFound;
     /**
-     * Only a failed plan can be copied (plan_not_failed), or its account is unavailable (platform_ad_account_unavailable).
+     * Oversized POST data returns message "The POST data is too large." before route authorization.
      */
-    422: PlanCopyError;
+    413: ErrorMessage;
+    /**
+     * error.code plan_not_failed when the source is not failed; platform_ad_account_unavailable when its account becomes unavailable after authorization; plan_not_found if the source disappears after lookup. Each includes error.message.
+     */
+    422: PlanCopyRejected;
+    /**
+     * The shared API rate limit is exceeded; message is "Too Many Attempts." Retry-After gives seconds until a retry is allowed.
+     */
+    429: ErrorMessage;
+    /**
+     * An unexpected server or provider-read fault returns message "Server Error" when debug is disabled.
+     */
+    500: ErrorMessage;
+    /**
+     * The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message "The workspace is busy. Retry the operation shortly." Retry-After is 1 second.
+     */
+    503: WorkspaceLockTimeout;
 };
 
 export type LaunchPlansCopyError = LaunchPlansCopyErrors[keyof LaunchPlansCopyErrors];
@@ -947,6 +1111,69 @@ export type LaunchPlansCopyResponses = {
 };
 
 export type LaunchPlansCopyResponse = LaunchPlansCopyResponses[keyof LaunchPlansCopyResponses];
+
+export type LaunchPlansExecuteData = {
+    body?: ExecuteDeploymentPlanRequest;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        deployment_plan: string;
+    };
+    query?: never;
+    url: '/workspaces/{workspace}/admin/plans/{deployment_plan}/execute';
+};
+
+export type LaunchPlansExecuteErrors = {
+    /**
+     * Missing, invalid, revoked or expired credentials, a missing active principal, missing read scope or lost issuer authority return message. No error code is returned.
+     */
+    401: ErrorMessage;
+    /**
+     * Missing workspace, account, write access, execution scope or workspace grant returns message without a code.
+     */
+    403: ErrorMessage;
+    /**
+     * A missing or inaccessible workspace or plan, or a disabled Plan surface, returns error.code api_route_not_found with error.message, error.resolution, request and resources.
+     */
+    404: ApiRouteNotFound;
+    /**
+     * An intent key bound to another plan returns error.code launch_submission_key_plan_mismatch and error.message.
+     */
+    409: PlanExecuteConflict;
+    /**
+     * Oversized POST data returns message "The POST data is too large." before route authorization.
+     */
+    413: ErrorMessage;
+    /**
+     * Request validation returns message plus errors (including intent_key). Domain refusals return error.code and error.message: deployment_plan_not_executable, creative_not_ready, creative_bytes_unavailable, ad_set_daily_budget_invalid, currency_mismatch, currency_unsupported, budget_invalid, deployment_plan_has_no_actions. Proposal input or evidence validation returns message plus field errors.
+     */
+    422: ValidationError | PlanExecuteRejected;
+    /**
+     * The shared API rate limit is exceeded; message is "Too Many Attempts." Retry-After gives seconds until a retry is allowed.
+     */
+    429: ErrorMessage;
+    /**
+     * An unexpected server or provider-read fault returns message "Server Error" when debug is disabled.
+     */
+    500: ErrorMessage;
+    /**
+     * The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message "The workspace is busy. Retry the operation shortly." Retry-After is 1 second.
+     */
+    503: WorkspaceLockTimeout;
+};
+
+export type LaunchPlansExecuteError = LaunchPlansExecuteErrors[keyof LaunchPlansExecuteErrors];
+
+export type LaunchPlansExecuteResponses = {
+    /**
+     * Created or replayed Launch intent, including a blocked intent under the kill switch.
+     */
+    200: LaunchIntentRead;
+};
+
+export type LaunchPlansExecuteResponse = LaunchPlansExecuteResponses[keyof LaunchPlansExecuteResponses];
 
 export type CreateEventData = {
     /**

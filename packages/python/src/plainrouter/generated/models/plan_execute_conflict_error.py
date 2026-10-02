@@ -1,36 +1,39 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-if TYPE_CHECKING:
-    from ..models.plan_copy_error_error import PlanCopyErrorError
+from ..models.plan_execute_conflict_error_code import PlanExecuteConflictErrorCode
 
-
-T = TypeVar("T", bound="PlanCopyError")
+T = TypeVar("T", bound="PlanExecuteConflictError")
 
 
 @_attrs_define
-class PlanCopyError:
+class PlanExecuteConflictError:
     """
     Attributes:
-        error (PlanCopyErrorError):
+        code (PlanExecuteConflictErrorCode):
+        message (str):
     """
 
-    error: PlanCopyErrorError
+    code: PlanExecuteConflictErrorCode
+    message: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        error = self.error.to_dict()
+        code = self.code.value
+
+        message = self.message
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "error": error,
+                "code": code,
+                "message": message,
             }
         )
 
@@ -38,17 +41,18 @@ class PlanCopyError:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.plan_copy_error_error import PlanCopyErrorError
-
         d = dict(src_dict)
-        error = PlanCopyErrorError.from_dict(d.pop("error"))
+        code = PlanExecuteConflictErrorCode(d.pop("code"))
 
-        plan_copy_error = cls(
-            error=error,
+        message = d.pop("message")
+
+        plan_execute_conflict_error = cls(
+            code=code,
+            message=message,
         )
 
-        plan_copy_error.additional_properties = d
-        return plan_copy_error
+        plan_execute_conflict_error.additional_properties = d
+        return plan_execute_conflict_error
 
     @property
     def additional_keys(self) -> list[str]:

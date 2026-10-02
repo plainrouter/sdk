@@ -645,6 +645,33 @@ export const zActionListRead = z.object({
 });
 
 /**
+ * AgentCredentialError
+ */
+export const zAgentCredentialError = z.object({
+    error: z.enum(['invalid_token', 'insufficient_scope']),
+    error_description: z.string()
+});
+
+/**
+ * ApiRouteNotFound
+ */
+export const zApiRouteNotFound = z.object({
+    error: z.object({
+        code: z.enum(['api_route_not_found']),
+        message: z.string(),
+        resolution: z.string()
+    }),
+    request: z.object({
+        method: z.string(),
+        path: z.string()
+    }),
+    resources: z.object({
+        documentation: z.string(),
+        openapi: z.string()
+    })
+});
+
+/**
  * DeliveryStatus
  */
 export const zDeliveryStatus = z.enum([
@@ -717,6 +744,13 @@ export const zErrorMessage = z.object({
 });
 
 /**
+ * ExecuteDeploymentPlanRequest
+ */
+export const zExecuteDeploymentPlanRequest = z.object({
+    intent_key: z.string().max(240).nullish()
+});
+
+/**
  * IngestionWarningCode
  *
  * The closed set of non-rejection warnings returned by authenticated ingestion.
@@ -733,6 +767,54 @@ export const zIngestionWarningCode = z.enum(['consent_captured_at_invalid']);
 export const zJurisdictionPolicyClass = z.enum(['strict_eu', 'global']);
 
 /**
+ * LaunchIntentRead
+ */
+export const zLaunchIntentRead = z.object({
+    intent: z.object({
+        id: z.string(),
+        status: z.enum([
+            'approval_required',
+            'approved',
+            'executing',
+            'verified',
+            'failed',
+            'drifted',
+            'partial',
+            'blocked'
+        ]),
+        action_batch_id: z.string().nullable(),
+        policy_reasons: z.array(z.string()),
+        provider_object_ids: z.unknown(),
+        campaign_id: z.string().nullable(),
+        ad_set_id: z.string().nullable(),
+        currency: z.string().nullable(),
+        actions: z.array(z.object({
+            id: z.string(),
+            type: z.enum([
+                'increase_budget',
+                'decrease_budget',
+                'pause',
+                'resume',
+                'replace_creative',
+                'shift_spend',
+                'rollback',
+                'create_campaign',
+                'create_ad_set',
+                'create_ad',
+                'upload_asset',
+                'adjust_budget',
+                'set_status',
+                'duplicate_ad_with_creative',
+                'duplicate_adset',
+                'duplicate_ad_with_creative_v2'
+            ]),
+            verification_result: z.string().nullable(),
+            external_ids: z.unknown()
+        }))
+    })
+});
+
+/**
  * LaunchIntentStatus
  */
 export const zLaunchIntentStatus = z.enum([
@@ -747,11 +829,21 @@ export const zLaunchIntentStatus = z.enum([
 ]);
 
 /**
- * PlanCopyError
+ * PlanCopyForbidden
  */
-export const zPlanCopyError = z.object({
+export const zPlanCopyForbidden = z.object({
     error: z.object({
-        code: z.string(),
+        code: z.enum(['insufficient_scope']),
+        message: z.string()
+    })
+});
+
+/**
+ * PlanCopyNotFound
+ */
+export const zPlanCopyNotFound = z.object({
+    error: z.object({
+        code: z.enum(['plan_not_found']),
         message: z.string()
     })
 });
@@ -768,6 +860,59 @@ export const zPlanCopyRead = z.object({
         validation_result: z.null(),
         validated_at: z.null(),
         approval_id: z.null()
+    })
+});
+
+/**
+ * PlanCopyRejected
+ */
+export const zPlanCopyRejected = z.object({
+    error: z.object({
+        code: z.enum([
+            'plan_not_failed',
+            'platform_ad_account_unavailable',
+            'plan_not_found'
+        ]),
+        message: z.string()
+    })
+});
+
+/**
+ * PlanExecuteConflict
+ */
+export const zPlanExecuteConflict = z.object({
+    error: z.object({
+        code: z.enum(['launch_submission_key_plan_mismatch']),
+        message: z.string()
+    })
+});
+
+/**
+ * PlanExecuteRejected
+ */
+export const zPlanExecuteRejected = z.object({
+    error: z.object({
+        code: z.enum([
+            'deployment_plan_not_executable',
+            'creative_not_ready',
+            'creative_bytes_unavailable',
+            'ad_set_daily_budget_invalid',
+            'currency_mismatch',
+            'currency_unsupported',
+            'budget_invalid',
+            'deployment_plan_has_no_actions'
+        ]),
+        message: z.string()
+    })
+});
+
+/**
+ * ProposalReplayConflict
+ */
+export const zProposalReplayConflict = z.object({
+    message: z.enum(['idempotency_key_parameters_mismatch: This submission key belongs to a different proposal.']),
+    errors: z.object({
+        idempotency_key: z.array(z.enum(['idempotency_key_parameters_mismatch: This submission key belongs to a different proposal.']))
     })
 });
 
@@ -853,6 +998,16 @@ export const zEvent = z.object({
 export const zValidationError = z.object({
     message: z.string(),
     errors: z.record(z.string(), z.array(z.string()))
+});
+
+/**
+ * WorkspaceLockTimeout
+ */
+export const zWorkspaceLockTimeout = z.object({
+    error: z.object({
+        code: z.enum(['workspace_lock_timeout']),
+        message: z.string()
+    })
 });
 
 export const zActionsApiDryRunBody = zActionProposalInput;
@@ -969,6 +1124,18 @@ export const zLaunchPlansCopyPath = z.object({
  * A new draft was created.
  */
 export const zLaunchPlansCopyResponse = zPlanCopyRead;
+
+export const zLaunchPlansExecuteBody = zExecuteDeploymentPlanRequest;
+
+export const zLaunchPlansExecutePath = z.object({
+    workspace: z.int(),
+    deployment_plan: z.string()
+});
+
+/**
+ * Created or replayed Launch intent, including a blocked intent under the kill switch.
+ */
+export const zLaunchPlansExecuteResponse = zLaunchIntentRead;
 
 /**
  * Authenticated callers using the Server secret may supply client_ip_address and client_user_agent in user_data; browser traffic using the Publishable key takes those fields only from the configured edge.

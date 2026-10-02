@@ -20,7 +20,7 @@ module PlainRouter::OpenAPI
       @api_client = api_client
     end
     # Preview actions
-    # Evaluate a governed proposal for the approved account and preview each policy decision and execution diff without creating a batch or action.
+    # Preview policy decisions and execution diffs for the approved account without saving a proposal. A kill switch returns blocked policy decisions.
     # @param workspace [Integer] The workspace ID
     # @param action_proposal_input [ActionProposalInput]
     # @param [Hash] opts the optional parameters
@@ -31,7 +31,7 @@ module PlainRouter::OpenAPI
     end
 
     # Preview actions
-    # Evaluate a governed proposal for the approved account and preview each policy decision and execution diff without creating a batch or action.
+    # Preview policy decisions and execution diffs for the approved account without saving a proposal. A kill switch returns blocked policy decisions.
     # @param workspace [Integer] The workspace ID
     # @param action_proposal_input [ActionProposalInput]
     # @param [Hash] opts the optional parameters

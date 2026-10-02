@@ -6,23 +6,25 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="PlanCopyErrorError")
+from ..models.plan_execute_rejected_error_code import PlanExecuteRejectedErrorCode
+
+T = TypeVar("T", bound="PlanExecuteRejectedError")
 
 
 @_attrs_define
-class PlanCopyErrorError:
+class PlanExecuteRejectedError:
     """
     Attributes:
-        code (str):
+        code (PlanExecuteRejectedErrorCode):
         message (str):
     """
 
-    code: str
+    code: PlanExecuteRejectedErrorCode
     message: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        code = self.code
+        code = self.code.value
 
         message = self.message
 
@@ -40,17 +42,17 @@ class PlanCopyErrorError:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        code = d.pop("code")
+        code = PlanExecuteRejectedErrorCode(d.pop("code"))
 
         message = d.pop("message")
 
-        plan_copy_error_error = cls(
+        plan_execute_rejected_error = cls(
             code=code,
             message=message,
         )
 
-        plan_copy_error_error.additional_properties = d
-        return plan_copy_error_error
+        plan_execute_rejected_error.additional_properties = d
+        return plan_execute_rejected_error
 
     @property
     def additional_keys(self) -> list[str]:

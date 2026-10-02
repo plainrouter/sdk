@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, LaunchPlansCopyData, LaunchPlansCopyErrors, LaunchPlansCopyResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
+import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, LaunchPlansCopyData, LaunchPlansCopyErrors, LaunchPlansCopyResponses, LaunchPlansExecuteData, LaunchPlansExecuteErrors, LaunchPlansExecuteResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -21,7 +21,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * Preview actions
  *
- * Evaluate a governed proposal for the approved account and preview each policy decision and execution diff without creating a batch or action.
+ * Preview policy decisions and execution diffs for the approved account without saving a proposal. A kill switch returns blocked policy decisions.
  */
 export const actionsApiDryRun = <ThrowOnError extends boolean = false>(options: Options<ActionsApiDryRunData, ThrowOnError>): RequestResult<ActionsApiDryRunResponses, ActionsApiDryRunErrors, ThrowOnError> => (options.client ?? client).post<ActionsApiDryRunResponses, ActionsApiDryRunErrors, ThrowOnError>({
     security: [{
@@ -55,7 +55,7 @@ export const actionsApiIndex = <ThrowOnError extends boolean = false>(options: O
 /**
  * Propose actions
  *
- * Submit a governed proposal for an advertising account available to this workspace key. A matching idempotency key returns the saved batch.
+ * Submit or replay a governed proposal for an account available to this key. A kill switch saves a blocked proposal without executing provider writes.
  */
 export const actionsApiPropose = <ThrowOnError extends boolean = false>(options: Options<ActionsApiProposeData, ThrowOnError>): RequestResult<ActionsApiProposeResponses, ActionsApiProposeErrors, ThrowOnError> => (options.client ?? client).post<ActionsApiProposeResponses, ActionsApiProposeErrors, ThrowOnError>({
     security: [{
@@ -144,6 +144,25 @@ export const launchPlansCopy = <ThrowOnError extends boolean = false>(options: O
         }],
     url: '/workspaces/{workspace}/admin/plans/{deployment_plan}/copy',
     ...options
+});
+
+/**
+ * Execute a deployment plan
+ *
+ * Create or replay a governed Launch intent for the approved account. A kill switch returns a blocked intent without executing provider writes.
+ */
+export const launchPlansExecute = <ThrowOnError extends boolean = false>(options: Options<LaunchPlansExecuteData, ThrowOnError>): RequestResult<LaunchPlansExecuteResponses, LaunchPlansExecuteErrors, ThrowOnError> => (options.client ?? client).post<LaunchPlansExecuteResponses, LaunchPlansExecuteErrors, ThrowOnError>({
+    security: [{
+            key: 'planWriter',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/plans/{deployment_plan}/execute',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**

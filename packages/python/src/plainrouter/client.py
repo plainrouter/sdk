@@ -20,7 +20,7 @@ def create_client(
     raise_on_unexpected_status: bool = False,
     httpx_args: dict[str, Any] | None = None,
 ) -> AuthenticatedClient:
-    """Create a client authenticated with a Signal Tracker secret."""
+    """Create a client authenticated with the bearer token required by the operation."""
 
     return AuthenticatedClient(
         base_url=base_url,

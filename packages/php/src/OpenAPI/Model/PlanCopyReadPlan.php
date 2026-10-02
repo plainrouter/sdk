@@ -61,9 +61,9 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
         'platform_ad_account_id' => 'int',
         'status' => 'string',
         'budget_amount_minor' => 'int',
-        'validation_result' => 'Null',
-        'validated_at' => 'Null',
-        'approval_id' => 'Null'
+        'validation_result' => 'object',
+        'validated_at' => 'object',
+        'approval_id' => 'object'
     ];
 
     /**
@@ -93,9 +93,9 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
         'platform_ad_account_id' => false,
         'status' => false,
         'budget_amount_minor' => false,
-        'validation_result' => false,
-        'validated_at' => false,
-        'approval_id' => false
+        'validation_result' => true,
+        'validated_at' => true,
+        'approval_id' => true
     ];
 
     /**
@@ -279,6 +279,42 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getValidationResultAllowableValues()
+    {
+        return [
+
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getValidatedAtAllowableValues()
+    {
+        return [
+
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getApprovalIdAllowableValues()
+    {
+        return [
+
+        ];
+    }
+
+    /**
      * Associative array for storing property values
      *
      * @var mixed[]
@@ -350,15 +386,42 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['budget_amount_minor'] === null) {
             $invalidProperties[] = "'budget_amount_minor' can't be null";
         }
-        if ($this->container['validation_result'] === null) {
-            $invalidProperties[] = "'validation_result' can't be null";
+        if ($this->container['validation_result'] === null && !$this->isNullableSetToNull('validation_result')) {
+            $invalidProperties[] = "'validation_result' is required";
         }
-        if ($this->container['validated_at'] === null) {
-            $invalidProperties[] = "'validated_at' can't be null";
+        $allowedValues = $this->getValidationResultAllowableValues();
+        if (!is_null($this->container['validation_result']) && !in_array($this->container['validation_result'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'validation_result', must be one of '%s'",
+                $this->container['validation_result'],
+                implode("', '", $allowedValues)
+            );
         }
-        if ($this->container['approval_id'] === null) {
-            $invalidProperties[] = "'approval_id' can't be null";
+
+        if ($this->container['validated_at'] === null && !$this->isNullableSetToNull('validated_at')) {
+            $invalidProperties[] = "'validated_at' is required";
         }
+        $allowedValues = $this->getValidatedAtAllowableValues();
+        if (!is_null($this->container['validated_at']) && !in_array($this->container['validated_at'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'validated_at', must be one of '%s'",
+                $this->container['validated_at'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['approval_id'] === null && !$this->isNullableSetToNull('approval_id')) {
+            $invalidProperties[] = "'approval_id' is required";
+        }
+        $allowedValues = $this->getApprovalIdAllowableValues();
+        if (!is_null($this->container['approval_id']) && !in_array($this->container['approval_id'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'approval_id', must be one of '%s'",
+                $this->container['approval_id'],
+                implode("', '", $allowedValues)
+            );
+        }
+
         return $invalidProperties;
     }
 
@@ -495,7 +558,7 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets validation_result
      *
-     * @return Null
+     * @return object|null
      */
     public function getValidationResult()
     {
@@ -505,14 +568,31 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets validation_result
      *
-     * @param Null $validation_result validation_result
+     * @param object|null $validation_result validation_result
      *
      * @return self
      */
     public function setValidationResult($validation_result)
     {
         if (is_null($validation_result)) {
-            throw new \InvalidArgumentException('non-nullable validation_result cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'validation_result');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('validation_result', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $allowedValues = $this->getValidationResultAllowableValues();
+        if (!is_null($validation_result) && !in_array($validation_result, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'validation_result', must be one of '%s'",
+                    $validation_result,
+                    implode("', '", $allowedValues)
+                )
+            );
         }
         $this->container['validation_result'] = $validation_result;
 
@@ -522,7 +602,7 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets validated_at
      *
-     * @return Null
+     * @return object|null
      */
     public function getValidatedAt()
     {
@@ -532,14 +612,31 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets validated_at
      *
-     * @param Null $validated_at validated_at
+     * @param object|null $validated_at validated_at
      *
      * @return self
      */
     public function setValidatedAt($validated_at)
     {
         if (is_null($validated_at)) {
-            throw new \InvalidArgumentException('non-nullable validated_at cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'validated_at');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('validated_at', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $allowedValues = $this->getValidatedAtAllowableValues();
+        if (!is_null($validated_at) && !in_array($validated_at, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'validated_at', must be one of '%s'",
+                    $validated_at,
+                    implode("', '", $allowedValues)
+                )
+            );
         }
         $this->container['validated_at'] = $validated_at;
 
@@ -549,7 +646,7 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets approval_id
      *
-     * @return Null
+     * @return object|null
      */
     public function getApprovalId()
     {
@@ -559,14 +656,31 @@ class PlanCopyReadPlan implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets approval_id
      *
-     * @param Null $approval_id approval_id
+     * @param object|null $approval_id approval_id
      *
      * @return self
      */
     public function setApprovalId($approval_id)
     {
         if (is_null($approval_id)) {
-            throw new \InvalidArgumentException('non-nullable approval_id cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'approval_id');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('approval_id', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        $allowedValues = $this->getApprovalIdAllowableValues();
+        if (!is_null($approval_id) && !in_array($approval_id, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'approval_id', must be one of '%s'",
+                    $approval_id,
+                    implode("', '", $allowedValues)
+                )
+            );
         }
         $this->container['approval_id'] = $approval_id;
 

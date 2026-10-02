@@ -30,12 +30,16 @@ fi
 
 node "$ROOT/scripts/verify-spec.mjs"
 
+GENERATOR_INPUT="$(mktemp "${TMPDIR:-/tmp}/plainrouter-php-input.XXXXXX.json")"
+trap 'rm -f "$GENERATOR_INPUT"' EXIT
+node "$ROOT/scripts/prepare-generator-input.mjs" "$ROOT/spec/openapi.json" "$GENERATOR_INPUT"
+
 "$JAVA_BIN" -jar "$GENERATOR_JAR" generate \
   -g php \
-  -i "$ROOT/spec/openapi.json" \
+  -i "$GENERATOR_INPUT" \
   -o "$OUTPUT" \
   --global-property=models,apis,supportingFiles,modelDocs=false,apiDocs=false,modelTests=false,apiTests=false \
-  --additional-properties='invokerPackage=Plainrouter\OpenAPI,srcBasePath=src/OpenAPI,artifactVersion=0.1.0,hideGenerationTimestamp=true,disallowAdditionalPropertiesIfNotPresent=false'
+  --additional-properties='invokerPackage=Plainrouter\OpenAPI,srcBasePath=src/OpenAPI,artifactVersion=0.2.0,hideGenerationTimestamp=true,disallowAdditionalPropertiesIfNotPresent=false'
 
 find "$OUTPUT/src/OpenAPI" -type f -name '*.php' -print0 \
   | xargs -0 perl -pi -e 's/[ \t]+$//'

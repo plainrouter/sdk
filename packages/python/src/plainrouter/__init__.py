@@ -2,6 +2,7 @@ from . import create_event
 from .client import DEFAULT_BASE_URL, create_client
 from .create_event import CreateEventBodyInput
 from .generated import AuthenticatedClient
+from .generated.api.deployment_plan import launch_plans_copy
 from .generated.api.event import get_event, verify_signal_ingestion
 from .generated.api.operations import (
     delete_user_data,
@@ -31,6 +32,7 @@ __all__ = (
     "get_event",
     "get_reconciliation_report",
     "list_events",
+    "launch_plans_copy",
     "replay_deliveries",
     "send_test_purchase",
     "set_destination_test_mode",

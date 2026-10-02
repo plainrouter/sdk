@@ -15,3 +15,14 @@ support promise yet.
 Configure authentication by injecting a `signalTrackerSecret` bearer token with
 the exported client configuration helper. No credential is embedded in the
 package.
+
+Copy a failed plan to a fresh draft with a plan-writer bearer token:
+
+```typescript
+import { configurePlainrouter, launchPlansCopy } from '@plainrouter/sdk';
+
+configurePlainrouter({ signalTrackerSecret: process.env.PLAINROUTER_TOKEN! });
+const result = await launchPlansCopy({
+  path: { workspace: 1, deployment_plan: 'failed-plan-id' },
+});
+```

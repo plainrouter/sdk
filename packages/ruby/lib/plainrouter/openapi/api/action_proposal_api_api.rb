@@ -20,7 +20,7 @@ module PlainRouter::OpenAPI
       @api_client = api_client
     end
     # Propose actions
-    # Submit a governed proposal for an advertising account available to this workspace key. A matching idempotency key returns the saved batch.
+    # Submit or replay a governed proposal for an account available to this key. A kill switch saves a blocked proposal without executing provider writes.
     # @param workspace [Integer] The workspace ID
     # @param action_proposal_input [ActionProposalInput]
     # @param [Hash] opts the optional parameters
@@ -31,7 +31,7 @@ module PlainRouter::OpenAPI
     end
 
     # Propose actions
-    # Submit a governed proposal for an advertising account available to this workspace key. A matching idempotency key returns the saved batch.
+    # Submit or replay a governed proposal for an account available to this key. A kill switch saves a blocked proposal without executing provider writes.
     # @param workspace [Integer] The workspace ID
     # @param action_proposal_input [ActionProposalInput]
     # @param [Hash] opts the optional parameters
