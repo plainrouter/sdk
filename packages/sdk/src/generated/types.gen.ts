@@ -501,6 +501,36 @@ export type IngestionWarningCode = 'consent_captured_at_invalid';
 export type JurisdictionPolicyClass = 'strict_eu' | 'global';
 
 /**
+ * LaunchIntentStatus
+ */
+export type LaunchIntentStatus = 'approval_required' | 'approved' | 'executing' | 'verified' | 'failed' | 'drifted' | 'partial' | 'blocked';
+
+/**
+ * PlanCopyError
+ */
+export type PlanCopyError = {
+    error: {
+        code: string;
+        message: string;
+    };
+};
+
+/**
+ * PlanCopyRead
+ */
+export type PlanCopyRead = {
+    plan: {
+        id: string;
+        platform_ad_account_id: number;
+        status: 'draft';
+        budget_amount_minor: number;
+        validation_result: null;
+        validated_at: null;
+        approval_id: null;
+    };
+};
+
+/**
  * ReconciliationReport
  */
 export type ReconciliationReport = {
@@ -874,6 +904,49 @@ export type ActionsApiBatchResponses = {
 };
 
 export type ActionsApiBatchResponse = ActionsApiBatchResponses[keyof ActionsApiBatchResponses];
+
+export type LaunchPlansCopyData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        deployment_plan: string;
+    };
+    query?: never;
+    url: '/workspaces/{workspace}/admin/plans/{deployment_plan}/copy';
+};
+
+export type LaunchPlansCopyErrors = {
+    /**
+     * An active principal is required.
+     */
+    401: ErrorMessage;
+    /**
+     * The principal lacks workspace, account or write access.
+     */
+    403: PlanCopyError;
+    /**
+     * The plan is unavailable to this workspace and account.
+     */
+    404: PlanCopyError;
+    /**
+     * Only a failed plan can be copied (plan_not_failed), or its account is unavailable (platform_ad_account_unavailable).
+     */
+    422: PlanCopyError;
+};
+
+export type LaunchPlansCopyError = LaunchPlansCopyErrors[keyof LaunchPlansCopyErrors];
+
+export type LaunchPlansCopyResponses = {
+    /**
+     * A new draft was created.
+     */
+    201: PlanCopyRead;
+};
+
+export type LaunchPlansCopyResponse = LaunchPlansCopyResponses[keyof LaunchPlansCopyResponses];
 
 export type CreateEventData = {
     /**

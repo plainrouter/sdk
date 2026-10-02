@@ -302,6 +302,7 @@ from .get_sandbox_response_200_try_body import GetSandboxResponse200TryBody
 from .get_sandbox_response_200_try_body_value_data import GetSandboxResponse200TryBodyValueData
 from .ingestion_warning_code import IngestionWarningCode
 from .jurisdiction_policy_class import JurisdictionPolicyClass
+from .launch_intent_status import LaunchIntentStatus
 from .list_events_by_cursor_response_200 import ListEventsByCursorResponse200
 from .list_events_by_cursor_response_200_events import ListEventsByCursorResponse200Events
 from .list_events_by_cursor_response_200_events_data_item import ListEventsByCursorResponse200EventsDataItem
@@ -351,6 +352,11 @@ from .list_events_response_200_events_data_item_value_data_type_0 import (
 )
 from .list_events_response_200_events_links_item import ListEventsResponse200EventsLinksItem
 from .list_events_response_200_metrics import ListEventsResponse200Metrics
+from .plan_copy_error import PlanCopyError
+from .plan_copy_error_error import PlanCopyErrorError
+from .plan_copy_read import PlanCopyRead
+from .plan_copy_read_plan import PlanCopyReadPlan
+from .plan_copy_read_plan_status import PlanCopyReadPlanStatus
 from .reconciliation_report import ReconciliationReport
 from .replay_deliveries_body import ReplayDeliveriesBody
 from .replay_deliveries_response_202 import ReplayDeliveriesResponse202
@@ -594,6 +600,7 @@ __all__ = (
     "GetSandboxResponse200TryBodyValueData",
     "IngestionWarningCode",
     "JurisdictionPolicyClass",
+    "LaunchIntentStatus",
     "ListEventsByCursorResponse200",
     "ListEventsByCursorResponse200Events",
     "ListEventsByCursorResponse200EventsDataItem",
@@ -619,6 +626,11 @@ __all__ = (
     "ListEventsResponse200EventsDataItemValueDataType0",
     "ListEventsResponse200EventsLinksItem",
     "ListEventsResponse200Metrics",
+    "PlanCopyError",
+    "PlanCopyErrorError",
+    "PlanCopyRead",
+    "PlanCopyReadPlan",
+    "PlanCopyReadPlanStatus",
     "ReconciliationReport",
     "ReplayDeliveriesBody",
     "ReplayDeliveriesResponse202",

@@ -733,6 +733,45 @@ export const zIngestionWarningCode = z.enum(['consent_captured_at_invalid']);
 export const zJurisdictionPolicyClass = z.enum(['strict_eu', 'global']);
 
 /**
+ * LaunchIntentStatus
+ */
+export const zLaunchIntentStatus = z.enum([
+    'approval_required',
+    'approved',
+    'executing',
+    'verified',
+    'failed',
+    'drifted',
+    'partial',
+    'blocked'
+]);
+
+/**
+ * PlanCopyError
+ */
+export const zPlanCopyError = z.object({
+    error: z.object({
+        code: z.string(),
+        message: z.string()
+    })
+});
+
+/**
+ * PlanCopyRead
+ */
+export const zPlanCopyRead = z.object({
+    plan: z.object({
+        id: z.string(),
+        platform_ad_account_id: z.int(),
+        status: z.enum(['draft']),
+        budget_amount_minor: z.int(),
+        validation_result: z.null(),
+        validated_at: z.null(),
+        approval_id: z.null()
+    })
+});
+
+/**
  * ReconciliationReport
  */
 export const zReconciliationReport = z.object({
@@ -920,6 +959,16 @@ export const zActionsApiBatchQuery = z.object({
  * Authorized Actions resource.
  */
 export const zActionsApiBatchResponse = zActionBatchRead;
+
+export const zLaunchPlansCopyPath = z.object({
+    workspace: z.int(),
+    deployment_plan: z.string()
+});
+
+/**
+ * A new draft was created.
+ */
+export const zLaunchPlansCopyResponse = zPlanCopyRead;
 
 /**
  * Authenticated callers using the Server secret may supply client_ip_address and client_user_agent in user_data; browser traffic using the Publishable key takes those fields only from the configured edge.
