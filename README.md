@@ -158,8 +158,13 @@ top-level SDK documentation.
 
 ## PHP SDK
 
-The PHP SDK lives in [`packages/php`](packages/php) and is not yet published to
-Packagist. Use the compact client facade for the three API areas:
+Install the PHP package:
+
+```sh
+composer require plainrouter/sdk
+```
+
+Use the compact client facade for the three API areas:
 
 ```php
 use Plainrouter\Client;
