@@ -1,9 +1,6 @@
 name: Spec drift
 
 on:
-  push:
-    branches: [main]
-  pull_request:
   schedule:
     - cron: '17 5 * * *'
   workflow_dispatch:
@@ -24,5 +21,5 @@ jobs:
           node-version-file: .nvmrc
       - name: Compare contracts
         env:
-          SPEC_DRIFT_STRICT: ${{ github.event_name == 'pull_request' && '0' || '1' }}
+          SPEC_DRIFT_STRICT: '1'
         run: corepack npm run spec:drift

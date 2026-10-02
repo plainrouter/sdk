@@ -8,9 +8,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   quality:
-    name: Typecheck, test, and build
+    name: TypeScript validation (Node 22)
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
@@ -25,9 +29,27 @@ jobs:
       - run: corepack npm ci
       - run: corepack npm run verify:metadata
       - run: corepack npm run verify:spec
+      - name: Verify generated TypeScript SDK drift
+        run: |
+          corepack npm run generate
+          git diff --exit-code -- packages/sdk/src/generated
       - run: corepack npm run typecheck
       - run: corepack npm test
       - run: corepack npm run build
+      - run: node packages/cli/bin/plainrouter.js --help
+      - name: Compare live and vendored contracts
+        env:
+          SPEC_DRIFT_STRICT: ${{ github.event_name == 'pull_request' && '0' || '1' }}
+        run: corepack npm run spec:drift
+      - name: Smoke test against the live API
+        env:
+          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
+        run: corepack npm run smoke:live
+      - name: Verify production install parity
+        run: |
+          corepack npm prune --omit=dev
+          corepack npm run smoke:production
+          node packages/cli/bin/plainrouter.js --help
 
   node-compatibility:
     name: Node.js ${{ matrix.node-version }}
@@ -35,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['22.22.2', '24', '26']
+        node-version: ['24', '26']
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -44,6 +66,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           package-manager-cache: false
+          cache: npm
       - name: Verify pinned npm
         run: test "$(corepack npm --version)" = "11.19.0"
       - run: corepack npm ci
@@ -67,11 +90,25 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: packages/python/requirements-dev.txt
+          cache-dependency-path: packages/python/requirements*.txt
       - name: Install pinned Python dependencies
         working-directory: packages/python
-        run: python -m pip install --disable-pip-version-check -r requirements-dev.txt
+        run: >-
+          python -m pip install --disable-pip-version-check
+          -r ${{ matrix.python-version == '3.11.16' && 'requirements-dev.txt' || 'requirements-test.txt' }}
+      - name: Verify generated Python SDK drift
+        if: matrix.python-version == '3.11.16'
+        run: |
+          openapi-python-client generate \
+            --path spec/openapi.json \
+            --config packages/python/openapi-python-client.json \
+            --meta none \
+            --output-path packages/python/src/plainrouter/generated \
+            --overwrite \
+            --fail-on-warning
+          git diff --exit-code -- packages/python/src/plainrouter/generated
       - name: Lint
+        if: matrix.python-version == '3.11.16'
         working-directory: packages/python
         run: >-
           ruff check .
@@ -93,6 +130,7 @@ jobs:
         working-directory: packages/python
         run: pytest
       - name: Verify official package metadata
+        if: matrix.python-version == '3.11.16'
         run: python scripts/verify-python-metadata.py
       - name: Build and inspect distributions
         if: matrix.python-version == '3.11.16'
@@ -101,6 +139,11 @@ jobs:
           python -m build
           twine check dist/*
           python ../../scripts/verify-python-dist.py dist/*.whl dist/*.tar.gz
+      - name: Smoke test against the live API
+        if: matrix.python-version == '3.11.16'
+        env:
+          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
+        run: python scripts/live-smoke.py
 
   ruby-quality:
     name: Ruby ${{ matrix.ruby-version }}
@@ -120,6 +163,21 @@ jobs:
           working-directory: packages/ruby
       - name: Verify signed contract
         run: node scripts/verify-spec.mjs
+      - name: Set up Node.js for generation
+        if: matrix.ruby-version == '3.4'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Set up Java for generation
+        if: matrix.ruby-version == '3.4'
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Verify generated Ruby SDK drift
+        if: matrix.ruby-version == '3.4'
+        run: scripts/check-ruby-generated.sh
       - name: Test without network
         working-directory: packages/ruby
         run: bundle exec rake test
@@ -127,6 +185,12 @@ jobs:
         if: matrix.ruby-version == '3.2'
         working-directory: packages/ruby
         run: bundle exec rake build verify_package
+      - name: Smoke test against the live API
+        if: matrix.ruby-version == '3.4'
+        working-directory: packages/ruby
+        env:
+          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
+        run: bundle exec ruby -Ilib ../../scripts/live-smoke.rb
 
   php-quality:
     name: PHP ${{ matrix.php-version }}
@@ -152,28 +216,33 @@ jobs:
       - name: Install dependencies
         working-directory: packages/php
         run: composer install --no-interaction --no-progress
-      - name: Test without network
-        working-directory: packages/php
-        run: composer test
-
-  production-install:
-    name: Production install parity
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Node.js
+      - name: Set up Node.js for generation
+        if: matrix.php-version == '8.4'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
-          cache: npm
-      - name: Verify pinned npm
-        run: test "$(corepack npm --version)" = "11.19.0"
-      - run: corepack npm ci
-      - run: corepack npm run build
-      - run: corepack npm prune --omit=dev
-      - run: corepack npm run smoke:production
-      - run: node packages/cli/bin/plainrouter.js --help
+          package-manager-cache: false
+      - name: Set up Java for generation
+        if: matrix.php-version == '8.4'
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Verify generated PHP SDK drift
+        if: matrix.php-version == '8.4'
+        run: scripts/check-php-generated.sh
+      - name: Test without network
+        working-directory: packages/php
+        run: composer test
+      - name: Install runtime-only dependencies for smoke
+        if: matrix.php-version == '8.4'
+        working-directory: packages/php
+        run: composer install --no-interaction --no-progress --no-dev
+      - name: Smoke test against the live API
+        if: matrix.php-version == '8.4'
+        env:
+          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
+        run: php scripts/live-smoke.php
 
   secret-scan:
     name: Gitleaks
