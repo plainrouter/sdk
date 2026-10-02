@@ -55,3 +55,18 @@ jobs:
           else
             git push "$MIRROR" "$SPLIT:refs/heads/main"
           fi
+      - name: Tell Packagist to refresh
+        env:
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+          PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
+        run: |
+          if [ -z "$PACKAGIST_USERNAME" ] || [ -z "$PACKAGIST_API_TOKEN" ]; then
+            echo "::notice title=Packagist refresh skipped::PACKAGIST_USERNAME and PACKAGIST_API_TOKEN are not set; update the package on packagist.org by hand."
+            exit 0
+          fi
+
+          curl --fail --silent --show-error --request POST \
+            --header "Content-Type: application/json" \
+            --header "Authorization: Bearer $PACKAGIST_USERNAME:$PACKAGIST_API_TOKEN" \
+            --data '{"repository":{"url":"https://github.com/plainrouter/sdk-php"}}' \
+            https://packagist.org/api/update-package
