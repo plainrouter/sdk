@@ -703,6 +703,92 @@
                 ]
             }
         },
+        "/workspaces/{workspace}/admin/plans/{deployment_plan}/copy": {
+            "post": {
+                "operationId": "launch.plans.copy",
+                "description": "Copy failed plan content and stored integer budgets into a fresh draft. History stays unchanged; validate budgets and submit again with a new intent.",
+                "summary": "Copy a failed plan to a new draft",
+                "tags": [
+                    "DeploymentPlan"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "deployment_plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "A new draft was created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanCopyRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "An active principal is required.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The principal lacks workspace, account or write access.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanCopyError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The plan is unavailable to this workspace and account.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanCopyError"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Only a failed plan can be copied (plan_not_failed), or its account is unavailable (platform_ad_account_unavailable).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanCopyError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "planWriter": []
+                    }
+                ]
+            }
+        },
         "/events": {
             "post": {
                 "operationId": "createEvent",
@@ -4425,6 +4511,11 @@
                 "type": "http",
                 "description": "Workspace execution key with the propose-actions grant. Unbound keys select an available advertising account with account_id.",
                 "scheme": "bearer"
+            },
+            "planWriter": {
+                "type": "http",
+                "description": "An OAuth agent or account-bound Workspace Key with write access and the plan-create grant.",
+                "scheme": "bearer"
             }
         },
         "schemas": {
@@ -6667,6 +6758,91 @@
                     "global"
                 ],
                 "title": "JurisdictionPolicyClass"
+            },
+            "LaunchIntentStatus": {
+                "type": "string",
+                "enum": [
+                    "approval_required",
+                    "approved",
+                    "executing",
+                    "verified",
+                    "failed",
+                    "drifted",
+                    "partial",
+                    "blocked"
+                ],
+                "title": "LaunchIntentStatus"
+            },
+            "PlanCopyError": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string"
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "PlanCopyError"
+            },
+            "PlanCopyRead": {
+                "type": "object",
+                "properties": {
+                    "plan": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "platform_ad_account_id": {
+                                "type": "integer"
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "draft"
+                                ]
+                            },
+                            "budget_amount_minor": {
+                                "type": "integer"
+                            },
+                            "validation_result": {
+                                "type": "null"
+                            },
+                            "validated_at": {
+                                "type": "null"
+                            },
+                            "approval_id": {
+                                "type": "null"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "platform_ad_account_id",
+                            "status",
+                            "budget_amount_minor",
+                            "validation_result",
+                            "validated_at",
+                            "approval_id"
+                        ]
+                    }
+                },
+                "required": [
+                    "plan"
+                ],
+                "title": "PlanCopyRead"
             },
             "ReconciliationReport": {
                 "type": "object",

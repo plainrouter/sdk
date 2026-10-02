@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
+import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, LaunchPlansCopyData, LaunchPlansCopyErrors, LaunchPlansCopyResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -128,6 +128,21 @@ export const actionsApiBatch = <ThrowOnError extends boolean = false>(options: O
             type: 'http'
         }],
     url: '/agent/workspaces/{workspace}/action-batches/{actionBatch}',
+    ...options
+});
+
+/**
+ * Copy a failed plan to a new draft
+ *
+ * Copy failed plan content and stored integer budgets into a fresh draft. History stays unchanged; validate budgets and submit again with a new intent.
+ */
+export const launchPlansCopy = <ThrowOnError extends boolean = false>(options: Options<LaunchPlansCopyData, ThrowOnError>): RequestResult<LaunchPlansCopyResponses, LaunchPlansCopyErrors, ThrowOnError> => (options.client ?? client).post<LaunchPlansCopyResponses, LaunchPlansCopyErrors, ThrowOnError>({
+    security: [{
+            key: 'planWriter',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/plans/{deployment_plan}/copy',
     ...options
 });
 
