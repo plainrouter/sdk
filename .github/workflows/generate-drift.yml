@@ -3,6 +3,7 @@ name: Generate drift
 on:
   pull_request:
     paths:
+      - .github/workflows/generate-drift.yml
       - spec/**
       - packages/cli/**
       - packages/sdk/**
@@ -16,9 +17,14 @@ on:
       - scripts/check-ruby-generated.sh
       - scripts/generate-php.sh
       - scripts/check-php-generated.sh
+      - scripts/prepare-generator-input.mjs
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   generate-drift:
@@ -49,10 +55,10 @@ jobs:
         with:
           python-version: '3.11.16'
           cache: pip
-          cache-dependency-path: packages/python/requirements-dev.txt
+          cache-dependency-path: packages/python/requirements*.txt
       - name: Install pinned Python dependencies
         working-directory: packages/python
-        run: python -m pip install --disable-pip-version-check -r requirements-dev.txt
+        run: python -m pip install --disable-pip-version-check -r requirements-generate.txt
       - name: Regenerate Python SDK
         run: >-
           openapi-python-client generate
