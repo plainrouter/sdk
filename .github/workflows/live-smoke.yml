@@ -1,24 +1,12 @@
 name: Live smoke
 
 on:
-  pull_request:
-    paths:
-      - .github/workflows/live-smoke.yml
-      - scripts/live-smoke.*
-      - packages/sdk/**
-      - packages/python/**
-      - packages/ruby/**
-      - packages/php/**
   schedule:
     - cron: '47 5 * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   typescript:
