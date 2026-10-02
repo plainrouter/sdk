@@ -1,0 +1,57 @@
+name: Mirror PHP SDK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - packages/php/**
+    tags:
+      - 'php-v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror-php
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Split packages/php into plainrouter/sdk-php
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify release tag and package version
+        if: github.ref_type == 'tag'
+        run: |
+          test "$GITHUB_ACTOR" = "bursteri"
+          grep -Fq "public const SDK = '${GITHUB_REF_NAME#php-v}';" packages/php/src/Version.php
+          node scripts/verify-spec.mjs
+      - name: Split and push
+        env:
+          SDK_PHP_DEPLOY_KEY: ${{ secrets.SDK_PHP_DEPLOY_KEY }}
+        run: |
+          if [ -z "$SDK_PHP_DEPLOY_KEY" ]; then
+            echo "::notice title=PHP mirror skipped::SDK_PHP_DEPLOY_KEY is not set, so nothing was pushed to plainrouter/sdk-php."
+            exit 0
+          fi
+
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SDK_PHP_DEPLOY_KEY" > ~/.ssh/sdk_php
+          chmod 600 ~/.ssh/sdk_php
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/sdk_php -o IdentitiesOnly=yes"
+
+          SPLIT="$(git subtree split --prefix=packages/php HEAD)"
+          MIRROR="git@github.com:plainrouter/sdk-php.git"
+
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            git push "$MIRROR" "$SPLIT:refs/tags/v${GITHUB_REF_NAME#php-v}"
+          else
+            git push "$MIRROR" "$SPLIT:refs/heads/main"
+          fi
