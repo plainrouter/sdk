@@ -48,6 +48,8 @@ jobs:
         run: |
           corepack npm run generate
           git diff --exit-code -- packages/sdk/src/generated
+      - name: Smoke test against the live sandbox
+        run: corepack npm run smoke:live
       - name: Pack SDK
         run: |
           mkdir -p build/npm
