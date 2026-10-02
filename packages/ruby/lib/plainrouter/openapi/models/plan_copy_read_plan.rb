@@ -81,15 +81,18 @@ module PlainRouter::OpenAPI
         :'platform_ad_account_id' => :'Integer',
         :'status' => :'String',
         :'budget_amount_minor' => :'Integer',
-        :'validation_result' => :'Null',
-        :'validated_at' => :'Null',
-        :'approval_id' => :'Null'
+        :'validation_result' => :'Object',
+        :'validated_at' => :'Object',
+        :'approval_id' => :'Object'
       }
     end
 
     # List of attributes with nullable: true
     def self.openapi_nullable
       Set.new([
+        :'validation_result',
+        :'validated_at',
+        :'approval_id'
       ])
     end
 
@@ -134,18 +137,27 @@ module PlainRouter::OpenAPI
       end
 
       if attributes.key?(:'validation_result')
+        if (value = attributes[:'validation_result']).is_a?(Hash)
+          self.validation_result = value
+        end
         self.validation_result = attributes[:'validation_result']
       else
         self.validation_result = nil
       end
 
       if attributes.key?(:'validated_at')
+        if (value = attributes[:'validated_at']).is_a?(Hash)
+          self.validated_at = value
+        end
         self.validated_at = attributes[:'validated_at']
       else
         self.validated_at = nil
       end
 
       if attributes.key?(:'approval_id')
+        if (value = attributes[:'approval_id']).is_a?(Hash)
+          self.approval_id = value
+        end
         self.approval_id = attributes[:'approval_id']
       else
         self.approval_id = nil
@@ -173,18 +185,6 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "budget_amount_minor", budget_amount_minor cannot be nil.')
       end
 
-      if @validation_result.nil?
-        invalid_properties.push('invalid value for "validation_result", validation_result cannot be nil.')
-      end
-
-      if @validated_at.nil?
-        invalid_properties.push('invalid value for "validated_at", validated_at cannot be nil.')
-      end
-
-      if @approval_id.nil?
-        invalid_properties.push('invalid value for "approval_id", approval_id cannot be nil.')
-      end
-
       invalid_properties
     end
 
@@ -198,9 +198,12 @@ module PlainRouter::OpenAPI
       status_validator = EnumAttributeValidator.new('String', ["draft"])
       return false unless status_validator.valid?(@status)
       return false if @budget_amount_minor.nil?
-      return false if @validation_result.nil?
-      return false if @validated_at.nil?
-      return false if @approval_id.nil?
+      validation_result_validator = EnumAttributeValidator.new('Object', [])
+      return false unless validation_result_validator.valid?(@validation_result)
+      validated_at_validator = EnumAttributeValidator.new('Object', [])
+      return false unless validated_at_validator.valid?(@validated_at)
+      approval_id_validator = EnumAttributeValidator.new('Object', [])
+      return false unless approval_id_validator.valid?(@approval_id)
       true
     end
 
@@ -244,33 +247,33 @@ module PlainRouter::OpenAPI
       @budget_amount_minor = budget_amount_minor
     end
 
-    # Custom attribute writer method with validation
-    # @param [Object] validation_result Value to be assigned
+    # Custom attribute writer method checking allowed values (enum).
+    # @param [Object] validation_result Object to be assigned
     def validation_result=(validation_result)
-      if validation_result.nil?
-        fail ArgumentError, 'validation_result cannot be nil'
+      validator = EnumAttributeValidator.new('Object', [])
+      unless validator.valid?(validation_result)
+        fail ArgumentError, "invalid value for \"validation_result\", must be one of #{validator.allowable_values}."
       end
-
       @validation_result = validation_result
     end
 
-    # Custom attribute writer method with validation
-    # @param [Object] validated_at Value to be assigned
+    # Custom attribute writer method checking allowed values (enum).
+    # @param [Object] validated_at Object to be assigned
     def validated_at=(validated_at)
-      if validated_at.nil?
-        fail ArgumentError, 'validated_at cannot be nil'
+      validator = EnumAttributeValidator.new('Object', [])
+      unless validator.valid?(validated_at)
+        fail ArgumentError, "invalid value for \"validated_at\", must be one of #{validator.allowable_values}."
       end
-
       @validated_at = validated_at
     end
 
-    # Custom attribute writer method with validation
-    # @param [Object] approval_id Value to be assigned
+    # Custom attribute writer method checking allowed values (enum).
+    # @param [Object] approval_id Object to be assigned
     def approval_id=(approval_id)
-      if approval_id.nil?
-        fail ArgumentError, 'approval_id cannot be nil'
+      validator = EnumAttributeValidator.new('Object', [])
+      unless validator.valid?(approval_id)
+        fail ArgumentError, "invalid value for \"approval_id\", must be one of #{validator.allowable_values}."
       end
-
       @approval_id = approval_id
     end
 

@@ -76,7 +76,7 @@ module PlainRouter
       end
     end
 
-    attr_reader :events, :operations, :sandbox
+    attr_reader :events, :operations, :sandbox, :plans
 
     def initialize(token: nil, base_url: DEFAULT_BASE_URL, timeout: 30, user_agent: nil)
       configuration = OpenAPI::Configuration.new
@@ -92,6 +92,7 @@ module PlainRouter
       @events.singleton_class.prepend(EventsValidation)
       @operations = OpenAPI::OperationsApi.new(api_client)
       @sandbox = OpenAPI::SandboxApi.new(api_client)
+      @plans = OpenAPI::DeploymentPlanApi.new(api_client)
     end
 
     private

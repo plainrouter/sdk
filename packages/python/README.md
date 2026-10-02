@@ -46,4 +46,16 @@ response = await get_event.asyncio(event="event-id", client=client)
 
 The default API base is `https://plainrouter.com/api/v1` and the default request timeout is 30 seconds. Pass `base_url` or an `httpx.Timeout` to `create_client` to override either setting. Credentials are supplied by the caller and are never embedded in the SDK.
 
+Copy a failed plan to a fresh draft using a plan-writer bearer token:
+
+```python
+import os
+from plainrouter import create_client, launch_plans_copy
+
+client = create_client(os.environ["PLAINROUTER_TOKEN"])
+response = launch_plans_copy.sync_detailed(1, "failed-plan-id", client=client)
+```
+
+The same operation provides `asyncio` and `asyncio_detailed` entry points.
+
 Licensed under Apache-2.0.

@@ -30,12 +30,16 @@ fi
 
 node "$ROOT/scripts/verify-spec.mjs"
 
+GENERATOR_INPUT="$(mktemp "${TMPDIR:-/tmp}/plainrouter-ruby-input.XXXXXX.json")"
+trap 'rm -f "$GENERATOR_INPUT"' EXIT
+node "$ROOT/scripts/prepare-generator-input.mjs" "$ROOT/spec/openapi.json" "$GENERATOR_INPUT"
+
 "$JAVA_BIN" -jar "$GENERATOR_JAR" generate \
   -g ruby \
-  -i "$ROOT/spec/openapi.json" \
+  -i "$GENERATOR_INPUT" \
   -o "$OUTPUT" \
   --global-property=models,apis,supportingFiles,modelDocs=false,apiDocs=false,modelTests=false,apiTests=false \
-  --additional-properties="gemName=plainrouter/openapi,moduleName=PlainRouter::OpenAPI,gemVersion=0.3.0,gemRequiredRubyVersion=>= 3.2,library=faraday,gemAuthor=PlainRouter,gemLicense=Apache-2.0,gemHomepage=https://plainrouter.com,gemSummary=Official PlainRouter Ruby SDK,gemDescription=Ruby SDK generated from the signed PlainRouter OpenAPI contract,hideGenerationTimestamp=true,disallowAdditionalPropertiesIfNotPresent=false"
+  --additional-properties="gemName=plainrouter/openapi,moduleName=PlainRouter::OpenAPI,gemVersion=0.4.0,gemRequiredRubyVersion=>= 3.2,library=faraday,gemAuthor=PlainRouter,gemLicense=Apache-2.0,gemHomepage=https://plainrouter.com,gemSummary=Official PlainRouter Ruby SDK,gemDescription=Ruby SDK generated from the signed PlainRouter OpenAPI contract,hideGenerationTimestamp=true,disallowAdditionalPropertiesIfNotPresent=false"
 
 find "$OUTPUT/lib/plainrouter" -type f -name '*.rb' -print0 \
   | xargs -0 perl -pi -e 's/[ \t]+$//'

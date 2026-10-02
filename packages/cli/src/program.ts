@@ -211,7 +211,7 @@ export const createProgram = (dependencies: CliDependencies): Command => {
   const program = new Command()
     .name('plainrouter')
     .description('Plainrouter Signals API command line interface')
-    .version('0.7.0')
+    .version('0.8.0')
     .option('--json', 'emit the API response as JSON')
     .configureHelp({ showGlobalOptions: true })
     .configureOutput({

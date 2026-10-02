@@ -180,6 +180,13 @@ from .action_read_item_policy_decision_type_3_type_1 import ActionReadItemPolicy
 from .action_read_item_status import ActionReadItemStatus
 from .action_read_item_type import ActionReadItemType
 from .actions_api_index_status import ActionsApiIndexStatus
+from .agent_credential_error import AgentCredentialError
+from .agent_credential_error_error import AgentCredentialErrorError
+from .api_route_not_found import ApiRouteNotFound
+from .api_route_not_found_error import ApiRouteNotFoundError
+from .api_route_not_found_error_code import ApiRouteNotFoundErrorCode
+from .api_route_not_found_request import ApiRouteNotFoundRequest
+from .api_route_not_found_resources import ApiRouteNotFoundResources
 from .create_event_body_type_0 import CreateEventBodyType0
 from .create_event_body_type_0_click_ids import CreateEventBodyType0ClickIds
 from .create_event_body_type_0_consent import CreateEventBodyType0Consent
@@ -211,6 +218,7 @@ from .error_message import ErrorMessage
 from .event import Event
 from .event_consent_source import EventConsentSource
 from .event_user_data_hashed_type_0 import EventUserDataHashedType0
+from .execute_deployment_plan_request import ExecuteDeploymentPlanRequest
 from .get_emq_report_response_200 import GetEmqReportResponse200
 from .get_emq_report_response_200_snapshots_item import GetEmqReportResponse200SnapshotsItem
 from .get_emq_report_response_200_snapshots_item_platform_response_type_0 import (
@@ -302,6 +310,11 @@ from .get_sandbox_response_200_try_body import GetSandboxResponse200TryBody
 from .get_sandbox_response_200_try_body_value_data import GetSandboxResponse200TryBodyValueData
 from .ingestion_warning_code import IngestionWarningCode
 from .jurisdiction_policy_class import JurisdictionPolicyClass
+from .launch_intent_read import LaunchIntentRead
+from .launch_intent_read_intent import LaunchIntentReadIntent
+from .launch_intent_read_intent_actions_item import LaunchIntentReadIntentActionsItem
+from .launch_intent_read_intent_actions_item_type import LaunchIntentReadIntentActionsItemType
+from .launch_intent_read_intent_status import LaunchIntentReadIntentStatus
 from .launch_intent_status import LaunchIntentStatus
 from .list_events_by_cursor_response_200 import ListEventsByCursorResponse200
 from .list_events_by_cursor_response_200_events import ListEventsByCursorResponse200Events
@@ -352,11 +365,28 @@ from .list_events_response_200_events_data_item_value_data_type_0 import (
 )
 from .list_events_response_200_events_links_item import ListEventsResponse200EventsLinksItem
 from .list_events_response_200_metrics import ListEventsResponse200Metrics
-from .plan_copy_error import PlanCopyError
-from .plan_copy_error_error import PlanCopyErrorError
+from .plan_copy_forbidden import PlanCopyForbidden
+from .plan_copy_forbidden_error import PlanCopyForbiddenError
+from .plan_copy_forbidden_error_code import PlanCopyForbiddenErrorCode
+from .plan_copy_not_found import PlanCopyNotFound
+from .plan_copy_not_found_error import PlanCopyNotFoundError
+from .plan_copy_not_found_error_code import PlanCopyNotFoundErrorCode
 from .plan_copy_read import PlanCopyRead
 from .plan_copy_read_plan import PlanCopyReadPlan
 from .plan_copy_read_plan_status import PlanCopyReadPlanStatus
+from .plan_copy_rejected import PlanCopyRejected
+from .plan_copy_rejected_error import PlanCopyRejectedError
+from .plan_copy_rejected_error_code import PlanCopyRejectedErrorCode
+from .plan_execute_conflict import PlanExecuteConflict
+from .plan_execute_conflict_error import PlanExecuteConflictError
+from .plan_execute_conflict_error_code import PlanExecuteConflictErrorCode
+from .plan_execute_rejected import PlanExecuteRejected
+from .plan_execute_rejected_error import PlanExecuteRejectedError
+from .plan_execute_rejected_error_code import PlanExecuteRejectedErrorCode
+from .proposal_replay_conflict import ProposalReplayConflict
+from .proposal_replay_conflict_errors import ProposalReplayConflictErrors
+from .proposal_replay_conflict_errors_idempotency_key_item import ProposalReplayConflictErrorsIdempotencyKeyItem
+from .proposal_replay_conflict_message import ProposalReplayConflictMessage
 from .reconciliation_report import ReconciliationReport
 from .replay_deliveries_body import ReplayDeliveriesBody
 from .replay_deliveries_response_202 import ReplayDeliveriesResponse202
@@ -380,6 +410,9 @@ from .validation_error import ValidationError
 from .validation_error_errors import ValidationErrorErrors
 from .verify_signal_ingestion_response_200 import VerifySignalIngestionResponse200
 from .verify_signal_ingestion_response_202 import VerifySignalIngestionResponse202
+from .workspace_lock_timeout import WorkspaceLockTimeout
+from .workspace_lock_timeout_error import WorkspaceLockTimeoutError
+from .workspace_lock_timeout_error_code import WorkspaceLockTimeoutErrorCode
 
 __all__ = (
     "ActionBatchRead",
@@ -520,6 +553,13 @@ __all__ = (
     "ActionReadItemStatus",
     "ActionReadItemType",
     "ActionsApiIndexStatus",
+    "AgentCredentialError",
+    "AgentCredentialErrorError",
+    "ApiRouteNotFound",
+    "ApiRouteNotFoundError",
+    "ApiRouteNotFoundErrorCode",
+    "ApiRouteNotFoundRequest",
+    "ApiRouteNotFoundResources",
     "CreateEventBodyType0",
     "CreateEventBodyType0ClickIds",
     "CreateEventBodyType0Consent",
@@ -551,6 +591,7 @@ __all__ = (
     "Event",
     "EventConsentSource",
     "EventUserDataHashedType0",
+    "ExecuteDeploymentPlanRequest",
     "GetEmqReportResponse200",
     "GetEmqReportResponse200SnapshotsItem",
     "GetEmqReportResponse200SnapshotsItemPlatformResponseType0",
@@ -600,6 +641,11 @@ __all__ = (
     "GetSandboxResponse200TryBodyValueData",
     "IngestionWarningCode",
     "JurisdictionPolicyClass",
+    "LaunchIntentRead",
+    "LaunchIntentReadIntent",
+    "LaunchIntentReadIntentActionsItem",
+    "LaunchIntentReadIntentActionsItemType",
+    "LaunchIntentReadIntentStatus",
     "LaunchIntentStatus",
     "ListEventsByCursorResponse200",
     "ListEventsByCursorResponse200Events",
@@ -626,11 +672,28 @@ __all__ = (
     "ListEventsResponse200EventsDataItemValueDataType0",
     "ListEventsResponse200EventsLinksItem",
     "ListEventsResponse200Metrics",
-    "PlanCopyError",
-    "PlanCopyErrorError",
+    "PlanCopyForbidden",
+    "PlanCopyForbiddenError",
+    "PlanCopyForbiddenErrorCode",
+    "PlanCopyNotFound",
+    "PlanCopyNotFoundError",
+    "PlanCopyNotFoundErrorCode",
     "PlanCopyRead",
     "PlanCopyReadPlan",
     "PlanCopyReadPlanStatus",
+    "PlanCopyRejected",
+    "PlanCopyRejectedError",
+    "PlanCopyRejectedErrorCode",
+    "PlanExecuteConflict",
+    "PlanExecuteConflictError",
+    "PlanExecuteConflictErrorCode",
+    "PlanExecuteRejected",
+    "PlanExecuteRejectedError",
+    "PlanExecuteRejectedErrorCode",
+    "ProposalReplayConflict",
+    "ProposalReplayConflictErrors",
+    "ProposalReplayConflictErrorsIdempotencyKeyItem",
+    "ProposalReplayConflictMessage",
     "ReconciliationReport",
     "ReplayDeliveriesBody",
     "ReplayDeliveriesResponse202",
@@ -652,4 +715,7 @@ __all__ = (
     "ValidationErrorErrors",
     "VerifySignalIngestionResponse200",
     "VerifySignalIngestionResponse202",
+    "WorkspaceLockTimeout",
+    "WorkspaceLockTimeoutError",
+    "WorkspaceLockTimeoutErrorCode",
 )

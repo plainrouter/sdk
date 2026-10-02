@@ -14,16 +14,13 @@ require 'date'
 require 'time'
 
 module PlainRouter::OpenAPI
-  class PlanCopyErrorError < ApiModelBase
-    attr_accessor :code
-
-    attr_accessor :message
+  class LaunchIntentRead < ApiModelBase
+    attr_accessor :intent
 
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
-        :'code' => :'code',
-        :'message' => :'message'
+        :'intent' => :'intent'
       }
     end
 
@@ -40,8 +37,7 @@ module PlainRouter::OpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
-        :'code' => :'String',
-        :'message' => :'String'
+        :'intent' => :'LaunchIntentReadIntent'
       }
     end
 
@@ -55,28 +51,22 @@ module PlainRouter::OpenAPI
     # @param [Hash] attributes Model attributes in the form of hash
     def initialize(attributes = {})
       if (!attributes.is_a?(Hash))
-        fail ArgumentError, "The input argument (attributes) must be a hash in `PlainRouter::OpenAPI::PlanCopyErrorError` initialize method"
+        fail ArgumentError, "The input argument (attributes) must be a hash in `PlainRouter::OpenAPI::LaunchIntentRead` initialize method"
       end
 
       # check to see if the attribute exists and convert string to symbol for hash key
       acceptable_attribute_map = self.class.acceptable_attribute_map
       attributes = attributes.each_with_object({}) { |(k, v), h|
         if (!acceptable_attribute_map.key?(k.to_sym))
-          fail ArgumentError, "`#{k}` is not a valid attribute in `PlainRouter::OpenAPI::PlanCopyErrorError`. Please check the name to make sure it's valid. List of attributes: " + acceptable_attribute_map.keys.inspect
+          fail ArgumentError, "`#{k}` is not a valid attribute in `PlainRouter::OpenAPI::LaunchIntentRead`. Please check the name to make sure it's valid. List of attributes: " + acceptable_attribute_map.keys.inspect
         end
         h[k.to_sym] = v
       }
 
-      if attributes.key?(:'code')
-        self.code = attributes[:'code']
+      if attributes.key?(:'intent')
+        self.intent = attributes[:'intent']
       else
-        self.code = nil
-      end
-
-      if attributes.key?(:'message')
-        self.message = attributes[:'message']
-      else
-        self.message = nil
+        self.intent = nil
       end
     end
 
@@ -85,12 +75,8 @@ module PlainRouter::OpenAPI
     def list_invalid_properties
       warn '[DEPRECATED] the `list_invalid_properties` method is obsolete'
       invalid_properties = Array.new
-      if @code.nil?
-        invalid_properties.push('invalid value for "code", code cannot be nil.')
-      end
-
-      if @message.nil?
-        invalid_properties.push('invalid value for "message", message cannot be nil.')
+      if @intent.nil?
+        invalid_properties.push('invalid value for "intent", intent cannot be nil.')
       end
 
       invalid_properties
@@ -100,29 +86,18 @@ module PlainRouter::OpenAPI
     # @return true if the model is valid
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
-      return false if @code.nil?
-      return false if @message.nil?
+      return false if @intent.nil?
       true
     end
 
     # Custom attribute writer method with validation
-    # @param [Object] code Value to be assigned
-    def code=(code)
-      if code.nil?
-        fail ArgumentError, 'code cannot be nil'
+    # @param [Object] intent Value to be assigned
+    def intent=(intent)
+      if intent.nil?
+        fail ArgumentError, 'intent cannot be nil'
       end
 
-      @code = code
-    end
-
-    # Custom attribute writer method with validation
-    # @param [Object] message Value to be assigned
-    def message=(message)
-      if message.nil?
-        fail ArgumentError, 'message cannot be nil'
-      end
-
-      @message = message
+      @intent = intent
     end
 
     # Checks equality by comparing each attribute.
@@ -130,8 +105,7 @@ module PlainRouter::OpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
-          code == o.code &&
-          message == o.message
+          intent == o.intent
     end
 
     # @see the `==` method
@@ -143,7 +117,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [code, message].hash
+      [intent].hash
     end
 
     # Builds the object from hash

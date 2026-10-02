@@ -7,14 +7,14 @@ The official Ruby SDK for the Plainrouter Signals Conversion API. It is generate
 Add the gem to your bundle:
 
 ```ruby
-gem "plainrouter-sdk", "~> 0.1"
+gem "plainrouter-sdk", "~> 0.4"
 ```
 
 Then run `bundle install`. Ruby 3.2 or newer is required.
 
 ## Use
 
-Create one client with a Signal Tracker secret and call one of the three API groups:
+Create one client with a Signal Tracker secret and call an API group:
 
 ```ruby
 require "plainrouter"
@@ -28,6 +28,13 @@ event = client.events.get_event("event-id")
 ```
 
 The default base URL is `https://plainrouter.com/api/v1` and the default timeout is 30 seconds. Credentials are supplied by the caller and are never embedded in the SDK.
+
+To copy a failed plan to a fresh draft, configure a client with a plan-writer bearer token:
+
+```ruby
+client = PlainRouter::Client.new(token: ENV.fetch("PLAINROUTER_TOKEN"))
+draft = client.plans.launch_plans_copy(1, "failed-plan-id")
+```
 
 The zero-auth sandbox uses the same client without a token:
 

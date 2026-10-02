@@ -15,6 +15,7 @@ from plainrouter import (
     get_emq_report,
     get_event,
     get_reconciliation_report,
+    launch_plans_copy,
     list_events,
     replay_deliveries,
     send_test_purchase,
@@ -32,6 +33,7 @@ from plainrouter.generated.models import (
     CreateEventResponse200,
     ErrorMessage,
     Event,
+    PlanCopyRead,
     ReplayDeliveriesBody,
     SendTestPurchaseBody,
     SetDestinationTestModeBody,
@@ -41,6 +43,43 @@ from plainrouter.generated.models import (
 from plainrouter.generated.types import Response
 
 T = TypeVar("T")
+
+
+def test_plan_copy_posts_with_auth_and_parses_draft_and_errors() -> None:
+    requests: list[httpx.Request] = []
+    draft = {
+        "plan": {
+            "id": "draft-copy",
+            "platform_ad_account_id": 7,
+            "status": "draft",
+            "budget_amount_minor": 12345,
+            "validation_result": None,
+            "validated_at": None,
+            "approval_id": None,
+        }
+    }
+    for status, body in (
+        (201, draft),
+        (401, {"message": "Unauthenticated."}),
+        (413, {"message": "The POST data is too large."}),
+        (429, {"message": "Too Many Attempts."}),
+    ):
+
+        def handle(request: httpx.Request) -> httpx.Response:
+            requests.append(request)
+            return httpx.Response(status, json=body, headers={"Retry-After": "60"} if status == 429 else {})
+
+        response = launch_plans_copy.sync_detailed(1, "failed-plan", client=make_client(handle))
+
+        assert response.status_code == status
+        assert isinstance(response.parsed, PlanCopyRead if status == 201 else ErrorMessage)
+        assert response.parsed.to_dict() == body
+        assert requests[-1].method == "POST"
+        assert requests[-1].url.path == "/api/v1/workspaces/1/admin/plans/failed-plan/copy"
+        assert requests[-1].headers["Authorization"] == "Bearer tracker-test-secret"
+        assert requests[-1].read() == b""
+        if status == 429:
+            assert response.headers["Retry-After"] == "60"
 
 
 def test_policy_model_parses_current_response_and_rejects_invalid_mode() -> None:

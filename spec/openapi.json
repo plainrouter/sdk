@@ -1,5 +1,4 @@
 {
-    "x-signed": true,
     "x-action-types": [
         "increase_budget",
         "decrease_budget",
@@ -34,7 +33,7 @@
         "/agent/workspaces/{workspace}/actions/dry-run": {
             "post": {
                 "operationId": "actions.api.dry-run",
-                "description": "Evaluate a governed proposal for the approved account and preview each policy decision and execution diff without creating a batch or action.",
+                "description": "Preview policy decisions and execution diffs for the approved account without saving a proposal. A kill switch returns blocked policy decisions.",
                 "summary": "Preview actions",
                 "tags": [
                     "ActionDryRunApi"
@@ -72,27 +71,61 @@
                         }
                     },
                     "401": {
-                        "description": "Missing, invalid, or expired workspace key.",
+                        "description": "Missing, invalid, revoked or expired credentials return error invalid_token and error_description. Missing principal permissions or an issuer whose current role no longer covers the key return error insufficient_scope and error_description. A management key returns message instead.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentCredentialError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "403": {
-                        "description": "The key lacks the propose-actions grant.",
+                        "description": "A revoked or insufficient workspace grant returns error insufficient_scope and error_description. Missing creative.write permission returns message without a code.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentCredentialError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Workspace, account, or Actions resource not found.",
+                        "description": "A missing or inaccessible workspace or plan, or a disabled Plan surface, returns error.code api_route_not_found with error.message, error.resolution, request and resources.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid input, account selection, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "Oversized POST data returns message \"The POST data is too large.\" before route authorization.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -101,12 +134,31 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "Request validation failed.",
+                    "429": {
+                        "description": "The shared API rate limit is exceeded; message is \"Too Many Attempts.\" Retry-After gives seconds until a retry is allowed.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the shared API rate limit allows another request.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected server or provider-read fault returns message \"Server Error\" when debug is disabled.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
                                 }
                             }
                         }
@@ -122,7 +174,7 @@
         "/agent/workspaces/{workspace}/actions": {
             "post": {
                 "operationId": "actions.api.propose",
-                "description": "Submit a governed proposal for an advertising account available to this workspace key. A matching idempotency key returns the saved batch.",
+                "description": "Submit or replay a governed proposal for an account available to this key. A kill switch saves a blocked proposal without executing provider writes.",
                 "summary": "Propose actions",
                 "tags": [
                     "ActionProposalApi"
@@ -170,27 +222,71 @@
                         }
                     },
                     "401": {
-                        "description": "Missing, invalid, or expired workspace key.",
+                        "description": "Missing, invalid, revoked or expired credentials return error invalid_token and error_description. Missing principal permissions or an issuer whose current role no longer covers the key return error insufficient_scope and error_description. A management key returns message instead.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentCredentialError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "403": {
-                        "description": "The key lacks the propose-actions grant.",
+                        "description": "A revoked or insufficient workspace grant returns error insufficient_scope and error_description. Missing creative.write permission returns message without a code.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentCredentialError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Workspace, account, or Actions resource not found.",
+                        "description": "A missing or inaccessible workspace or plan, or a disabled Plan surface, returns error.code api_route_not_found with error.message, error.resolution, request and resources.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid input, account selection, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "A replay whose parameters or proposing principal differ returns message and errors.idempotency_key containing idempotency_key_parameters_mismatch: This submission key belongs to a different proposal.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProposalReplayConflict"
+                                }
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "Oversized POST data returns message \"The POST data is too large.\" before route authorization.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -199,12 +295,41 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "Request validation failed.",
+                    "429": {
+                        "description": "The shared API rate limit is exceeded; message is \"Too Many Attempts.\" Retry-After gives seconds until a retry is allowed.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the shared API rate limit allows another request.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceLockTimeout"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected server or provider-read fault returns message \"Server Error\" when debug is disabled.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
                                 }
                             }
                         }
@@ -742,7 +867,7 @@
                         }
                     },
                     "401": {
-                        "description": "An active principal is required.",
+                        "description": "Missing, invalid, revoked or expired credentials, a missing active principal, missing read scope or lost issuer authority return message. No error code is returned.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -752,31 +877,255 @@
                         }
                     },
                     "403": {
-                        "description": "The principal lacks workspace, account or write access.",
+                        "description": "Missing workspace, account or write access returns error.code insufficient_scope and error.message. A revoked grant returns message without a code.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PlanCopyError"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/PlanCopyForbidden"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "The plan is unavailable to this workspace and account.",
+                        "description": "An inaccessible or missing plan returns error.code plan_not_found and error.message. A missing workspace or disabled Plan surface returns the api_route_not_found envelope with error, request and resources.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PlanCopyError"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/PlanCopyNotFound"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ApiRouteNotFound"
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "422": {
-                        "description": "Only a failed plan can be copied (plan_not_failed), or its account is unavailable (platform_ad_account_unavailable).",
+                        "description": "error.code plan_not_failed when the source is not failed; platform_ad_account_unavailable when its account becomes unavailable after authorization; plan_not_found if the source disappears after lookup. Each includes error.message.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PlanCopyError"
+                                    "$ref": "#/components/schemas/PlanCopyRejected"
+                                }
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "Oversized POST data returns message \"The POST data is too large.\" before route authorization.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "The shared API rate limit is exceeded; message is \"Too Many Attempts.\" Retry-After gives seconds until a retry is allowed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the shared API rate limit allows another request.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceLockTimeout"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected server or provider-read fault returns message \"Server Error\" when debug is disabled.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "planWriter": []
+                    }
+                ]
+            }
+        },
+        "/workspaces/{workspace}/admin/plans/{deployment_plan}/execute": {
+            "post": {
+                "operationId": "launch.plans.execute",
+                "description": "Create or replay a governed Launch intent for the approved account. A kill switch returns a blocked intent without executing provider writes.",
+                "summary": "Execute a deployment plan",
+                "tags": [
+                    "DeploymentPlan"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "deployment_plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExecuteDeploymentPlanRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Created or replayed Launch intent, including a blocked intent under the kill switch.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LaunchIntentRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, revoked or expired credentials, a missing active principal, missing read scope or lost issuer authority return message. No error code is returned.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Missing workspace, account, write access, execution scope or workspace grant returns message without a code.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "A missing or inaccessible workspace or plan, or a disabled Plan surface, returns error.code api_route_not_found with error.message, error.resolution, request and resources.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation returns message plus errors (including intent_key). Domain refusals return error.code and error.message: deployment_plan_not_executable, creative_not_ready, creative_bytes_unavailable, ad_set_daily_budget_invalid, currency_mismatch, currency_unsupported, budget_invalid, deployment_plan_has_no_actions. Proposal input or evidence validation returns message plus field errors.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ValidationError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/PlanExecuteRejected"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "An intent key bound to another plan returns error.code launch_submission_key_plan_mismatch and error.message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanExecuteConflict"
+                                }
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "Oversized POST data returns message \"The POST data is too large.\" before route authorization.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "The shared API rate limit is exceeded; message is \"Too Many Attempts.\" Retry-After gives seconds until a retry is allowed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the shared API rate limit allows another request.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceLockTimeout"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected server or provider-read fault returns message \"Server Error\" when debug is disabled.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
                                 }
                             }
                         }
@@ -6400,6 +6749,89 @@
                 ],
                 "title": "ActionReadItem"
             },
+            "AgentCredentialError": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "enum": [
+                            "invalid_token",
+                            "insufficient_scope"
+                        ]
+                    },
+                    "error_description": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "error",
+                    "error_description"
+                ],
+                "title": "AgentCredentialError"
+            },
+            "ApiRouteNotFound": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "api_route_not_found"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "resolution": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message",
+                            "resolution"
+                        ]
+                    },
+                    "request": {
+                        "type": "object",
+                        "properties": {
+                            "method": {
+                                "type": "string"
+                            },
+                            "path": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "method",
+                            "path"
+                        ]
+                    },
+                    "resources": {
+                        "type": "object",
+                        "properties": {
+                            "documentation": {
+                                "type": "string"
+                            },
+                            "openapi": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "documentation",
+                            "openapi"
+                        ]
+                    }
+                },
+                "required": [
+                    "error",
+                    "request",
+                    "resources"
+                ],
+                "title": "ApiRouteNotFound"
+            },
             "DeliveryStatus": {
                 "type": "string",
                 "enum": [
@@ -6742,6 +7174,19 @@
                 ],
                 "title": "Event"
             },
+            "ExecuteDeploymentPlanRequest": {
+                "type": "object",
+                "properties": {
+                    "intent_key": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 240
+                    }
+                },
+                "title": "ExecuteDeploymentPlanRequest"
+            },
             "IngestionWarningCode": {
                 "type": "string",
                 "description": "The closed set of non-rejection warnings returned by authenticated ingestion.\n",
@@ -6759,6 +7204,123 @@
                 ],
                 "title": "JurisdictionPolicyClass"
             },
+            "LaunchIntentRead": {
+                "type": "object",
+                "properties": {
+                    "intent": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "approval_required",
+                                    "approved",
+                                    "executing",
+                                    "verified",
+                                    "failed",
+                                    "drifted",
+                                    "partial",
+                                    "blocked"
+                                ]
+                            },
+                            "action_batch_id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "policy_reasons": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "provider_object_ids": {},
+                            "campaign_id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "ad_set_id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "currency": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "actions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "increase_budget",
+                                                "decrease_budget",
+                                                "pause",
+                                                "resume",
+                                                "replace_creative",
+                                                "shift_spend",
+                                                "rollback",
+                                                "create_campaign",
+                                                "create_ad_set",
+                                                "create_ad",
+                                                "upload_asset",
+                                                "adjust_budget",
+                                                "set_status",
+                                                "duplicate_ad_with_creative",
+                                                "duplicate_adset",
+                                                "duplicate_ad_with_creative_v2"
+                                            ]
+                                        },
+                                        "verification_result": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "external_ids": {}
+                                    },
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "verification_result",
+                                        "external_ids"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "status",
+                            "action_batch_id",
+                            "policy_reasons",
+                            "provider_object_ids",
+                            "campaign_id",
+                            "ad_set_id",
+                            "currency",
+                            "actions"
+                        ]
+                    }
+                },
+                "required": [
+                    "intent"
+                ],
+                "title": "LaunchIntentRead"
+            },
             "LaunchIntentStatus": {
                 "type": "string",
                 "enum": [
@@ -6773,14 +7335,17 @@
                 ],
                 "title": "LaunchIntentStatus"
             },
-            "PlanCopyError": {
+            "PlanCopyForbidden": {
                 "type": "object",
                 "properties": {
                     "error": {
                         "type": "object",
                         "properties": {
                             "code": {
-                                "type": "string"
+                                "type": "string",
+                                "enum": [
+                                    "insufficient_scope"
+                                ]
                             },
                             "message": {
                                 "type": "string"
@@ -6795,7 +7360,34 @@
                 "required": [
                     "error"
                 ],
-                "title": "PlanCopyError"
+                "title": "PlanCopyForbidden"
+            },
+            "PlanCopyNotFound": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "plan_not_found"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "PlanCopyNotFound"
             },
             "PlanCopyRead": {
                 "type": "object",
@@ -6843,6 +7435,129 @@
                     "plan"
                 ],
                 "title": "PlanCopyRead"
+            },
+            "PlanCopyRejected": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "plan_not_failed",
+                                    "platform_ad_account_unavailable",
+                                    "plan_not_found"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "PlanCopyRejected"
+            },
+            "PlanExecuteConflict": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "launch_submission_key_plan_mismatch"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "PlanExecuteConflict"
+            },
+            "PlanExecuteRejected": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "deployment_plan_not_executable",
+                                    "creative_not_ready",
+                                    "creative_bytes_unavailable",
+                                    "ad_set_daily_budget_invalid",
+                                    "currency_mismatch",
+                                    "currency_unsupported",
+                                    "budget_invalid",
+                                    "deployment_plan_has_no_actions"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "PlanExecuteRejected"
+            },
+            "ProposalReplayConflict": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "enum": [
+                            "idempotency_key_parameters_mismatch: This submission key belongs to a different proposal."
+                        ]
+                    },
+                    "errors": {
+                        "type": "object",
+                        "properties": {
+                            "idempotency_key": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "enum": [
+                                        "idempotency_key_parameters_mismatch: This submission key belongs to a different proposal."
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "idempotency_key"
+                        ]
+                    }
+                },
+                "required": [
+                    "message",
+                    "errors"
+                ],
+                "title": "ProposalReplayConflict"
             },
             "ReconciliationReport": {
                 "type": "object",
@@ -6959,7 +7674,35 @@
                     "errors"
                 ],
                 "title": "ValidationError"
+            },
+            "WorkspaceLockTimeout": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "workspace_lock_timeout"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "WorkspaceLockTimeout"
             }
         }
-    }
+    },
+    "x-signed": true
 }

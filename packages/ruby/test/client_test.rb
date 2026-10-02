@@ -8,6 +8,30 @@ class PlainRouterClientTest < Minitest::Test
   VALID_CAPTURED_AT = "2026-08-19T12:34:56.123456+02:00"
   VALID_CAPTURED_AT_Z = "2026-08-19T10:34:56Z"
 
+  def test_plan_copy_posts_with_auth_and_returns_a_typed_draft
+    draft = {
+      plan: {
+        id: "draft-copy", platform_ad_account_id: 7, status: "draft", budget_amount_minor: 12345,
+        validation_result: nil, validated_at: nil, approval_id: nil
+      }
+    }
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post("/api/v1/workspaces/1/admin/plans/failed-plan/copy") do |environment|
+        assert_equal "Bearer plan-writer-test-token", environment.request_headers["Authorization"]
+        assert_equal "", environment.body
+        [201, { "Content-Type" => "application/json" }, draft.to_json]
+      end
+    end
+
+    response, status, = stubbed_client(stubs, token: "plan-writer-test-token")
+      .plans.launch_plans_copy_with_http_info(1, "failed-plan")
+
+    assert_equal 201, status
+    assert_instance_of PlainRouter::OpenAPI::PlanCopyRead, response
+    assert_equal draft, response.to_hash
+    stubs.verify_stubbed_calls
+  end
+
   def test_policy_model_accepts_current_response_and_rejects_invalid_mode
     data = {
       id: nil,
@@ -60,12 +84,13 @@ class PlainRouterClientTest < Minitest::Test
       %i[CONTRACT_VERSION Client DEFAULT_BASE_URL OpenAPI VERSION],
       PlainRouter.constants(false).sort
     )
-    assert_equal %i[events operations sandbox], PlainRouter::Client.public_instance_methods(false).sort
+    assert_equal %i[events operations plans sandbox], PlainRouter::Client.public_instance_methods(false).sort
   end
 
-  def test_exposes_all_signed_contract_operations_through_three_groups
+  def test_exposes_all_signed_contract_operations_through_service_groups
     client = PlainRouter::Client.new
 
+    assert_equal %i[launch_plans_copy launch_plans_execute], operation_names(client.plans)
     assert_equal %i[create_event get_event verify_signal_ingestion], operation_names(client.events)
     assert_equal(
       %i[
@@ -97,6 +122,7 @@ class PlainRouterClientTest < Minitest::Test
 
     assert_same api_client, client.operations.api_client
     assert_same api_client, client.sandbox.api_client
+    assert_same api_client, client.plans.api_client
     assert_equal "http://localhost:4567/custom/v1", api_client.config.base_url
     assert_equal 12, api_client.config.timeout
     assert_equal "Bearer tracker-secret", api_client.config.auth_settings.fetch("workspaceSecret").fetch(:value)

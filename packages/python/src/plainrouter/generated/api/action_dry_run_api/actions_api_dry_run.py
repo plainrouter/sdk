@@ -8,6 +8,8 @@ from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.action_dry_run_read import ActionDryRunRead
 from ...models.action_proposal_input import ActionProposalInput
+from ...models.agent_credential_error import AgentCredentialError
+from ...models.api_route_not_found import ApiRouteNotFound
 from ...models.error_message import ErrorMessage
 from ...models.validation_error import ValidationError
 from ...types import Response
@@ -37,31 +39,78 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ActionDryRunRead | ErrorMessage | ValidationError | None:
+) -> ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError | None:
     if response.status_code == 200:
         response_200 = ActionDryRunRead.from_dict(response.json())
 
         return response_200
 
     if response.status_code == 401:
-        response_401 = ErrorMessage.from_dict(response.json())
+
+        def _parse_response_401(data: object) -> AgentCredentialError | ErrorMessage:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                response_401_type_0 = AgentCredentialError.from_dict(data)
+
+                return response_401_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            if not isinstance(data, dict):
+                raise TypeError()
+            response_401_type_1 = ErrorMessage.from_dict(data)
+
+            return response_401_type_1
+
+        response_401 = _parse_response_401(response.json())
 
         return response_401
 
     if response.status_code == 403:
-        response_403 = ErrorMessage.from_dict(response.json())
+
+        def _parse_response_403(data: object) -> AgentCredentialError | ErrorMessage:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                response_403_type_0 = AgentCredentialError.from_dict(data)
+
+                return response_403_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            if not isinstance(data, dict):
+                raise TypeError()
+            response_403_type_1 = ErrorMessage.from_dict(data)
+
+            return response_403_type_1
+
+        response_403 = _parse_response_403(response.json())
 
         return response_403
 
     if response.status_code == 404:
-        response_404 = ErrorMessage.from_dict(response.json())
+        response_404 = ApiRouteNotFound.from_dict(response.json())
 
         return response_404
+
+    if response.status_code == 413:
+        response_413 = ErrorMessage.from_dict(response.json())
+
+        return response_413
 
     if response.status_code == 422:
         response_422 = ValidationError.from_dict(response.json())
 
         return response_422
+
+    if response.status_code == 429:
+        response_429 = ErrorMessage.from_dict(response.json())
+
+        return response_429
+
+    if response.status_code == 500:
+        response_500 = ErrorMessage.from_dict(response.json())
+
+        return response_500
 
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
@@ -71,7 +120,9 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ActionDryRunRead | ErrorMessage | ValidationError]:
+) -> Response[
+    ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError
+]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -85,11 +136,13 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: ActionProposalInput,
-) -> Response[ActionDryRunRead | ErrorMessage | ValidationError]:
+) -> Response[
+    ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError
+]:
     """Preview actions
 
-     Evaluate a governed proposal for the approved account and preview each policy decision and execution
-    diff without creating a batch or action.
+     Preview policy decisions and execution diffs for the approved account without saving a proposal. A
+    kill switch returns blocked policy decisions.
 
     Args:
         workspace (int):
@@ -100,7 +153,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionDryRunRead | ErrorMessage | ValidationError]
+        Response[ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -120,11 +173,11 @@ def sync(
     *,
     client: AuthenticatedClient,
     body: ActionProposalInput,
-) -> ActionDryRunRead | ErrorMessage | ValidationError | None:
+) -> ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError | None:
     """Preview actions
 
-     Evaluate a governed proposal for the approved account and preview each policy decision and execution
-    diff without creating a batch or action.
+     Preview policy decisions and execution diffs for the approved account without saving a proposal. A
+    kill switch returns blocked policy decisions.
 
     Args:
         workspace (int):
@@ -135,7 +188,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionDryRunRead | ErrorMessage | ValidationError
+        ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError
     """
 
     return sync_detailed(
@@ -150,11 +203,13 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: ActionProposalInput,
-) -> Response[ActionDryRunRead | ErrorMessage | ValidationError]:
+) -> Response[
+    ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError
+]:
     """Preview actions
 
-     Evaluate a governed proposal for the approved account and preview each policy decision and execution
-    diff without creating a batch or action.
+     Preview policy decisions and execution diffs for the approved account without saving a proposal. A
+    kill switch returns blocked policy decisions.
 
     Args:
         workspace (int):
@@ -165,7 +220,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionDryRunRead | ErrorMessage | ValidationError]
+        Response[ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -183,11 +238,11 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     body: ActionProposalInput,
-) -> ActionDryRunRead | ErrorMessage | ValidationError | None:
+) -> ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError | None:
     """Preview actions
 
-     Evaluate a governed proposal for the approved account and preview each policy decision and execution
-    diff without creating a batch or action.
+     Preview policy decisions and execution diffs for the approved account without saving a proposal. A
+    kill switch returns blocked policy decisions.
 
     Args:
         workspace (int):
@@ -198,7 +253,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionDryRunRead | ErrorMessage | ValidationError
+        ActionDryRunRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ValidationError
     """
 
     return (
