@@ -123,7 +123,7 @@ module PlainRouter::OpenAPI
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
       return false if @code.nil?
-      code_validator = EnumAttributeValidator.new('String', ["deployment_plan_not_executable", "creative_not_ready", "creative_bytes_unavailable", "ad_set_daily_budget_invalid", "currency_mismatch", "currency_unsupported", "budget_invalid", "deployment_plan_has_no_actions"])
+      code_validator = EnumAttributeValidator.new('String', ["plan_changed_since_review", "deployment_plan_not_executable", "creative_not_ready", "creative_bytes_unavailable", "ad_set_daily_budget_invalid", "ad_set_bid_amount_invalid", "currency_mismatch", "currency_unsupported", "budget_invalid", "deployment_plan_has_no_actions"])
       return false unless code_validator.valid?(@code)
       return false if @message.nil?
       true
@@ -132,7 +132,7 @@ module PlainRouter::OpenAPI
     # Custom attribute writer method checking allowed values (enum).
     # @param [Object] code Object to be assigned
     def code=(code)
-      validator = EnumAttributeValidator.new('String', ["deployment_plan_not_executable", "creative_not_ready", "creative_bytes_unavailable", "ad_set_daily_budget_invalid", "currency_mismatch", "currency_unsupported", "budget_invalid", "deployment_plan_has_no_actions"])
+      validator = EnumAttributeValidator.new('String', ["plan_changed_since_review", "deployment_plan_not_executable", "creative_not_ready", "creative_bytes_unavailable", "ad_set_daily_budget_invalid", "ad_set_bid_amount_invalid", "currency_mismatch", "currency_unsupported", "budget_invalid", "deployment_plan_has_no_actions"])
       unless validator.valid?(code)
         fail ArgumentError, "invalid value for \"code\", must be one of #{validator.allowable_values}."
       end

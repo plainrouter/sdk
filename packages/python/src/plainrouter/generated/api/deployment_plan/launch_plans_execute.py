@@ -14,14 +14,14 @@ from ...models.plan_execute_conflict import PlanExecuteConflict
 from ...models.plan_execute_rejected import PlanExecuteRejected
 from ...models.validation_error import ValidationError
 from ...models.workspace_lock_timeout import WorkspaceLockTimeout
-from ...types import UNSET, Response, Unset
+from ...types import Response
 
 
 def _get_kwargs(
     workspace: int,
     deployment_plan: str,
     *,
-    body: ExecuteDeploymentPlanRequest | Unset = UNSET,
+    body: ExecuteDeploymentPlanRequest,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -33,8 +33,7 @@ def _get_kwargs(
         ),
     }
 
-    if not isinstance(body, Unset):
-        _kwargs["json"] = body.to_dict()
+    _kwargs["json"] = body.to_dict()
 
     headers["Content-Type"] = "application/json"
 
@@ -150,7 +149,7 @@ def sync_detailed(
     deployment_plan: str,
     *,
     client: AuthenticatedClient,
-    body: ExecuteDeploymentPlanRequest | Unset = UNSET,
+    body: ExecuteDeploymentPlanRequest,
 ) -> Response[
     ApiRouteNotFound
     | ErrorMessage
@@ -162,13 +161,13 @@ def sync_detailed(
 ]:
     """Execute a deployment plan
 
-     Create or replay a governed Launch intent for the approved account. A kill switch returns a blocked
-    intent without executing provider writes.
+     Create or replay a governed Launch intent using the reviewed plan's review_version. Changed versions
+    are refused before intent creation or staging.
 
     Args:
         workspace (int):
         deployment_plan (str):
-        body (ExecuteDeploymentPlanRequest | Unset):
+        body (ExecuteDeploymentPlanRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -196,7 +195,7 @@ def sync(
     deployment_plan: str,
     *,
     client: AuthenticatedClient,
-    body: ExecuteDeploymentPlanRequest | Unset = UNSET,
+    body: ExecuteDeploymentPlanRequest,
 ) -> (
     ApiRouteNotFound
     | ErrorMessage
@@ -209,13 +208,13 @@ def sync(
 ):
     """Execute a deployment plan
 
-     Create or replay a governed Launch intent for the approved account. A kill switch returns a blocked
-    intent without executing provider writes.
+     Create or replay a governed Launch intent using the reviewed plan's review_version. Changed versions
+    are refused before intent creation or staging.
 
     Args:
         workspace (int):
         deployment_plan (str):
-        body (ExecuteDeploymentPlanRequest | Unset):
+        body (ExecuteDeploymentPlanRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -238,7 +237,7 @@ async def asyncio_detailed(
     deployment_plan: str,
     *,
     client: AuthenticatedClient,
-    body: ExecuteDeploymentPlanRequest | Unset = UNSET,
+    body: ExecuteDeploymentPlanRequest,
 ) -> Response[
     ApiRouteNotFound
     | ErrorMessage
@@ -250,13 +249,13 @@ async def asyncio_detailed(
 ]:
     """Execute a deployment plan
 
-     Create or replay a governed Launch intent for the approved account. A kill switch returns a blocked
-    intent without executing provider writes.
+     Create or replay a governed Launch intent using the reviewed plan's review_version. Changed versions
+    are refused before intent creation or staging.
 
     Args:
         workspace (int):
         deployment_plan (str):
-        body (ExecuteDeploymentPlanRequest | Unset):
+        body (ExecuteDeploymentPlanRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -282,7 +281,7 @@ async def asyncio(
     deployment_plan: str,
     *,
     client: AuthenticatedClient,
-    body: ExecuteDeploymentPlanRequest | Unset = UNSET,
+    body: ExecuteDeploymentPlanRequest,
 ) -> (
     ApiRouteNotFound
     | ErrorMessage
@@ -295,13 +294,13 @@ async def asyncio(
 ):
     """Execute a deployment plan
 
-     Create or replay a governed Launch intent for the approved account. A kill switch returns a blocked
-    intent without executing provider writes.
+     Create or replay a governed Launch intent using the reviewed plan's review_version. Changed versions
+    are refused before intent creation or staging.
 
     Args:
         workspace (int):
         deployment_plan (str):
-        body (ExecuteDeploymentPlanRequest | Unset):
+        body (ExecuteDeploymentPlanRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

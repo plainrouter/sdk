@@ -89,25 +89,25 @@ module PlainRouter::OpenAPI
     end
 
     # Execute a deployment plan
-    # Create or replay a governed Launch intent for the approved account. A kill switch returns a blocked intent without executing provider writes.
+    # Create or replay a governed Launch intent using the reviewed plan's review_version. Changed versions are refused before intent creation or staging.
     # @param workspace [Integer] The workspace ID
     # @param deployment_plan [String]
+    # @param execute_deployment_plan_request [ExecuteDeploymentPlanRequest]
     # @param [Hash] opts the optional parameters
-    # @option opts [ExecuteDeploymentPlanRequest] :execute_deployment_plan_request
     # @return [LaunchIntentRead]
-    def launch_plans_execute(workspace, deployment_plan, opts = {})
-      data, _status_code, _headers = launch_plans_execute_with_http_info(workspace, deployment_plan, opts)
+    def launch_plans_execute(workspace, deployment_plan, execute_deployment_plan_request, opts = {})
+      data, _status_code, _headers = launch_plans_execute_with_http_info(workspace, deployment_plan, execute_deployment_plan_request, opts)
       data
     end
 
     # Execute a deployment plan
-    # Create or replay a governed Launch intent for the approved account. A kill switch returns a blocked intent without executing provider writes.
+    # Create or replay a governed Launch intent using the reviewed plan&#39;s review_version. Changed versions are refused before intent creation or staging.
     # @param workspace [Integer] The workspace ID
     # @param deployment_plan [String]
+    # @param execute_deployment_plan_request [ExecuteDeploymentPlanRequest]
     # @param [Hash] opts the optional parameters
-    # @option opts [ExecuteDeploymentPlanRequest] :execute_deployment_plan_request
     # @return [Array<(LaunchIntentRead, Integer, Hash)>] LaunchIntentRead data, response status code and response headers
-    def launch_plans_execute_with_http_info(workspace, deployment_plan, opts = {})
+    def launch_plans_execute_with_http_info(workspace, deployment_plan, execute_deployment_plan_request, opts = {})
       if @api_client.config.debugging
         @api_client.config.logger.debug 'Calling API: DeploymentPlanApi.launch_plans_execute ...'
       end
@@ -118,6 +118,10 @@ module PlainRouter::OpenAPI
       # verify the required parameter 'deployment_plan' is set
       if @api_client.config.client_side_validation && deployment_plan.nil?
         fail ArgumentError, "Missing the required parameter 'deployment_plan' when calling DeploymentPlanApi.launch_plans_execute"
+      end
+      # verify the required parameter 'execute_deployment_plan_request' is set
+      if @api_client.config.client_side_validation && execute_deployment_plan_request.nil?
+        fail ArgumentError, "Missing the required parameter 'execute_deployment_plan_request' when calling DeploymentPlanApi.launch_plans_execute"
       end
       # resource path
       local_var_path = '/workspaces/{workspace}/admin/plans/{deployment_plan}/execute'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{deployment_plan}', CGI.escape(deployment_plan.to_s))
@@ -139,7 +143,7 @@ module PlainRouter::OpenAPI
       form_params = opts[:form_params] || {}
 
       # http body (model)
-      post_body = opts[:debug_body] || @api_client.object_to_http_body(opts[:'execute_deployment_plan_request'])
+      post_body = opts[:debug_body] || @api_client.object_to_http_body(execute_deployment_plan_request)
 
       # return_type
       return_type = opts[:debug_return_type] || 'LaunchIntentRead'
@@ -160,6 +164,141 @@ module PlainRouter::OpenAPI
       data, status_code, headers = @api_client.call_api(:POST, local_var_path, new_options)
       if @api_client.config.debugging
         @api_client.config.logger.debug "API called: DeploymentPlanApi#launch_plans_execute\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # List deployment plans
+    # Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.
+    # @param workspace [Integer] The workspace ID
+    # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :per_page  (default to 25)
+    # @return [LaunchPlansIndex200Response]
+    def launch_plans_index(workspace, opts = {})
+      data, _status_code, _headers = launch_plans_index_with_http_info(workspace, opts)
+      data
+    end
+
+    # List deployment plans
+    # Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.
+    # @param workspace [Integer] The workspace ID
+    # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :per_page  (default to 25)
+    # @return [Array<(LaunchPlansIndex200Response, Integer, Hash)>] LaunchPlansIndex200Response data, response status code and response headers
+    def launch_plans_index_with_http_info(workspace, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: DeploymentPlanApi.launch_plans_index ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling DeploymentPlanApi.launch_plans_index"
+      end
+      # resource path
+      local_var_path = '/workspaces/{workspace}/admin/plans'.sub('{workspace}', CGI.escape(workspace.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+      query_params[:'per_page'] = opts[:'per_page'] if !opts[:'per_page'].nil?
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'LaunchPlansIndex200Response'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['planReader']
+
+      new_options = opts.merge(
+        :operation => :"DeploymentPlanApi.launch_plans_index",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: DeploymentPlanApi#launch_plans_index\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Read a deployment plan
+    # Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.
+    # @param workspace [Integer] The workspace ID
+    # @param deployment_plan [String]
+    # @param [Hash] opts the optional parameters
+    # @return [LaunchPlansShow200Response]
+    def launch_plans_show(workspace, deployment_plan, opts = {})
+      data, _status_code, _headers = launch_plans_show_with_http_info(workspace, deployment_plan, opts)
+      data
+    end
+
+    # Read a deployment plan
+    # Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.
+    # @param workspace [Integer] The workspace ID
+    # @param deployment_plan [String]
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(LaunchPlansShow200Response, Integer, Hash)>] LaunchPlansShow200Response data, response status code and response headers
+    def launch_plans_show_with_http_info(workspace, deployment_plan, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: DeploymentPlanApi.launch_plans_show ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling DeploymentPlanApi.launch_plans_show"
+      end
+      # verify the required parameter 'deployment_plan' is set
+      if @api_client.config.client_side_validation && deployment_plan.nil?
+        fail ArgumentError, "Missing the required parameter 'deployment_plan' when calling DeploymentPlanApi.launch_plans_show"
+      end
+      # resource path
+      local_var_path = '/workspaces/{workspace}/admin/plans/{deployment_plan}'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{deployment_plan}', CGI.escape(deployment_plan.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'LaunchPlansShow200Response'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['planReader']
+
+      new_options = opts.merge(
+        :operation => :"DeploymentPlanApi.launch_plans_show",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: DeploymentPlanApi#launch_plans_show\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
       end
       return data, status_code, headers
     end

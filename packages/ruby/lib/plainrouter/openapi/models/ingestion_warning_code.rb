@@ -16,9 +16,10 @@ require 'time'
 module PlainRouter::OpenAPI
   class IngestionWarningCode
     CONSENT_CAPTURED_AT_INVALID = "consent_captured_at_invalid".freeze
+    EVENT_SOURCE_INVALID = "event_source_invalid".freeze
 
     def self.all_vars
-      @all_vars ||= [CONSENT_CAPTURED_AT_INVALID].freeze
+      @all_vars ||= [CONSENT_CAPTURED_AT_INVALID, EVENT_SOURCE_INVALID].freeze
     end
 
     # Builds the enum from string

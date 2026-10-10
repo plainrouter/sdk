@@ -16,9 +16,10 @@ require 'time'
 module PlainRouter::OpenAPI
   class DestinationType
     META = "meta".freeze
+    GOOGLE_ADS = "google_ads".freeze
 
     def self.all_vars
-      @all_vars ||= [META].freeze
+      @all_vars ||= [META, GOOGLE_ADS].freeze
     end
 
     # Builds the enum from string

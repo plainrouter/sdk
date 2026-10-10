@@ -27,6 +27,8 @@ module PlainRouter::OpenAPI
 
     attr_accessor :account_id
 
+    attr_accessor :workspace_id
+
     class EnumAttributeValidator
       attr_reader :datatype
       attr_reader :allowable_values
@@ -57,7 +59,8 @@ module PlainRouter::OpenAPI
         :'idempotency_key' => :'idempotency_key',
         :'evidence' => :'evidence',
         :'target_source' => :'target_source',
-        :'account_id' => :'account_id'
+        :'account_id' => :'account_id',
+        :'workspace_id' => :'workspace_id'
       }
     end
 
@@ -79,7 +82,8 @@ module PlainRouter::OpenAPI
         :'idempotency_key' => :'String',
         :'evidence' => :'Array<ActionProposalInputEvidenceInner>',
         :'target_source' => :'String',
-        :'account_id' => :'Integer'
+        :'account_id' => :'Integer',
+        :'workspace_id' => :'Integer'
       }
     end
 
@@ -142,6 +146,10 @@ module PlainRouter::OpenAPI
       if attributes.key?(:'account_id')
         self.account_id = attributes[:'account_id']
       end
+
+      if attributes.key?(:'workspace_id')
+        self.workspace_id = attributes[:'workspace_id']
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -197,6 +205,10 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "account_id", must be greater than or equal to 1.')
       end
 
+      if !@workspace_id.nil? && @workspace_id < 1
+        invalid_properties.push('invalid value for "workspace_id", must be greater than or equal to 1.')
+      end
+
       invalid_properties
     end
 
@@ -218,6 +230,7 @@ module PlainRouter::OpenAPI
       target_source_validator = EnumAttributeValidator.new('String', ["human_supplied"])
       return false unless target_source_validator.valid?(@target_source)
       return false if !@account_id.nil? && @account_id < 1
+      return false if !@workspace_id.nil? && @workspace_id < 1
       true
     end
 
@@ -309,6 +322,20 @@ module PlainRouter::OpenAPI
       @account_id = account_id
     end
 
+    # Custom attribute writer method with validation
+    # @param [Object] workspace_id Value to be assigned
+    def workspace_id=(workspace_id)
+      if workspace_id.nil?
+        fail ArgumentError, 'workspace_id cannot be nil'
+      end
+
+      if workspace_id < 1
+        fail ArgumentError, 'invalid value for "workspace_id", must be greater than or equal to 1.'
+      end
+
+      @workspace_id = workspace_id
+    end
+
     # Checks equality by comparing each attribute.
     # @param [Object] Object to be compared
     def ==(o)
@@ -319,7 +346,8 @@ module PlainRouter::OpenAPI
           idempotency_key == o.idempotency_key &&
           evidence == o.evidence &&
           target_source == o.target_source &&
-          account_id == o.account_id
+          account_id == o.account_id &&
+          workspace_id == o.workspace_id
     end
 
     # @see the `==` method
@@ -331,7 +359,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [actions, rationale, idempotency_key, evidence, target_source, account_id].hash
+      [actions, rationale, idempotency_key, evidence, target_source, account_id, workspace_id].hash
     end
 
     # Builds the object from hash

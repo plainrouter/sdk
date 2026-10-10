@@ -11,6 +11,35 @@ from .action_batch_read_data_restoration_summary_type_2_type_1 import ActionBatc
 from .action_batch_read_data_restoration_summary_type_3_type_1 import ActionBatchReadDataRestorationSummaryType3Type1
 from .action_batch_read_data_status import ActionBatchReadDataStatus
 from .action_current_disposition import ActionCurrentDisposition
+from .action_current_disposition_outcome_payload_type_0 import ActionCurrentDispositionOutcomePayloadType0
+from .action_current_disposition_outcome_payload_type_0_baseline_type_0 import (
+    ActionCurrentDispositionOutcomePayloadType0BaselineType0,
+)
+from .action_current_disposition_outcome_payload_type_0_baseline_type_0_scope import (
+    ActionCurrentDispositionOutcomePayloadType0BaselineType0Scope,
+)
+from .action_current_disposition_outcome_payload_type_0_inverse import (
+    ActionCurrentDispositionOutcomePayloadType0Inverse,
+)
+from .action_current_disposition_outcome_payload_type_0_inverse_status import (
+    ActionCurrentDispositionOutcomePayloadType0InverseStatus,
+)
+from .action_current_disposition_outcome_payload_type_0_metrics_type_0 import (
+    ActionCurrentDispositionOutcomePayloadType0MetricsType0,
+)
+from .action_current_disposition_outcome_payload_type_0_metrics_type_0_scope import (
+    ActionCurrentDispositionOutcomePayloadType0MetricsType0Scope,
+)
+from .action_current_disposition_outcome_payload_type_0_metrics_type_0_verdict_type_1 import (
+    ActionCurrentDispositionOutcomePayloadType0MetricsType0VerdictType1,
+)
+from .action_current_disposition_outcome_payload_type_0_metrics_type_0_verdict_type_2_type_1 import (
+    ActionCurrentDispositionOutcomePayloadType0MetricsType0VerdictType2Type1,
+)
+from .action_current_disposition_outcome_payload_type_0_metrics_type_0_verdict_type_3_type_1 import (
+    ActionCurrentDispositionOutcomePayloadType0MetricsType0VerdictType3Type1,
+)
+from .action_current_disposition_outcome_payload_type_0_status import ActionCurrentDispositionOutcomePayloadType0Status
 from .action_current_disposition_outcome_status_type_1 import ActionCurrentDispositionOutcomeStatusType1
 from .action_current_disposition_outcome_status_type_2_type_1 import ActionCurrentDispositionOutcomeStatusType2Type1
 from .action_current_disposition_outcome_status_type_3_type_1 import ActionCurrentDispositionOutcomeStatusType3Type1
@@ -51,6 +80,9 @@ from .action_list_read_meta import ActionListReadMeta
 from .action_policy_read import ActionPolicyRead
 from .action_policy_read_data import ActionPolicyReadData
 from .action_policy_read_data_execution_mode import ActionPolicyReadDataExecutionMode
+from .action_policy_result import ActionPolicyResult
+from .action_policy_result_outcome import ActionPolicyResultOutcome
+from .action_policy_result_phase import ActionPolicyResultPhase
 from .action_proposal_input import ActionProposalInput
 from .action_proposal_input_actions_item_type_0 import ActionProposalInputActionsItemType0
 from .action_proposal_input_actions_item_type_0_params import ActionProposalInputActionsItemType0Params
@@ -173,13 +205,201 @@ from .action_proposal_read_proposal_proposed_by import ActionProposalReadProposa
 from .action_proposal_read_proposal_status import ActionProposalReadProposalStatus
 from .action_read_item import ActionReadItem
 from .action_read_item_batch_status import ActionReadItemBatchStatus
+from .action_read_item_evidence_type_0 import ActionReadItemEvidenceType0
+from .action_read_item_evidence_type_0_outcome import ActionReadItemEvidenceType0Outcome
+from .action_read_item_evidence_type_0_outcome_baseline_type_0 import ActionReadItemEvidenceType0OutcomeBaselineType0
+from .action_read_item_evidence_type_0_outcome_baseline_type_0_scope import (
+    ActionReadItemEvidenceType0OutcomeBaselineType0Scope,
+)
+from .action_read_item_evidence_type_0_outcome_inverse import ActionReadItemEvidenceType0OutcomeInverse
+from .action_read_item_evidence_type_0_outcome_inverse_status import ActionReadItemEvidenceType0OutcomeInverseStatus
+from .action_read_item_evidence_type_0_outcome_metrics_type_0 import ActionReadItemEvidenceType0OutcomeMetricsType0
+from .action_read_item_evidence_type_0_outcome_metrics_type_0_scope import (
+    ActionReadItemEvidenceType0OutcomeMetricsType0Scope,
+)
+from .action_read_item_evidence_type_0_outcome_metrics_type_0_verdict_type_1 import (
+    ActionReadItemEvidenceType0OutcomeMetricsType0VerdictType1,
+)
+from .action_read_item_evidence_type_0_outcome_metrics_type_0_verdict_type_2_type_1 import (
+    ActionReadItemEvidenceType0OutcomeMetricsType0VerdictType2Type1,
+)
+from .action_read_item_evidence_type_0_outcome_metrics_type_0_verdict_type_3_type_1 import (
+    ActionReadItemEvidenceType0OutcomeMetricsType0VerdictType3Type1,
+)
+from .action_read_item_evidence_type_0_outcome_status import ActionReadItemEvidenceType0OutcomeStatus
+from .action_read_item_evidence_type_1 import ActionReadItemEvidenceType1
+from .action_read_item_evidence_type_2 import ActionReadItemEvidenceType2
 from .action_read_item_params_type_0 import ActionReadItemParamsType0
 from .action_read_item_policy_decision_type_1 import ActionReadItemPolicyDecisionType1
 from .action_read_item_policy_decision_type_2_type_1 import ActionReadItemPolicyDecisionType2Type1
 from .action_read_item_policy_decision_type_3_type_1 import ActionReadItemPolicyDecisionType3Type1
+from .action_read_item_proposer import ActionReadItemProposer
+from .action_read_item_proposer_type import ActionReadItemProposerType
 from .action_read_item_status import ActionReadItemStatus
 from .action_read_item_type import ActionReadItemType
 from .actions_api_index_status import ActionsApiIndexStatus
+from .actions_tests_api_store_body import ActionsTestsApiStoreBody
+from .actions_tests_api_store_body_axis import ActionsTestsApiStoreBodyAxis
+from .ad_test import AdTest
+from .ad_test_create_read import AdTestCreateRead
+from .ad_test_create_read_test import AdTestCreateReadTest
+from .ad_test_create_read_test_axis import AdTestCreateReadTestAxis
+from .ad_test_create_read_test_members_item import AdTestCreateReadTestMembersItem
+from .ad_test_create_read_test_pause_proposals_item import AdTestCreateReadTestPauseProposalsItem
+from .ad_test_create_read_test_pause_proposals_item_reason_type_1 import (
+    AdTestCreateReadTestPauseProposalsItemReasonType1,
+)
+from .ad_test_create_read_test_pause_proposals_item_reason_type_2_type_1 import (
+    AdTestCreateReadTestPauseProposalsItemReasonType2Type1,
+)
+from .ad_test_create_read_test_pause_proposals_item_reason_type_3_type_1 import (
+    AdTestCreateReadTestPauseProposalsItemReasonType3Type1,
+)
+from .ad_test_create_read_test_pause_proposals_item_status import AdTestCreateReadTestPauseProposalsItemStatus
+from .ad_test_create_read_test_verdict_type_0 import AdTestCreateReadTestVerdictType0
+from .ad_test_create_read_test_verdict_type_0_daily_facts_item import AdTestCreateReadTestVerdictType0DailyFactsItem
+from .ad_test_create_read_test_verdict_type_0_halt_details_type_0 import (
+    AdTestCreateReadTestVerdictType0HaltDetailsType0,
+)
+from .ad_test_create_read_test_verdict_type_0_halt_details_type_0_baseline import (
+    AdTestCreateReadTestVerdictType0HaltDetailsType0Baseline,
+)
+from .ad_test_create_read_test_verdict_type_0_halt_details_type_0_effective_status import (
+    AdTestCreateReadTestVerdictType0HaltDetailsType0EffectiveStatus,
+)
+from .ad_test_create_read_test_verdict_type_0_halt_details_type_0_observed_destinations_item import (
+    AdTestCreateReadTestVerdictType0HaltDetailsType0ObservedDestinationsItem,
+)
+from .ad_test_create_read_test_verdict_type_0_members_item import AdTestCreateReadTestVerdictType0MembersItem
+from .ad_test_create_read_test_verdict_type_0_members_item_state import AdTestCreateReadTestVerdictType0MembersItemState
+from .ad_test_create_read_test_verdict_type_0_outcome_type_1 import AdTestCreateReadTestVerdictType0OutcomeType1
+from .ad_test_create_read_test_verdict_type_0_outcome_type_2_type_1 import (
+    AdTestCreateReadTestVerdictType0OutcomeType2Type1,
+)
+from .ad_test_create_read_test_verdict_type_0_outcome_type_3_type_1 import (
+    AdTestCreateReadTestVerdictType0OutcomeType3Type1,
+)
+from .ad_test_daily_fact_read import AdTestDailyFactRead
+from .ad_test_event_choice import AdTestEventChoice
+from .ad_test_list_read import AdTestListRead
+from .ad_test_list_read_observed_conversion_events_item import AdTestListReadObservedConversionEventsItem
+from .ad_test_list_read_tests import AdTestListReadTests
+from .ad_test_list_read_tests_data_item import AdTestListReadTestsDataItem
+from .ad_test_list_read_tests_data_item_axis import AdTestListReadTestsDataItemAxis
+from .ad_test_list_read_tests_data_item_members_item import AdTestListReadTestsDataItemMembersItem
+from .ad_test_list_read_tests_data_item_pause_proposals_item import AdTestListReadTestsDataItemPauseProposalsItem
+from .ad_test_list_read_tests_data_item_pause_proposals_item_reason_type_1 import (
+    AdTestListReadTestsDataItemPauseProposalsItemReasonType1,
+)
+from .ad_test_list_read_tests_data_item_pause_proposals_item_reason_type_2_type_1 import (
+    AdTestListReadTestsDataItemPauseProposalsItemReasonType2Type1,
+)
+from .ad_test_list_read_tests_data_item_pause_proposals_item_reason_type_3_type_1 import (
+    AdTestListReadTestsDataItemPauseProposalsItemReasonType3Type1,
+)
+from .ad_test_list_read_tests_data_item_pause_proposals_item_status import (
+    AdTestListReadTestsDataItemPauseProposalsItemStatus,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0 import AdTestListReadTestsDataItemVerdictType0
+from .ad_test_list_read_tests_data_item_verdict_type_0_daily_facts_item import (
+    AdTestListReadTestsDataItemVerdictType0DailyFactsItem,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0_halt_details_type_0 import (
+    AdTestListReadTestsDataItemVerdictType0HaltDetailsType0,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0_halt_details_type_0_baseline import (
+    AdTestListReadTestsDataItemVerdictType0HaltDetailsType0Baseline,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0_halt_details_type_0_effective_status import (
+    AdTestListReadTestsDataItemVerdictType0HaltDetailsType0EffectiveStatus,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0_halt_details_type_0_observed_destinations_item import (
+    AdTestListReadTestsDataItemVerdictType0HaltDetailsType0ObservedDestinationsItem,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0_members_item import (
+    AdTestListReadTestsDataItemVerdictType0MembersItem,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0_members_item_state import (
+    AdTestListReadTestsDataItemVerdictType0MembersItemState,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0_outcome_type_1 import (
+    AdTestListReadTestsDataItemVerdictType0OutcomeType1,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0_outcome_type_2_type_1 import (
+    AdTestListReadTestsDataItemVerdictType0OutcomeType2Type1,
+)
+from .ad_test_list_read_tests_data_item_verdict_type_0_outcome_type_3_type_1 import (
+    AdTestListReadTestsDataItemVerdictType0OutcomeType3Type1,
+)
+from .ad_test_list_read_tests_links_item import AdTestListReadTestsLinksItem
+from .ad_test_read import AdTestRead
+from .ad_test_read_axis import AdTestReadAxis
+from .ad_test_read_members_item import AdTestReadMembersItem
+from .ad_test_read_pause_proposals_item import AdTestReadPauseProposalsItem
+from .ad_test_read_pause_proposals_item_reason_type_1 import AdTestReadPauseProposalsItemReasonType1
+from .ad_test_read_pause_proposals_item_reason_type_2_type_1 import AdTestReadPauseProposalsItemReasonType2Type1
+from .ad_test_read_pause_proposals_item_reason_type_3_type_1 import AdTestReadPauseProposalsItemReasonType3Type1
+from .ad_test_read_pause_proposals_item_status import AdTestReadPauseProposalsItemStatus
+from .ad_test_read_verdict_type_0 import AdTestReadVerdictType0
+from .ad_test_read_verdict_type_0_daily_facts_item import AdTestReadVerdictType0DailyFactsItem
+from .ad_test_read_verdict_type_0_halt_details_type_0 import AdTestReadVerdictType0HaltDetailsType0
+from .ad_test_read_verdict_type_0_halt_details_type_0_baseline import AdTestReadVerdictType0HaltDetailsType0Baseline
+from .ad_test_read_verdict_type_0_halt_details_type_0_effective_status import (
+    AdTestReadVerdictType0HaltDetailsType0EffectiveStatus,
+)
+from .ad_test_read_verdict_type_0_halt_details_type_0_observed_destinations_item import (
+    AdTestReadVerdictType0HaltDetailsType0ObservedDestinationsItem,
+)
+from .ad_test_read_verdict_type_0_members_item import AdTestReadVerdictType0MembersItem
+from .ad_test_read_verdict_type_0_members_item_state import AdTestReadVerdictType0MembersItemState
+from .ad_test_read_verdict_type_0_outcome_type_1 import AdTestReadVerdictType0OutcomeType1
+from .ad_test_read_verdict_type_0_outcome_type_2_type_1 import AdTestReadVerdictType0OutcomeType2Type1
+from .ad_test_read_verdict_type_0_outcome_type_3_type_1 import AdTestReadVerdictType0OutcomeType3Type1
+from .ad_test_show_read import AdTestShowRead
+from .ad_test_show_read_test import AdTestShowReadTest
+from .ad_test_show_read_test_axis import AdTestShowReadTestAxis
+from .ad_test_show_read_test_members_item import AdTestShowReadTestMembersItem
+from .ad_test_show_read_test_pause_proposals_item import AdTestShowReadTestPauseProposalsItem
+from .ad_test_show_read_test_pause_proposals_item_reason_type_1 import AdTestShowReadTestPauseProposalsItemReasonType1
+from .ad_test_show_read_test_pause_proposals_item_reason_type_2_type_1 import (
+    AdTestShowReadTestPauseProposalsItemReasonType2Type1,
+)
+from .ad_test_show_read_test_pause_proposals_item_reason_type_3_type_1 import (
+    AdTestShowReadTestPauseProposalsItemReasonType3Type1,
+)
+from .ad_test_show_read_test_pause_proposals_item_status import AdTestShowReadTestPauseProposalsItemStatus
+from .ad_test_show_read_test_verdict_type_0 import AdTestShowReadTestVerdictType0
+from .ad_test_show_read_test_verdict_type_0_daily_facts_item import AdTestShowReadTestVerdictType0DailyFactsItem
+from .ad_test_show_read_test_verdict_type_0_halt_details_type_0 import AdTestShowReadTestVerdictType0HaltDetailsType0
+from .ad_test_show_read_test_verdict_type_0_halt_details_type_0_baseline import (
+    AdTestShowReadTestVerdictType0HaltDetailsType0Baseline,
+)
+from .ad_test_show_read_test_verdict_type_0_halt_details_type_0_effective_status import (
+    AdTestShowReadTestVerdictType0HaltDetailsType0EffectiveStatus,
+)
+from .ad_test_show_read_test_verdict_type_0_halt_details_type_0_observed_destinations_item import (
+    AdTestShowReadTestVerdictType0HaltDetailsType0ObservedDestinationsItem,
+)
+from .ad_test_show_read_test_verdict_type_0_members_item import AdTestShowReadTestVerdictType0MembersItem
+from .ad_test_show_read_test_verdict_type_0_members_item_state import AdTestShowReadTestVerdictType0MembersItemState
+from .ad_test_show_read_test_verdict_type_0_outcome_type_1 import AdTestShowReadTestVerdictType0OutcomeType1
+from .ad_test_show_read_test_verdict_type_0_outcome_type_2_type_1 import AdTestShowReadTestVerdictType0OutcomeType2Type1
+from .ad_test_show_read_test_verdict_type_0_outcome_type_3_type_1 import AdTestShowReadTestVerdictType0OutcomeType3Type1
+from .ad_test_verdict_member_read import AdTestVerdictMemberRead
+from .ad_test_verdict_member_read_state import AdTestVerdictMemberReadState
+from .ad_test_verdict_read import AdTestVerdictRead
+from .ad_test_verdict_read_daily_facts_item import AdTestVerdictReadDailyFactsItem
+from .ad_test_verdict_read_halt_details_type_0 import AdTestVerdictReadHaltDetailsType0
+from .ad_test_verdict_read_halt_details_type_0_baseline import AdTestVerdictReadHaltDetailsType0Baseline
+from .ad_test_verdict_read_halt_details_type_0_effective_status import AdTestVerdictReadHaltDetailsType0EffectiveStatus
+from .ad_test_verdict_read_halt_details_type_0_observed_destinations_item import (
+    AdTestVerdictReadHaltDetailsType0ObservedDestinationsItem,
+)
+from .ad_test_verdict_read_members_item import AdTestVerdictReadMembersItem
+from .ad_test_verdict_read_members_item_state import AdTestVerdictReadMembersItemState
+from .ad_test_verdict_read_outcome_type_1 import AdTestVerdictReadOutcomeType1
+from .ad_test_verdict_read_outcome_type_2_type_1 import AdTestVerdictReadOutcomeType2Type1
+from .ad_test_verdict_read_outcome_type_3_type_1 import AdTestVerdictReadOutcomeType3Type1
 from .agent_credential_error import AgentCredentialError
 from .agent_credential_error_error import AgentCredentialErrorError
 from .api_route_not_found import ApiRouteNotFound
@@ -187,6 +407,15 @@ from .api_route_not_found_error import ApiRouteNotFoundError
 from .api_route_not_found_error_code import ApiRouteNotFoundErrorCode
 from .api_route_not_found_request import ApiRouteNotFoundRequest
 from .api_route_not_found_resources import ApiRouteNotFoundResources
+from .cookie_declaration import CookieDeclaration
+from .cookie_declaration_categories import CookieDeclarationCategories
+from .cookie_declaration_categories_analytics import CookieDeclarationCategoriesAnalytics
+from .cookie_declaration_categories_functional import CookieDeclarationCategoriesFunctional
+from .cookie_declaration_categories_marketing import CookieDeclarationCategoriesMarketing
+from .cookie_declaration_categories_necessary import CookieDeclarationCategoriesNecessary
+from .cookie_declaration_categories_unclassified import CookieDeclarationCategoriesUnclassified
+from .cookie_declaration_item import CookieDeclarationItem
+from .cookie_declaration_item_party import CookieDeclarationItemParty
 from .create_event_body_type_0 import CreateEventBodyType0
 from .create_event_body_type_0_click_ids import CreateEventBodyType0ClickIds
 from .create_event_body_type_0_consent import CreateEventBodyType0Consent
@@ -205,10 +434,30 @@ from .create_event_body_type_1_value_data import CreateEventBodyType1ValueData
 from .create_event_response_200 import CreateEventResponse200
 from .create_event_response_202 import CreateEventResponse202
 from .create_event_response_202_warnings_item import CreateEventResponse202WarningsItem
+from .create_event_response_202_warnings_item_field import CreateEventResponse202WarningsItemField
 from .create_sandbox_key_response_201 import CreateSandboxKeyResponse201
 from .create_sandbox_key_response_201_use import CreateSandboxKeyResponse201Use
+from .creative_intake_read import CreativeIntakeRead
+from .creative_intake_read_creative import CreativeIntakeReadCreative
+from .creative_intake_read_creative_status import CreativeIntakeReadCreativeStatus
+from .creative_intake_read_creative_tags_type_0 import CreativeIntakeReadCreativeTagsType0
+from .creative_intake_read_creative_type import CreativeIntakeReadCreativeType
+from .creative_intake_rejected import CreativeIntakeRejected
+from .creative_intake_rejected_error import CreativeIntakeRejectedError
+from .creative_intake_tags import CreativeIntakeTags
 from .delete_user_data_response_200 import DeleteUserDataResponse200
 from .delivery_status import DeliveryStatus
+from .deployment_plan import DeploymentPlan
+from .deployment_plan_read import DeploymentPlanRead
+from .deployment_plan_read_copy_type_0 import DeploymentPlanReadCopyType0
+from .deployment_plan_read_copy_type_0_cta import DeploymentPlanReadCopyType0Cta
+from .deployment_plan_read_creatives_item import DeploymentPlanReadCreativesItem
+from .deployment_plan_read_creatives_item_copy_type_0 import DeploymentPlanReadCreativesItemCopyType0
+from .deployment_plan_read_creatives_item_copy_type_0_cta import DeploymentPlanReadCreativesItemCopyType0Cta
+from .deployment_plan_read_creatives_item_resolved_copy_type_0 import DeploymentPlanReadCreativesItemResolvedCopyType0
+from .deployment_plan_read_creatives_item_resolved_copy_type_0_cta import (
+    DeploymentPlanReadCreativesItemResolvedCopyType0Cta,
+)
 from .destination import Destination
 from .destination_credential_source import DestinationCredentialSource
 from .destination_status import DestinationStatus
@@ -276,6 +525,26 @@ from .get_event_response_200_lineage_parent_type_0_user_data_hashed_type_0 impor
 from .get_event_response_200_lineage_parent_type_0_value_data_type_0 import (
     GetEventResponse200LineageParentType0ValueDataType0,
 )
+from .get_inventory_metrics_response_200 import GetInventoryMetricsResponse200
+from .get_inventory_metrics_response_200_account import GetInventoryMetricsResponse200Account
+from .get_inventory_metrics_response_200_changes_item import GetInventoryMetricsResponse200ChangesItem
+from .get_inventory_metrics_response_200_effective_range_type_0 import GetInventoryMetricsResponse200EffectiveRangeType0
+from .get_inventory_metrics_response_200_metrics_item import GetInventoryMetricsResponse200MetricsItem
+from .get_inventory_metrics_response_200_metrics_item_action_values_type_0 import (
+    GetInventoryMetricsResponse200MetricsItemActionValuesType0,
+)
+from .get_inventory_metrics_response_200_metrics_item_actions_type_0 import (
+    GetInventoryMetricsResponse200MetricsItemActionsType0,
+)
+from .get_inventory_metrics_response_200_object_metrics_item import GetInventoryMetricsResponse200ObjectMetricsItem
+from .get_inventory_metrics_response_200_object_metrics_item_level import (
+    GetInventoryMetricsResponse200ObjectMetricsItemLevel,
+)
+from .get_inventory_metrics_response_200_object_metrics_item_meta_type_0 import (
+    GetInventoryMetricsResponse200ObjectMetricsItemMetaType0,
+)
+from .get_inventory_metrics_response_200_staleness import GetInventoryMetricsResponse200Staleness
+from .get_inventory_metrics_response_200_sync import GetInventoryMetricsResponse200Sync
 from .get_reconciliation_report_response_200 import GetReconciliationReportResponse200
 from .get_reconciliation_report_response_200_reports_item import GetReconciliationReportResponse200ReportsItem
 from .get_reconciliation_report_response_200_reports_item_buckets import (
@@ -316,6 +585,9 @@ from .launch_intent_read_intent_actions_item import LaunchIntentReadIntentAction
 from .launch_intent_read_intent_actions_item_type import LaunchIntentReadIntentActionsItemType
 from .launch_intent_read_intent_status import LaunchIntentReadIntentStatus
 from .launch_intent_status import LaunchIntentStatus
+from .launch_plans_index_response_200 import LaunchPlansIndexResponse200
+from .launch_plans_index_response_200_plans import LaunchPlansIndexResponse200Plans
+from .launch_plans_show_response_200 import LaunchPlansShowResponse200
 from .list_events_by_cursor_response_200 import ListEventsByCursorResponse200
 from .list_events_by_cursor_response_200_events import ListEventsByCursorResponse200Events
 from .list_events_by_cursor_response_200_events_data_item import ListEventsByCursorResponse200EventsDataItem
@@ -399,6 +671,12 @@ from .set_destination_test_mode_response_200_destination import SetDestinationTe
 from .set_destination_test_mode_response_200_destination_config_type_0 import (
     SetDestinationTestModeResponse200DestinationConfigType0,
 )
+from .store_creative_body import StoreCreativeBody
+from .store_creative_body_tags import StoreCreativeBodyTags
+from .store_creative_from_url_body import StoreCreativeFromUrlBody
+from .store_creative_from_url_body_tags import StoreCreativeFromUrlBodyTags
+from .store_creative_from_url_request import StoreCreativeFromUrlRequest
+from .store_creative_request import StoreCreativeRequest
 from .traffic_class import TrafficClass
 from .validate_sandbox_event_body import ValidateSandboxEventBody
 from .validate_sandbox_event_body_value_data import ValidateSandboxEventBodyValueData
@@ -426,6 +704,17 @@ __all__ = (
     "ActionBatchReadDataRestorationSummaryType3Type1",
     "ActionBatchReadDataStatus",
     "ActionCurrentDisposition",
+    "ActionCurrentDispositionOutcomePayloadType0",
+    "ActionCurrentDispositionOutcomePayloadType0BaselineType0",
+    "ActionCurrentDispositionOutcomePayloadType0BaselineType0Scope",
+    "ActionCurrentDispositionOutcomePayloadType0Inverse",
+    "ActionCurrentDispositionOutcomePayloadType0InverseStatus",
+    "ActionCurrentDispositionOutcomePayloadType0MetricsType0",
+    "ActionCurrentDispositionOutcomePayloadType0MetricsType0Scope",
+    "ActionCurrentDispositionOutcomePayloadType0MetricsType0VerdictType1",
+    "ActionCurrentDispositionOutcomePayloadType0MetricsType0VerdictType2Type1",
+    "ActionCurrentDispositionOutcomePayloadType0MetricsType0VerdictType3Type1",
+    "ActionCurrentDispositionOutcomePayloadType0Status",
     "ActionCurrentDispositionOutcomeStatusType1",
     "ActionCurrentDispositionOutcomeStatusType2Type1",
     "ActionCurrentDispositionOutcomeStatusType3Type1",
@@ -456,6 +745,9 @@ __all__ = (
     "ActionPolicyRead",
     "ActionPolicyReadData",
     "ActionPolicyReadDataExecutionMode",
+    "ActionPolicyResult",
+    "ActionPolicyResultOutcome",
+    "ActionPolicyResultPhase",
     "ActionProposalInput",
     "ActionProposalInputActionsItemType0",
     "ActionProposalInputActionsItemType0Params",
@@ -546,13 +838,129 @@ __all__ = (
     "ActionProposalReadProposalStatus",
     "ActionReadItem",
     "ActionReadItemBatchStatus",
+    "ActionReadItemEvidenceType0",
+    "ActionReadItemEvidenceType0Outcome",
+    "ActionReadItemEvidenceType0OutcomeBaselineType0",
+    "ActionReadItemEvidenceType0OutcomeBaselineType0Scope",
+    "ActionReadItemEvidenceType0OutcomeInverse",
+    "ActionReadItemEvidenceType0OutcomeInverseStatus",
+    "ActionReadItemEvidenceType0OutcomeMetricsType0",
+    "ActionReadItemEvidenceType0OutcomeMetricsType0Scope",
+    "ActionReadItemEvidenceType0OutcomeMetricsType0VerdictType1",
+    "ActionReadItemEvidenceType0OutcomeMetricsType0VerdictType2Type1",
+    "ActionReadItemEvidenceType0OutcomeMetricsType0VerdictType3Type1",
+    "ActionReadItemEvidenceType0OutcomeStatus",
+    "ActionReadItemEvidenceType1",
+    "ActionReadItemEvidenceType2",
     "ActionReadItemParamsType0",
     "ActionReadItemPolicyDecisionType1",
     "ActionReadItemPolicyDecisionType2Type1",
     "ActionReadItemPolicyDecisionType3Type1",
+    "ActionReadItemProposer",
+    "ActionReadItemProposerType",
     "ActionReadItemStatus",
     "ActionReadItemType",
     "ActionsApiIndexStatus",
+    "ActionsTestsApiStoreBody",
+    "ActionsTestsApiStoreBodyAxis",
+    "AdTest",
+    "AdTestCreateRead",
+    "AdTestCreateReadTest",
+    "AdTestCreateReadTestAxis",
+    "AdTestCreateReadTestMembersItem",
+    "AdTestCreateReadTestPauseProposalsItem",
+    "AdTestCreateReadTestPauseProposalsItemReasonType1",
+    "AdTestCreateReadTestPauseProposalsItemReasonType2Type1",
+    "AdTestCreateReadTestPauseProposalsItemReasonType3Type1",
+    "AdTestCreateReadTestPauseProposalsItemStatus",
+    "AdTestCreateReadTestVerdictType0",
+    "AdTestCreateReadTestVerdictType0DailyFactsItem",
+    "AdTestCreateReadTestVerdictType0HaltDetailsType0",
+    "AdTestCreateReadTestVerdictType0HaltDetailsType0Baseline",
+    "AdTestCreateReadTestVerdictType0HaltDetailsType0EffectiveStatus",
+    "AdTestCreateReadTestVerdictType0HaltDetailsType0ObservedDestinationsItem",
+    "AdTestCreateReadTestVerdictType0MembersItem",
+    "AdTestCreateReadTestVerdictType0MembersItemState",
+    "AdTestCreateReadTestVerdictType0OutcomeType1",
+    "AdTestCreateReadTestVerdictType0OutcomeType2Type1",
+    "AdTestCreateReadTestVerdictType0OutcomeType3Type1",
+    "AdTestDailyFactRead",
+    "AdTestEventChoice",
+    "AdTestListRead",
+    "AdTestListReadObservedConversionEventsItem",
+    "AdTestListReadTests",
+    "AdTestListReadTestsDataItem",
+    "AdTestListReadTestsDataItemAxis",
+    "AdTestListReadTestsDataItemMembersItem",
+    "AdTestListReadTestsDataItemPauseProposalsItem",
+    "AdTestListReadTestsDataItemPauseProposalsItemReasonType1",
+    "AdTestListReadTestsDataItemPauseProposalsItemReasonType2Type1",
+    "AdTestListReadTestsDataItemPauseProposalsItemReasonType3Type1",
+    "AdTestListReadTestsDataItemPauseProposalsItemStatus",
+    "AdTestListReadTestsDataItemVerdictType0",
+    "AdTestListReadTestsDataItemVerdictType0DailyFactsItem",
+    "AdTestListReadTestsDataItemVerdictType0HaltDetailsType0",
+    "AdTestListReadTestsDataItemVerdictType0HaltDetailsType0Baseline",
+    "AdTestListReadTestsDataItemVerdictType0HaltDetailsType0EffectiveStatus",
+    "AdTestListReadTestsDataItemVerdictType0HaltDetailsType0ObservedDestinationsItem",
+    "AdTestListReadTestsDataItemVerdictType0MembersItem",
+    "AdTestListReadTestsDataItemVerdictType0MembersItemState",
+    "AdTestListReadTestsDataItemVerdictType0OutcomeType1",
+    "AdTestListReadTestsDataItemVerdictType0OutcomeType2Type1",
+    "AdTestListReadTestsDataItemVerdictType0OutcomeType3Type1",
+    "AdTestListReadTestsLinksItem",
+    "AdTestRead",
+    "AdTestReadAxis",
+    "AdTestReadMembersItem",
+    "AdTestReadPauseProposalsItem",
+    "AdTestReadPauseProposalsItemReasonType1",
+    "AdTestReadPauseProposalsItemReasonType2Type1",
+    "AdTestReadPauseProposalsItemReasonType3Type1",
+    "AdTestReadPauseProposalsItemStatus",
+    "AdTestReadVerdictType0",
+    "AdTestReadVerdictType0DailyFactsItem",
+    "AdTestReadVerdictType0HaltDetailsType0",
+    "AdTestReadVerdictType0HaltDetailsType0Baseline",
+    "AdTestReadVerdictType0HaltDetailsType0EffectiveStatus",
+    "AdTestReadVerdictType0HaltDetailsType0ObservedDestinationsItem",
+    "AdTestReadVerdictType0MembersItem",
+    "AdTestReadVerdictType0MembersItemState",
+    "AdTestReadVerdictType0OutcomeType1",
+    "AdTestReadVerdictType0OutcomeType2Type1",
+    "AdTestReadVerdictType0OutcomeType3Type1",
+    "AdTestShowRead",
+    "AdTestShowReadTest",
+    "AdTestShowReadTestAxis",
+    "AdTestShowReadTestMembersItem",
+    "AdTestShowReadTestPauseProposalsItem",
+    "AdTestShowReadTestPauseProposalsItemReasonType1",
+    "AdTestShowReadTestPauseProposalsItemReasonType2Type1",
+    "AdTestShowReadTestPauseProposalsItemReasonType3Type1",
+    "AdTestShowReadTestPauseProposalsItemStatus",
+    "AdTestShowReadTestVerdictType0",
+    "AdTestShowReadTestVerdictType0DailyFactsItem",
+    "AdTestShowReadTestVerdictType0HaltDetailsType0",
+    "AdTestShowReadTestVerdictType0HaltDetailsType0Baseline",
+    "AdTestShowReadTestVerdictType0HaltDetailsType0EffectiveStatus",
+    "AdTestShowReadTestVerdictType0HaltDetailsType0ObservedDestinationsItem",
+    "AdTestShowReadTestVerdictType0MembersItem",
+    "AdTestShowReadTestVerdictType0MembersItemState",
+    "AdTestShowReadTestVerdictType0OutcomeType1",
+    "AdTestShowReadTestVerdictType0OutcomeType2Type1",
+    "AdTestShowReadTestVerdictType0OutcomeType3Type1",
+    "AdTestVerdictMemberRead",
+    "AdTestVerdictMemberReadState",
+    "AdTestVerdictRead",
+    "AdTestVerdictReadDailyFactsItem",
+    "AdTestVerdictReadHaltDetailsType0",
+    "AdTestVerdictReadHaltDetailsType0Baseline",
+    "AdTestVerdictReadHaltDetailsType0EffectiveStatus",
+    "AdTestVerdictReadHaltDetailsType0ObservedDestinationsItem",
+    "AdTestVerdictReadMembersItem",
+    "AdTestVerdictReadMembersItemState",
+    "AdTestVerdictReadOutcomeType1",
+    "AdTestVerdictReadOutcomeType2Type1",
+    "AdTestVerdictReadOutcomeType3Type1",
     "AgentCredentialError",
     "AgentCredentialErrorError",
     "ApiRouteNotFound",
@@ -560,6 +968,15 @@ __all__ = (
     "ApiRouteNotFoundErrorCode",
     "ApiRouteNotFoundRequest",
     "ApiRouteNotFoundResources",
+    "CookieDeclaration",
+    "CookieDeclarationCategories",
+    "CookieDeclarationCategoriesAnalytics",
+    "CookieDeclarationCategoriesFunctional",
+    "CookieDeclarationCategoriesMarketing",
+    "CookieDeclarationCategoriesNecessary",
+    "CookieDeclarationCategoriesUnclassified",
+    "CookieDeclarationItem",
+    "CookieDeclarationItemParty",
     "CreateEventBodyType0",
     "CreateEventBodyType0ClickIds",
     "CreateEventBodyType0Consent",
@@ -578,10 +995,28 @@ __all__ = (
     "CreateEventResponse200",
     "CreateEventResponse202",
     "CreateEventResponse202WarningsItem",
+    "CreateEventResponse202WarningsItemField",
     "CreateSandboxKeyResponse201",
     "CreateSandboxKeyResponse201Use",
+    "CreativeIntakeRead",
+    "CreativeIntakeReadCreative",
+    "CreativeIntakeReadCreativeStatus",
+    "CreativeIntakeReadCreativeTagsType0",
+    "CreativeIntakeReadCreativeType",
+    "CreativeIntakeRejected",
+    "CreativeIntakeRejectedError",
+    "CreativeIntakeTags",
     "DeleteUserDataResponse200",
     "DeliveryStatus",
+    "DeploymentPlan",
+    "DeploymentPlanRead",
+    "DeploymentPlanReadCopyType0",
+    "DeploymentPlanReadCopyType0Cta",
+    "DeploymentPlanReadCreativesItem",
+    "DeploymentPlanReadCreativesItemCopyType0",
+    "DeploymentPlanReadCreativesItemCopyType0Cta",
+    "DeploymentPlanReadCreativesItemResolvedCopyType0",
+    "DeploymentPlanReadCreativesItemResolvedCopyType0Cta",
     "Destination",
     "DestinationCredentialSource",
     "DestinationStatus",
@@ -621,6 +1056,18 @@ __all__ = (
     "GetEventResponse200LineageParentType0SessionType0",
     "GetEventResponse200LineageParentType0UserDataHashedType0",
     "GetEventResponse200LineageParentType0ValueDataType0",
+    "GetInventoryMetricsResponse200",
+    "GetInventoryMetricsResponse200Account",
+    "GetInventoryMetricsResponse200ChangesItem",
+    "GetInventoryMetricsResponse200EffectiveRangeType0",
+    "GetInventoryMetricsResponse200MetricsItem",
+    "GetInventoryMetricsResponse200MetricsItemActionsType0",
+    "GetInventoryMetricsResponse200MetricsItemActionValuesType0",
+    "GetInventoryMetricsResponse200ObjectMetricsItem",
+    "GetInventoryMetricsResponse200ObjectMetricsItemLevel",
+    "GetInventoryMetricsResponse200ObjectMetricsItemMetaType0",
+    "GetInventoryMetricsResponse200Staleness",
+    "GetInventoryMetricsResponse200Sync",
     "GetReconciliationReportResponse200",
     "GetReconciliationReportResponse200ReportsItem",
     "GetReconciliationReportResponse200ReportsItemBuckets",
@@ -647,6 +1094,9 @@ __all__ = (
     "LaunchIntentReadIntentActionsItemType",
     "LaunchIntentReadIntentStatus",
     "LaunchIntentStatus",
+    "LaunchPlansIndexResponse200",
+    "LaunchPlansIndexResponse200Plans",
+    "LaunchPlansShowResponse200",
     "ListEventsByCursorResponse200",
     "ListEventsByCursorResponse200Events",
     "ListEventsByCursorResponse200EventsDataItem",
@@ -704,6 +1154,12 @@ __all__ = (
     "SetDestinationTestModeResponse200",
     "SetDestinationTestModeResponse200Destination",
     "SetDestinationTestModeResponse200DestinationConfigType0",
+    "StoreCreativeBody",
+    "StoreCreativeBodyTags",
+    "StoreCreativeFromUrlBody",
+    "StoreCreativeFromUrlBodyTags",
+    "StoreCreativeFromUrlRequest",
+    "StoreCreativeRequest",
     "TrafficClass",
     "ValidateSandboxEventBody",
     "ValidateSandboxEventBodyValueData",

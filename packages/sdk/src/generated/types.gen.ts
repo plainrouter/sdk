@@ -28,6 +28,65 @@ export type ActionBatchRead = {
  */
 export type ActionCurrentDisposition = {
     receipt_status: 'pending' | 'attempting' | 'reconciliation_required' | 'committed' | 'executed_pending_verification' | 'measuring' | 'verified' | 'compensating' | 'compensated' | 'compensation_failed' | 'irreversible' | 'failed' | 'reconciliation_exhausted' | null;
+    /**
+     * Write-once outcome. Management comparisons use PlainRouter counted arrivals and Inventory spend. Resume compares the target after the change with the rest of the same account over those same days. Pause is not judged. Missing data never yields a verdict. Other action types retain their existing payloads.
+     */
+    outcome_payload: {
+        status?: 'measurable' | 'not_measurable' | 'unavailable';
+        observed_at?: string;
+        reason_code?: string | null;
+        reason?: string | null;
+        baseline?: {
+            scope?: 'target' | 'rest_of_account';
+            /**
+             * Three whole days in the ad account timezone; excludes the change day.
+             */
+            days?: Array<string>;
+            currency?: string | null;
+            timezone?: string;
+            /**
+             * Decimal spend in ISO currency minor units; null when daily mirror data is missing.
+             */
+            spend_minor?: string | null;
+            /**
+             * Arrivals counted by PlainRouter through Signals, never provider conversions.
+             */
+            counted_arrivals?: number | null;
+            /**
+             * Spend divided by counted arrivals, in ISO currency minor units, displayed to six decimal places.
+             */
+            cost_per_counted_arrival_minor?: string | null;
+        } | Array<string>;
+        metrics?: {
+            scope?: 'target' | 'rest_of_account';
+            /**
+             * Three whole days in the ad account timezone; excludes the change day.
+             */
+            days?: Array<string>;
+            currency?: string | null;
+            timezone?: string;
+            /**
+             * Decimal spend in ISO currency minor units; null when daily mirror data is missing.
+             */
+            spend_minor?: string | null;
+            /**
+             * Arrivals counted by PlainRouter through Signals, never provider conversions.
+             */
+            counted_arrivals?: number | null;
+            /**
+             * Spend divided by counted arrivals, in ISO currency minor units, displayed to six decimal places.
+             */
+            cost_per_counted_arrival_minor?: string | null;
+            verdict?: 'held' | 'lost' | 'not_judged' | null;
+            loss_threshold_percent?: string;
+        } | Array<string>;
+        inverse?: {
+            status: 'proposed' | 'inverse_not_proposed';
+            batch_id?: string;
+            reason_code?: string;
+        };
+        [key: string]: unknown;
+    } | null;
     outcome_status: 'measurable' | 'not_measurable' | 'unavailable' | null;
     outcome_reason_code: string | null;
     outcome_checked_at: string | null;
@@ -112,10 +171,25 @@ export type ActionPolicyRead = {
     data: {
         id: number | null;
         workspace_id: number;
-        execution_mode: 'ask' | 'full' | 'suggest_only' | 'auto_with_limits' | 'full_auto';
+        execution_mode: 'ask' | 'full';
         outcome_check_after_hours: number;
         anomaly_threshold_percent: string;
     };
+};
+
+/**
+ * ActionPolicyResult
+ */
+export type ActionPolicyResult = {
+    id: string;
+    policy_id: string;
+    policy_version: number;
+    phase: 'proposal' | 'approval' | 'execution';
+    outcome: 'allowed' | 'approval_required' | 'blocked';
+    reasons: Array<string>;
+    reason_details: Array<string> | null;
+    requested_minor: number | null;
+    evaluated_at: string;
 };
 
 /**
@@ -307,6 +381,7 @@ export type ActionProposalInput = {
     }>;
     target_source: 'human_supplied';
     account_id?: number;
+    workspace_id?: number;
 };
 
 /**
@@ -368,11 +443,733 @@ export type ActionReadItem = {
         [key: string]: unknown;
     } | Array<unknown>;
     rationale: string;
+    proposer?: {
+        type: 'user' | 'agent' | 'system';
+        /**
+         * PlainRouter for a system proposer; omitted for people and agents.
+         */
+        name?: string;
+    };
+    /**
+     * System evidence cites either the original action and its counted outcome or the rule, revision, run and decision.
+     */
+    evidence?: {
+        original_action_id: string;
+        /**
+         * Write-once outcome. Management comparisons use PlainRouter counted arrivals and Inventory spend. Resume compares the target after the change with the rest of the same account over those same days. Pause is not judged. Missing data never yields a verdict. Other action types retain their existing payloads.
+         */
+        outcome: {
+            status?: 'measurable' | 'not_measurable' | 'unavailable';
+            observed_at?: string;
+            reason_code?: string | null;
+            reason?: string | null;
+            baseline?: {
+                scope?: 'target' | 'rest_of_account';
+                /**
+                 * Three whole days in the ad account timezone; excludes the change day.
+                 */
+                days?: Array<string>;
+                currency?: string | null;
+                timezone?: string;
+                /**
+                 * Decimal spend in ISO currency minor units; null when daily mirror data is missing.
+                 */
+                spend_minor?: string | null;
+                /**
+                 * Arrivals counted by PlainRouter through Signals, never provider conversions.
+                 */
+                counted_arrivals?: number | null;
+                /**
+                 * Spend divided by counted arrivals, in ISO currency minor units, displayed to six decimal places.
+                 */
+                cost_per_counted_arrival_minor?: string | null;
+            } | Array<string>;
+            metrics?: {
+                scope?: 'target' | 'rest_of_account';
+                /**
+                 * Three whole days in the ad account timezone; excludes the change day.
+                 */
+                days?: Array<string>;
+                currency?: string | null;
+                timezone?: string;
+                /**
+                 * Decimal spend in ISO currency minor units; null when daily mirror data is missing.
+                 */
+                spend_minor?: string | null;
+                /**
+                 * Arrivals counted by PlainRouter through Signals, never provider conversions.
+                 */
+                counted_arrivals?: number | null;
+                /**
+                 * Spend divided by counted arrivals, in ISO currency minor units, displayed to six decimal places.
+                 */
+                cost_per_counted_arrival_minor?: string | null;
+                verdict?: 'held' | 'lost' | 'not_judged' | null;
+                loss_threshold_percent?: string;
+            } | Array<string>;
+            inverse?: {
+                status: 'proposed' | 'inverse_not_proposed';
+                batch_id?: string;
+                reason_code?: string;
+            };
+            [key: string]: unknown;
+        };
+    } | {
+        rule_id: string;
+        revision_id: string;
+        run_id: string;
+        decision_id: string;
+    } | {
+        test_id: string;
+        verdict_id: string;
+        winner_member_id: string;
+    };
     status: 'pending' | 'approved_without_execution' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'verified' | 'failed' | 'execution_uncertain' | 'rolled_back' | 'blocked';
     batch_status: 'pending' | 'approved' | 'approved_without_execution' | 'auto_approved' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'completed' | 'failed' | 'rolled_back' | 'rollback_incomplete' | 'blocked' | 'halted';
     disposition: ActionCurrentDisposition;
     policy_decision: 'allow' | 'require_approval' | 'block' | null;
     policy_reasons: Array<string>;
+    policy_result: ActionPolicyResult | null;
+    policy_results: Array<ActionPolicyResult>;
+};
+
+/**
+ * AdTest
+ */
+export type AdTest = {
+    id: string;
+    workspace_id: number;
+    platform_ad_account_id: number;
+    ad_set_id: string;
+    axis: string;
+    event_name: string;
+    arrivals_floor: number;
+    minimum_conversions: number;
+    maximum_days: number;
+    maximum_spend_minor: string | null;
+    anomaly_threshold_percent: string;
+    currency: string;
+    timezone: string;
+    first_day: string;
+    created_at: string;
+    updated_at: string;
+    count_health_click_threshold: number | null;
+};
+
+/**
+ * AdTestCreateRead
+ */
+export type AdTestCreateRead = {
+    test: {
+        id: string;
+        workspace_id: number;
+        platform_ad_account_id: number;
+        ad_set_id: string;
+        axis: 'hook' | 'angle' | 'visual' | 'offer' | 'format' | 'landing';
+        event_name: string;
+        arrivals_floor: number;
+        /**
+         * Link-click threshold frozen at conclusion; null until concluded or for legacy Tests.
+         */
+        count_health_click_threshold?: number | null;
+        minimum_conversions: number;
+        maximum_days: number;
+        /**
+         * Optional maximum in positive whole Meta minor units, using the same unit scale as Launch plan budget_amount_minor.
+         */
+        maximum_spend_minor: string | null;
+        anomaly_threshold_percent: string;
+        first_day: string;
+        timezone: string;
+        currency: string;
+        created_at: string | null;
+        members: Array<{
+            ad_id: string;
+            position: number;
+            /**
+             * Immutable normalized landing host once the member has a baseline.
+             */
+            baseline_host?: string | null;
+            /**
+             * Immutable normalized landing path once the member has a baseline.
+             */
+            baseline_path?: string | null;
+        }>;
+        pause_proposals: Array<{
+            ad_id: string;
+            status: 'pending' | 'proposed' | 'skipped' | 'expired';
+            /**
+             * Stable reason code when the proposal was skipped or expired.
+             */
+            reason: 'already_paused' | 'deleted' | 'archived' | 'campaign_paused' | 'adset_paused' | 'decision_window_elapsed' | null;
+            /**
+             * Immutable deadline 24 hours after the Test's candidates are created on the database clock.
+             */
+            decision_deadline_at: string;
+        }>;
+        verdict: {
+            outcome: 'winner' | 'no_clear_winner' | 'not_judged' | 'halted' | null;
+            winner_ad_id: string | null;
+            reason: string | null;
+            halt_details?: {
+                ad_id?: string;
+                effective_status?: 'DISAPPROVED' | 'WITH_ISSUES';
+                date?: string;
+                link_clicks?: number;
+                counted_arrivals?: number;
+                ad_test_member_id?: string;
+                baseline?: {
+                    host: string;
+                    path: string;
+                };
+                observed_destinations?: Array<{
+                    host: string;
+                    path: string;
+                    counted_arrivals: number;
+                }>;
+            } | null;
+            window_start: string | null;
+            window_end: string | null;
+            concluded_at: string | null;
+            members: Array<{
+                ad_id: string;
+                state: 'not_delivered' | 'insufficient' | 'ranked' | 'facts_unavailable' | 'halted';
+                rank: number | null;
+                spend: string | null;
+                impressions: number | null;
+                counted_arrivals: number | null;
+                /**
+                 * PlainRouter recorded consented conversions of this Test event.
+                 */
+                recorded_conversions: number | null;
+                /**
+                 * Admitted conversions are shown beside recorded conversions and are never substituted for them.
+                 */
+                admitted_conversions: number | null;
+                /**
+                 * Major-unit spend divided by PlainRouter recorded conversions; used only to compare members within this Test.
+                 */
+                spend_per_recorded_conversion: string | null;
+                covered_days: Array<string>;
+            }>;
+            daily_facts: Array<{
+                date: string;
+                ad_test_member_id: string;
+                ad_id: string;
+                /**
+                 * Exact spend in Meta minor units for the account currency, including any stored fractional component.
+                 */
+                spend_minor: string;
+                /**
+                 * Account-currency spend in major units.
+                 */
+                spend: string | null;
+                impressions: number | null;
+                inline_link_clicks?: number | null;
+                counted_arrivals: number | null;
+                recorded_conversions: number | null;
+                admitted_conversions: number | null;
+            }>;
+        } | null;
+    };
+};
+
+/**
+ * AdTestDailyFactRead
+ */
+export type AdTestDailyFactRead = {
+    date: string;
+    ad_test_member_id: string;
+    ad_id: string;
+    /**
+     * Exact spend in Meta minor units for the account currency, including any stored fractional component.
+     */
+    spend_minor: string;
+    /**
+     * Account-currency spend in major units.
+     */
+    spend: string | null;
+    impressions: number | null;
+    inline_link_clicks?: number | null;
+    counted_arrivals: number | null;
+    recorded_conversions: number | null;
+    admitted_conversions: number | null;
+};
+
+/**
+ * AdTestEventChoice
+ */
+export type AdTestEventChoice = {
+    event_name: string;
+    recorded_count: number;
+};
+
+/**
+ * AdTestListRead
+ */
+export type AdTestListRead = {
+    tests: {
+        current_page: number;
+        data: Array<{
+            id: string;
+            workspace_id: number;
+            platform_ad_account_id: number;
+            ad_set_id: string;
+            axis: 'hook' | 'angle' | 'visual' | 'offer' | 'format' | 'landing';
+            event_name: string;
+            arrivals_floor: number;
+            /**
+             * Link-click threshold frozen at conclusion; null until concluded or for legacy Tests.
+             */
+            count_health_click_threshold?: number | null;
+            minimum_conversions: number;
+            maximum_days: number;
+            /**
+             * Optional maximum in positive whole Meta minor units, using the same unit scale as Launch plan budget_amount_minor.
+             */
+            maximum_spend_minor: string | null;
+            anomaly_threshold_percent: string;
+            first_day: string;
+            timezone: string;
+            currency: string;
+            created_at: string | null;
+            members: Array<{
+                ad_id: string;
+                position: number;
+                /**
+                 * Immutable normalized landing host once the member has a baseline.
+                 */
+                baseline_host?: string | null;
+                /**
+                 * Immutable normalized landing path once the member has a baseline.
+                 */
+                baseline_path?: string | null;
+            }>;
+            pause_proposals: Array<{
+                ad_id: string;
+                status: 'pending' | 'proposed' | 'skipped' | 'expired';
+                /**
+                 * Stable reason code when the proposal was skipped or expired.
+                 */
+                reason: 'already_paused' | 'deleted' | 'archived' | 'campaign_paused' | 'adset_paused' | 'decision_window_elapsed' | null;
+                /**
+                 * Immutable deadline 24 hours after the Test's candidates are created on the database clock.
+                 */
+                decision_deadline_at: string;
+            }>;
+            verdict: {
+                outcome: 'winner' | 'no_clear_winner' | 'not_judged' | 'halted' | null;
+                winner_ad_id: string | null;
+                reason: string | null;
+                halt_details?: {
+                    ad_id?: string;
+                    effective_status?: 'DISAPPROVED' | 'WITH_ISSUES';
+                    date?: string;
+                    link_clicks?: number;
+                    counted_arrivals?: number;
+                    ad_test_member_id?: string;
+                    baseline?: {
+                        host: string;
+                        path: string;
+                    };
+                    observed_destinations?: Array<{
+                        host: string;
+                        path: string;
+                        counted_arrivals: number;
+                    }>;
+                } | null;
+                window_start: string | null;
+                window_end: string | null;
+                concluded_at: string | null;
+                members: Array<{
+                    ad_id: string;
+                    state: 'not_delivered' | 'insufficient' | 'ranked' | 'facts_unavailable' | 'halted';
+                    rank: number | null;
+                    spend: string | null;
+                    impressions: number | null;
+                    counted_arrivals: number | null;
+                    /**
+                     * PlainRouter recorded consented conversions of this Test event.
+                     */
+                    recorded_conversions: number | null;
+                    /**
+                     * Admitted conversions are shown beside recorded conversions and are never substituted for them.
+                     */
+                    admitted_conversions: number | null;
+                    /**
+                     * Major-unit spend divided by PlainRouter recorded conversions; used only to compare members within this Test.
+                     */
+                    spend_per_recorded_conversion: string | null;
+                    covered_days: Array<string>;
+                }>;
+                daily_facts: Array<{
+                    date: string;
+                    ad_test_member_id: string;
+                    ad_id: string;
+                    /**
+                     * Exact spend in Meta minor units for the account currency, including any stored fractional component.
+                     */
+                    spend_minor: string;
+                    /**
+                     * Account-currency spend in major units.
+                     */
+                    spend: string | null;
+                    impressions: number | null;
+                    inline_link_clicks?: number | null;
+                    counted_arrivals: number | null;
+                    recorded_conversions: number | null;
+                    admitted_conversions: number | null;
+                }>;
+            } | null;
+        }>;
+        first_page_url: string | null;
+        from: number | null;
+        last_page: number;
+        last_page_url: string | null;
+        links: Array<{
+            active: boolean;
+            label: string;
+            url: string | null;
+        }>;
+        next_page_url: string | null;
+        path: string;
+        per_page: number;
+        prev_page_url: string | null;
+        to: number | null;
+        total: number;
+    };
+    observed_conversion_events_available: boolean;
+    observed_conversion_events: Array<{
+        event_name: string;
+        recorded_count: number;
+    }>;
+};
+
+/**
+ * AdTestRead
+ */
+export type AdTestRead = {
+    id: string;
+    workspace_id: number;
+    platform_ad_account_id: number;
+    ad_set_id: string;
+    axis: 'hook' | 'angle' | 'visual' | 'offer' | 'format' | 'landing';
+    event_name: string;
+    arrivals_floor: number;
+    /**
+     * Link-click threshold frozen at conclusion; null until concluded or for legacy Tests.
+     */
+    count_health_click_threshold?: number | null;
+    minimum_conversions: number;
+    maximum_days: number;
+    /**
+     * Optional maximum in positive whole Meta minor units, using the same unit scale as Launch plan budget_amount_minor.
+     */
+    maximum_spend_minor: string | null;
+    anomaly_threshold_percent: string;
+    first_day: string;
+    timezone: string;
+    currency: string;
+    created_at: string | null;
+    members: Array<{
+        ad_id: string;
+        position: number;
+        /**
+         * Immutable normalized landing host once the member has a baseline.
+         */
+        baseline_host?: string | null;
+        /**
+         * Immutable normalized landing path once the member has a baseline.
+         */
+        baseline_path?: string | null;
+    }>;
+    pause_proposals: Array<{
+        ad_id: string;
+        status: 'pending' | 'proposed' | 'skipped' | 'expired';
+        /**
+         * Stable reason code when the proposal was skipped or expired.
+         */
+        reason: 'already_paused' | 'deleted' | 'archived' | 'campaign_paused' | 'adset_paused' | 'decision_window_elapsed' | null;
+        /**
+         * Immutable deadline 24 hours after the Test's candidates are created on the database clock.
+         */
+        decision_deadline_at: string;
+    }>;
+    verdict: {
+        outcome: 'winner' | 'no_clear_winner' | 'not_judged' | 'halted' | null;
+        winner_ad_id: string | null;
+        reason: string | null;
+        halt_details?: {
+            ad_id?: string;
+            effective_status?: 'DISAPPROVED' | 'WITH_ISSUES';
+            date?: string;
+            link_clicks?: number;
+            counted_arrivals?: number;
+            ad_test_member_id?: string;
+            baseline?: {
+                host: string;
+                path: string;
+            };
+            observed_destinations?: Array<{
+                host: string;
+                path: string;
+                counted_arrivals: number;
+            }>;
+        } | null;
+        window_start: string | null;
+        window_end: string | null;
+        concluded_at: string | null;
+        members: Array<{
+            ad_id: string;
+            state: 'not_delivered' | 'insufficient' | 'ranked' | 'facts_unavailable' | 'halted';
+            rank: number | null;
+            spend: string | null;
+            impressions: number | null;
+            counted_arrivals: number | null;
+            /**
+             * PlainRouter recorded consented conversions of this Test event.
+             */
+            recorded_conversions: number | null;
+            /**
+             * Admitted conversions are shown beside recorded conversions and are never substituted for them.
+             */
+            admitted_conversions: number | null;
+            /**
+             * Major-unit spend divided by PlainRouter recorded conversions; used only to compare members within this Test.
+             */
+            spend_per_recorded_conversion: string | null;
+            covered_days: Array<string>;
+        }>;
+        daily_facts: Array<{
+            date: string;
+            ad_test_member_id: string;
+            ad_id: string;
+            /**
+             * Exact spend in Meta minor units for the account currency, including any stored fractional component.
+             */
+            spend_minor: string;
+            /**
+             * Account-currency spend in major units.
+             */
+            spend: string | null;
+            impressions: number | null;
+            inline_link_clicks?: number | null;
+            counted_arrivals: number | null;
+            recorded_conversions: number | null;
+            admitted_conversions: number | null;
+        }>;
+    } | null;
+};
+
+/**
+ * AdTestShowRead
+ */
+export type AdTestShowRead = {
+    test: {
+        id: string;
+        workspace_id: number;
+        platform_ad_account_id: number;
+        ad_set_id: string;
+        axis: 'hook' | 'angle' | 'visual' | 'offer' | 'format' | 'landing';
+        event_name: string;
+        arrivals_floor: number;
+        /**
+         * Link-click threshold frozen at conclusion; null until concluded or for legacy Tests.
+         */
+        count_health_click_threshold?: number | null;
+        minimum_conversions: number;
+        maximum_days: number;
+        /**
+         * Optional maximum in positive whole Meta minor units, using the same unit scale as Launch plan budget_amount_minor.
+         */
+        maximum_spend_minor: string | null;
+        anomaly_threshold_percent: string;
+        first_day: string;
+        timezone: string;
+        currency: string;
+        created_at: string | null;
+        members: Array<{
+            ad_id: string;
+            position: number;
+            /**
+             * Immutable normalized landing host once the member has a baseline.
+             */
+            baseline_host?: string | null;
+            /**
+             * Immutable normalized landing path once the member has a baseline.
+             */
+            baseline_path?: string | null;
+        }>;
+        pause_proposals: Array<{
+            ad_id: string;
+            status: 'pending' | 'proposed' | 'skipped' | 'expired';
+            /**
+             * Stable reason code when the proposal was skipped or expired.
+             */
+            reason: 'already_paused' | 'deleted' | 'archived' | 'campaign_paused' | 'adset_paused' | 'decision_window_elapsed' | null;
+            /**
+             * Immutable deadline 24 hours after the Test's candidates are created on the database clock.
+             */
+            decision_deadline_at: string;
+        }>;
+        verdict: {
+            outcome: 'winner' | 'no_clear_winner' | 'not_judged' | 'halted' | null;
+            winner_ad_id: string | null;
+            reason: string | null;
+            halt_details?: {
+                ad_id?: string;
+                effective_status?: 'DISAPPROVED' | 'WITH_ISSUES';
+                date?: string;
+                link_clicks?: number;
+                counted_arrivals?: number;
+                ad_test_member_id?: string;
+                baseline?: {
+                    host: string;
+                    path: string;
+                };
+                observed_destinations?: Array<{
+                    host: string;
+                    path: string;
+                    counted_arrivals: number;
+                }>;
+            } | null;
+            window_start: string | null;
+            window_end: string | null;
+            concluded_at: string | null;
+            members: Array<{
+                ad_id: string;
+                state: 'not_delivered' | 'insufficient' | 'ranked' | 'facts_unavailable' | 'halted';
+                rank: number | null;
+                spend: string | null;
+                impressions: number | null;
+                counted_arrivals: number | null;
+                /**
+                 * PlainRouter recorded consented conversions of this Test event.
+                 */
+                recorded_conversions: number | null;
+                /**
+                 * Admitted conversions are shown beside recorded conversions and are never substituted for them.
+                 */
+                admitted_conversions: number | null;
+                /**
+                 * Major-unit spend divided by PlainRouter recorded conversions; used only to compare members within this Test.
+                 */
+                spend_per_recorded_conversion: string | null;
+                covered_days: Array<string>;
+            }>;
+            daily_facts: Array<{
+                date: string;
+                ad_test_member_id: string;
+                ad_id: string;
+                /**
+                 * Exact spend in Meta minor units for the account currency, including any stored fractional component.
+                 */
+                spend_minor: string;
+                /**
+                 * Account-currency spend in major units.
+                 */
+                spend: string | null;
+                impressions: number | null;
+                inline_link_clicks?: number | null;
+                counted_arrivals: number | null;
+                recorded_conversions: number | null;
+                admitted_conversions: number | null;
+            }>;
+        } | null;
+    };
+};
+
+/**
+ * AdTestVerdictMemberRead
+ */
+export type AdTestVerdictMemberRead = {
+    ad_id: string;
+    state: 'not_delivered' | 'insufficient' | 'ranked' | 'facts_unavailable' | 'halted';
+    rank: number | null;
+    spend: string | null;
+    impressions: number | null;
+    counted_arrivals: number | null;
+    /**
+     * PlainRouter recorded consented conversions of this Test event.
+     */
+    recorded_conversions: number | null;
+    /**
+     * Admitted conversions are shown beside recorded conversions and are never substituted for them.
+     */
+    admitted_conversions: number | null;
+    /**
+     * Major-unit spend divided by PlainRouter recorded conversions; used only to compare members within this Test.
+     */
+    spend_per_recorded_conversion: string | null;
+    covered_days: Array<string>;
+};
+
+/**
+ * AdTestVerdictRead
+ */
+export type AdTestVerdictRead = {
+    outcome: 'winner' | 'no_clear_winner' | 'not_judged' | 'halted' | null;
+    winner_ad_id: string | null;
+    reason: string | null;
+    halt_details?: {
+        ad_id?: string;
+        effective_status?: 'DISAPPROVED' | 'WITH_ISSUES';
+        date?: string;
+        link_clicks?: number;
+        counted_arrivals?: number;
+        ad_test_member_id?: string;
+        baseline?: {
+            host: string;
+            path: string;
+        };
+        observed_destinations?: Array<{
+            host: string;
+            path: string;
+            counted_arrivals: number;
+        }>;
+    } | null;
+    window_start: string | null;
+    window_end: string | null;
+    concluded_at: string | null;
+    members: Array<{
+        ad_id: string;
+        state: 'not_delivered' | 'insufficient' | 'ranked' | 'facts_unavailable' | 'halted';
+        rank: number | null;
+        spend: string | null;
+        impressions: number | null;
+        counted_arrivals: number | null;
+        /**
+         * PlainRouter recorded consented conversions of this Test event.
+         */
+        recorded_conversions: number | null;
+        /**
+         * Admitted conversions are shown beside recorded conversions and are never substituted for them.
+         */
+        admitted_conversions: number | null;
+        /**
+         * Major-unit spend divided by PlainRouter recorded conversions; used only to compare members within this Test.
+         */
+        spend_per_recorded_conversion: string | null;
+        covered_days: Array<string>;
+    }>;
+    daily_facts: Array<{
+        date: string;
+        ad_test_member_id: string;
+        ad_id: string;
+        /**
+         * Exact spend in Meta minor units for the account currency, including any stored fractional component.
+         */
+        spend_minor: string;
+        /**
+         * Account-currency spend in major units.
+         */
+        spend: string | null;
+        impressions: number | null;
+        inline_link_clicks?: number | null;
+        counted_arrivals: number | null;
+        recorded_conversions: number | null;
+        admitted_conversions: number | null;
+    }>;
 };
 
 /**
@@ -403,9 +1200,196 @@ export type ApiRouteNotFound = {
 };
 
 /**
+ * CookieDeclaration
+ */
+export type CookieDeclaration = {
+    /**
+     * Date of the latest completed scan; null when no scan has completed. Blocked and failed scans do not replace it.
+     */
+    scan_date: string | null;
+    categories: {
+        necessary: {
+            cookies: Array<CookieDeclarationItem>;
+            storage_keys: Array<CookieDeclarationItem>;
+        };
+        functional: {
+            cookies: Array<CookieDeclarationItem>;
+            storage_keys: Array<CookieDeclarationItem>;
+        };
+        analytics: {
+            cookies: Array<CookieDeclarationItem>;
+            storage_keys: Array<CookieDeclarationItem>;
+        };
+        marketing: {
+            cookies: Array<CookieDeclarationItem>;
+            storage_keys: Array<CookieDeclarationItem>;
+        };
+        unclassified: {
+            cookies: Array<CookieDeclarationItem>;
+            storage_keys: Array<CookieDeclarationItem>;
+        };
+    };
+};
+
+/**
+ * CookieDeclarationItem
+ */
+export type CookieDeclarationItem = {
+    name: string;
+    provider_domain: string;
+    party: 'first' | 'third';
+    /**
+     * Observed UTC expiry date, Session, or Until removed.
+     */
+    expiry: string;
+    /**
+     * Purpose from the Open Cookie Database, where available.
+     */
+    purpose: string | null;
+};
+
+/**
+ * CreativeIntakeRead
+ */
+export type CreativeIntakeRead = {
+    creative: {
+        id: string;
+        fingerprint: string;
+        type: 'image' | 'video';
+        mime_type: string;
+        byte_size: number;
+        width: number | null;
+        height: number | null;
+        aspect_ratio: number | null;
+        duration_ms: number | null;
+        original_filename?: string | null;
+        source_ref: string | null;
+        /**
+         * Stored tags, including provenance when supplied. An empty map is returned as an empty array. Existing creatives keep their original tags.
+         */
+        tags: {
+            [key: string]: string;
+        } | Array<string>;
+        status: 'draft' | 'approved' | 'retired';
+        created_at: string | null;
+        updated_at: string | null;
+    };
+};
+
+/**
+ * CreativeIntakeRejected
+ */
+export type CreativeIntakeRejected = {
+    error: {
+        code: string;
+        message: string;
+    };
+};
+
+/**
+ * CreativeIntakeTags
+ *
+ * Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter’s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.
+ */
+export type CreativeIntakeTags = {
+    /**
+     * Lowercase slug naming the outside tool that made the creative.
+     */
+    generator?: string;
+    /**
+     * Printable characters naming the tool’s job or render; control and other non-printable characters are refused.
+     */
+    generator_job?: string;
+    /**
+     * The id returned by the creative APIs: a lowercase ULID of an existing creative in the same workspace that this creative varies.
+     */
+    parent_creative?: string;
+    [key: string]: string | string | string | string | undefined;
+};
+
+/**
  * DeliveryStatus
  */
 export type DeliveryStatus = 'queued' | 'sent' | 'accepted' | 'retrying' | 'failed:auth' | 'failed:permanent' | 'failed:unknown' | 'expired' | 'skipped:consent' | 'skipped:no_destination' | 'skipped:duplicate';
+
+/**
+ * DeploymentPlan
+ */
+export type DeploymentPlan = {
+    id: string;
+    workspace_id: number;
+    platform_ad_account_id: number;
+    platform: string;
+    campaign_ref: string | null;
+    campaign_spec: Array<unknown> | null;
+    ad_set_ref: string | null;
+    /**
+     * When present, bid_amount must be a positive integer in Meta minor units for the account currency. Digit-only strings of at most 18 digits are accepted and normalized to integers. Null, zero, negatives, decimals and other strings are refused on ad_set_spec.bid_amount.
+     */
+    ad_set_spec: Array<unknown> | null;
+    budget_type: string;
+    budget_amount_minor: number;
+    currency: string;
+    copy: Array<unknown>;
+    landing_page: string;
+    utm_policy_id: string | null;
+    naming_policy_id: string | null;
+    status: string;
+    validation_result: Array<unknown> | null;
+    diff: Array<unknown> | null;
+    validated_at: string | null;
+    approval_id: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+    platform_object_ids: Array<unknown>;
+    name: string | null;
+};
+
+/**
+ * DeploymentPlanRead
+ */
+export type DeploymentPlanRead = {
+    name?: string | null;
+    id: string;
+    platform_ad_account_id: number;
+    /**
+     * Current review version. Pass this value when executing the plan you reviewed.
+     */
+    review_version: string;
+    copy?: {
+        primary_text: string;
+        headline: string;
+        description: string;
+        cta: 'learn_more' | 'shop_now' | 'sign_up';
+    } | null;
+    landing_page?: string;
+    creatives?: Array<{
+        id: string;
+        position: number;
+        /**
+         * Optional complete per-ad copy override; null uses the plan copy.
+         */
+        copy: {
+            primary_text: string;
+            headline: string;
+            description: string;
+            cta: 'learn_more' | 'shop_now' | 'sign_up';
+        } | null;
+        /**
+         * Optional per-ad HTTPS landing URL override; null uses the plan landing URL.
+         */
+        landing_page: string | null;
+        resolved_copy: {
+            primary_text: string;
+            headline: string;
+            description: string;
+            cta: 'learn_more' | 'shop_now' | 'sign_up';
+        } | null;
+        resolved_landing_page: string;
+        copy_differs: boolean;
+        landing_page_differs: boolean;
+    }>;
+};
 
 /**
  * Destination
@@ -441,7 +1425,7 @@ export type DestinationStatus = 'active' | 'inactive';
 /**
  * DestinationType
  */
-export type DestinationType = 'meta';
+export type DestinationType = 'meta' | 'google_ads';
 
 /**
  * EmqSnapshot
@@ -515,16 +1499,17 @@ export type Event = {
  * ExecuteDeploymentPlanRequest
  */
 export type ExecuteDeploymentPlanRequest = {
+    review_version: string;
     intent_key?: string | null;
 };
 
 /**
  * IngestionWarningCode
  *
- * The closed set of non-rejection warnings returned by authenticated ingestion.
+ * The closed set of non-rejection warnings returned by POST /events.
  *
  */
-export type IngestionWarningCode = 'consent_captured_at_invalid';
+export type IngestionWarningCode = 'consent_captured_at_invalid' | 'event_source_invalid';
 
 /**
  * JurisdictionPolicyClass
@@ -621,7 +1606,7 @@ export type PlanExecuteConflict = {
  */
 export type PlanExecuteRejected = {
     error: {
-        code: 'deployment_plan_not_executable' | 'creative_not_ready' | 'creative_bytes_unavailable' | 'ad_set_daily_budget_invalid' | 'currency_mismatch' | 'currency_unsupported' | 'budget_invalid' | 'deployment_plan_has_no_actions';
+        code: 'plan_changed_since_review' | 'deployment_plan_not_executable' | 'creative_not_ready' | 'creative_bytes_unavailable' | 'ad_set_daily_budget_invalid' | 'ad_set_bid_amount_invalid' | 'currency_mismatch' | 'currency_unsupported' | 'budget_invalid' | 'deployment_plan_has_no_actions';
         message: string;
     };
 };
@@ -663,6 +1648,24 @@ export type ReconciliationReport = {
      * Meta outbound clicks. Days before 2026-06-29, or not re-read by the daily sync since 2026-09-27, may still hold Meta link clicks or all clicks.
      */
     claimed_clicks: number | null;
+};
+
+/**
+ * StoreCreativeFromUrlRequest
+ */
+export type StoreCreativeFromUrlRequest = {
+    url: string;
+    source_ref?: string | null;
+    tags?: Array<string>;
+};
+
+/**
+ * StoreCreativeRequest
+ */
+export type StoreCreativeRequest = {
+    file: Blob | File;
+    source_ref?: string | null;
+    tags?: Array<string>;
 };
 
 /**
@@ -1053,6 +2056,349 @@ export type ActionsApiBatchResponses = {
 
 export type ActionsApiBatchResponse = ActionsApiBatchResponses[keyof ActionsApiBatchResponses];
 
+export type ActionsTestsApiIndexData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: {
+        page?: number;
+        per_page?: number;
+    };
+    url: '/agent/workspaces/{workspace}/tests';
+};
+
+export type ActionsTestsApiIndexErrors = {
+    /**
+     * An active workspace principal is required; credential refusals include an error code and description.
+     */
+    401: AgentCredentialError | ErrorMessage;
+    /**
+     * The workspace principal lacks a matching plan grant or account binding.
+     */
+    403: AgentCredentialError | ErrorMessage;
+    /**
+     * The scoped workspace, account, or Test is unavailable, or the API route is not found.
+     */
+    404: ApiRouteNotFound | ErrorMessage;
+    /**
+     * Request validation failed, the event is not in the observed list, or selected ads are not members of the ad set.
+     */
+    422: ValidationError;
+    /**
+     * The shared API rate limit was exceeded; Retry-After gives the seconds until another request is allowed.
+     */
+    429: ErrorMessage;
+};
+
+export type ActionsTestsApiIndexError = ActionsTestsApiIndexErrors[keyof ActionsTestsApiIndexErrors];
+
+export type ActionsTestsApiIndexResponses = {
+    /**
+     * Tests and observed conversion event choices.
+     */
+    200: AdTestListRead;
+};
+
+export type ActionsTestsApiIndexResponse = ActionsTestsApiIndexResponses[keyof ActionsTestsApiIndexResponses];
+
+export type ActionsTestsApiStoreData = {
+    /**
+     * A Test using ads present in the selected mirrored Meta ad set.
+     */
+    body: {
+        platform_ad_account_id: number;
+        ad_set_id: string;
+        /**
+         * Two to four distinct Meta ad IDs shown in the selected ad set inventory.
+         */
+        member_ad_ids: Array<string>;
+        axis: 'hook' | 'angle' | 'visual' | 'offer' | 'format' | 'landing';
+        /**
+         * An observed workspace conversion event other than PageView.
+         */
+        event_name: string;
+        /**
+         * Optional override; default 50 counted arrivals per member.
+         */
+        arrivals_floor?: number;
+        /**
+         * Optional override; default 10 recorded conversions for a winner.
+         */
+        minimum_conversions?: number;
+        /**
+         * Optional override; default 14 complete account-local days.
+         */
+        maximum_days?: number;
+        /**
+         * Optional stop limit in positive whole Meta minor units, using the same unit scale as Launch plan budget_amount_minor.
+         */
+        maximum_spend_minor?: string | number | null;
+    };
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/tests';
+};
+
+export type ActionsTestsApiStoreErrors = {
+    /**
+     * An active workspace principal is required; credential refusals include an error code and description.
+     */
+    401: AgentCredentialError | ErrorMessage;
+    /**
+     * The workspace principal lacks a matching plan grant or account binding.
+     */
+    403: AgentCredentialError | ErrorMessage;
+    /**
+     * The scoped workspace, account, or Test is unavailable, or the API route is not found.
+     */
+    404: ApiRouteNotFound | ErrorMessage;
+    /**
+     * Request validation failed, the event is not in the observed list, or selected ads are not members of the ad set.
+     */
+    422: ValidationError;
+    /**
+     * The shared API rate limit was exceeded; Retry-After gives the seconds until another request is allowed.
+     */
+    429: ErrorMessage;
+};
+
+export type ActionsTestsApiStoreError = ActionsTestsApiStoreErrors[keyof ActionsTestsApiStoreErrors];
+
+export type ActionsTestsApiStoreResponses = {
+    /**
+     * The frozen judging Test.
+     */
+    201: AdTestCreateRead;
+};
+
+export type ActionsTestsApiStoreResponse = ActionsTestsApiStoreResponses[keyof ActionsTestsApiStoreResponses];
+
+export type ActionsTestsApiShowData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        ad_test: string;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/tests/{ad_test}';
+};
+
+export type ActionsTestsApiShowErrors = {
+    /**
+     * An active workspace principal is required; credential refusals include an error code and description.
+     */
+    401: AgentCredentialError | ErrorMessage;
+    /**
+     * The workspace principal lacks a matching plan grant or account binding.
+     */
+    403: AgentCredentialError | ErrorMessage;
+    /**
+     * The scoped workspace, account, or Test is unavailable, or the API route is not found.
+     */
+    404: ApiRouteNotFound | ErrorMessage;
+    /**
+     * The shared API rate limit was exceeded; Retry-After gives the seconds until another request is allowed.
+     */
+    429: ErrorMessage;
+};
+
+export type ActionsTestsApiShowError = ActionsTestsApiShowErrors[keyof ActionsTestsApiShowErrors];
+
+export type ActionsTestsApiShowResponses = {
+    /**
+     * The Test and its stored verdict facts.
+     */
+    200: AdTestShowRead;
+};
+
+export type ActionsTestsApiShowResponse = ActionsTestsApiShowResponses[keyof ActionsTestsApiShowResponses];
+
+export type GetCookieDeclarationData = {
+    body?: never;
+    path: {
+        /**
+         * Workspace publishable key from the customer page source; pk_live_ followed by 32 alphanumeric characters.
+         */
+        publishableKey: string;
+    };
+    query?: never;
+    url: '/cookie-declarations/{publishableKey}';
+};
+
+export type GetCookieDeclarationErrors = {
+    /**
+     * Unknown well-formed key returns an empty array. Invalid-format keys return the API route-not-found response before any limiter bucket is created.
+     */
+    404: Array<string> | ApiRouteNotFound;
+    /**
+     * The 300-per-minute allowance for this key is exhausted.
+     */
+    429: ErrorMessage;
+};
+
+export type GetCookieDeclarationError = GetCookieDeclarationErrors[keyof GetCookieDeclarationErrors];
+
+export type GetCookieDeclarationResponses = {
+    /**
+     * Latest completed scan metadata, or empty groups if none has completed.
+     */
+    200: CookieDeclaration;
+};
+
+export type GetCookieDeclarationResponse = GetCookieDeclarationResponses[keyof GetCookieDeclarationResponses];
+
+export type StoreCreativeData = {
+    body: {
+        /**
+         * JPEG, PNG, MP4 or QuickTime bytes, at most 4 GiB.
+         */
+        file: Blob | File;
+        /**
+         * Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter’s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.
+         */
+        tags?: {
+            /**
+             * Lowercase slug naming the outside tool that made the creative.
+             */
+            generator?: string;
+            /**
+             * Printable characters naming the tool’s job or render; control and other non-printable characters are refused.
+             */
+            generator_job?: string;
+            /**
+             * The id returned by the creative APIs: a lowercase ULID of an existing creative in the same workspace that this creative varies.
+             */
+            parent_creative?: string;
+            [key: string]: string | string | string | string | undefined;
+        };
+        source_ref?: string | null;
+    };
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: never;
+    url: '/workspaces/{workspace}/admin/creatives';
+};
+
+export type StoreCreativeErrors = {
+    /**
+     * A valid workspace-bound credential is required.
+     */
+    401: ErrorMessage;
+    /**
+     * The credential or workspace grant does not authorize creative intake.
+     */
+    403: ErrorMessage | AgentCredentialError;
+    /**
+     * Creative intake is disabled, or the workspace is missing or inaccessible.
+     */
+    404: ApiRouteNotFound;
+    /**
+     * Creative bytes exceed the 4 GiB cap, or POST data exceeds the request limit.
+     */
+    413: CreativeIntakeRejected | ErrorMessage;
+    /**
+     * A reserved tag that violates the provenance contract returns error.code creative_provenance_invalid and error.message naming the key. Other intake refusals return their stable error.code and error.message; request-shape errors return message plus field errors.
+     */
+    422: CreativeIntakeRejected | ValidationError;
+};
+
+export type StoreCreativeError = StoreCreativeErrors[keyof StoreCreativeErrors];
+
+export type StoreCreativeResponses = {
+    /**
+     * Creative stored, or the existing creative returned for identical bytes in this workspace.
+     */
+    201: CreativeIntakeRead;
+};
+
+export type StoreCreativeResponse = StoreCreativeResponses[keyof StoreCreativeResponses];
+
+export type StoreCreativeFromUrlData = {
+    body: {
+        /**
+         * Vetted HTTPS URL to fetch; private addresses and unsafe redirects are refused.
+         */
+        url: string;
+        /**
+         * Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter’s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.
+         */
+        tags?: {
+            /**
+             * Lowercase slug naming the outside tool that made the creative.
+             */
+            generator?: string;
+            /**
+             * Printable characters naming the tool’s job or render; control and other non-printable characters are refused.
+             */
+            generator_job?: string;
+            /**
+             * The id returned by the creative APIs: a lowercase ULID of an existing creative in the same workspace that this creative varies.
+             */
+            parent_creative?: string;
+            [key: string]: string | string | string | string | undefined;
+        };
+        source_ref?: string | null;
+    };
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: never;
+    url: '/workspaces/{workspace}/admin/creatives/from-url';
+};
+
+export type StoreCreativeFromUrlErrors = {
+    /**
+     * A valid workspace-bound credential is required.
+     */
+    401: ErrorMessage;
+    /**
+     * The credential or workspace grant does not authorize creative intake.
+     */
+    403: ErrorMessage | AgentCredentialError;
+    /**
+     * Creative intake is disabled, or the workspace is missing or inaccessible.
+     */
+    404: ApiRouteNotFound;
+    /**
+     * Creative bytes exceed the 4 GiB cap, or POST data exceeds the request limit.
+     */
+    413: CreativeIntakeRejected | ErrorMessage;
+    /**
+     * A reserved tag that violates the provenance contract returns error.code creative_provenance_invalid and error.message naming the key. Other intake refusals return their stable error.code and error.message; request-shape errors return message plus field errors.
+     */
+    422: CreativeIntakeRejected | ValidationError;
+};
+
+export type StoreCreativeFromUrlError = StoreCreativeFromUrlErrors[keyof StoreCreativeFromUrlErrors];
+
+export type StoreCreativeFromUrlResponses = {
+    /**
+     * Creative stored, or the existing creative returned for identical bytes in this workspace.
+     */
+    201: CreativeIntakeRead;
+};
+
+export type StoreCreativeFromUrlResponse = StoreCreativeFromUrlResponses[keyof StoreCreativeFromUrlResponses];
+
 export type LaunchPlansCopyData = {
     body?: never;
     path: {
@@ -1113,7 +2459,7 @@ export type LaunchPlansCopyResponses = {
 export type LaunchPlansCopyResponse = LaunchPlansCopyResponses[keyof LaunchPlansCopyResponses];
 
 export type LaunchPlansExecuteData = {
-    body?: ExecuteDeploymentPlanRequest;
+    body: ExecuteDeploymentPlanRequest;
     path: {
         /**
          * The workspace ID
@@ -1147,7 +2493,7 @@ export type LaunchPlansExecuteErrors = {
      */
     413: ErrorMessage;
     /**
-     * Request validation returns message plus errors (including intent_key). Domain refusals return error.code and error.message: deployment_plan_not_executable, creative_not_ready, creative_bytes_unavailable, ad_set_daily_budget_invalid, currency_mismatch, currency_unsupported, budget_invalid, deployment_plan_has_no_actions. Proposal input or evidence validation returns message plus field errors.
+     * Request validation returns message plus errors (including intent_key and review_version). Domain refusals return error.code and error.message: plan_changed_since_review ("This plan changed since you reviewed it. Reload and review the latest plan before submitting."), deployment_plan_not_executable, creative_not_ready, creative_bytes_unavailable, ad_set_daily_budget_invalid, ad_set_bid_amount_invalid, currency_mismatch, currency_unsupported, budget_invalid, deployment_plan_has_no_actions. Proposal input or evidence validation returns message plus field errors.
      */
     422: ValidationError | PlanExecuteRejected;
     /**
@@ -1174,6 +2520,94 @@ export type LaunchPlansExecuteResponses = {
 };
 
 export type LaunchPlansExecuteResponse = LaunchPlansExecuteResponses[keyof LaunchPlansExecuteResponses];
+
+export type LaunchPlansIndexData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: {
+        per_page?: number;
+    };
+    url: '/workspaces/{workspace}/admin/plans';
+};
+
+export type LaunchPlansIndexErrors = {
+    /**
+     * An active principal is required.
+     */
+    401: ErrorMessage;
+    /**
+     * The principal lacks read access to this account.
+     */
+    403: ErrorMessage;
+    /**
+     * Workspace or plan not found.
+     */
+    404: ApiRouteNotFound;
+};
+
+export type LaunchPlansIndexError = LaunchPlansIndexErrors[keyof LaunchPlansIndexErrors];
+
+export type LaunchPlansIndexResponses = {
+    /**
+     * Plans with their current review version.
+     */
+    200: {
+        plans: {
+            data: Array<DeploymentPlanRead>;
+            current_page: number;
+            per_page: number;
+            total: number;
+        };
+    };
+};
+
+export type LaunchPlansIndexResponse = LaunchPlansIndexResponses[keyof LaunchPlansIndexResponses];
+
+export type LaunchPlansShowData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        deployment_plan: string;
+    };
+    query?: never;
+    url: '/workspaces/{workspace}/admin/plans/{deployment_plan}';
+};
+
+export type LaunchPlansShowErrors = {
+    /**
+     * An active principal is required.
+     */
+    401: ErrorMessage;
+    /**
+     * The principal lacks read access to this account.
+     */
+    403: ErrorMessage;
+    /**
+     * Workspace or plan not found.
+     */
+    404: ApiRouteNotFound;
+};
+
+export type LaunchPlansShowError = LaunchPlansShowErrors[keyof LaunchPlansShowErrors];
+
+export type LaunchPlansShowResponses = {
+    /**
+     * Plans with their current review version.
+     */
+    200: {
+        plan: DeploymentPlanRead;
+    };
+};
+
+export type LaunchPlansShowResponse = LaunchPlansShowResponses[keyof LaunchPlansShowResponses];
 
 export type CreateEventData = {
     /**
@@ -1209,7 +2643,7 @@ export type CreateEventData = {
          */
         visitor_id?: string;
         /**
-         * Legal basis for processing. Legitimate-interest revenue lifecycle events are rejected; use an authenticated server adapter.
+         * Legal basis for processing. Legitimate-interest server revenue retains identity only with admitted global visitor or buyer-country evidence and no opt-out.
          */
         consent_basis: 'consent';
         /**
@@ -1282,7 +2716,7 @@ export type CreateEventData = {
          */
         visitor_id?: string;
         /**
-         * Legal basis for processing. Legitimate-interest revenue lifecycle events are rejected; use an authenticated server adapter.
+         * Legal basis for processing. Legitimate-interest server revenue retains identity only with admitted global visitor or buyer-country evidence and no opt-out.
          */
         consent_basis: 'legitimate_interest';
         /**
@@ -1366,7 +2800,7 @@ export type CreateEventResponses = {
         duplicate: boolean;
         warnings: Array<{
             code: IngestionWarningCode;
-            field: 'consent.captured_at';
+            field: 'consent.captured_at' | 'event_source';
             message: string;
         }>;
     };
@@ -1626,6 +3060,135 @@ export type GetEventResponses = {
 };
 
 export type GetEventResponse = GetEventResponses[keyof GetEventResponses];
+
+export type GetInventoryMetricsData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        account_id: string;
+    };
+    query?: {
+        start_date?: string | null;
+        end_date?: string | null;
+        campaign_id?: string | null;
+        adset_id?: string | null;
+        ad_id?: string | null;
+        include_changes?: boolean;
+    };
+    url: '/workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory/metrics';
+};
+
+export type GetInventoryMetricsErrors = {
+    /**
+     * Workspace read key missing or invalid.
+     */
+    401: ErrorMessage;
+    /**
+     * Workspace read grant required.
+     */
+    403: ErrorMessage;
+    /**
+     * Account not found or outside the key binding.
+     */
+    404: ErrorMessage;
+    /**
+     * Request validation failed.
+     */
+    422: ValidationError;
+};
+
+export type GetInventoryMetricsError = GetInventoryMetricsErrors[keyof GetInventoryMetricsErrors];
+
+export type GetInventoryMetricsResponses = {
+    /**
+     * Account-local Meta metrics and counted arrivals, clamped to plan retention.
+     */
+    200: {
+        account: {
+            id: number;
+            external_id: string;
+            name: string | null;
+            currency: string | null;
+            timezone: string | null;
+            status: string;
+            connection_status: string | null;
+        };
+        sync: {
+            campaigns_count: number | null;
+            adsets_count: number | null;
+            ads_count: number | null;
+            counts_read_at: string | null;
+        };
+        staleness: {
+            structure_synced_at: string | null;
+            metrics_synced_at: string | null;
+            last_error_code: string | null;
+            state: string;
+        };
+        metrics: Array<{
+            id: number;
+            platform_ad_account_id: number;
+            ad_external_id: string;
+            campaign_external_id: string | null;
+            adset_external_id: string | null;
+            date: string;
+            account_currency: string;
+            spend: string;
+            impressions: number;
+            clicks: number;
+            inline_link_clicks: number;
+            actions: {
+                [key: string]: unknown;
+            } | Array<unknown> | null;
+            action_values: {
+                [key: string]: unknown;
+            } | Array<unknown> | null;
+            fetched_at: string | null;
+            arrivals: number | null;
+            creative_id: string | null;
+            generator: string | null;
+            generator_job: string | null;
+            parent_creative: string | null;
+        }>;
+        changes: Array<{
+            id: number;
+            platform_ad_account_id: number;
+            level: string;
+            external_id: string;
+            field: string;
+            old_value: string | null;
+            new_value: string | null;
+            observed_at: string | null;
+        }>;
+        effective_range: {
+            from: string;
+            to: string;
+        } | null;
+        object_metrics: Array<{
+            level: 'campaign' | 'adset' | 'ad';
+            external_id: string;
+            date: string;
+            meta: {
+                account_currency: string;
+                spend: string;
+                impressions: number;
+                clicks: number;
+                inline_link_clicks: number;
+            } | null;
+            arrivals: number | null;
+            creative_id?: string | null;
+            generator?: string | null;
+            generator_job?: string | null;
+            parent_creative?: string | null;
+        }>;
+        unmatched_arrivals: number | null;
+    };
+};
+
+export type GetInventoryMetricsResponse = GetInventoryMetricsResponses[keyof GetInventoryMetricsResponses];
 
 export type ListEventsData = {
     body?: never;

@@ -35,7 +35,7 @@ module PlainRouter::OpenAPI
     # Optional visitor identifier; maximum 255 characters.
     attr_accessor :visitor_id
 
-    # Legal basis for processing. Legitimate-interest revenue lifecycle events are rejected; use an authenticated server adapter.
+    # Legal basis for processing. Legitimate-interest server revenue retains identity only with admitted global visitor or buyer-country evidence and no opt-out.
     attr_accessor :consent_basis
 
     # Consent state supplied with the event.

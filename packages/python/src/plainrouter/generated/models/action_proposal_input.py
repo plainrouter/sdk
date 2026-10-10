@@ -46,6 +46,7 @@ class ActionProposalInput:
         evidence (list[ActionProposalInputEvidenceItem]):
         target_source (ActionProposalInputTargetSource):
         account_id (int | Unset):
+        workspace_id (int | Unset):
     """
 
     actions: list[
@@ -69,6 +70,7 @@ class ActionProposalInput:
     evidence: list[ActionProposalInputEvidenceItem]
     target_source: ActionProposalInputTargetSource
     account_id: int | Unset = UNSET
+    workspace_id: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -133,6 +135,8 @@ class ActionProposalInput:
 
         account_id = self.account_id
 
+        workspace_id = self.workspace_id
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -146,6 +150,8 @@ class ActionProposalInput:
         )
         if account_id is not UNSET:
             field_dict["account_id"] = account_id
+        if workspace_id is not UNSET:
+            field_dict["workspace_id"] = workspace_id
 
         return field_dict
 
@@ -319,6 +325,8 @@ class ActionProposalInput:
 
         account_id = d.pop("account_id", UNSET)
 
+        workspace_id = d.pop("workspace_id", UNSET)
+
         action_proposal_input = cls(
             actions=actions,
             rationale=rationale,
@@ -326,6 +334,7 @@ class ActionProposalInput:
             evidence=evidence,
             target_source=target_source,
             account_id=account_id,
+            workspace_id=workspace_id,
         )
 
         action_proposal_input.additional_properties = d

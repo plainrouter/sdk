@@ -16,6 +16,23 @@ const normalize = (value) => {
     value.enum ??= [null];
   }
 
+  // New list responses reuse the pagination-link model. Keep its existing
+  // property order when the generator deduplicates those equivalent schemas.
+  const paginationFields = ['url', 'label', 'active'];
+  if (
+    value.type === 'object'
+    && value.properties
+    && Object.keys(value.properties).length === paginationFields.length
+    && paginationFields.every((field) => Object.hasOwn(value.properties, field))
+  ) {
+    value.properties = Object.fromEntries(
+      paginationFields.map((field) => [field, value.properties[field]]),
+    );
+    if (Array.isArray(value.required)) {
+      value.required = paginationFields.filter((field) => value.required.includes(field));
+    }
+  }
+
   for (const child of Object.values(value)) normalize(child);
 };
 

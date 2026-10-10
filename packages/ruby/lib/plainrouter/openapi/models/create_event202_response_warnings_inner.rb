@@ -138,7 +138,7 @@ module PlainRouter::OpenAPI
       warn '[DEPRECATED] the `valid?` method is obsolete'
       return false if @code.nil?
       return false if @field.nil?
-      field_validator = EnumAttributeValidator.new('String', ["consent.captured_at"])
+      field_validator = EnumAttributeValidator.new('String', ["consent.captured_at", "event_source"])
       return false unless field_validator.valid?(@field)
       return false if @message.nil?
       true
@@ -157,7 +157,7 @@ module PlainRouter::OpenAPI
     # Custom attribute writer method checking allowed values (enum).
     # @param [Object] field Object to be assigned
     def field=(field)
-      validator = EnumAttributeValidator.new('String', ["consent.captured_at"])
+      validator = EnumAttributeValidator.new('String', ["consent.captured_at", "event_source"])
       unless validator.valid?(field)
         fail ArgumentError, "invalid value for \"field\", must be one of #{validator.allowable_values}."
       end

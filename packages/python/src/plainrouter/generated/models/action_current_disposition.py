@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -31,6 +31,10 @@ from ..models.action_current_disposition_recovery_disposition_type_3_type_1 impo
     ActionCurrentDispositionRecoveryDispositionType3Type1,
 )
 
+if TYPE_CHECKING:
+    from ..models.action_current_disposition_outcome_payload_type_0 import ActionCurrentDispositionOutcomePayloadType0
+
+
 T = TypeVar("T", bound="ActionCurrentDisposition")
 
 
@@ -40,6 +44,10 @@ class ActionCurrentDisposition:
     Attributes:
         receipt_status (ActionCurrentDispositionReceiptStatusType1 | ActionCurrentDispositionReceiptStatusType2Type1 |
             ActionCurrentDispositionReceiptStatusType3Type1 | None):
+        outcome_payload (ActionCurrentDispositionOutcomePayloadType0 | None): Write-once outcome. Management comparisons
+            use PlainRouter counted arrivals and Inventory spend. Resume compares the target after the change with the rest
+            of the same account over those same days. Pause is not judged. Missing data never yields a verdict. Other action
+            types retain their existing payloads.
         outcome_status (ActionCurrentDispositionOutcomeStatusType1 | ActionCurrentDispositionOutcomeStatusType2Type1 |
             ActionCurrentDispositionOutcomeStatusType3Type1 | None):
         outcome_reason_code (None | str):
@@ -57,6 +65,7 @@ class ActionCurrentDisposition:
         | ActionCurrentDispositionReceiptStatusType3Type1
         | None
     )
+    outcome_payload: ActionCurrentDispositionOutcomePayloadType0 | None
     outcome_status: (
         ActionCurrentDispositionOutcomeStatusType1
         | ActionCurrentDispositionOutcomeStatusType2Type1
@@ -76,6 +85,10 @@ class ActionCurrentDisposition:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.action_current_disposition_outcome_payload_type_0 import (
+            ActionCurrentDispositionOutcomePayloadType0,
+        )
+
         receipt_status: None | str
         if isinstance(self.receipt_status, ActionCurrentDispositionReceiptStatusType1):
             receipt_status = self.receipt_status.value
@@ -85,6 +98,12 @@ class ActionCurrentDisposition:
             receipt_status = self.receipt_status.value
         else:
             receipt_status = self.receipt_status
+
+        outcome_payload: dict[str, Any] | None
+        if isinstance(self.outcome_payload, ActionCurrentDispositionOutcomePayloadType0):
+            outcome_payload = self.outcome_payload.to_dict()
+        else:
+            outcome_payload = self.outcome_payload
 
         outcome_status: None | str
         if isinstance(self.outcome_status, ActionCurrentDispositionOutcomeStatusType1):
@@ -125,6 +144,7 @@ class ActionCurrentDisposition:
         field_dict.update(
             {
                 "receipt_status": receipt_status,
+                "outcome_payload": outcome_payload,
                 "outcome_status": outcome_status,
                 "outcome_reason_code": outcome_reason_code,
                 "outcome_checked_at": outcome_checked_at,
@@ -138,6 +158,10 @@ class ActionCurrentDisposition:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.action_current_disposition_outcome_payload_type_0 import (
+            ActionCurrentDispositionOutcomePayloadType0,
+        )
+
         d = dict(src_dict)
 
         def _parse_receipt_status(
@@ -183,6 +207,21 @@ class ActionCurrentDisposition:
             )
 
         receipt_status = _parse_receipt_status(d.pop("receipt_status"))
+
+        def _parse_outcome_payload(data: object) -> ActionCurrentDispositionOutcomePayloadType0 | None:
+            if data is None:
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                outcome_payload_type_0 = ActionCurrentDispositionOutcomePayloadType0.from_dict(data)
+
+                return outcome_payload_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(ActionCurrentDispositionOutcomePayloadType0 | None, data)
+
+        outcome_payload = _parse_outcome_payload(d.pop("outcome_payload"))
 
         def _parse_outcome_status(
             data: object,
@@ -305,6 +344,7 @@ class ActionCurrentDisposition:
 
         action_current_disposition = cls(
             receipt_status=receipt_status,
+            outcome_payload=outcome_payload,
             outcome_status=outcome_status,
             outcome_reason_code=outcome_reason_code,
             outcome_checked_at=outcome_checked_at,
