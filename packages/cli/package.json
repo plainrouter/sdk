@@ -1,7 +1,7 @@
 {
   "name": "@plainrouter/cli",
   "version": "0.9.0",
-  "description": "Command-line interface for the Plainrouter API.",
+  "description": "Command-line interface for the Plainrouter API, supporting Meta conversion tracking and governed ad changes.",
   "homepage": "https://plainrouter.com",
   "keywords": ["plainrouter", "meta-ads", "facebook-ads", "conversions-api", "mcp", "cli"],
   "license": "Apache-2.0",

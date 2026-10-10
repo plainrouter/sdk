@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "plainrouter"
 version = "0.9.0"
-description = "Python SDK and command-line interface for the signed Plainrouter OpenAPI contract"
+description = "Python SDK and command-line interface for the signed Plainrouter OpenAPI contract, supporting Meta conversion tracking and governed ad changes."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
