@@ -163,7 +163,7 @@ module PlainRouter::OpenAPI
       warn '[DEPRECATED] the `valid?` method is obsolete'
       return false if @workspace_id.nil?
       return false if @execution_mode.nil?
-      execution_mode_validator = EnumAttributeValidator.new('String', ["ask", "full", "suggest_only", "auto_with_limits", "full_auto"])
+      execution_mode_validator = EnumAttributeValidator.new('String', ["ask", "full"])
       return false unless execution_mode_validator.valid?(@execution_mode)
       return false if @outcome_check_after_hours.nil?
       return false if @anomaly_threshold_percent.nil?
@@ -183,7 +183,7 @@ module PlainRouter::OpenAPI
     # Custom attribute writer method checking allowed values (enum).
     # @param [Object] execution_mode Object to be assigned
     def execution_mode=(execution_mode)
-      validator = EnumAttributeValidator.new('String', ["ask", "full", "suggest_only", "auto_with_limits", "full_auto"])
+      validator = EnumAttributeValidator.new('String', ["ask", "full"])
       unless validator.valid?(execution_mode)
         fail ArgumentError, "invalid value for \"execution_mode\", must be one of #{validator.allowable_values}."
       end

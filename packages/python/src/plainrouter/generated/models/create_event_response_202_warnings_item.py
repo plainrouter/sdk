@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, Literal, TypeVar, cast
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.create_event_response_202_warnings_item_field import CreateEventResponse202WarningsItemField
 from ..models.ingestion_warning_code import IngestionWarningCode
 
 T = TypeVar("T", bound="CreateEventResponse202WarningsItem")
@@ -15,20 +16,20 @@ T = TypeVar("T", bound="CreateEventResponse202WarningsItem")
 class CreateEventResponse202WarningsItem:
     """
     Attributes:
-        code (IngestionWarningCode): The closed set of non-rejection warnings returned by authenticated ingestion.
-        field (Literal['consent.captured_at']):
+        code (IngestionWarningCode): The closed set of non-rejection warnings returned by POST /events.
+        field (CreateEventResponse202WarningsItemField):
         message (str):
     """
 
     code: IngestionWarningCode
-    field: Literal["consent.captured_at"]
+    field: CreateEventResponse202WarningsItemField
     message: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         code = self.code.value
 
-        field = self.field
+        field = self.field.value
 
         message = self.message
 
@@ -49,9 +50,7 @@ class CreateEventResponse202WarningsItem:
         d = dict(src_dict)
         code = IngestionWarningCode(d.pop("code"))
 
-        field = cast(Literal["consent.captured_at"], d.pop("field"))
-        if field != "consent.captured_at":
-            raise ValueError(f"field must match const 'consent.captured_at', got '{field}'")
+        field = CreateEventResponse202WarningsItemField(d.pop("field"))
 
         message = d.pop("message")
 

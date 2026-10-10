@@ -17,6 +17,8 @@ module PlainRouter::OpenAPI
   class ActionCurrentDisposition < ApiModelBase
     attr_accessor :receipt_status
 
+    attr_accessor :outcome_payload
+
     attr_accessor :outcome_status
 
     attr_accessor :outcome_reason_code
@@ -55,6 +57,7 @@ module PlainRouter::OpenAPI
     def self.attribute_map
       {
         :'receipt_status' => :'receipt_status',
+        :'outcome_payload' => :'outcome_payload',
         :'outcome_status' => :'outcome_status',
         :'outcome_reason_code' => :'outcome_reason_code',
         :'outcome_checked_at' => :'outcome_checked_at',
@@ -78,6 +81,7 @@ module PlainRouter::OpenAPI
     def self.openapi_types
       {
         :'receipt_status' => :'String',
+        :'outcome_payload' => :'ActionCurrentDispositionOutcomePayload',
         :'outcome_status' => :'String',
         :'outcome_reason_code' => :'String',
         :'outcome_checked_at' => :'Time',
@@ -91,6 +95,7 @@ module PlainRouter::OpenAPI
     def self.openapi_nullable
       Set.new([
         :'receipt_status',
+        :'outcome_payload',
         :'outcome_status',
         :'outcome_reason_code',
         :'outcome_checked_at',
@@ -119,6 +124,12 @@ module PlainRouter::OpenAPI
         self.receipt_status = attributes[:'receipt_status']
       else
         self.receipt_status = nil
+      end
+
+      if attributes.key?(:'outcome_payload')
+        self.outcome_payload = attributes[:'outcome_payload']
+      else
+        self.outcome_payload = nil
       end
 
       if attributes.key?(:'outcome_status')
@@ -230,6 +241,7 @@ module PlainRouter::OpenAPI
       return true if self.equal?(o)
       self.class == o.class &&
           receipt_status == o.receipt_status &&
+          outcome_payload == o.outcome_payload &&
           outcome_status == o.outcome_status &&
           outcome_reason_code == o.outcome_reason_code &&
           outcome_checked_at == o.outcome_checked_at &&
@@ -247,7 +259,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [receipt_status, outcome_status, outcome_reason_code, outcome_checked_at, compensation_reason_code, recovery_disposition, late_restored].hash
+      [receipt_status, outcome_payload, outcome_status, outcome_reason_code, outcome_checked_at, compensation_reason_code, recovery_disposition, late_restored].hash
     end
 
     # Builds the object from hash

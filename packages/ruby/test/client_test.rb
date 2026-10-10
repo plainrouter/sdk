@@ -69,8 +69,10 @@ class PlainRouterClientTest < Minitest::Test
       rationale: "Pause the ad while the batch is halted.",
       status: "blocked",
       policy_reasons: [],
+      policy_result: nil,
+      policy_results: [],
       batch_status: "halted",
-      disposition: PlainRouter::OpenAPI::ActionCurrentDisposition.new(late_restored: false)
+      disposition: PlainRouter::OpenAPI::ActionCurrentDisposition.new(outcome_payload: nil, late_restored: false)
     )
 
     assert_equal "halted", batch.status
@@ -90,7 +92,7 @@ class PlainRouterClientTest < Minitest::Test
   def test_exposes_all_signed_contract_operations_through_service_groups
     client = PlainRouter::Client.new
 
-    assert_equal %i[launch_plans_copy launch_plans_execute], operation_names(client.plans)
+    assert_equal %i[launch_plans_copy launch_plans_execute launch_plans_index launch_plans_show], operation_names(client.plans)
     assert_equal %i[create_event get_event verify_signal_ingestion], operation_names(client.events)
     assert_equal(
       %i[

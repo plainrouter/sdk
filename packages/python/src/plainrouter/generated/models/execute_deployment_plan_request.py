@@ -15,13 +15,17 @@ T = TypeVar("T", bound="ExecuteDeploymentPlanRequest")
 class ExecuteDeploymentPlanRequest:
     """
     Attributes:
+        review_version (str):
         intent_key (None | str | Unset):
     """
 
+    review_version: str
     intent_key: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        review_version = self.review_version
+
         intent_key: None | str | Unset
         if isinstance(self.intent_key, Unset):
             intent_key = UNSET
@@ -30,7 +34,11 @@ class ExecuteDeploymentPlanRequest:
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({})
+        field_dict.update(
+            {
+                "review_version": review_version,
+            }
+        )
         if intent_key is not UNSET:
             field_dict["intent_key"] = intent_key
 
@@ -39,6 +47,7 @@ class ExecuteDeploymentPlanRequest:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
+        review_version = d.pop("review_version")
 
         def _parse_intent_key(data: object) -> None | str | Unset:
             if data is None:
@@ -50,6 +59,7 @@ class ExecuteDeploymentPlanRequest:
         intent_key = _parse_intent_key(d.pop("intent_key", UNSET))
 
         execute_deployment_plan_request = cls(
+            review_version=review_version,
             intent_key=intent_key,
         )
 

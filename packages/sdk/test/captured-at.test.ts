@@ -5,6 +5,7 @@ import {
   createEvent,
   validateCreateEventBody,
   type CreateEventData,
+  type IngestionWarningCode,
 } from '../src/index.js';
 
 const VALID_CAPTURED_AT = '2026-08-19T12:34:56.123456+02:00';
@@ -127,12 +128,18 @@ describe('consent.captured_at client validation', () => {
 });
 
 describe('POST /events response warnings', () => {
-  it('returns a typed 202 warning without throwing', async () => {
-    const warning = {
+  it.each([
+    {
       code: 'consent_captured_at_invalid',
       field: 'consent.captured_at',
       message: 'Consent capture time must be ISO-8601.',
-    } as const;
+    },
+    {
+      code: 'event_source_invalid',
+      field: 'event_source',
+      message: 'Event source must be a valid URL.',
+    },
+  ] as const)('returns a typed 202 $code warning without throwing', async (warning) => {
     configureWithResponse(
       {
         event_id: 'event-warning',
@@ -161,9 +168,9 @@ describe('POST /events response warnings', () => {
       return;
     }
 
-    const closedWarningCode: 'consent_captured_at_invalid' = firstWarning.code;
-    expect(closedWarningCode).toBe('consent_captured_at_invalid');
-    expect(firstWarning.field).toBe('consent.captured_at');
+    const closedWarningCode: IngestionWarningCode = firstWarning.code;
+    expect(closedWarningCode).toBe(warning.code);
+    expect(firstWarning.field).toBe(warning.field);
     expect(firstWarning.message).toBe(warning.message);
   });
 

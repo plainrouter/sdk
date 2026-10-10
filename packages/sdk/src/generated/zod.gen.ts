@@ -21,6 +21,51 @@ export const zActionCurrentDisposition = z.object({
         'failed',
         'reconciliation_exhausted'
     ]).nullable(),
+    outcome_payload: z.object({
+        status: z.enum([
+            'measurable',
+            'not_measurable',
+            'unavailable'
+        ]).optional(),
+        observed_at: z.iso.datetime().optional(),
+        reason_code: z.string().nullish(),
+        reason: z.string().nullish(),
+        baseline: z.union([
+            z.object({
+                scope: z.enum(['target', 'rest_of_account']).optional(),
+                days: z.array(z.iso.date()).optional(),
+                currency: z.string().nullish(),
+                timezone: z.string().optional(),
+                spend_minor: z.string().nullish(),
+                counted_arrivals: z.int().nullish(),
+                cost_per_counted_arrival_minor: z.string().nullish()
+            }),
+            z.array(z.string())
+        ]).optional(),
+        metrics: z.union([
+            z.object({
+                scope: z.enum(['target', 'rest_of_account']).optional(),
+                days: z.array(z.iso.date()).optional(),
+                currency: z.string().nullish(),
+                timezone: z.string().optional(),
+                spend_minor: z.string().nullish(),
+                counted_arrivals: z.int().nullish(),
+                cost_per_counted_arrival_minor: z.string().nullish(),
+                verdict: z.enum([
+                    'held',
+                    'lost',
+                    'not_judged'
+                ]).nullish(),
+                loss_threshold_percent: z.string().optional()
+            }),
+            z.array(z.string())
+        ]).optional(),
+        inverse: z.object({
+            status: z.enum(['proposed', 'inverse_not_proposed']),
+            batch_id: z.string().optional(),
+            reason_code: z.string().optional()
+        }).optional()
+    }).nullable(),
     outcome_status: z.enum([
         'measurable',
         'not_measurable',
@@ -132,16 +177,33 @@ export const zActionPolicyRead = z.object({
     data: z.object({
         id: z.int().nullable(),
         workspace_id: z.int(),
-        execution_mode: z.enum([
-            'ask',
-            'full',
-            'suggest_only',
-            'auto_with_limits',
-            'full_auto'
-        ]),
+        execution_mode: z.enum(['ask', 'full']),
         outcome_check_after_hours: z.int(),
         anomaly_threshold_percent: z.string()
     })
+});
+
+/**
+ * ActionPolicyResult
+ */
+export const zActionPolicyResult = z.object({
+    id: z.string(),
+    policy_id: z.string(),
+    policy_version: z.int(),
+    phase: z.enum([
+        'proposal',
+        'approval',
+        'execution'
+    ]),
+    outcome: z.enum([
+        'allowed',
+        'approval_required',
+        'blocked'
+    ]),
+    reasons: z.array(z.string()),
+    reason_details: z.array(z.string()).nullable(),
+    requested_minor: z.int().nullable(),
+    evaluated_at: z.iso.datetime()
 });
 
 /**
@@ -407,7 +469,8 @@ export const zActionProposalInput = z.object({
         action_index: z.int().gte(0).optional()
     })).min(1).max(3),
     target_source: z.enum(['human_supplied']),
-    account_id: z.int().gte(1).optional()
+    account_id: z.int().gte(1).optional(),
+    workspace_id: z.int().gte(1).optional()
 });
 
 /**
@@ -529,6 +592,75 @@ export const zActionReadItem = z.object({
         z.array(z.unknown())
     ]),
     rationale: z.string(),
+    proposer: z.object({
+        type: z.enum([
+            'user',
+            'agent',
+            'system'
+        ]),
+        name: z.string().optional()
+    }).optional(),
+    evidence: z.union([
+        z.object({
+            original_action_id: z.string(),
+            outcome: z.object({
+                status: z.enum([
+                    'measurable',
+                    'not_measurable',
+                    'unavailable'
+                ]).optional(),
+                observed_at: z.iso.datetime().optional(),
+                reason_code: z.string().nullish(),
+                reason: z.string().nullish(),
+                baseline: z.union([
+                    z.object({
+                        scope: z.enum(['target', 'rest_of_account']).optional(),
+                        days: z.array(z.iso.date()).optional(),
+                        currency: z.string().nullish(),
+                        timezone: z.string().optional(),
+                        spend_minor: z.string().nullish(),
+                        counted_arrivals: z.int().nullish(),
+                        cost_per_counted_arrival_minor: z.string().nullish()
+                    }),
+                    z.array(z.string())
+                ]).optional(),
+                metrics: z.union([
+                    z.object({
+                        scope: z.enum(['target', 'rest_of_account']).optional(),
+                        days: z.array(z.iso.date()).optional(),
+                        currency: z.string().nullish(),
+                        timezone: z.string().optional(),
+                        spend_minor: z.string().nullish(),
+                        counted_arrivals: z.int().nullish(),
+                        cost_per_counted_arrival_minor: z.string().nullish(),
+                        verdict: z.enum([
+                            'held',
+                            'lost',
+                            'not_judged'
+                        ]).nullish(),
+                        loss_threshold_percent: z.string().optional()
+                    }),
+                    z.array(z.string())
+                ]).optional(),
+                inverse: z.object({
+                    status: z.enum(['proposed', 'inverse_not_proposed']),
+                    batch_id: z.string().optional(),
+                    reason_code: z.string().optional()
+                }).optional()
+            })
+        }),
+        z.object({
+            rule_id: z.string(),
+            revision_id: z.string(),
+            run_id: z.string(),
+            decision_id: z.string()
+        }),
+        z.object({
+            test_id: z.string(),
+            verdict_id: z.string(),
+            winner_member_id: z.string()
+        })
+    ]).optional(),
     status: z.enum([
         'pending',
         'approved_without_execution',
@@ -566,7 +698,9 @@ export const zActionReadItem = z.object({
         'require_approval',
         'block'
     ]).nullable(),
-    policy_reasons: z.array(z.string())
+    policy_reasons: z.array(z.string()),
+    policy_result: zActionPolicyResult.nullable(),
+    policy_results: z.array(zActionPolicyResult)
 });
 
 /**
@@ -645,6 +779,620 @@ export const zActionListRead = z.object({
 });
 
 /**
+ * AdTest
+ */
+export const zAdTest = z.object({
+    id: z.string(),
+    workspace_id: z.int(),
+    platform_ad_account_id: z.int(),
+    ad_set_id: z.string(),
+    axis: z.string(),
+    event_name: z.string(),
+    arrivals_floor: z.int(),
+    minimum_conversions: z.int(),
+    maximum_days: z.int(),
+    maximum_spend_minor: z.string().nullable(),
+    anomaly_threshold_percent: z.string(),
+    currency: z.string(),
+    timezone: z.string(),
+    first_day: z.iso.datetime(),
+    created_at: z.iso.datetime(),
+    updated_at: z.iso.datetime(),
+    count_health_click_threshold: z.int().nullable()
+});
+
+/**
+ * AdTestCreateRead
+ */
+export const zAdTestCreateRead = z.object({
+    test: z.object({
+        id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+        workspace_id: z.int(),
+        platform_ad_account_id: z.int(),
+        ad_set_id: z.string().max(128).regex(/^[0-9]+$/),
+        axis: z.enum([
+            'hook',
+            'angle',
+            'visual',
+            'offer',
+            'format',
+            'landing'
+        ]),
+        event_name: z.string(),
+        arrivals_floor: z.int(),
+        count_health_click_threshold: z.int().nullish(),
+        minimum_conversions: z.int(),
+        maximum_days: z.int(),
+        maximum_spend_minor: z.string().nullable(),
+        anomaly_threshold_percent: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+        first_day: z.iso.date(),
+        timezone: z.string(),
+        currency: z.string().regex(/^[A-Z]{3}$/),
+        created_at: z.iso.datetime().nullable(),
+        members: z.array(z.object({
+            ad_id: z.string().max(128).regex(/^[0-9]+$/),
+            position: z.int(),
+            baseline_host: z.string().nullish(),
+            baseline_path: z.string().nullish()
+        })),
+        pause_proposals: z.array(z.object({
+            ad_id: z.string().max(128).regex(/^[0-9]+$/),
+            status: z.enum([
+                'pending',
+                'proposed',
+                'skipped',
+                'expired'
+            ]),
+            reason: z.enum([
+                'already_paused',
+                'deleted',
+                'archived',
+                'campaign_paused',
+                'adset_paused',
+                'decision_window_elapsed'
+            ]).nullable(),
+            decision_deadline_at: z.iso.datetime()
+        })),
+        verdict: z.object({
+            outcome: z.enum([
+                'winner',
+                'no_clear_winner',
+                'not_judged',
+                'halted'
+            ]).nullable(),
+            winner_ad_id: z.string().max(128).regex(/^[0-9]+$/).nullable(),
+            reason: z.string().nullable(),
+            halt_details: z.object({
+                ad_id: z.string().optional(),
+                effective_status: z.enum(['DISAPPROVED', 'WITH_ISSUES']).optional(),
+                date: z.iso.date().optional(),
+                link_clicks: z.int().optional(),
+                counted_arrivals: z.int().optional(),
+                ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/).optional(),
+                baseline: z.object({
+                    host: z.string(),
+                    path: z.string()
+                }).optional(),
+                observed_destinations: z.array(z.object({
+                    host: z.string(),
+                    path: z.string(),
+                    counted_arrivals: z.int()
+                })).optional()
+            }).nullish(),
+            window_start: z.iso.date().nullable(),
+            window_end: z.iso.date().nullable(),
+            concluded_at: z.iso.datetime().nullable(),
+            members: z.array(z.object({
+                ad_id: z.string().max(128).regex(/^[0-9]+$/),
+                state: z.enum([
+                    'not_delivered',
+                    'insufficient',
+                    'ranked',
+                    'facts_unavailable',
+                    'halted'
+                ]),
+                rank: z.int().nullable(),
+                spend: z.string().nullable(),
+                impressions: z.int().nullable(),
+                counted_arrivals: z.int().nullable(),
+                recorded_conversions: z.int().nullable(),
+                admitted_conversions: z.int().nullable(),
+                spend_per_recorded_conversion: z.string().nullable(),
+                covered_days: z.array(z.iso.date())
+            })),
+            daily_facts: z.array(z.object({
+                date: z.iso.date(),
+                ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+                ad_id: z.string().max(128).regex(/^[0-9]+$/),
+                spend_minor: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+                spend: z.string().nullable(),
+                impressions: z.int().nullable(),
+                inline_link_clicks: z.int().nullish(),
+                counted_arrivals: z.int().nullable(),
+                recorded_conversions: z.int().nullable(),
+                admitted_conversions: z.int().nullable()
+            }))
+        }).nullable()
+    })
+});
+
+/**
+ * AdTestDailyFactRead
+ */
+export const zAdTestDailyFactRead = z.object({
+    date: z.iso.date(),
+    ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+    ad_id: z.string().max(128).regex(/^[0-9]+$/),
+    spend_minor: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+    spend: z.string().nullable(),
+    impressions: z.int().nullable(),
+    inline_link_clicks: z.int().nullish(),
+    counted_arrivals: z.int().nullable(),
+    recorded_conversions: z.int().nullable(),
+    admitted_conversions: z.int().nullable()
+});
+
+/**
+ * AdTestEventChoice
+ */
+export const zAdTestEventChoice = z.object({
+    event_name: z.string(),
+    recorded_count: z.int()
+});
+
+/**
+ * AdTestListRead
+ */
+export const zAdTestListRead = z.object({
+    tests: z.object({
+        current_page: z.int(),
+        data: z.array(z.object({
+            id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+            workspace_id: z.int(),
+            platform_ad_account_id: z.int(),
+            ad_set_id: z.string().max(128).regex(/^[0-9]+$/),
+            axis: z.enum([
+                'hook',
+                'angle',
+                'visual',
+                'offer',
+                'format',
+                'landing'
+            ]),
+            event_name: z.string(),
+            arrivals_floor: z.int(),
+            count_health_click_threshold: z.int().nullish(),
+            minimum_conversions: z.int(),
+            maximum_days: z.int(),
+            maximum_spend_minor: z.string().nullable(),
+            anomaly_threshold_percent: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+            first_day: z.iso.date(),
+            timezone: z.string(),
+            currency: z.string().regex(/^[A-Z]{3}$/),
+            created_at: z.iso.datetime().nullable(),
+            members: z.array(z.object({
+                ad_id: z.string().max(128).regex(/^[0-9]+$/),
+                position: z.int(),
+                baseline_host: z.string().nullish(),
+                baseline_path: z.string().nullish()
+            })),
+            pause_proposals: z.array(z.object({
+                ad_id: z.string().max(128).regex(/^[0-9]+$/),
+                status: z.enum([
+                    'pending',
+                    'proposed',
+                    'skipped',
+                    'expired'
+                ]),
+                reason: z.enum([
+                    'already_paused',
+                    'deleted',
+                    'archived',
+                    'campaign_paused',
+                    'adset_paused',
+                    'decision_window_elapsed'
+                ]).nullable(),
+                decision_deadline_at: z.iso.datetime()
+            })),
+            verdict: z.object({
+                outcome: z.enum([
+                    'winner',
+                    'no_clear_winner',
+                    'not_judged',
+                    'halted'
+                ]).nullable(),
+                winner_ad_id: z.string().max(128).regex(/^[0-9]+$/).nullable(),
+                reason: z.string().nullable(),
+                halt_details: z.object({
+                    ad_id: z.string().optional(),
+                    effective_status: z.enum(['DISAPPROVED', 'WITH_ISSUES']).optional(),
+                    date: z.iso.date().optional(),
+                    link_clicks: z.int().optional(),
+                    counted_arrivals: z.int().optional(),
+                    ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/).optional(),
+                    baseline: z.object({
+                        host: z.string(),
+                        path: z.string()
+                    }).optional(),
+                    observed_destinations: z.array(z.object({
+                        host: z.string(),
+                        path: z.string(),
+                        counted_arrivals: z.int()
+                    })).optional()
+                }).nullish(),
+                window_start: z.iso.date().nullable(),
+                window_end: z.iso.date().nullable(),
+                concluded_at: z.iso.datetime().nullable(),
+                members: z.array(z.object({
+                    ad_id: z.string().max(128).regex(/^[0-9]+$/),
+                    state: z.enum([
+                        'not_delivered',
+                        'insufficient',
+                        'ranked',
+                        'facts_unavailable',
+                        'halted'
+                    ]),
+                    rank: z.int().nullable(),
+                    spend: z.string().nullable(),
+                    impressions: z.int().nullable(),
+                    counted_arrivals: z.int().nullable(),
+                    recorded_conversions: z.int().nullable(),
+                    admitted_conversions: z.int().nullable(),
+                    spend_per_recorded_conversion: z.string().nullable(),
+                    covered_days: z.array(z.iso.date())
+                })),
+                daily_facts: z.array(z.object({
+                    date: z.iso.date(),
+                    ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+                    ad_id: z.string().max(128).regex(/^[0-9]+$/),
+                    spend_minor: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+                    spend: z.string().nullable(),
+                    impressions: z.int().nullable(),
+                    inline_link_clicks: z.int().nullish(),
+                    counted_arrivals: z.int().nullable(),
+                    recorded_conversions: z.int().nullable(),
+                    admitted_conversions: z.int().nullable()
+                }))
+            }).nullable()
+        })),
+        first_page_url: z.string().nullable(),
+        from: z.int().nullable(),
+        last_page: z.int(),
+        last_page_url: z.string().nullable(),
+        links: z.array(z.object({
+            active: z.boolean(),
+            label: z.string(),
+            url: z.string().nullable()
+        })),
+        next_page_url: z.string().nullable(),
+        path: z.string(),
+        per_page: z.int(),
+        prev_page_url: z.string().nullable(),
+        to: z.int().nullable(),
+        total: z.int()
+    }),
+    observed_conversion_events_available: z.boolean(),
+    observed_conversion_events: z.array(z.object({
+        event_name: z.string(),
+        recorded_count: z.int()
+    }))
+});
+
+/**
+ * AdTestRead
+ */
+export const zAdTestRead = z.object({
+    id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+    workspace_id: z.int(),
+    platform_ad_account_id: z.int(),
+    ad_set_id: z.string().max(128).regex(/^[0-9]+$/),
+    axis: z.enum([
+        'hook',
+        'angle',
+        'visual',
+        'offer',
+        'format',
+        'landing'
+    ]),
+    event_name: z.string(),
+    arrivals_floor: z.int(),
+    count_health_click_threshold: z.int().nullish(),
+    minimum_conversions: z.int(),
+    maximum_days: z.int(),
+    maximum_spend_minor: z.string().nullable(),
+    anomaly_threshold_percent: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+    first_day: z.iso.date(),
+    timezone: z.string(),
+    currency: z.string().regex(/^[A-Z]{3}$/),
+    created_at: z.iso.datetime().nullable(),
+    members: z.array(z.object({
+        ad_id: z.string().max(128).regex(/^[0-9]+$/),
+        position: z.int(),
+        baseline_host: z.string().nullish(),
+        baseline_path: z.string().nullish()
+    })),
+    pause_proposals: z.array(z.object({
+        ad_id: z.string().max(128).regex(/^[0-9]+$/),
+        status: z.enum([
+            'pending',
+            'proposed',
+            'skipped',
+            'expired'
+        ]),
+        reason: z.enum([
+            'already_paused',
+            'deleted',
+            'archived',
+            'campaign_paused',
+            'adset_paused',
+            'decision_window_elapsed'
+        ]).nullable(),
+        decision_deadline_at: z.iso.datetime()
+    })),
+    verdict: z.object({
+        outcome: z.enum([
+            'winner',
+            'no_clear_winner',
+            'not_judged',
+            'halted'
+        ]).nullable(),
+        winner_ad_id: z.string().max(128).regex(/^[0-9]+$/).nullable(),
+        reason: z.string().nullable(),
+        halt_details: z.object({
+            ad_id: z.string().optional(),
+            effective_status: z.enum(['DISAPPROVED', 'WITH_ISSUES']).optional(),
+            date: z.iso.date().optional(),
+            link_clicks: z.int().optional(),
+            counted_arrivals: z.int().optional(),
+            ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/).optional(),
+            baseline: z.object({
+                host: z.string(),
+                path: z.string()
+            }).optional(),
+            observed_destinations: z.array(z.object({
+                host: z.string(),
+                path: z.string(),
+                counted_arrivals: z.int()
+            })).optional()
+        }).nullish(),
+        window_start: z.iso.date().nullable(),
+        window_end: z.iso.date().nullable(),
+        concluded_at: z.iso.datetime().nullable(),
+        members: z.array(z.object({
+            ad_id: z.string().max(128).regex(/^[0-9]+$/),
+            state: z.enum([
+                'not_delivered',
+                'insufficient',
+                'ranked',
+                'facts_unavailable',
+                'halted'
+            ]),
+            rank: z.int().nullable(),
+            spend: z.string().nullable(),
+            impressions: z.int().nullable(),
+            counted_arrivals: z.int().nullable(),
+            recorded_conversions: z.int().nullable(),
+            admitted_conversions: z.int().nullable(),
+            spend_per_recorded_conversion: z.string().nullable(),
+            covered_days: z.array(z.iso.date())
+        })),
+        daily_facts: z.array(z.object({
+            date: z.iso.date(),
+            ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+            ad_id: z.string().max(128).regex(/^[0-9]+$/),
+            spend_minor: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+            spend: z.string().nullable(),
+            impressions: z.int().nullable(),
+            inline_link_clicks: z.int().nullish(),
+            counted_arrivals: z.int().nullable(),
+            recorded_conversions: z.int().nullable(),
+            admitted_conversions: z.int().nullable()
+        }))
+    }).nullable()
+});
+
+/**
+ * AdTestShowRead
+ */
+export const zAdTestShowRead = z.object({
+    test: z.object({
+        id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+        workspace_id: z.int(),
+        platform_ad_account_id: z.int(),
+        ad_set_id: z.string().max(128).regex(/^[0-9]+$/),
+        axis: z.enum([
+            'hook',
+            'angle',
+            'visual',
+            'offer',
+            'format',
+            'landing'
+        ]),
+        event_name: z.string(),
+        arrivals_floor: z.int(),
+        count_health_click_threshold: z.int().nullish(),
+        minimum_conversions: z.int(),
+        maximum_days: z.int(),
+        maximum_spend_minor: z.string().nullable(),
+        anomaly_threshold_percent: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+        first_day: z.iso.date(),
+        timezone: z.string(),
+        currency: z.string().regex(/^[A-Z]{3}$/),
+        created_at: z.iso.datetime().nullable(),
+        members: z.array(z.object({
+            ad_id: z.string().max(128).regex(/^[0-9]+$/),
+            position: z.int(),
+            baseline_host: z.string().nullish(),
+            baseline_path: z.string().nullish()
+        })),
+        pause_proposals: z.array(z.object({
+            ad_id: z.string().max(128).regex(/^[0-9]+$/),
+            status: z.enum([
+                'pending',
+                'proposed',
+                'skipped',
+                'expired'
+            ]),
+            reason: z.enum([
+                'already_paused',
+                'deleted',
+                'archived',
+                'campaign_paused',
+                'adset_paused',
+                'decision_window_elapsed'
+            ]).nullable(),
+            decision_deadline_at: z.iso.datetime()
+        })),
+        verdict: z.object({
+            outcome: z.enum([
+                'winner',
+                'no_clear_winner',
+                'not_judged',
+                'halted'
+            ]).nullable(),
+            winner_ad_id: z.string().max(128).regex(/^[0-9]+$/).nullable(),
+            reason: z.string().nullable(),
+            halt_details: z.object({
+                ad_id: z.string().optional(),
+                effective_status: z.enum(['DISAPPROVED', 'WITH_ISSUES']).optional(),
+                date: z.iso.date().optional(),
+                link_clicks: z.int().optional(),
+                counted_arrivals: z.int().optional(),
+                ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/).optional(),
+                baseline: z.object({
+                    host: z.string(),
+                    path: z.string()
+                }).optional(),
+                observed_destinations: z.array(z.object({
+                    host: z.string(),
+                    path: z.string(),
+                    counted_arrivals: z.int()
+                })).optional()
+            }).nullish(),
+            window_start: z.iso.date().nullable(),
+            window_end: z.iso.date().nullable(),
+            concluded_at: z.iso.datetime().nullable(),
+            members: z.array(z.object({
+                ad_id: z.string().max(128).regex(/^[0-9]+$/),
+                state: z.enum([
+                    'not_delivered',
+                    'insufficient',
+                    'ranked',
+                    'facts_unavailable',
+                    'halted'
+                ]),
+                rank: z.int().nullable(),
+                spend: z.string().nullable(),
+                impressions: z.int().nullable(),
+                counted_arrivals: z.int().nullable(),
+                recorded_conversions: z.int().nullable(),
+                admitted_conversions: z.int().nullable(),
+                spend_per_recorded_conversion: z.string().nullable(),
+                covered_days: z.array(z.iso.date())
+            })),
+            daily_facts: z.array(z.object({
+                date: z.iso.date(),
+                ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+                ad_id: z.string().max(128).regex(/^[0-9]+$/),
+                spend_minor: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+                spend: z.string().nullable(),
+                impressions: z.int().nullable(),
+                inline_link_clicks: z.int().nullish(),
+                counted_arrivals: z.int().nullable(),
+                recorded_conversions: z.int().nullable(),
+                admitted_conversions: z.int().nullable()
+            }))
+        }).nullable()
+    })
+});
+
+/**
+ * AdTestVerdictMemberRead
+ */
+export const zAdTestVerdictMemberRead = z.object({
+    ad_id: z.string().max(128).regex(/^[0-9]+$/),
+    state: z.enum([
+        'not_delivered',
+        'insufficient',
+        'ranked',
+        'facts_unavailable',
+        'halted'
+    ]),
+    rank: z.int().nullable(),
+    spend: z.string().nullable(),
+    impressions: z.int().nullable(),
+    counted_arrivals: z.int().nullable(),
+    recorded_conversions: z.int().nullable(),
+    admitted_conversions: z.int().nullable(),
+    spend_per_recorded_conversion: z.string().nullable(),
+    covered_days: z.array(z.iso.date())
+});
+
+/**
+ * AdTestVerdictRead
+ */
+export const zAdTestVerdictRead = z.object({
+    outcome: z.enum([
+        'winner',
+        'no_clear_winner',
+        'not_judged',
+        'halted'
+    ]).nullable(),
+    winner_ad_id: z.string().max(128).regex(/^[0-9]+$/).nullable(),
+    reason: z.string().nullable(),
+    halt_details: z.object({
+        ad_id: z.string().optional(),
+        effective_status: z.enum(['DISAPPROVED', 'WITH_ISSUES']).optional(),
+        date: z.iso.date().optional(),
+        link_clicks: z.int().optional(),
+        counted_arrivals: z.int().optional(),
+        ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/).optional(),
+        baseline: z.object({
+            host: z.string(),
+            path: z.string()
+        }).optional(),
+        observed_destinations: z.array(z.object({
+            host: z.string(),
+            path: z.string(),
+            counted_arrivals: z.int()
+        })).optional()
+    }).nullish(),
+    window_start: z.iso.date().nullable(),
+    window_end: z.iso.date().nullable(),
+    concluded_at: z.iso.datetime().nullable(),
+    members: z.array(z.object({
+        ad_id: z.string().max(128).regex(/^[0-9]+$/),
+        state: z.enum([
+            'not_delivered',
+            'insufficient',
+            'ranked',
+            'facts_unavailable',
+            'halted'
+        ]),
+        rank: z.int().nullable(),
+        spend: z.string().nullable(),
+        impressions: z.int().nullable(),
+        counted_arrivals: z.int().nullable(),
+        recorded_conversions: z.int().nullable(),
+        admitted_conversions: z.int().nullable(),
+        spend_per_recorded_conversion: z.string().nullable(),
+        covered_days: z.array(z.iso.date())
+    })),
+    daily_facts: z.array(z.object({
+        date: z.iso.date(),
+        ad_test_member_id: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+        ad_id: z.string().max(128).regex(/^[0-9]+$/),
+        spend_minor: z.string().regex(/^[0-9]+(?:\.[0-9]+)?$/),
+        spend: z.string().nullable(),
+        impressions: z.int().nullable(),
+        inline_link_clicks: z.int().nullish(),
+        counted_arrivals: z.int().nullable(),
+        recorded_conversions: z.int().nullable(),
+        admitted_conversions: z.int().nullable()
+    }))
+});
+
+/**
  * AgentCredentialError
  */
 export const zAgentCredentialError = z.object({
@@ -672,6 +1420,97 @@ export const zApiRouteNotFound = z.object({
 });
 
 /**
+ * CookieDeclarationItem
+ */
+export const zCookieDeclarationItem = z.object({
+    name: z.string(),
+    provider_domain: z.string(),
+    party: z.enum(['first', 'third']),
+    expiry: z.string(),
+    purpose: z.string().nullable()
+});
+
+/**
+ * CookieDeclaration
+ */
+export const zCookieDeclaration = z.object({
+    scan_date: z.iso.datetime().nullable(),
+    categories: z.object({
+        necessary: z.object({
+            cookies: z.array(zCookieDeclarationItem),
+            storage_keys: z.array(zCookieDeclarationItem)
+        }),
+        functional: z.object({
+            cookies: z.array(zCookieDeclarationItem),
+            storage_keys: z.array(zCookieDeclarationItem)
+        }),
+        analytics: z.object({
+            cookies: z.array(zCookieDeclarationItem),
+            storage_keys: z.array(zCookieDeclarationItem)
+        }),
+        marketing: z.object({
+            cookies: z.array(zCookieDeclarationItem),
+            storage_keys: z.array(zCookieDeclarationItem)
+        }),
+        unclassified: z.object({
+            cookies: z.array(zCookieDeclarationItem),
+            storage_keys: z.array(zCookieDeclarationItem)
+        })
+    })
+});
+
+/**
+ * CreativeIntakeRead
+ */
+export const zCreativeIntakeRead = z.object({
+    creative: z.object({
+        id: z.string().regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+        fingerprint: z.string(),
+        type: z.enum(['image', 'video']),
+        mime_type: z.string(),
+        byte_size: z.int(),
+        width: z.int().nullable(),
+        height: z.int().nullable(),
+        aspect_ratio: z.number().nullable(),
+        duration_ms: z.int().nullable(),
+        original_filename: z.string().nullish(),
+        source_ref: z.string().nullable(),
+        tags: z.union([
+            z.record(z.string(), z.string()),
+            z.array(z.string()).max(0)
+        ]),
+        status: z.enum([
+            'draft',
+            'approved',
+            'retired'
+        ]),
+        created_at: z.string().nullable(),
+        updated_at: z.string().nullable()
+    })
+});
+
+/**
+ * CreativeIntakeRejected
+ */
+export const zCreativeIntakeRejected = z.object({
+    error: z.object({
+        code: z.string(),
+        message: z.string()
+    })
+});
+
+/**
+ * CreativeIntakeTags
+ *
+ * Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter’s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.
+ */
+export const zCreativeIntakeTags = z.object({
+    generator: z.string().min(1).max(64).regex(/^[a-z0-9-]{1,64}$/).optional(),
+    generator_job: z.string().min(1).max(255).optional(),
+    parent_creative: z.string().regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/).optional()
+});
+
+/**
  * DeliveryStatus
  */
 export const zDeliveryStatus = z.enum([
@@ -689,6 +1528,85 @@ export const zDeliveryStatus = z.enum([
 ]);
 
 /**
+ * DeploymentPlan
+ */
+export const zDeploymentPlan = z.object({
+    id: z.string(),
+    workspace_id: z.int(),
+    platform_ad_account_id: z.int(),
+    platform: z.string(),
+    campaign_ref: z.string().nullable(),
+    campaign_spec: z.array(z.unknown()).nullable(),
+    ad_set_ref: z.string().nullable(),
+    ad_set_spec: z.array(z.unknown()).nullable(),
+    budget_type: z.string(),
+    budget_amount_minor: z.int(),
+    currency: z.string(),
+    copy: z.array(z.unknown()),
+    landing_page: z.string(),
+    utm_policy_id: z.string().nullable(),
+    naming_policy_id: z.string().nullable(),
+    status: z.string(),
+    validation_result: z.array(z.unknown()).nullable(),
+    diff: z.array(z.unknown()).nullable(),
+    validated_at: z.iso.datetime().nullable(),
+    approval_id: z.string().nullable(),
+    created_at: z.iso.datetime().nullable(),
+    updated_at: z.iso.datetime().nullable(),
+    platform_object_ids: z.array(z.unknown()),
+    name: z.string().nullable()
+});
+
+/**
+ * DeploymentPlanRead
+ */
+export const zDeploymentPlanRead = z.object({
+    name: z.string().nullish(),
+    id: z.string(),
+    platform_ad_account_id: z.int(),
+    review_version: z.string().regex(/^[a-f0-9]{64}$/),
+    copy: z.object({
+        primary_text: z.string(),
+        headline: z.string(),
+        description: z.string(),
+        cta: z.enum([
+            'learn_more',
+            'shop_now',
+            'sign_up'
+        ])
+    }).nullish(),
+    landing_page: z.string().optional(),
+    creatives: z.array(z.object({
+        id: z.string(),
+        position: z.int(),
+        copy: z.object({
+            primary_text: z.string(),
+            headline: z.string(),
+            description: z.string(),
+            cta: z.enum([
+                'learn_more',
+                'shop_now',
+                'sign_up'
+            ])
+        }).nullable(),
+        landing_page: z.string().max(2048).nullable(),
+        resolved_copy: z.object({
+            primary_text: z.string(),
+            headline: z.string(),
+            description: z.string(),
+            cta: z.enum([
+                'learn_more',
+                'shop_now',
+                'sign_up'
+            ])
+        }).nullable(),
+        resolved_landing_page: z.string(),
+        copy_differs: z.boolean(),
+        landing_page_differs: z.boolean()
+    })).optional()
+});
+
+/**
  * DestinationCredentialSource
  */
 export const zDestinationCredentialSource = z.enum(['oauth_connection']);
@@ -701,7 +1619,7 @@ export const zDestinationStatus = z.enum(['active', 'inactive']);
 /**
  * DestinationType
  */
-export const zDestinationType = z.enum(['meta']);
+export const zDestinationType = z.enum(['meta', 'google_ads']);
 
 /**
  * Destination
@@ -747,16 +1665,17 @@ export const zErrorMessage = z.object({
  * ExecuteDeploymentPlanRequest
  */
 export const zExecuteDeploymentPlanRequest = z.object({
+    review_version: z.string().regex(/^[a-f0-9]{64}$/),
     intent_key: z.string().max(240).nullish()
 });
 
 /**
  * IngestionWarningCode
  *
- * The closed set of non-rejection warnings returned by authenticated ingestion.
+ * The closed set of non-rejection warnings returned by POST /events.
  *
  */
-export const zIngestionWarningCode = z.enum(['consent_captured_at_invalid']);
+export const zIngestionWarningCode = z.enum(['consent_captured_at_invalid', 'event_source_invalid']);
 
 /**
  * JurisdictionPolicyClass
@@ -893,10 +1812,12 @@ export const zPlanExecuteConflict = z.object({
 export const zPlanExecuteRejected = z.object({
     error: z.object({
         code: z.enum([
+            'plan_changed_since_review',
             'deployment_plan_not_executable',
             'creative_not_ready',
             'creative_bytes_unavailable',
             'ad_set_daily_budget_invalid',
+            'ad_set_bid_amount_invalid',
             'currency_mismatch',
             'currency_unsupported',
             'budget_invalid',
@@ -935,6 +1856,24 @@ export const zReconciliationReport = z.object({
     created_at: z.iso.datetime().nullable(),
     updated_at: z.iso.datetime().nullable(),
     claimed_clicks: z.int().nullable()
+});
+
+/**
+ * StoreCreativeFromUrlRequest
+ */
+export const zStoreCreativeFromUrlRequest = z.object({
+    url: z.url().max(2048),
+    source_ref: z.string().max(255).nullish(),
+    tags: z.array(z.string()).max(32).optional()
+});
+
+/**
+ * StoreCreativeRequest
+ */
+export const zStoreCreativeRequest = z.object({
+    file: z.string(),
+    source_ref: z.string().max(255).nullish(),
+    tags: z.array(z.string()).max(32).optional()
 });
 
 /**
@@ -1115,6 +2054,111 @@ export const zActionsApiBatchQuery = z.object({
  */
 export const zActionsApiBatchResponse = zActionBatchRead;
 
+export const zActionsTestsApiIndexPath = z.object({
+    workspace: z.int()
+});
+
+export const zActionsTestsApiIndexQuery = z.object({
+    page: z.int().gte(1).optional(),
+    per_page: z.int().gte(1).lte(100).optional()
+});
+
+/**
+ * Tests and observed conversion event choices.
+ */
+export const zActionsTestsApiIndexResponse = zAdTestListRead;
+
+/**
+ * A Test using ads present in the selected mirrored Meta ad set.
+ */
+export const zActionsTestsApiStoreBody = z.object({
+    platform_ad_account_id: z.int().gte(1),
+    ad_set_id: z.string().max(128).regex(/^[0-9]+$/),
+    member_ad_ids: z.array(z.string().max(128).regex(/^[0-9]+$/)).min(2).max(4),
+    axis: z.enum([
+        'hook',
+        'angle',
+        'visual',
+        'offer',
+        'format',
+        'landing'
+    ]),
+    event_name: z.string().min(1).max(255),
+    arrivals_floor: z.int().gte(50).optional(),
+    minimum_conversions: z.int().gte(1).optional(),
+    maximum_days: z.int().gte(3).lte(30).optional(),
+    maximum_spend_minor: z.union([
+        z.string().regex(/^[1-9][0-9]{0,17}$/),
+        z.int().gte(1).lte(9223372036854776000)
+    ]).nullish()
+});
+
+export const zActionsTestsApiStorePath = z.object({
+    workspace: z.int()
+});
+
+/**
+ * The frozen judging Test.
+ */
+export const zActionsTestsApiStoreResponse = zAdTestCreateRead;
+
+export const zActionsTestsApiShowPath = z.object({
+    workspace: z.int(),
+    ad_test: z.string().length(26).regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/)
+});
+
+/**
+ * The Test and its stored verdict facts.
+ */
+export const zActionsTestsApiShowResponse = zAdTestShowRead;
+
+export const zGetCookieDeclarationPath = z.object({
+    publishableKey: z.string().regex(/^pk_live_[A-Za-z0-9]{32}$/)
+});
+
+/**
+ * Latest completed scan metadata, or empty groups if none has completed.
+ */
+export const zGetCookieDeclarationResponse = zCookieDeclaration;
+
+export const zStoreCreativeBody = z.object({
+    file: z.string(),
+    tags: z.object({
+        generator: z.string().min(1).max(64).regex(/^[a-z0-9-]{1,64}$/).optional(),
+        generator_job: z.string().min(1).max(255).optional(),
+        parent_creative: z.string().regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/).optional()
+    }).optional(),
+    source_ref: z.string().max(255).nullish()
+});
+
+export const zStoreCreativePath = z.object({
+    workspace: z.int()
+});
+
+/**
+ * Creative stored, or the existing creative returned for identical bytes in this workspace.
+ */
+export const zStoreCreativeResponse = zCreativeIntakeRead;
+
+export const zStoreCreativeFromUrlBody = z.object({
+    url: z.string().max(2048),
+    tags: z.object({
+        generator: z.string().min(1).max(64).regex(/^[a-z0-9-]{1,64}$/).optional(),
+        generator_job: z.string().min(1).max(255).optional(),
+        parent_creative: z.string().regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/).optional()
+    }).optional(),
+    source_ref: z.string().max(255).nullish()
+});
+
+export const zStoreCreativeFromUrlPath = z.object({
+    workspace: z.int()
+});
+
+/**
+ * Creative stored, or the existing creative returned for identical bytes in this workspace.
+ */
+export const zStoreCreativeFromUrlResponse = zCreativeIntakeRead;
+
 export const zLaunchPlansCopyPath = z.object({
     workspace: z.int(),
     deployment_plan: z.string()
@@ -1136,6 +2180,38 @@ export const zLaunchPlansExecutePath = z.object({
  * Created or replayed Launch intent, including a blocked intent under the kill switch.
  */
 export const zLaunchPlansExecuteResponse = zLaunchIntentRead;
+
+export const zLaunchPlansIndexPath = z.object({
+    workspace: z.int()
+});
+
+export const zLaunchPlansIndexQuery = z.object({
+    per_page: z.int().optional().default(25)
+});
+
+/**
+ * Plans with their current review version.
+ */
+export const zLaunchPlansIndexResponse = z.object({
+    plans: z.object({
+        data: z.array(zDeploymentPlanRead),
+        current_page: z.int(),
+        per_page: z.int(),
+        total: z.int()
+    })
+});
+
+export const zLaunchPlansShowPath = z.object({
+    workspace: z.int(),
+    deployment_plan: z.string()
+});
+
+/**
+ * Plans with their current review version.
+ */
+export const zLaunchPlansShowResponse = z.object({
+    plan: zDeploymentPlanRead
+});
 
 /**
  * Authenticated callers using the Server secret may supply client_ip_address and client_user_agent in user_data; browser traffic using the Publishable key takes those fields only from the configured edge.
@@ -1207,7 +2283,7 @@ export const zCreateEventResponse = z.union([
         duplicate: z.boolean(),
         warnings: z.array(z.object({
             code: zIngestionWarningCode,
-            field: z.literal('consent.captured_at'),
+            field: z.enum(['consent.captured_at', 'event_source']),
             message: z.string()
         }))
     })
@@ -1403,6 +2479,110 @@ export const zGetEventResponse = z.object({
     }).and(z.object({
         explanation: z.string()
     })))
+});
+
+export const zGetInventoryMetricsPath = z.object({
+    workspace: z.int(),
+    account_id: z.string()
+});
+
+export const zGetInventoryMetricsQuery = z.object({
+    start_date: z.iso.date().nullish(),
+    end_date: z.iso.date().nullish(),
+    campaign_id: z.string().max(128).nullish(),
+    adset_id: z.string().max(128).nullish(),
+    ad_id: z.string().max(128).nullish(),
+    include_changes: z.boolean().optional()
+});
+
+/**
+ * Account-local Meta metrics and counted arrivals, clamped to plan retention.
+ */
+export const zGetInventoryMetricsResponse = z.object({
+    account: z.object({
+        id: z.int(),
+        external_id: z.string(),
+        name: z.string().nullable(),
+        currency: z.string().nullable(),
+        timezone: z.string().nullable(),
+        status: z.string(),
+        connection_status: z.string().nullable()
+    }),
+    sync: z.object({
+        campaigns_count: z.int().nullable(),
+        adsets_count: z.int().nullable(),
+        ads_count: z.int().nullable(),
+        counts_read_at: z.string().nullable()
+    }),
+    staleness: z.object({
+        structure_synced_at: z.string().nullable(),
+        metrics_synced_at: z.string().nullable(),
+        last_error_code: z.string().nullable(),
+        state: z.string()
+    }),
+    metrics: z.array(z.object({
+        id: z.int(),
+        platform_ad_account_id: z.int(),
+        ad_external_id: z.string(),
+        campaign_external_id: z.string().nullable(),
+        adset_external_id: z.string().nullable(),
+        date: z.string(),
+        account_currency: z.string(),
+        spend: z.string(),
+        impressions: z.int(),
+        clicks: z.int(),
+        inline_link_clicks: z.int(),
+        actions: z.union([
+            z.record(z.string(), z.unknown()),
+            z.array(z.unknown())
+        ]).nullable(),
+        action_values: z.union([
+            z.record(z.string(), z.unknown()),
+            z.array(z.unknown())
+        ]).nullable(),
+        fetched_at: z.string().nullable(),
+        arrivals: z.int().nullable(),
+        creative_id: z.string().nullable(),
+        generator: z.string().nullable(),
+        generator_job: z.string().nullable(),
+        parent_creative: z.string().nullable()
+    })),
+    changes: z.array(z.object({
+        id: z.int(),
+        platform_ad_account_id: z.int(),
+        level: z.string(),
+        external_id: z.string(),
+        field: z.string(),
+        old_value: z.string().nullable(),
+        new_value: z.string().nullable(),
+        observed_at: z.string().nullable()
+    })),
+    effective_range: z.object({
+        from: z.string(),
+        to: z.string()
+    }).nullable(),
+    object_metrics: z.array(z.object({
+        level: z.enum([
+            'campaign',
+            'adset',
+            'ad'
+        ]),
+        external_id: z.string(),
+        date: z.string(),
+        meta: z.object({
+            account_currency: z.string(),
+            spend: z.string(),
+            impressions: z.int(),
+            clicks: z.int(),
+            inline_link_clicks: z.int()
+        }).nullable(),
+        arrivals: z.int().nullable(),
+        creative_id: z.string().nullish(),
+        generator: z.string().nullish(),
+        generator_job: z.string().nullish(),
+        parent_creative: z.string().nullish()
+    })),
+    unmatched_arrivals: z.int().nullable()
 });
 
 export const zListEventsQuery = z.object({

@@ -15,11 +15,14 @@ require 'time'
 
 module PlainRouter::OpenAPI
   class ExecuteDeploymentPlanRequest < ApiModelBase
+    attr_accessor :review_version
+
     attr_accessor :intent_key
 
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
+        :'review_version' => :'review_version',
         :'intent_key' => :'intent_key'
       }
     end
@@ -37,6 +40,7 @@ module PlainRouter::OpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
+        :'review_version' => :'String',
         :'intent_key' => :'String'
       }
     end
@@ -64,6 +68,12 @@ module PlainRouter::OpenAPI
         h[k.to_sym] = v
       }
 
+      if attributes.key?(:'review_version')
+        self.review_version = attributes[:'review_version']
+      else
+        self.review_version = nil
+      end
+
       if attributes.key?(:'intent_key')
         self.intent_key = attributes[:'intent_key']
       end
@@ -74,6 +84,15 @@ module PlainRouter::OpenAPI
     def list_invalid_properties
       warn '[DEPRECATED] the `list_invalid_properties` method is obsolete'
       invalid_properties = Array.new
+      if @review_version.nil?
+        invalid_properties.push('invalid value for "review_version", review_version cannot be nil.')
+      end
+
+      pattern = Regexp.new(/^[a-f0-9]{64}$/)
+      if @review_version !~ pattern
+        invalid_properties.push("invalid value for \"review_version\", must conform to the pattern #{pattern}.")
+      end
+
       if !@intent_key.nil? && @intent_key.to_s.length > 240
         invalid_properties.push('invalid value for "intent_key", the character length must be smaller than or equal to 240.')
       end
@@ -85,8 +104,25 @@ module PlainRouter::OpenAPI
     # @return true if the model is valid
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
+      return false if @review_version.nil?
+      return false if @review_version !~ Regexp.new(/^[a-f0-9]{64}$/)
       return false if !@intent_key.nil? && @intent_key.to_s.length > 240
       true
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] review_version Value to be assigned
+    def review_version=(review_version)
+      if review_version.nil?
+        fail ArgumentError, 'review_version cannot be nil'
+      end
+
+      pattern = Regexp.new(/^[a-f0-9]{64}$/)
+      if review_version !~ pattern
+        fail ArgumentError, "invalid value for \"review_version\", must conform to the pattern #{pattern}."
+      end
+
+      @review_version = review_version
     end
 
     # Custom attribute writer method with validation
@@ -104,6 +140,7 @@ module PlainRouter::OpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
+          review_version == o.review_version &&
           intent_key == o.intent_key
     end
 
@@ -116,7 +153,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [intent_key].hash
+      [review_version, intent_key].hash
     end
 
     # Builds the object from hash

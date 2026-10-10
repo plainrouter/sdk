@@ -37,9 +37,21 @@ describe('generated response schemas', () => {
       outcome_status: null,
       outcome_reason_code: null,
       outcome_checked_at: null,
+      outcome_payload: null,
       compensation_reason_code: null,
       recovery_disposition: null,
       late_restored: false,
+    };
+    const policyResult = {
+      id: 'policy-result-1',
+      policy_id: 'policy-1',
+      policy_version: 1,
+      phase: 'execution',
+      outcome: 'blocked',
+      reasons: ['account_inactive'],
+      reason_details: null,
+      requested_minor: null,
+      evaluated_at: '2026-10-10T10:00:00Z',
     };
     const action = {
       id: '01JTESTACTION0000000000000',
@@ -54,6 +66,8 @@ describe('generated response schemas', () => {
       status: 'blocked',
       batch_status: 'halted',
       disposition,
+      policy_result: policyResult,
+      policy_results: [policyResult],
       policy_decision: null,
       policy_reasons: [],
     };
@@ -75,6 +89,12 @@ describe('generated response schemas', () => {
 
     expect(zActionBatchRead.parse(batch)).toEqual(batch);
     expect(zActionReadItem.parse(action)).toEqual(action);
+    expect(() =>
+      zActionReadItem.parse({
+        ...action,
+        policy_result: { ...policyResult, phase: 'unknown_phase' },
+      }),
+    ).toThrow();
     expect(() =>
       zActionBatchRead.parse({
         data: { ...batch.data, status: 'unknown_status' },

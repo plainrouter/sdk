@@ -33,6 +33,10 @@ module PlainRouter::OpenAPI
 
     attr_accessor :rationale
 
+    attr_accessor :proposer
+
+    attr_accessor :evidence
+
     attr_accessor :status
 
     attr_accessor :batch_status
@@ -42,6 +46,10 @@ module PlainRouter::OpenAPI
     attr_accessor :policy_decision
 
     attr_accessor :policy_reasons
+
+    attr_accessor :policy_result
+
+    attr_accessor :policy_results
 
     class EnumAttributeValidator
       attr_reader :datatype
@@ -77,11 +85,15 @@ module PlainRouter::OpenAPI
         :'target_entity_name' => :'target_entity_name',
         :'params' => :'params',
         :'rationale' => :'rationale',
+        :'proposer' => :'proposer',
+        :'evidence' => :'evidence',
         :'status' => :'status',
         :'batch_status' => :'batch_status',
         :'disposition' => :'disposition',
         :'policy_decision' => :'policy_decision',
-        :'policy_reasons' => :'policy_reasons'
+        :'policy_reasons' => :'policy_reasons',
+        :'policy_result' => :'policy_result',
+        :'policy_results' => :'policy_results'
       }
     end
 
@@ -107,11 +119,15 @@ module PlainRouter::OpenAPI
         :'target_entity_name' => :'String',
         :'params' => :'ActionProposalReadProposalActionsInnerParams',
         :'rationale' => :'String',
+        :'proposer' => :'ActionReadItemProposer',
+        :'evidence' => :'ActionReadItemEvidence',
         :'status' => :'String',
         :'batch_status' => :'String',
         :'disposition' => :'ActionCurrentDisposition',
         :'policy_decision' => :'String',
-        :'policy_reasons' => :'Array<String>'
+        :'policy_reasons' => :'Array<String>',
+        :'policy_result' => :'ActionPolicyResult',
+        :'policy_results' => :'Array<ActionPolicyResult>'
       }
     end
 
@@ -120,6 +136,7 @@ module PlainRouter::OpenAPI
       Set.new([
         :'target_entity_name',
         :'policy_decision',
+        :'policy_result',
       ])
     end
 
@@ -193,6 +210,14 @@ module PlainRouter::OpenAPI
         self.rationale = nil
       end
 
+      if attributes.key?(:'proposer')
+        self.proposer = attributes[:'proposer']
+      end
+
+      if attributes.key?(:'evidence')
+        self.evidence = attributes[:'evidence']
+      end
+
       if attributes.key?(:'status')
         self.status = attributes[:'status']
       else
@@ -223,6 +248,20 @@ module PlainRouter::OpenAPI
         end
       else
         self.policy_reasons = nil
+      end
+
+      if attributes.key?(:'policy_result')
+        self.policy_result = attributes[:'policy_result']
+      else
+        self.policy_result = nil
+      end
+
+      if attributes.key?(:'policy_results')
+        if (value = attributes[:'policy_results']).is_a?(Array)
+          self.policy_results = value
+        end
+      else
+        self.policy_results = nil
       end
     end
 
@@ -279,6 +318,10 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "policy_reasons", policy_reasons cannot be nil.')
       end
 
+      if @policy_results.nil?
+        invalid_properties.push('invalid value for "policy_results", policy_results cannot be nil.')
+      end
+
       invalid_properties
     end
 
@@ -306,6 +349,7 @@ module PlainRouter::OpenAPI
       policy_decision_validator = EnumAttributeValidator.new('String', ["allow", "require_approval", "block"])
       return false unless policy_decision_validator.valid?(@policy_decision)
       return false if @policy_reasons.nil?
+      return false if @policy_results.nil?
       true
     end
 
@@ -439,6 +483,16 @@ module PlainRouter::OpenAPI
       @policy_reasons = policy_reasons
     end
 
+    # Custom attribute writer method with validation
+    # @param [Object] policy_results Value to be assigned
+    def policy_results=(policy_results)
+      if policy_results.nil?
+        fail ArgumentError, 'policy_results cannot be nil'
+      end
+
+      @policy_results = policy_results
+    end
+
     # Checks equality by comparing each attribute.
     # @param [Object] Object to be compared
     def ==(o)
@@ -453,11 +507,15 @@ module PlainRouter::OpenAPI
           target_entity_name == o.target_entity_name &&
           params == o.params &&
           rationale == o.rationale &&
+          proposer == o.proposer &&
+          evidence == o.evidence &&
           status == o.status &&
           batch_status == o.batch_status &&
           disposition == o.disposition &&
           policy_decision == o.policy_decision &&
-          policy_reasons == o.policy_reasons
+          policy_reasons == o.policy_reasons &&
+          policy_result == o.policy_result &&
+          policy_results == o.policy_results
     end
 
     # @see the `==` method
@@ -469,7 +527,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, batch_id, workspace_id, type, target_entity_type, target_entity_id, target_entity_name, params, rationale, status, batch_status, disposition, policy_decision, policy_reasons].hash
+      [id, batch_id, workspace_id, type, target_entity_type, target_entity_id, target_entity_name, params, rationale, proposer, evidence, status, batch_status, disposition, policy_decision, policy_reasons, policy_result, policy_results].hash
     end
 
     # Builds the object from hash

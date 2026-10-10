@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class PlanExecuteRejectedErrorCode(str, Enum):
+    AD_SET_BID_AMOUNT_INVALID = "ad_set_bid_amount_invalid"
     AD_SET_DAILY_BUDGET_INVALID = "ad_set_daily_budget_invalid"
     BUDGET_INVALID = "budget_invalid"
     CREATIVE_BYTES_UNAVAILABLE = "creative_bytes_unavailable"
@@ -10,6 +11,7 @@ class PlanExecuteRejectedErrorCode(str, Enum):
     CURRENCY_UNSUPPORTED = "currency_unsupported"
     DEPLOYMENT_PLAN_HAS_NO_ACTIONS = "deployment_plan_has_no_actions"
     DEPLOYMENT_PLAN_NOT_EXECUTABLE = "deployment_plan_not_executable"
+    PLAN_CHANGED_SINCE_REVIEW = "plan_changed_since_review"
 
     def __str__(self) -> str:
         return str(self.value)

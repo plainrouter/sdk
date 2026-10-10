@@ -25,8 +25,8 @@ class CreateEventBodyType0:
     """
     Attributes:
         event_name (str): Signal event name; maximum 100 characters.
-        consent_basis (Literal['consent']): Legal basis for processing. Legitimate-interest revenue lifecycle events are
-            rejected; use an authenticated server adapter.
+        consent_basis (Literal['consent']): Legal basis for processing. Legitimate-interest server revenue retains
+            identity only with admitted global visitor or buyer-country evidence and no opt-out.
         event_id (str | Unset): Caller-supplied idempotency key; maximum 128 characters.
         parent_event_id (str | Unset): Optional parent event id; maximum 128 characters.
         event_time (int | str | Unset): Unix timestamp or ISO-8601 date-time. Defaults to receipt time.
