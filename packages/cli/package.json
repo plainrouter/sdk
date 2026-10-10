@@ -3,6 +3,7 @@
   "version": "0.8.0",
   "description": "Command-line interface for the Plainrouter API.",
   "homepage": "https://plainrouter.com",
+  "keywords": ["plainrouter", "meta-ads", "facebook-ads", "conversions-api", "mcp", "cli"],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

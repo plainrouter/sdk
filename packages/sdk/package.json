@@ -3,6 +3,7 @@
   "version": "0.8.0",
   "description": "Generated TypeScript client and Zod schemas for the Plainrouter API.",
   "homepage": "https://plainrouter.com",
+  "keywords": ["plainrouter", "meta-ads", "facebook-ads", "conversions-api", "mcp", "sdk", "openapi", "typescript"],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
