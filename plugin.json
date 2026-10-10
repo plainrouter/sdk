@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "plainrouter",
   "version": "0.1.1",
-  "description": "Connect agents to approved advertising account context through Plainrouter.",
+  "description": "Connect AI agents to Meta ad accounts and conversion-signal health through Plainrouter, with governed change proposals under Ask or Full.",
   "author": {
     "name": "Plainrouter",
     "url": "https://plainrouter.com"

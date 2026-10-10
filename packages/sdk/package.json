@@ -1,7 +1,7 @@
 {
   "name": "@plainrouter/sdk",
   "version": "0.9.0",
-  "description": "Generated TypeScript client and Zod schemas for the Plainrouter API.",
+  "description": "Generated TypeScript client and Zod schemas for the Plainrouter API, supporting Meta conversion tracking and governed ad changes.",
   "homepage": "https://plainrouter.com",
   "keywords": ["plainrouter", "meta-ads", "facebook-ads", "conversions-api", "mcp", "sdk", "openapi", "typescript"],
   "license": "Apache-2.0",
