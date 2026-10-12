@@ -8,3 +8,4 @@ end
 
 require_relative "plainrouter/openapi"
 require_relative "plainrouter/client"
+require_relative "plainrouter/proposal_errors"

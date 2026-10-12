@@ -145,7 +145,7 @@ module PlainRouter::OpenAPI
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
       return false if @source_tool.nil?
-      source_tool_validator = EnumAttributeValidator.new('String', ["get_account_state", "get_signal_health", "get_performance", "get-creative-library", "staged-asset-manifest"])
+      source_tool_validator = EnumAttributeValidator.new('String', ["get_account_state", "get_signal_health", "get_performance", "get_inventory_metrics", "get-creative-library", "staged-asset-manifest"])
       return false unless source_tool_validator.valid?(@source_tool)
       return false if @fields_used.nil?
       return false if @fields_used.length > 50
@@ -157,7 +157,7 @@ module PlainRouter::OpenAPI
     # Custom attribute writer method checking allowed values (enum).
     # @param [Object] source_tool Object to be assigned
     def source_tool=(source_tool)
-      validator = EnumAttributeValidator.new('String', ["get_account_state", "get_signal_health", "get_performance", "get-creative-library", "staged-asset-manifest"])
+      validator = EnumAttributeValidator.new('String', ["get_account_state", "get_signal_health", "get_performance", "get_inventory_metrics", "get-creative-library", "staged-asset-manifest"])
       unless validator.valid?(source_tool)
         fail ArgumentError, "invalid value for \"source_tool\", must be one of #{validator.allowable_values}."
       end

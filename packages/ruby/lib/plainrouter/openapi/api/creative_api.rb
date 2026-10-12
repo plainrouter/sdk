@@ -19,6 +19,90 @@ module PlainRouter::OpenAPI
     def initialize(api_client = ApiClient.default)
       @api_client = api_client
     end
+    # List workspace creatives
+    # Read complete workspace creative rows within the shared MCP byte budget. Continue with next_cursor as cursor in the same workspace.
+    # @param workspace [Integer] The workspace ID
+    # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :page  (default to 1)
+    # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+    # @option opts [Integer] :per_page Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
+    # @return [LaunchCreativesIndex200Response]
+    def launch_creatives_index(workspace, opts = {})
+      data, _status_code, _headers = launch_creatives_index_with_http_info(workspace, opts)
+      data
+    end
+
+    # List workspace creatives
+    # Read complete workspace creative rows within the shared MCP byte budget. Continue with next_cursor as cursor in the same workspace.
+    # @param workspace [Integer] The workspace ID
+    # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :page  (default to 1)
+    # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+    # @option opts [Integer] :per_page Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
+    # @return [Array<(LaunchCreativesIndex200Response, Integer, Hash)>] LaunchCreativesIndex200Response data, response status code and response headers
+    def launch_creatives_index_with_http_info(workspace, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: CreativeApi.launch_creatives_index ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling CreativeApi.launch_creatives_index"
+      end
+      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && opts[:'cursor'] < 0
+        fail ArgumentError, 'invalid value for "opts[:"cursor"]" when calling CreativeApi.launch_creatives_index, must be greater than or equal to 0.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'per_page'].nil? && opts[:'per_page'] > 100
+        fail ArgumentError, 'invalid value for "opts[:"per_page"]" when calling CreativeApi.launch_creatives_index, must be smaller than or equal to 100.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'per_page'].nil? && opts[:'per_page'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"per_page"]" when calling CreativeApi.launch_creatives_index, must be greater than or equal to 1.'
+      end
+
+      # resource path
+      local_var_path = '/workspaces/{workspace}/admin/creatives'.sub('{workspace}', CGI.escape(workspace.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+      query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
+      query_params[:'cursor'] = opts[:'cursor'] if !opts[:'cursor'].nil?
+      query_params[:'per_page'] = opts[:'per_page'] if !opts[:'per_page'].nil?
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'LaunchCreativesIndex200Response'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
+
+      new_options = opts.merge(
+        :operation => :"CreativeApi.launch_creatives_index",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: CreativeApi#launch_creatives_index\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
     # Upload a creative
     # Store a creative in the credential-bound workspace. Set generator, generator_job and parent_creative tags for output from an outside tool.
     # @param workspace [Integer] The workspace ID

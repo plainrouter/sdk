@@ -205,6 +205,18 @@ from .action_proposal_read_proposal_proposed_by import ActionProposalReadProposa
 from .action_proposal_read_proposal_status import ActionProposalReadProposalStatus
 from .action_read_item import ActionReadItem
 from .action_read_item_batch_status import ActionReadItemBatchStatus
+from .action_read_item_counted_evidence_type_0 import ActionReadItemCountedEvidenceType0
+from .action_read_item_counted_evidence_type_0_counted import ActionReadItemCountedEvidenceType0Counted
+from .action_read_item_counted_evidence_type_0_coverage import ActionReadItemCountedEvidenceType0Coverage
+from .action_read_item_counted_evidence_type_0_coverage_arrivals_type_0 import (
+    ActionReadItemCountedEvidenceType0CoverageArrivalsType0,
+)
+from .action_read_item_counted_evidence_type_0_coverage_purchases_type_0 import (
+    ActionReadItemCountedEvidenceType0CoveragePurchasesType0,
+)
+from .action_read_item_counted_evidence_type_0_meta_reported import ActionReadItemCountedEvidenceType0MetaReported
+from .action_read_item_counted_evidence_type_0_target import ActionReadItemCountedEvidenceType0Target
+from .action_read_item_counted_evidence_type_0_window_type_0 import ActionReadItemCountedEvidenceType0WindowType0
 from .action_read_item_evidence_type_0 import ActionReadItemEvidenceType0
 from .action_read_item_evidence_type_0_outcome import ActionReadItemEvidenceType0Outcome
 from .action_read_item_evidence_type_0_outcome_baseline_type_0 import ActionReadItemEvidenceType0OutcomeBaselineType0
@@ -238,6 +250,15 @@ from .action_read_item_proposer_type import ActionReadItemProposerType
 from .action_read_item_status import ActionReadItemStatus
 from .action_read_item_type import ActionReadItemType
 from .actions_api_index_status import ActionsApiIndexStatus
+from .actions_rules_index_response_200 import ActionsRulesIndexResponse200
+from .actions_rules_index_response_200_rules import ActionsRulesIndexResponse200Rules
+from .actions_rules_index_response_200_rules_data_item import ActionsRulesIndexResponse200RulesDataItem
+from .actions_rules_index_response_200_rules_data_item_account import ActionsRulesIndexResponse200RulesDataItemAccount
+from .actions_rules_index_response_200_rules_data_item_counts import ActionsRulesIndexResponse200RulesDataItemCounts
+from .actions_rules_index_response_200_rules_data_item_current_revision import (
+    ActionsRulesIndexResponse200RulesDataItemCurrentRevision,
+)
+from .actions_rules_index_response_200_rules_data_item_status import ActionsRulesIndexResponse200RulesDataItemStatus
 from .actions_tests_api_store_body import ActionsTestsApiStoreBody
 from .actions_tests_api_store_body_axis import ActionsTestsApiStoreBodyAxis
 from .ad_test import AdTest
@@ -445,9 +466,14 @@ from .creative_intake_read_creative_type import CreativeIntakeReadCreativeType
 from .creative_intake_rejected import CreativeIntakeRejected
 from .creative_intake_rejected_error import CreativeIntakeRejectedError
 from .creative_intake_tags import CreativeIntakeTags
+from .creative_mcp_grant_operation import CreativeMcpGrantOperation
+from .creative_mcp_preview import CreativeMcpPreview
+from .creative_mcp_preview_mime_type import CreativeMcpPreviewMimeType
+from .creative_mcp_preview_state import CreativeMcpPreviewState
+from .creative_mcp_refusal import CreativeMcpRefusal
+from .creative_mcp_tool import CreativeMcpTool
 from .delete_user_data_response_200 import DeleteUserDataResponse200
 from .delivery_status import DeliveryStatus
-from .deployment_plan import DeploymentPlan
 from .deployment_plan_read import DeploymentPlanRead
 from .deployment_plan_read_copy_type_0 import DeploymentPlanReadCopyType0
 from .deployment_plan_read_copy_type_0_cta import DeploymentPlanReadCopyType0Cta
@@ -468,6 +494,17 @@ from .event import Event
 from .event_consent_source import EventConsentSource
 from .event_user_data_hashed_type_0 import EventUserDataHashedType0
 from .execute_deployment_plan_request import ExecuteDeploymentPlanRequest
+from .get_account_inventory_level_type_1 import GetAccountInventoryLevelType1
+from .get_account_inventory_level_type_2_type_1 import GetAccountInventoryLevelType2Type1
+from .get_account_inventory_level_type_3_type_1 import GetAccountInventoryLevelType3Type1
+from .get_account_inventory_response_200 import GetAccountInventoryResponse200
+from .get_account_inventory_response_200_account import GetAccountInventoryResponse200Account
+from .get_account_inventory_response_200_objects_item import GetAccountInventoryResponse200ObjectsItem
+from .get_account_inventory_response_200_staleness import GetAccountInventoryResponse200Staleness
+from .get_account_inventory_response_200_summary import GetAccountInventoryResponse200Summary
+from .get_account_inventory_response_200_summary_by_level import GetAccountInventoryResponse200SummaryByLevel
+from .get_account_inventory_response_200_sync import GetAccountInventoryResponse200Sync
+from .get_account_inventory_response_404 import GetAccountInventoryResponse404
 from .get_emq_report_response_200 import GetEmqReportResponse200
 from .get_emq_report_response_200_snapshots_item import GetEmqReportResponse200SnapshotsItem
 from .get_emq_report_response_200_snapshots_item_platform_response_type_0 import (
@@ -543,6 +580,10 @@ from .get_inventory_metrics_response_200_object_metrics_item_level import (
 from .get_inventory_metrics_response_200_object_metrics_item_meta_type_0 import (
     GetInventoryMetricsResponse200ObjectMetricsItemMetaType0,
 )
+from .get_inventory_metrics_response_200_pagination import GetInventoryMetricsResponse200Pagination
+from .get_inventory_metrics_response_200_pagination_additional_property import (
+    GetInventoryMetricsResponse200PaginationAdditionalProperty,
+)
 from .get_inventory_metrics_response_200_staleness import GetInventoryMetricsResponse200Staleness
 from .get_inventory_metrics_response_200_sync import GetInventoryMetricsResponse200Sync
 from .get_reconciliation_report_response_200 import GetReconciliationReportResponse200
@@ -556,8 +597,14 @@ from .get_reconciliation_report_response_200_reports_item_buckets_additional_pro
 from .get_reconciliation_report_response_200_reports_item_destination import (
     GetReconciliationReportResponse200ReportsItemDestination,
 )
+from .get_reconciliation_report_response_200_reports_item_destination_attention_reason_type_0 import (
+    GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0,
+)
 from .get_reconciliation_report_response_200_reports_item_destination_config_type_0 import (
     GetReconciliationReportResponse200ReportsItemDestinationConfigType0,
+)
+from .get_reconciliation_report_response_200_reports_item_destination_notices_item import (
+    GetReconciliationReportResponse200ReportsItemDestinationNoticesItem,
 )
 from .get_reconciliation_report_response_200_reports_item_event_counts import (
     GetReconciliationReportResponse200ReportsItemEventCounts,
@@ -579,6 +626,18 @@ from .get_sandbox_response_200_try_body import GetSandboxResponse200TryBody
 from .get_sandbox_response_200_try_body_value_data import GetSandboxResponse200TryBodyValueData
 from .ingestion_warning_code import IngestionWarningCode
 from .jurisdiction_policy_class import JurisdictionPolicyClass
+from .launch_creatives_index_response_200 import LaunchCreativesIndexResponse200
+from .launch_creatives_index_response_200_creatives import LaunchCreativesIndexResponse200Creatives
+from .launch_creatives_index_response_200_creatives_data_item import LaunchCreativesIndexResponse200CreativesDataItem
+from .launch_creatives_index_response_200_creatives_data_item_status import (
+    LaunchCreativesIndexResponse200CreativesDataItemStatus,
+)
+from .launch_creatives_index_response_200_creatives_data_item_tags_type_0 import (
+    LaunchCreativesIndexResponse200CreativesDataItemTagsType0,
+)
+from .launch_creatives_index_response_200_creatives_data_item_type import (
+    LaunchCreativesIndexResponse200CreativesDataItemType,
+)
 from .launch_intent_read import LaunchIntentRead
 from .launch_intent_read_intent import LaunchIntentReadIntent
 from .launch_intent_read_intent_actions_item import LaunchIntentReadIntentActionsItem
@@ -659,6 +718,9 @@ from .proposal_replay_conflict import ProposalReplayConflict
 from .proposal_replay_conflict_errors import ProposalReplayConflictErrors
 from .proposal_replay_conflict_errors_idempotency_key_item import ProposalReplayConflictErrorsIdempotencyKeyItem
 from .proposal_replay_conflict_message import ProposalReplayConflictMessage
+from .proposal_unavailable import ProposalUnavailable
+from .proposal_unavailable_error import ProposalUnavailableError
+from .proposal_unavailable_error_code import ProposalUnavailableErrorCode
 from .reconciliation_report import ReconciliationReport
 from .replay_deliveries_body import ReplayDeliveriesBody
 from .replay_deliveries_response_202 import ReplayDeliveriesResponse202
@@ -668,8 +730,14 @@ from .send_test_purchase_response_502 import SendTestPurchaseResponse502
 from .set_destination_test_mode_body import SetDestinationTestModeBody
 from .set_destination_test_mode_response_200 import SetDestinationTestModeResponse200
 from .set_destination_test_mode_response_200_destination import SetDestinationTestModeResponse200Destination
+from .set_destination_test_mode_response_200_destination_attention_reason_type_0 import (
+    SetDestinationTestModeResponse200DestinationAttentionReasonType0,
+)
 from .set_destination_test_mode_response_200_destination_config_type_0 import (
     SetDestinationTestModeResponse200DestinationConfigType0,
+)
+from .set_destination_test_mode_response_200_destination_notices_item import (
+    SetDestinationTestModeResponse200DestinationNoticesItem,
 )
 from .store_creative_body import StoreCreativeBody
 from .store_creative_body_tags import StoreCreativeBodyTags
@@ -838,6 +906,14 @@ __all__ = (
     "ActionProposalReadProposalStatus",
     "ActionReadItem",
     "ActionReadItemBatchStatus",
+    "ActionReadItemCountedEvidenceType0",
+    "ActionReadItemCountedEvidenceType0Counted",
+    "ActionReadItemCountedEvidenceType0Coverage",
+    "ActionReadItemCountedEvidenceType0CoverageArrivalsType0",
+    "ActionReadItemCountedEvidenceType0CoveragePurchasesType0",
+    "ActionReadItemCountedEvidenceType0MetaReported",
+    "ActionReadItemCountedEvidenceType0Target",
+    "ActionReadItemCountedEvidenceType0WindowType0",
     "ActionReadItemEvidenceType0",
     "ActionReadItemEvidenceType0Outcome",
     "ActionReadItemEvidenceType0OutcomeBaselineType0",
@@ -861,6 +937,13 @@ __all__ = (
     "ActionReadItemStatus",
     "ActionReadItemType",
     "ActionsApiIndexStatus",
+    "ActionsRulesIndexResponse200",
+    "ActionsRulesIndexResponse200Rules",
+    "ActionsRulesIndexResponse200RulesDataItem",
+    "ActionsRulesIndexResponse200RulesDataItemAccount",
+    "ActionsRulesIndexResponse200RulesDataItemCounts",
+    "ActionsRulesIndexResponse200RulesDataItemCurrentRevision",
+    "ActionsRulesIndexResponse200RulesDataItemStatus",
     "ActionsTestsApiStoreBody",
     "ActionsTestsApiStoreBodyAxis",
     "AdTest",
@@ -1006,9 +1089,14 @@ __all__ = (
     "CreativeIntakeRejected",
     "CreativeIntakeRejectedError",
     "CreativeIntakeTags",
+    "CreativeMcpGrantOperation",
+    "CreativeMcpPreview",
+    "CreativeMcpPreviewMimeType",
+    "CreativeMcpPreviewState",
+    "CreativeMcpRefusal",
+    "CreativeMcpTool",
     "DeleteUserDataResponse200",
     "DeliveryStatus",
-    "DeploymentPlan",
     "DeploymentPlanRead",
     "DeploymentPlanReadCopyType0",
     "DeploymentPlanReadCopyType0Cta",
@@ -1027,6 +1115,17 @@ __all__ = (
     "EventConsentSource",
     "EventUserDataHashedType0",
     "ExecuteDeploymentPlanRequest",
+    "GetAccountInventoryLevelType1",
+    "GetAccountInventoryLevelType2Type1",
+    "GetAccountInventoryLevelType3Type1",
+    "GetAccountInventoryResponse200",
+    "GetAccountInventoryResponse200Account",
+    "GetAccountInventoryResponse200ObjectsItem",
+    "GetAccountInventoryResponse200Staleness",
+    "GetAccountInventoryResponse200Summary",
+    "GetAccountInventoryResponse200SummaryByLevel",
+    "GetAccountInventoryResponse200Sync",
+    "GetAccountInventoryResponse404",
     "GetEmqReportResponse200",
     "GetEmqReportResponse200SnapshotsItem",
     "GetEmqReportResponse200SnapshotsItemPlatformResponseType0",
@@ -1066,6 +1165,8 @@ __all__ = (
     "GetInventoryMetricsResponse200ObjectMetricsItem",
     "GetInventoryMetricsResponse200ObjectMetricsItemLevel",
     "GetInventoryMetricsResponse200ObjectMetricsItemMetaType0",
+    "GetInventoryMetricsResponse200Pagination",
+    "GetInventoryMetricsResponse200PaginationAdditionalProperty",
     "GetInventoryMetricsResponse200Staleness",
     "GetInventoryMetricsResponse200Sync",
     "GetReconciliationReportResponse200",
@@ -1073,7 +1174,9 @@ __all__ = (
     "GetReconciliationReportResponse200ReportsItemBuckets",
     "GetReconciliationReportResponse200ReportsItemBucketsAdditionalProperty",
     "GetReconciliationReportResponse200ReportsItemDestination",
+    "GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0",
     "GetReconciliationReportResponse200ReportsItemDestinationConfigType0",
+    "GetReconciliationReportResponse200ReportsItemDestinationNoticesItem",
     "GetReconciliationReportResponse200ReportsItemEventCounts",
     "GetReconciliationReportResponse200ReportsItemEventCountsAcceptedType0",
     "GetReconciliationReportResponse200ReportsItemEventCountsMetaType0",
@@ -1088,6 +1191,12 @@ __all__ = (
     "GetSandboxResponse200TryBodyValueData",
     "IngestionWarningCode",
     "JurisdictionPolicyClass",
+    "LaunchCreativesIndexResponse200",
+    "LaunchCreativesIndexResponse200Creatives",
+    "LaunchCreativesIndexResponse200CreativesDataItem",
+    "LaunchCreativesIndexResponse200CreativesDataItemStatus",
+    "LaunchCreativesIndexResponse200CreativesDataItemTagsType0",
+    "LaunchCreativesIndexResponse200CreativesDataItemType",
     "LaunchIntentRead",
     "LaunchIntentReadIntent",
     "LaunchIntentReadIntentActionsItem",
@@ -1144,6 +1253,9 @@ __all__ = (
     "ProposalReplayConflictErrors",
     "ProposalReplayConflictErrorsIdempotencyKeyItem",
     "ProposalReplayConflictMessage",
+    "ProposalUnavailable",
+    "ProposalUnavailableError",
+    "ProposalUnavailableErrorCode",
     "ReconciliationReport",
     "ReplayDeliveriesBody",
     "ReplayDeliveriesResponse202",
@@ -1153,7 +1265,9 @@ __all__ = (
     "SetDestinationTestModeBody",
     "SetDestinationTestModeResponse200",
     "SetDestinationTestModeResponse200Destination",
+    "SetDestinationTestModeResponse200DestinationAttentionReasonType0",
     "SetDestinationTestModeResponse200DestinationConfigType0",
+    "SetDestinationTestModeResponse200DestinationNoticesItem",
     "StoreCreativeBody",
     "StoreCreativeBodyTags",
     "StoreCreativeFromUrlBody",

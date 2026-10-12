@@ -18,6 +18,7 @@ from ..models.action_batch_read_data_restoration_summary_type_3_type_1 import (
     ActionBatchReadDataRestorationSummaryType3Type1,
 )
 from ..models.action_batch_read_data_status import ActionBatchReadDataStatus
+from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.action_read_item import ActionReadItem
@@ -28,21 +29,28 @@ T = TypeVar("T", bound="ActionBatchReadData")
 
 @_attrs_define
 class ActionBatchReadData:
-    """
-    Attributes:
-        id (str):
-        workspace_id (int):
-        platform_ad_account_id (int):
-        status (ActionBatchReadDataStatus):
-        batch_status (ActionBatchReadDataBatchStatus):
-        restoration_summary (ActionBatchReadDataRestorationSummaryType1 |
-            ActionBatchReadDataRestorationSummaryType2Type1 | ActionBatchReadDataRestorationSummaryType3Type1 | None):
-        policy_decision (ActionBatchReadDataPolicyDecisionType1 | ActionBatchReadDataPolicyDecisionType2Type1 |
-            ActionBatchReadDataPolicyDecisionType3Type1 | None):
-        policy_reasons (list[str]):
-        rationale (str):
-        idempotency_key (str):
-        actions (list[ActionReadItem]):
+    """Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are
+    bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are
+    never silently clipped.
+
+        Attributes:
+            id (str):
+            workspace_id (int):
+            platform_ad_account_id (int):
+            status (ActionBatchReadDataStatus):
+            batch_status (ActionBatchReadDataBatchStatus):
+            restoration_summary (ActionBatchReadDataRestorationSummaryType1 |
+                ActionBatchReadDataRestorationSummaryType2Type1 | ActionBatchReadDataRestorationSummaryType3Type1 | None):
+            policy_decision (ActionBatchReadDataPolicyDecisionType1 | ActionBatchReadDataPolicyDecisionType2Type1 |
+                ActionBatchReadDataPolicyDecisionType3Type1 | None):
+            policy_reasons (list[str]):
+            rationale (str):
+            idempotency_key (str):
+            actions (list[ActionReadItem]):
+            next_cursor (int | None | Unset):
+            truncated (bool | Unset):
+            continuation (str | Unset):
+            total (int | Unset):
     """
 
     id: str
@@ -66,6 +74,10 @@ class ActionBatchReadData:
     rationale: str
     idempotency_key: str
     actions: list[ActionReadItem]
+    next_cursor: int | None | Unset = UNSET
+    truncated: bool | Unset = UNSET
+    continuation: str | Unset = UNSET
+    total: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -110,6 +122,18 @@ class ActionBatchReadData:
             actions_item = actions_item_data.to_dict()
             actions.append(actions_item)
 
+        next_cursor: int | None | Unset
+        if isinstance(self.next_cursor, Unset):
+            next_cursor = UNSET
+        else:
+            next_cursor = self.next_cursor
+
+        truncated = self.truncated
+
+        continuation = self.continuation
+
+        total = self.total
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -127,6 +151,14 @@ class ActionBatchReadData:
                 "actions": actions,
             }
         )
+        if next_cursor is not UNSET:
+            field_dict["next_cursor"] = next_cursor
+        if truncated is not UNSET:
+            field_dict["truncated"] = truncated
+        if continuation is not UNSET:
+            field_dict["continuation"] = continuation
+        if total is not UNSET:
+            field_dict["total"] = total
 
         return field_dict
 
@@ -246,6 +278,21 @@ class ActionBatchReadData:
 
             actions.append(actions_item)
 
+        def _parse_next_cursor(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        next_cursor = _parse_next_cursor(d.pop("next_cursor", UNSET))
+
+        truncated = d.pop("truncated", UNSET)
+
+        continuation = d.pop("continuation", UNSET)
+
+        total = d.pop("total", UNSET)
+
         action_batch_read_data = cls(
             id=id,
             workspace_id=workspace_id,
@@ -258,6 +305,10 @@ class ActionBatchReadData:
             rationale=rationale,
             idempotency_key=idempotency_key,
             actions=actions,
+            next_cursor=next_cursor,
+            truncated=truncated,
+            continuation=continuation,
+            total=total,
         )
 
         action_batch_read_data.additional_properties = d

@@ -25,6 +25,8 @@ module PlainRouter::OpenAPI
     # @param action_batch [String]
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+    # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [ActionBatchRead]
     def actions_api_batch(workspace, action_batch, opts = {})
       data, _status_code, _headers = actions_api_batch_with_http_info(workspace, action_batch, opts)
@@ -37,6 +39,8 @@ module PlainRouter::OpenAPI
     # @param action_batch [String]
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+    # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [Array<(ActionBatchRead, Integer, Hash)>] ActionBatchRead data, response status code and response headers
     def actions_api_batch_with_http_info(workspace, action_batch, opts = {})
       if @api_client.config.debugging
@@ -54,12 +58,26 @@ module PlainRouter::OpenAPI
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 1.'
       end
 
+      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && opts[:'cursor'] < 0
+        fail ArgumentError, 'invalid value for "opts[:"cursor"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 0.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 100
+        fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_batch, must be smaller than or equal to 100.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 1.'
+      end
+
       # resource path
       local_var_path = '/agent/workspaces/{workspace}/action-batches/{actionBatch}'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{actionBatch}', CGI.escape(action_batch.to_s))
 
       # query parameters
       query_params = opts[:query_params] || {}
       query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
+      query_params[:'cursor'] = opts[:'cursor'] if !opts[:'cursor'].nil?
+      query_params[:'limit'] = opts[:'limit'] if !opts[:'limit'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}
@@ -178,6 +196,8 @@ module PlainRouter::OpenAPI
     # @option opts [String] :status
     # @option opts [Integer] :page
     # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+    # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [ActionListRead]
     def actions_api_index(workspace, opts = {})
       data, _status_code, _headers = actions_api_index_with_http_info(workspace, opts)
@@ -191,6 +211,8 @@ module PlainRouter::OpenAPI
     # @option opts [String] :status
     # @option opts [Integer] :page
     # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+    # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [Array<(ActionListRead, Integer, Hash)>] ActionListRead data, response status code and response headers
     def actions_api_index_with_http_info(workspace, opts = {})
       if @api_client.config.debugging
@@ -212,6 +234,18 @@ module PlainRouter::OpenAPI
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
       end
 
+      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && opts[:'cursor'] < 0
+        fail ArgumentError, 'invalid value for "opts[:"cursor"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 0.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 100
+        fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_index, must be smaller than or equal to 100.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
+      end
+
       # resource path
       local_var_path = '/agent/workspaces/{workspace}/actions'.sub('{workspace}', CGI.escape(workspace.to_s))
 
@@ -220,6 +254,8 @@ module PlainRouter::OpenAPI
       query_params[:'status'] = opts[:'status'] if !opts[:'status'].nil?
       query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
       query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
+      query_params[:'cursor'] = opts[:'cursor'] if !opts[:'cursor'].nil?
+      query_params[:'limit'] = opts[:'limit'] if !opts[:'limit'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}

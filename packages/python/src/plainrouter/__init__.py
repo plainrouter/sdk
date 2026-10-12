@@ -13,6 +13,7 @@ from .generated.api.operations import (
     send_test_purchase,
     set_destination_test_mode,
 )
+from .proposal_errors import is_retryable_proposal_error
 from .validation import (
     CAPTURED_AT_PATTERN,
     CreateEventValidationError,
@@ -23,6 +24,7 @@ __all__ = (
     "DEFAULT_BASE_URL",
     "AuthenticatedClient",
     "create_client",
+    "is_retryable_proposal_error",
     "create_event",
     "CreateEventBodyInput",
     "CAPTURED_AT_PATTERN",

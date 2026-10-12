@@ -31,6 +31,10 @@ module PlainRouter::OpenAPI
 
     attr_accessor :unmatched_arrivals
 
+    attr_accessor :pagination
+
+    attr_accessor :next_cursor
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -41,7 +45,9 @@ module PlainRouter::OpenAPI
         :'changes' => :'changes',
         :'effective_range' => :'effective_range',
         :'object_metrics' => :'object_metrics',
-        :'unmatched_arrivals' => :'unmatched_arrivals'
+        :'unmatched_arrivals' => :'unmatched_arrivals',
+        :'pagination' => :'pagination',
+        :'next_cursor' => :'next_cursor'
       }
     end
 
@@ -65,7 +71,9 @@ module PlainRouter::OpenAPI
         :'changes' => :'Array<GetInventoryMetrics200ResponseChangesInner>',
         :'effective_range' => :'GetInventoryMetrics200ResponseEffectiveRange',
         :'object_metrics' => :'Array<GetInventoryMetrics200ResponseObjectMetricsInner>',
-        :'unmatched_arrivals' => :'Integer'
+        :'unmatched_arrivals' => :'Integer',
+        :'pagination' => :'Hash<String, GetInventoryMetrics200ResponsePaginationValue>',
+        :'next_cursor' => :'String'
       }
     end
 
@@ -73,7 +81,8 @@ module PlainRouter::OpenAPI
     def self.openapi_nullable
       Set.new([
         :'effective_range',
-        :'unmatched_arrivals'
+        :'unmatched_arrivals',
+        :'next_cursor'
       ])
     end
 
@@ -145,6 +154,16 @@ module PlainRouter::OpenAPI
         self.unmatched_arrivals = attributes[:'unmatched_arrivals']
       else
         self.unmatched_arrivals = nil
+      end
+
+      if attributes.key?(:'pagination')
+        if (value = attributes[:'pagination']).is_a?(Hash)
+          self.pagination = value
+        end
+      end
+
+      if attributes.key?(:'next_cursor')
+        self.next_cursor = attributes[:'next_cursor']
       end
     end
 
@@ -265,7 +284,9 @@ module PlainRouter::OpenAPI
           changes == o.changes &&
           effective_range == o.effective_range &&
           object_metrics == o.object_metrics &&
-          unmatched_arrivals == o.unmatched_arrivals
+          unmatched_arrivals == o.unmatched_arrivals &&
+          pagination == o.pagination &&
+          next_cursor == o.next_cursor
     end
 
     # @see the `==` method
@@ -277,7 +298,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [account, sync, staleness, metrics, changes, effective_range, object_metrics, unmatched_arrivals].hash
+      [account, sync, staleness, metrics, changes, effective_range, object_metrics, unmatched_arrivals, pagination, next_cursor].hash
     end
 
     # Builds the object from hash

@@ -61,7 +61,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Evaluated dry-run preview.",
+                        "description": "Evaluated dry-run preview. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -202,7 +202,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Saved idempotent proposal.",
+                        "description": "Saved idempotent proposal. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -212,7 +212,7 @@
                         }
                     },
                     "201": {
-                        "description": "New proposal created.",
+                        "description": "New proposal created. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -315,11 +315,20 @@
                         }
                     },
                     "503": {
-                        "description": "The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
+                        "description": "The proposal could not be recorded: error.code proposal_not_recorded and error.message \"The proposal could not be recorded. Retry.\" No proposal is committed. The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/WorkspaceLockTimeout"
+                                    "$ref": "#/components/schemas/ProposalUnavailable"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the operation may be retried.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
                                 }
                             }
                         }
@@ -395,11 +404,31 @@
                             "type": "integer",
                             "minimum": 1
                         }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum complete rows; the byte budget may return fewer. Defaults to 25.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 25,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Authorized Actions resource.",
+                        "description": "Authorized Actions resource. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -419,7 +448,7 @@
                         }
                     },
                     "403": {
-                        "description": "The key lacks the propose-actions grant.",
+                        "description": "The key lacks the read-actions grant.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -506,7 +535,7 @@
                         }
                     },
                     "403": {
-                        "description": "The key lacks the propose-actions grant.",
+                        "description": "The key lacks the read-actions grant.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -601,7 +630,7 @@
                         }
                     },
                     "403": {
-                        "description": "The key lacks the propose-actions grant.",
+                        "description": "The key lacks the read-actions grant.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -696,7 +725,7 @@
                         }
                     },
                     "403": {
-                        "description": "The key lacks the propose-actions grant.",
+                        "description": "The key lacks the read-actions grant.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -767,11 +796,31 @@
                             "type": "integer",
                             "minimum": 1
                         }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum complete rows; the byte budget may return fewer. Defaults to 25.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 25,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Authorized Actions resource.",
+                        "description": "Authorized Actions resource. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -791,7 +840,7 @@
                         }
                     },
                     "403": {
-                        "description": "The key lacks the propose-actions grant.",
+                        "description": "The key lacks the read-actions grant.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -826,6 +875,178 @@
                         "workspaceActionKey": []
                     }
                 ]
+            }
+        },
+        "/agent/workspaces/{workspace}/action-rules": {
+            "get": {
+                "operationId": "actions.rules.index",
+                "description": "Read rule summaries, current revision and last-run status without histories or decisions. Continue with cursor; use actions.rules.show for detail.",
+                "summary": "List rule summaries",
+                "tags": [
+                    "ActionRuleApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Maximum complete rows; the byte budget may return fewer. Defaults to 25.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 25,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Bounded rows; no nested history is included in rule summaries. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "rules": {
+                                            "type": "object",
+                                            "description": "Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "enabled",
+                                                                    "disabled",
+                                                                    "suspended"
+                                                                ]
+                                                            },
+                                                            "account": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": [
+                                                                            "string",
+                                                                            "null"
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "current_revision": {
+                                                                "type": "object",
+                                                                "additionalProperties": {}
+                                                            },
+                                                            "last_run_status": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "last_run_at": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "counts": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "revisions": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "runs": {
+                                                                        "type": "integer"
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "name",
+                                                            "status",
+                                                            "account",
+                                                            "current_revision",
+                                                            "last_run_status",
+                                                            "last_run_at",
+                                                            "counts"
+                                                        ]
+                                                    }
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer"
+                                                },
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "truncated": {
+                                                    "type": "boolean"
+                                                },
+                                                "continuation": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "rules"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/agent/workspaces/{workspace}/tests": {
@@ -1566,6 +1787,222 @@
                         "creativeWriter": []
                     }
                 ]
+            },
+            "get": {
+                "operationId": "launch.creatives.index",
+                "description": "Read complete workspace creative rows within the shared MCP byte budget. Continue with next_cursor as cursor in the same workspace.",
+                "summary": "List workspace creatives",
+                "tags": [
+                    "Creative"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Maximum complete rows; the byte budget may return fewer. Defaults to 25.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 25,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Bounded rows; no nested history is included in rule summaries. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "creatives": {
+                                            "type": "object",
+                                            "description": "Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "pattern": "^[0-7][0-9a-hjkmnp-tv-z]{25}$"
+                                                            },
+                                                            "fingerprint": {
+                                                                "type": "string"
+                                                            },
+                                                            "type": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "image",
+                                                                    "video"
+                                                                ]
+                                                            },
+                                                            "mime_type": {
+                                                                "type": "string"
+                                                            },
+                                                            "byte_size": {
+                                                                "type": "integer"
+                                                            },
+                                                            "width": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "height": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "aspect_ratio": {
+                                                                "type": [
+                                                                    "number",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "duration_ms": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "original_filename": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "source_ref": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "tags": {
+                                                                "description": "Stored tags, including provenance when supplied. An empty map is returned as an empty array. Existing creatives keep their original tags.",
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "object",
+                                                                        "additionalProperties": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "maxItems": 0
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "draft",
+                                                                    "approved",
+                                                                    "retired"
+                                                                ]
+                                                            },
+                                                            "created_at": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "updated_at": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "fingerprint",
+                                                            "type",
+                                                            "mime_type",
+                                                            "byte_size",
+                                                            "width",
+                                                            "height",
+                                                            "aspect_ratio",
+                                                            "duration_ms",
+                                                            "source_ref",
+                                                            "tags",
+                                                            "status",
+                                                            "created_at",
+                                                            "updated_at"
+                                                        ]
+                                                    }
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer"
+                                                },
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "truncated": {
+                                                    "type": "boolean"
+                                                },
+                                                "continuation": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "creatives"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/workspaces/{workspace}/admin/creatives/from-url": {
@@ -1861,6 +2298,15 @@
                                     "$ref": "#/components/schemas/WorkspaceLockTimeout"
                                 }
                             }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the operation may be retried.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
                         }
                     },
                     "500": {
@@ -2016,11 +2462,20 @@
                         }
                     },
                     "503": {
-                        "description": "The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
+                        "description": "The proposal could not be recorded: error.code proposal_not_recorded and error.message \"The proposal could not be recorded. Retry.\" No proposal is committed. The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/WorkspaceLockTimeout"
+                                    "$ref": "#/components/schemas/ProposalUnavailable"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the operation may be retried.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
                                 }
                             }
                         }
@@ -2062,8 +2517,26 @@
                         }
                     },
                     {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
                         "name": "per_page",
                         "in": "query",
+                        "description": "Maximum complete rows; the byte budget may return fewer. Defaults to 25.",
                         "schema": {
                             "type": "integer",
                             "default": 25
@@ -2072,7 +2545,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Plans with their current review version.",
+                        "description": "Plans with their current review version. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2175,11 +2648,31 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum complete rows; the byte budget may return fewer. Defaults to 5.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 5,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Plans with their current review version.",
+                        "description": "Plans with their current review version. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2926,6 +3419,18 @@
                                                                     "null"
                                                                 ]
                                                             },
+                                                            "upload_deadline_at": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "freshness_basis": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
                                                             "created_at": {
                                                                 "type": "string"
                                                             },
@@ -2949,6 +3454,8 @@
                                                             "platform_response",
                                                             "platform_trace_id",
                                                             "next_attempt_at",
+                                                            "upload_deadline_at",
+                                                            "freshness_basis",
                                                             "created_at",
                                                             "updated_at"
                                                         ]
@@ -3438,6 +3945,18 @@
                                                                     "null"
                                                                 ]
                                                             },
+                                                            "upload_deadline_at": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "freshness_basis": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
                                                             "created_at": {
                                                                 "type": "string"
                                                             },
@@ -3461,6 +3980,8 @@
                                                             "platform_response",
                                                             "platform_trace_id",
                                                             "next_attempt_at",
+                                                            "upload_deadline_at",
+                                                            "freshness_basis",
                                                             "created_at",
                                                             "updated_at"
                                                         ]
@@ -3505,6 +4026,203 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory": {
+            "get": {
+                "operationId": "get_account_inventory",
+                "description": "Read complete Meta objects with account-wide totals on every page. Continue with next_cursor as after_id; scope and filters stay unchanged.",
+                "summary": "Read account inventory",
+                "tags": [
+                    "MetaInventoryExposure"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "account_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "enum": [
+                                "campaign",
+                                "adset",
+                                "ad",
+                                null
+                            ]
+                        }
+                    },
+                    {
+                        "name": "effective_status",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "maxLength": 50
+                        }
+                    },
+                    {
+                        "name": "campaign_id",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "maxLength": 128
+                        }
+                    },
+                    {
+                        "name": "adset_id",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "maxLength": 128
+                        }
+                    },
+                    {
+                        "name": "after_id",
+                        "in": "query",
+                        "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum complete rows; the byte budget may return fewer. Defaults to 25.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 25,
+                            "minimum": 1,
+                            "maximum": 200
+                        }
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Account not found."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Bounded account inventory with summary totals. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.",
+                                    "properties": {
+                                        "account": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        },
+                                        "sync": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        },
+                                        "staleness": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        },
+                                        "summary": {
+                                            "type": "object",
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "by_level": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "objects": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            }
+                                        },
+                                        "next_cursor": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "truncated": {
+                                            "type": "boolean"
+                                        },
+                                        "continuation": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "account",
+                                        "sync",
+                                        "staleness",
+                                        "summary",
+                                        "objects",
+                                        "next_cursor",
+                                        "truncated",
+                                        "continuation"
+                                    ]
                                 }
                             }
                         }
@@ -3598,6 +4316,26 @@
                         "in": "query",
                         "schema": {
                             "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "maxLength": 500
                         }
                     }
                 ],
@@ -4020,6 +4758,37 @@
                                                 "integer",
                                                 "null"
                                             ]
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "total": {
+                                                        "type": "integer"
+                                                    },
+                                                    "truncated": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "next_cursor": {
+                                                        "type": [
+                                                            "integer",
+                                                            "null"
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "total",
+                                                    "truncated",
+                                                    "next_cursor"
+                                                ]
+                                            }
+                                        },
+                                        "next_cursor": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -4348,6 +5117,18 @@
                                                                                 "null"
                                                                             ]
                                                                         },
+                                                                        "upload_deadline_at": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "freshness_basis": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
                                                                         "created_at": {
                                                                             "type": "string"
                                                                         },
@@ -4371,6 +5152,8 @@
                                                                         "platform_response",
                                                                         "platform_trace_id",
                                                                         "next_attempt_at",
+                                                                        "upload_deadline_at",
+                                                                        "freshness_basis",
                                                                         "created_at",
                                                                         "updated_at"
                                                                     ]
@@ -4816,6 +5599,18 @@
                                                                                 "null"
                                                                             ]
                                                                         },
+                                                                        "upload_deadline_at": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "freshness_basis": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
                                                                         "created_at": {
                                                                             "type": "string"
                                                                         },
@@ -4839,6 +5634,8 @@
                                                                         "platform_response",
                                                                         "platform_trace_id",
                                                                         "next_attempt_at",
+                                                                        "upload_deadline_at",
+                                                                        "freshness_basis",
                                                                         "created_at",
                                                                         "updated_at"
                                                                     ]
@@ -5044,6 +5841,31 @@
                                                 "credential_source": {
                                                     "$ref": "#/components/schemas/DestinationCredentialSource"
                                                 },
+                                                "attention_reason": {
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "object",
+                                                            "additionalProperties": {}
+                                                        },
+                                                        {
+                                                            "type": "array",
+                                                            "items": {}
+                                                        },
+                                                        {
+                                                            "type": "null"
+                                                        }
+                                                    ]
+                                                },
+                                                "held_count": {
+                                                    "type": "integer"
+                                                },
+                                                "notices": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "additionalProperties": {}
+                                                    }
+                                                },
                                                 "config": {
                                                     "anyOf": [
                                                         {
@@ -5082,6 +5904,9 @@
                                                 "platform_ad_account_id",
                                                 "type",
                                                 "credential_source",
+                                                "attention_reason",
+                                                "held_count",
+                                                "notices",
                                                 "config",
                                                 "status",
                                                 "created_at",
@@ -5550,6 +6375,31 @@
                                                             "credential_source": {
                                                                 "$ref": "#/components/schemas/DestinationCredentialSource"
                                                             },
+                                                            "attention_reason": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "object",
+                                                                        "additionalProperties": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "items": {}
+                                                                    },
+                                                                    {
+                                                                        "type": "null"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "held_count": {
+                                                                "type": "integer"
+                                                            },
+                                                            "notices": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "additionalProperties": {}
+                                                                }
+                                                            },
                                                             "config": {
                                                                 "anyOf": [
                                                                     {
@@ -5588,6 +6438,9 @@
                                                             "platform_ad_account_id",
                                                             "type",
                                                             "credential_source",
+                                                            "attention_reason",
+                                                            "held_count",
+                                                            "notices",
                                                             "config",
                                                             "status",
                                                             "created_at",
@@ -6529,7 +7382,7 @@
             },
             "workspaceActionKey": {
                 "type": "http",
-                "description": "Workspace execution key with the propose-actions grant. Unbound keys select an available advertising account with account_id.",
+                "description": "Workspace key with read-actions for reads or propose-actions for writes. Unbound keys select an available advertising account with account_id.",
                 "scheme": "bearer"
             },
             "planWriter": {
@@ -6569,6 +7422,7 @@
                 "properties": {
                     "data": {
                         "type": "object",
+                        "description": "Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.",
                         "properties": {
                             "id": {
                                 "type": "string"
@@ -6658,6 +7512,21 @@
                                 "items": {
                                     "$ref": "#/components/schemas/ActionReadItem"
                                 }
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "continuation": {
+                                "type": "string"
+                            },
+                            "total": {
+                                "type": "integer"
                             }
                         },
                         "required": [
@@ -7011,6 +7880,7 @@
                 "properties": {
                     "dry_run": {
                         "type": "object",
+                        "description": "Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.",
                         "properties": {
                             "actions": {
                                 "type": "array",
@@ -7168,6 +8038,21 @@
                                         }
                                     ]
                                 }
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "continuation": {
+                                "type": "string"
+                            },
+                            "total": {
+                                "type": "integer"
                             }
                         },
                         "required": [
@@ -7191,6 +8076,7 @@
                     },
                     "meta": {
                         "type": "object",
+                        "description": "Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.",
                         "properties": {
                             "current_page": {
                                 "type": "integer"
@@ -7203,6 +8089,18 @@
                             },
                             "total": {
                                 "type": "integer"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "continuation": {
+                                "type": "string"
                             }
                         },
                         "required": [
@@ -7331,6 +8229,18 @@
             },
             "ActionProposalInput": {
                 "properties": {
+                    "limit": {
+                        "description": "Maximum complete result actions; the shared JSON byte budget can return fewer.",
+                        "default": 25,
+                        "minimum": 1,
+                        "maximum": 100,
+                        "type": "integer"
+                    },
+                    "cursor": {
+                        "description": "Continue using next_cursor. Read saved proposal actions with get_action_batch to avoid another write; dry runs repeat the same inputs.",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
                     "actions": {
                         "minItems": 1,
                         "maxItems": 25,
@@ -8297,6 +9207,7 @@
                                         "get_account_state",
                                         "get_signal_health",
                                         "get_performance",
+                                        "get_inventory_metrics",
                                         "get-creative-library",
                                         "staged-asset-manifest"
                                     ],
@@ -8354,6 +9265,7 @@
                 "properties": {
                     "proposal": {
                         "type": "object",
+                        "description": "Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.",
                         "properties": {
                             "id": {
                                 "type": "string"
@@ -8544,6 +9456,21 @@
                                         "policy_evidence"
                                     ]
                                 }
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "continuation": {
+                                "type": "string"
+                            },
+                            "total": {
+                                "type": "integer"
                             }
                         },
                         "required": [
@@ -8610,6 +9537,206 @@
                         "type": [
                             "string",
                             "null"
+                        ]
+                    },
+                    "counted_evidence": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "Frozen proposal-time target figures over completed account-local dates. Purchase values are decimal strings in the account currency; counted values in other currencies are excluded and never converted. Null means figures were not captured. Display only; never an enforcement input.",
+                        "properties": {
+                            "target": {
+                                "type": "object",
+                                "properties": {
+                                    "kind": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "kind",
+                                    "id"
+                                ]
+                            },
+                            "captured_at": {
+                                "type": "string"
+                            },
+                            "window": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "properties": {
+                                    "since": {
+                                        "type": "string"
+                                    },
+                                    "until": {
+                                        "type": "string"
+                                    },
+                                    "timezone": {
+                                        "type": "string"
+                                    },
+                                    "days": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "since",
+                                    "until",
+                                    "timezone"
+                                ]
+                            },
+                            "currency": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "currency_note": {
+                                "type": "string"
+                            },
+                            "meta_reported": {
+                                "type": "object",
+                                "properties": {
+                                    "inline_link_clicks": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "purchase_count": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "purchase_value": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "spend": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "impressions": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "inline_link_clicks",
+                                    "purchase_count",
+                                    "purchase_value",
+                                    "spend",
+                                    "impressions"
+                                ]
+                            },
+                            "counted": {
+                                "type": "object",
+                                "properties": {
+                                    "arrivals": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "purchase_count": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "purchase_value": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "arrivals",
+                                    "purchase_count",
+                                    "purchase_value"
+                                ]
+                            },
+                            "coverage": {
+                                "type": "object",
+                                "properties": {
+                                    "arrivals": {
+                                        "type": [
+                                            "object",
+                                            "null"
+                                        ],
+                                        "properties": {
+                                            "since": {
+                                                "type": "string"
+                                            },
+                                            "until": {
+                                                "type": "string"
+                                            },
+                                            "timezone": {
+                                                "type": "string"
+                                            },
+                                            "days": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "required": [
+                                            "since",
+                                            "until",
+                                            "timezone"
+                                        ]
+                                    },
+                                    "purchases": {
+                                        "type": [
+                                            "object",
+                                            "null"
+                                        ],
+                                        "properties": {
+                                            "since": {
+                                                "type": "string"
+                                            },
+                                            "until": {
+                                                "type": "string"
+                                            },
+                                            "timezone": {
+                                                "type": "string"
+                                            },
+                                            "days": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "required": [
+                                            "since",
+                                            "until",
+                                            "timezone"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "arrivals",
+                                    "purchases"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "target",
+                            "captured_at",
+                            "window",
+                            "currency",
+                            "currency_note",
+                            "meta_reported",
+                            "counted",
+                            "coverage"
                         ]
                     },
                     "params": {
@@ -12065,11 +13192,96 @@
                 },
                 "title": "CreativeIntakeTags"
             },
+            "CreativeMcpGrantOperation": {
+                "type": "string",
+                "description": "Workspace grants alone authorize creative MCP tools. Read: list_templates, get_render, list_creatives, preview_creatives. Write: render_ad, resume_render. No advertising account is required; account_id and platform_ad_account_id are refused. Images enter the library by upload or launch.creatives.store-from-url; render_ad renders a template over a library image.",
+                "enum": [
+                    "launch.creatives.index",
+                    "launch.templates.index",
+                    "launch.renders.show",
+                    "launch.creatives.preview",
+                    "launch.renders.store",
+                    "launch.renders.resume"
+                ],
+                "title": "CreativeMcpGrantOperation"
+            },
+            "CreativeMcpPreview": {
+                "type": "object",
+                "description": "Missing derivatives return pending and queue a creative-queue build, including creatives created before these tools shipped. No image bytes are sent to the model.",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "ready",
+                            "refused"
+                        ]
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "Ready items only, delivered in tool-result _meta.creative_previews to the MCP App. Signed R2 derivative URL valid for at most 300 seconds; never an original or provider URL."
+                    },
+                    "mime_type": {
+                        "type": "string",
+                        "enum": [
+                            "image/jpeg"
+                        ]
+                    },
+                    "width": {
+                        "type": "integer"
+                    },
+                    "height": {
+                        "type": "integer"
+                    },
+                    "byte_size": {
+                        "type": "integer",
+                        "description": "Stored derivative at most 1048576 bytes and 4000000 pixels. SVG refused; the existing decode cap applies."
+                    },
+                    "expires_at": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "state"
+                ],
+                "title": "CreativeMcpPreview"
+            },
+            "CreativeMcpRefusal": {
+                "type": "string",
+                "enum": [
+                    "request_key_conflict",
+                    "rate_limited",
+                    "invalid_arguments",
+                    "insufficient_scope",
+                    "invalid_token",
+                    "not_found",
+                    "workspace_required"
+                ],
+                "title": "CreativeMcpRefusal"
+            },
+            "CreativeMcpTool": {
+                "type": "string",
+                "description": "Rendering: 6/minute per grant and 12/minute per workspace. Reads and preview signing share 60/minute per grant. list_creatives returns metadata and unchanged Library provenance, accepts kind/status filters and an ID cursor, and returns at most 50 items per page without storage keys or URLs. Matching request_key replays return the original job without reservation, queueing or write-limit counting. Changed normalized payloads return request_key_conflict. Resume queues held states only; running states return inspect guidance.",
+                "enum": [
+                    "list_templates",
+                    "render_ad",
+                    "get_render",
+                    "resume_render",
+                    "list_creatives",
+                    "preview_creatives"
+                ],
+                "title": "CreativeMcpTool"
+            },
             "DeliveryStatus": {
                 "type": "string",
                 "enum": [
                     "queued",
                     "sent",
+                    "held",
                     "accepted",
                     "retrying",
                     "failed:auth",
@@ -12082,161 +13294,9 @@
                 ],
                 "title": "DeliveryStatus"
             },
-            "DeploymentPlan": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "workspace_id": {
-                        "type": "integer"
-                    },
-                    "platform_ad_account_id": {
-                        "type": "integer"
-                    },
-                    "platform": {
-                        "type": "string"
-                    },
-                    "campaign_ref": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "campaign_spec": {
-                        "type": [
-                            "array",
-                            "null"
-                        ],
-                        "items": {}
-                    },
-                    "ad_set_ref": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "ad_set_spec": {
-                        "type": [
-                            "array",
-                            "null"
-                        ],
-                        "description": "When present, bid_amount must be a positive integer in Meta minor units for the account currency. Digit-only strings of at most 18 digits are accepted and normalized to integers. Null, zero, negatives, decimals and other strings are refused on ad_set_spec.bid_amount.",
-                        "items": {}
-                    },
-                    "budget_type": {
-                        "type": "string"
-                    },
-                    "budget_amount_minor": {
-                        "type": "integer"
-                    },
-                    "currency": {
-                        "type": "string"
-                    },
-                    "copy": {
-                        "type": "array",
-                        "items": {}
-                    },
-                    "landing_page": {
-                        "type": "string"
-                    },
-                    "utm_policy_id": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "naming_policy_id": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "status": {
-                        "type": "string"
-                    },
-                    "validation_result": {
-                        "type": [
-                            "array",
-                            "null"
-                        ],
-                        "items": {}
-                    },
-                    "diff": {
-                        "type": [
-                            "array",
-                            "null"
-                        ],
-                        "items": {}
-                    },
-                    "validated_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "approval_id": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "created_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "platform_object_ids": {
-                        "type": "array",
-                        "items": {}
-                    },
-                    "name": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    }
-                },
-                "required": [
-                    "id",
-                    "workspace_id",
-                    "platform_ad_account_id",
-                    "platform",
-                    "campaign_ref",
-                    "campaign_spec",
-                    "ad_set_ref",
-                    "ad_set_spec",
-                    "budget_type",
-                    "budget_amount_minor",
-                    "currency",
-                    "copy",
-                    "landing_page",
-                    "utm_policy_id",
-                    "naming_policy_id",
-                    "status",
-                    "validation_result",
-                    "diff",
-                    "validated_at",
-                    "approval_id",
-                    "created_at",
-                    "updated_at",
-                    "platform_object_ids",
-                    "name"
-                ],
-                "title": "DeploymentPlan"
-            },
             "DeploymentPlanRead": {
                 "type": "object",
+                "description": "Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.",
                 "properties": {
                     "name": {
                         "type": [
@@ -12392,6 +13452,21 @@
                                 "landing_page_differs"
                             ]
                         }
+                    },
+                    "next_cursor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "truncated": {
+                        "type": "boolean"
+                    },
+                    "continuation": {
+                        "type": "string"
+                    },
+                    "creative_count": {
+                        "type": "integer"
                     }
                 },
                 "required": [
@@ -12447,6 +13522,15 @@
                             "null"
                         ],
                         "format": "date-time"
+                    },
+                    "attention_reason": {
+                        "type": "string"
+                    },
+                    "held_count": {
+                        "type": "string"
+                    },
+                    "notices": {
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -12459,7 +13543,10 @@
                     "config",
                     "status",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+                    "attention_reason",
+                    "held_count",
+                    "notices"
                 ],
                 "title": "Destination"
             },
@@ -12474,6 +13561,7 @@
                 "type": "string",
                 "enum": [
                     "active",
+                    "needs_attention",
                     "inactive"
                 ],
                 "title": "DestinationStatus"
@@ -13121,6 +14209,34 @@
                     "errors"
                 ],
                 "title": "ProposalReplayConflict"
+            },
+            "ProposalUnavailable": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "workspace_lock_timeout",
+                                    "proposal_not_recorded"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "ProposalUnavailable"
             },
             "ReconciliationReport": {
                 "type": "object",

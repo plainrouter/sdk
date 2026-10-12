@@ -23,6 +23,8 @@ def _get_kwargs(
     adset_id: None | str | Unset = UNSET,
     ad_id: None | str | Unset = UNSET,
     include_changes: bool | Unset = UNSET,
+    limit: int | Unset = UNSET,
+    cursor: None | str | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -67,6 +69,15 @@ def _get_kwargs(
     params["ad_id"] = json_ad_id
 
     params["include_changes"] = include_changes
+
+    params["limit"] = limit
+
+    json_cursor: None | str | Unset
+    if isinstance(cursor, Unset):
+        json_cursor = UNSET
+    else:
+        json_cursor = cursor
+    params["cursor"] = json_cursor
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -138,6 +149,8 @@ def sync_detailed(
     adset_id: None | str | Unset = UNSET,
     ad_id: None | str | Unset = UNSET,
     include_changes: bool | Unset = UNSET,
+    limit: int | Unset = UNSET,
+    cursor: None | str | Unset = UNSET,
 ) -> Response[ErrorMessage | GetInventoryMetricsResponse200 | ValidationError]:
     """Compare Meta metrics with counted arrivals
 
@@ -153,6 +166,8 @@ def sync_detailed(
         adset_id (None | str | Unset):
         ad_id (None | str | Unset):
         include_changes (bool | Unset):
+        limit (int | Unset):
+        cursor (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -171,6 +186,8 @@ def sync_detailed(
         adset_id=adset_id,
         ad_id=ad_id,
         include_changes=include_changes,
+        limit=limit,
+        cursor=cursor,
     )
 
     response = client.get_httpx_client().request(
@@ -191,6 +208,8 @@ def sync(
     adset_id: None | str | Unset = UNSET,
     ad_id: None | str | Unset = UNSET,
     include_changes: bool | Unset = UNSET,
+    limit: int | Unset = UNSET,
+    cursor: None | str | Unset = UNSET,
 ) -> ErrorMessage | GetInventoryMetricsResponse200 | ValidationError | None:
     """Compare Meta metrics with counted arrivals
 
@@ -206,6 +225,8 @@ def sync(
         adset_id (None | str | Unset):
         ad_id (None | str | Unset):
         include_changes (bool | Unset):
+        limit (int | Unset):
+        cursor (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -225,6 +246,8 @@ def sync(
         adset_id=adset_id,
         ad_id=ad_id,
         include_changes=include_changes,
+        limit=limit,
+        cursor=cursor,
     ).parsed
 
 
@@ -239,6 +262,8 @@ async def asyncio_detailed(
     adset_id: None | str | Unset = UNSET,
     ad_id: None | str | Unset = UNSET,
     include_changes: bool | Unset = UNSET,
+    limit: int | Unset = UNSET,
+    cursor: None | str | Unset = UNSET,
 ) -> Response[ErrorMessage | GetInventoryMetricsResponse200 | ValidationError]:
     """Compare Meta metrics with counted arrivals
 
@@ -254,6 +279,8 @@ async def asyncio_detailed(
         adset_id (None | str | Unset):
         ad_id (None | str | Unset):
         include_changes (bool | Unset):
+        limit (int | Unset):
+        cursor (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -272,6 +299,8 @@ async def asyncio_detailed(
         adset_id=adset_id,
         ad_id=ad_id,
         include_changes=include_changes,
+        limit=limit,
+        cursor=cursor,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -290,6 +319,8 @@ async def asyncio(
     adset_id: None | str | Unset = UNSET,
     ad_id: None | str | Unset = UNSET,
     include_changes: bool | Unset = UNSET,
+    limit: int | Unset = UNSET,
+    cursor: None | str | Unset = UNSET,
 ) -> ErrorMessage | GetInventoryMetricsResponse200 | ValidationError | None:
     """Compare Meta metrics with counted arrivals
 
@@ -305,6 +336,8 @@ async def asyncio(
         adset_id (None | str | Unset):
         ad_id (None | str | Unset):
         include_changes (bool | Unset):
+        limit (int | Unset):
+        cursor (None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -325,5 +358,7 @@ async def asyncio(
             adset_id=adset_id,
             ad_id=ad_id,
             include_changes=include_changes,
+            limit=limit,
+            cursor=cursor,
         )
     ).parsed

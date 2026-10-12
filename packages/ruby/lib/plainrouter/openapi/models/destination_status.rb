@@ -16,10 +16,11 @@ require 'time'
 module PlainRouter::OpenAPI
   class DestinationStatus
     ACTIVE = "active".freeze
+    NEEDS_ATTENTION = "needs_attention".freeze
     INACTIVE = "inactive".freeze
 
     def self.all_vars
-      @all_vars ||= [ACTIVE, INACTIVE].freeze
+      @all_vars ||= [ACTIVE, NEEDS_ATTENTION, INACTIVE].freeze
     end
 
     # Builds the enum from string

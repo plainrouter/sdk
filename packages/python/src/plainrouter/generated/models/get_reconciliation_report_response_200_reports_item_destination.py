@@ -11,8 +11,14 @@ from ..models.destination_status import DestinationStatus
 from ..models.destination_type import DestinationType
 
 if TYPE_CHECKING:
+    from ..models.get_reconciliation_report_response_200_reports_item_destination_attention_reason_type_0 import (
+        GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0,
+    )
     from ..models.get_reconciliation_report_response_200_reports_item_destination_config_type_0 import (
         GetReconciliationReportResponse200ReportsItemDestinationConfigType0,
+    )
+    from ..models.get_reconciliation_report_response_200_reports_item_destination_notices_item import (
+        GetReconciliationReportResponse200ReportsItemDestinationNoticesItem,
     )
 
 
@@ -29,6 +35,10 @@ class GetReconciliationReportResponse200ReportsItemDestination:
         platform_ad_account_id (int | None):
         type_ (DestinationType):
         credential_source (DestinationCredentialSource):
+        attention_reason (GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0 | list[Any] |
+            None):
+        held_count (int):
+        notices (list[GetReconciliationReportResponse200ReportsItemDestinationNoticesItem]):
         config (GetReconciliationReportResponse200ReportsItemDestinationConfigType0 | list[Any] | None):
         status (DestinationStatus):
         created_at (None | str):
@@ -41,6 +51,9 @@ class GetReconciliationReportResponse200ReportsItemDestination:
     platform_ad_account_id: int | None
     type_: DestinationType
     credential_source: DestinationCredentialSource
+    attention_reason: GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0 | list[Any] | None
+    held_count: int
+    notices: list[GetReconciliationReportResponse200ReportsItemDestinationNoticesItem]
     config: GetReconciliationReportResponse200ReportsItemDestinationConfigType0 | list[Any] | None
     status: DestinationStatus
     created_at: None | str
@@ -48,6 +61,9 @@ class GetReconciliationReportResponse200ReportsItemDestination:
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.get_reconciliation_report_response_200_reports_item_destination_attention_reason_type_0 import (
+            GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0,
+        )
         from ..models.get_reconciliation_report_response_200_reports_item_destination_config_type_0 import (
             GetReconciliationReportResponse200ReportsItemDestinationConfigType0,
         )
@@ -64,6 +80,24 @@ class GetReconciliationReportResponse200ReportsItemDestination:
         type_ = self.type_.value
 
         credential_source = self.credential_source.value
+
+        attention_reason: dict[str, Any] | list[Any] | None
+        if isinstance(
+            self.attention_reason, GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0
+        ):
+            attention_reason = self.attention_reason.to_dict()
+        elif isinstance(self.attention_reason, list):
+            attention_reason = self.attention_reason
+
+        else:
+            attention_reason = self.attention_reason
+
+        held_count = self.held_count
+
+        notices = []
+        for notices_item_data in self.notices:
+            notices_item = notices_item_data.to_dict()
+            notices.append(notices_item)
 
         config: dict[str, Any] | list[Any] | None
         if isinstance(self.config, GetReconciliationReportResponse200ReportsItemDestinationConfigType0):
@@ -92,6 +126,9 @@ class GetReconciliationReportResponse200ReportsItemDestination:
                 "platform_ad_account_id": platform_ad_account_id,
                 "type": type_,
                 "credential_source": credential_source,
+                "attention_reason": attention_reason,
+                "held_count": held_count,
+                "notices": notices,
                 "config": config,
                 "status": status,
                 "created_at": created_at,
@@ -103,8 +140,14 @@ class GetReconciliationReportResponse200ReportsItemDestination:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.get_reconciliation_report_response_200_reports_item_destination_attention_reason_type_0 import (
+            GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0,
+        )
         from ..models.get_reconciliation_report_response_200_reports_item_destination_config_type_0 import (
             GetReconciliationReportResponse200ReportsItemDestinationConfigType0,
+        )
+        from ..models.get_reconciliation_report_response_200_reports_item_destination_notices_item import (
+            GetReconciliationReportResponse200ReportsItemDestinationNoticesItem,
         )
 
         d = dict(src_dict)
@@ -124,6 +167,46 @@ class GetReconciliationReportResponse200ReportsItemDestination:
         type_ = DestinationType(d.pop("type"))
 
         credential_source = DestinationCredentialSource(d.pop("credential_source"))
+
+        def _parse_attention_reason(
+            data: object,
+        ) -> GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0 | list[Any] | None:
+            if data is None:
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                attention_reason_type_0 = (
+                    GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0.from_dict(data)
+                )
+
+                return attention_reason_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                attention_reason_type_1 = cast(list[Any], data)
+
+                return attention_reason_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(
+                GetReconciliationReportResponse200ReportsItemDestinationAttentionReasonType0 | list[Any] | None, data
+            )
+
+        attention_reason = _parse_attention_reason(d.pop("attention_reason"))
+
+        held_count = d.pop("held_count")
+
+        notices = []
+        _notices = d.pop("notices")
+        for notices_item_data in _notices:
+            notices_item = GetReconciliationReportResponse200ReportsItemDestinationNoticesItem.from_dict(
+                notices_item_data
+            )
+
+            notices.append(notices_item)
 
         def _parse_config(
             data: object,
@@ -173,6 +256,9 @@ class GetReconciliationReportResponse200ReportsItemDestination:
             platform_ad_account_id=platform_ad_account_id,
             type_=type_,
             credential_source=credential_source,
+            attention_reason=attention_reason,
+            held_count=held_count,
+            notices=notices,
             config=config,
             status=status,
             created_at=created_at,

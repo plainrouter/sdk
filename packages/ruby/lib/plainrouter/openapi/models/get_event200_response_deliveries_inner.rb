@@ -40,6 +40,10 @@ module PlainRouter::OpenAPI
 
     attr_accessor :next_attempt_at
 
+    attr_accessor :upload_deadline_at
+
+    attr_accessor :freshness_basis
+
     attr_accessor :created_at
 
     attr_accessor :updated_at
@@ -83,6 +87,8 @@ module PlainRouter::OpenAPI
         :'platform_response' => :'platform_response',
         :'platform_trace_id' => :'platform_trace_id',
         :'next_attempt_at' => :'next_attempt_at',
+        :'upload_deadline_at' => :'upload_deadline_at',
+        :'freshness_basis' => :'freshness_basis',
         :'created_at' => :'created_at',
         :'updated_at' => :'updated_at',
         :'explanation' => :'explanation'
@@ -114,6 +120,8 @@ module PlainRouter::OpenAPI
         :'platform_response' => :'GetEvent200ResponseEventConsent',
         :'platform_trace_id' => :'String',
         :'next_attempt_at' => :'String',
+        :'upload_deadline_at' => :'String',
+        :'freshness_basis' => :'String',
         :'created_at' => :'String',
         :'updated_at' => :'String',
         :'explanation' => :'String'
@@ -128,6 +136,8 @@ module PlainRouter::OpenAPI
         :'platform_response',
         :'platform_trace_id',
         :'next_attempt_at',
+        :'upload_deadline_at',
+        :'freshness_basis',
         :'updated_at',
       ])
     end
@@ -218,6 +228,18 @@ module PlainRouter::OpenAPI
         self.next_attempt_at = attributes[:'next_attempt_at']
       else
         self.next_attempt_at = nil
+      end
+
+      if attributes.key?(:'upload_deadline_at')
+        self.upload_deadline_at = attributes[:'upload_deadline_at']
+      else
+        self.upload_deadline_at = nil
+      end
+
+      if attributes.key?(:'freshness_basis')
+        self.freshness_basis = attributes[:'freshness_basis']
+      else
+        self.freshness_basis = nil
       end
 
       if attributes.key?(:'created_at')
@@ -406,6 +428,8 @@ module PlainRouter::OpenAPI
           platform_response == o.platform_response &&
           platform_trace_id == o.platform_trace_id &&
           next_attempt_at == o.next_attempt_at &&
+          upload_deadline_at == o.upload_deadline_at &&
+          freshness_basis == o.freshness_basis &&
           created_at == o.created_at &&
           updated_at == o.updated_at &&
           explanation == o.explanation
@@ -420,7 +444,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, workspace_id, signal_tracker_id, event_id, destination_id, status, is_test, attempt_count, last_error, platform_response, platform_trace_id, next_attempt_at, created_at, updated_at, explanation].hash
+      [id, workspace_id, signal_tracker_id, event_id, destination_id, status, is_test, attempt_count, last_error, platform_response, platform_trace_id, next_attempt_at, upload_deadline_at, freshness_basis, created_at, updated_at, explanation].hash
     end
 
     # Builds the object from hash

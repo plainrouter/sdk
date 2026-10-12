@@ -8,6 +8,9 @@ export type ClientOptions = {
  * ActionBatchRead
  */
 export type ActionBatchRead = {
+    /**
+     * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
+     */
     data: {
         id: string;
         workspace_id: number;
@@ -20,6 +23,10 @@ export type ActionBatchRead = {
         rationale: string;
         idempotency_key: string;
         actions: Array<ActionReadItem>;
+        next_cursor?: number | null;
+        truncated?: boolean;
+        continuation?: string;
+        total?: number;
     };
 };
 
@@ -121,6 +128,9 @@ export type ActionDetailRead = {
  * ActionDryRunRead
  */
 export type ActionDryRunRead = {
+    /**
+     * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
+     */
     dry_run: {
         actions: Array<{
             type: 'increase_budget' | 'decrease_budget' | 'pause' | 'resume' | 'replace_creative' | 'shift_spend' | 'rollback' | 'create_campaign' | 'create_ad_set' | 'create_ad' | 'upload_asset' | 'adjust_budget' | 'set_status' | 'duplicate_ad_with_creative' | 'duplicate_adset' | 'duplicate_ad_with_creative_v2';
@@ -148,6 +158,10 @@ export type ActionDryRunRead = {
             status: 'dry_run_unavailable';
             reason: string;
         }>;
+        next_cursor?: number | null;
+        truncated?: boolean;
+        continuation?: string;
+        total?: number;
     };
 };
 
@@ -156,11 +170,17 @@ export type ActionDryRunRead = {
  */
 export type ActionListRead = {
     data: Array<ActionReadItem>;
+    /**
+     * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
+     */
     meta: {
         current_page: number;
         last_page: number;
         per_page: number;
         total: number;
+        next_cursor?: number | null;
+        truncated?: boolean;
+        continuation?: string;
     };
 };
 
@@ -196,6 +216,14 @@ export type ActionPolicyResult = {
  * ActionProposalInput
  */
 export type ActionProposalInput = {
+    /**
+     * Maximum complete result actions; the shared JSON byte budget can return fewer.
+     */
+    limit?: number;
+    /**
+     * Continue using next_cursor. Read saved proposal actions with get_action_batch to avoid another write; dry runs repeat the same inputs.
+     */
+    cursor?: number;
     actions: Array<{
         type: 'increase_budget';
         target_entity: {
@@ -375,7 +403,7 @@ export type ActionProposalInput = {
     rationale: string;
     idempotency_key: string;
     evidence: Array<{
-        source_tool: 'get_account_state' | 'get_signal_health' | 'get_performance' | 'get-creative-library' | 'staged-asset-manifest';
+        source_tool: 'get_account_state' | 'get_signal_health' | 'get_performance' | 'get_inventory_metrics' | 'get-creative-library' | 'staged-asset-manifest';
         fields_used: Array<string>;
         action_index?: number;
     }>;
@@ -388,6 +416,9 @@ export type ActionProposalInput = {
  * ActionProposalRead
  */
 export type ActionProposalRead = {
+    /**
+     * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
+     */
     proposal: {
         id: string;
         scope: unknown;
@@ -425,6 +456,10 @@ export type ActionProposalRead = {
             policy_reasons: Array<string>;
             policy_evidence: unknown;
         }>;
+        next_cursor?: number | null;
+        truncated?: boolean;
+        continuation?: string;
+        total?: number;
     };
 };
 
@@ -439,6 +474,50 @@ export type ActionReadItem = {
     target_entity_type: string;
     target_entity_id: string;
     target_entity_name: string | null;
+    /**
+     * Frozen proposal-time target figures over completed account-local dates. Purchase values are decimal strings in the account currency; counted values in other currencies are excluded and never converted. Null means figures were not captured. Display only; never an enforcement input.
+     */
+    counted_evidence?: {
+        target: {
+            kind: string;
+            id: string;
+        };
+        captured_at: string;
+        window: {
+            since: string;
+            until: string;
+            timezone: string;
+            days?: number;
+        } | null;
+        currency: string | null;
+        currency_note: string;
+        meta_reported: {
+            inline_link_clicks: number | null;
+            purchase_count: number | null;
+            purchase_value: string | null;
+            spend: string | null;
+            impressions: number | null;
+        };
+        counted: {
+            arrivals: number | null;
+            purchase_count: number | null;
+            purchase_value: string | null;
+        };
+        coverage: {
+            arrivals: {
+                since: string;
+                until: string;
+                timezone: string;
+                days?: number;
+            } | null;
+            purchases: {
+                since: string;
+                until: string;
+                timezone: string;
+                days?: number;
+            } | null;
+        };
+    } | null;
     params: {
         [key: string]: unknown;
     } | Array<unknown>;
@@ -1308,45 +1387,55 @@ export type CreativeIntakeTags = {
 };
 
 /**
- * DeliveryStatus
+ * CreativeMcpGrantOperation
+ *
+ * Workspace grants alone authorize creative MCP tools. Read: list_templates, get_render, list_creatives, preview_creatives. Write: render_ad, resume_render. No advertising account is required; account_id and platform_ad_account_id are refused. Images enter the library by upload or launch.creatives.store-from-url; render_ad renders a template over a library image.
  */
-export type DeliveryStatus = 'queued' | 'sent' | 'accepted' | 'retrying' | 'failed:auth' | 'failed:permanent' | 'failed:unknown' | 'expired' | 'skipped:consent' | 'skipped:no_destination' | 'skipped:duplicate';
+export type CreativeMcpGrantOperation = 'launch.creatives.index' | 'launch.templates.index' | 'launch.renders.show' | 'launch.creatives.preview' | 'launch.renders.store' | 'launch.renders.resume';
 
 /**
- * DeploymentPlan
+ * CreativeMcpPreview
+ *
+ * Missing derivatives return pending and queue a creative-queue build, including creatives created before these tools shipped. No image bytes are sent to the model.
  */
-export type DeploymentPlan = {
+export type CreativeMcpPreview = {
     id: string;
-    workspace_id: number;
-    platform_ad_account_id: number;
-    platform: string;
-    campaign_ref: string | null;
-    campaign_spec: Array<unknown> | null;
-    ad_set_ref: string | null;
+    state: 'pending' | 'ready' | 'refused';
     /**
-     * When present, bid_amount must be a positive integer in Meta minor units for the account currency. Digit-only strings of at most 18 digits are accepted and normalized to integers. Null, zero, negatives, decimals and other strings are refused on ad_set_spec.bid_amount.
+     * Ready items only, delivered in tool-result _meta.creative_previews to the MCP App. Signed R2 derivative URL valid for at most 300 seconds; never an original or provider URL.
      */
-    ad_set_spec: Array<unknown> | null;
-    budget_type: string;
-    budget_amount_minor: number;
-    currency: string;
-    copy: Array<unknown>;
-    landing_page: string;
-    utm_policy_id: string | null;
-    naming_policy_id: string | null;
-    status: string;
-    validation_result: Array<unknown> | null;
-    diff: Array<unknown> | null;
-    validated_at: string | null;
-    approval_id: string | null;
-    created_at: string | null;
-    updated_at: string | null;
-    platform_object_ids: Array<unknown>;
-    name: string | null;
+    url?: string;
+    mime_type?: 'image/jpeg';
+    width?: number;
+    height?: number;
+    /**
+     * Stored derivative at most 1048576 bytes and 4000000 pixels. SVG refused; the existing decode cap applies.
+     */
+    byte_size?: number;
+    expires_at?: string;
 };
 
 /**
+ * CreativeMcpRefusal
+ */
+export type CreativeMcpRefusal = 'request_key_conflict' | 'rate_limited' | 'invalid_arguments' | 'insufficient_scope' | 'invalid_token' | 'not_found' | 'workspace_required';
+
+/**
+ * CreativeMcpTool
+ *
+ * Rendering: 6/minute per grant and 12/minute per workspace. Reads and preview signing share 60/minute per grant. list_creatives returns metadata and unchanged Library provenance, accepts kind/status filters and an ID cursor, and returns at most 50 items per page without storage keys or URLs. Matching request_key replays return the original job without reservation, queueing or write-limit counting. Changed normalized payloads return request_key_conflict. Resume queues held states only; running states return inspect guidance.
+ */
+export type CreativeMcpTool = 'list_templates' | 'render_ad' | 'get_render' | 'resume_render' | 'list_creatives' | 'preview_creatives';
+
+/**
+ * DeliveryStatus
+ */
+export type DeliveryStatus = 'queued' | 'sent' | 'held' | 'accepted' | 'retrying' | 'failed:auth' | 'failed:permanent' | 'failed:unknown' | 'expired' | 'skipped:consent' | 'skipped:no_destination' | 'skipped:duplicate';
+
+/**
  * DeploymentPlanRead
+ *
+ * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
  */
 export type DeploymentPlanRead = {
     name?: string | null;
@@ -1389,6 +1478,10 @@ export type DeploymentPlanRead = {
         copy_differs: boolean;
         landing_page_differs: boolean;
     }>;
+    next_cursor?: number | null;
+    truncated?: boolean;
+    continuation?: string;
+    creative_count?: number;
 };
 
 /**
@@ -1410,6 +1503,9 @@ export type Destination = {
     status: DestinationStatus;
     created_at: string | null;
     updated_at: string | null;
+    attention_reason: string;
+    held_count: string;
+    notices: string;
 };
 
 /**
@@ -1420,7 +1516,7 @@ export type DestinationCredentialSource = 'oauth_connection';
 /**
  * DestinationStatus
  */
-export type DestinationStatus = 'active' | 'inactive';
+export type DestinationStatus = 'active' | 'needs_attention' | 'inactive';
 
 /**
  * DestinationType
@@ -1622,6 +1718,16 @@ export type ProposalReplayConflict = {
 };
 
 /**
+ * ProposalUnavailable
+ */
+export type ProposalUnavailable = {
+    error: {
+        code: 'workspace_lock_timeout' | 'proposal_not_recorded';
+        message: string;
+    };
+};
+
+/**
  * ReconciliationReport
  */
 export type ReconciliationReport = {
@@ -1743,7 +1849,7 @@ export type ActionsApiDryRunError = ActionsApiDryRunErrors[keyof ActionsApiDryRu
 
 export type ActionsApiDryRunResponses = {
     /**
-     * Evaluated dry-run preview.
+     * Evaluated dry-run preview. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
      */
     200: ActionDryRunRead;
 };
@@ -1765,6 +1871,14 @@ export type ActionsApiIndexData = {
          * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
          */
         account_id?: number;
+        /**
+         * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+         */
+        cursor?: number;
+        /**
+         * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
+         */
+        limit?: number;
     };
     url: '/agent/workspaces/{workspace}/actions';
 };
@@ -1775,7 +1889,7 @@ export type ActionsApiIndexErrors = {
      */
     401: ErrorMessage;
     /**
-     * The key lacks the propose-actions grant.
+     * The key lacks the read-actions grant.
      */
     403: ErrorMessage;
     /**
@@ -1792,7 +1906,7 @@ export type ActionsApiIndexError = ActionsApiIndexErrors[keyof ActionsApiIndexEr
 
 export type ActionsApiIndexResponses = {
     /**
-     * Authorized Actions resource.
+     * Authorized Actions resource. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
      */
     200: ActionListRead;
 };
@@ -1845,20 +1959,20 @@ export type ActionsApiProposeErrors = {
      */
     500: ErrorMessage;
     /**
-     * The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message "The workspace is busy. Retry the operation shortly." Retry-After is 1 second.
+     * The proposal could not be recorded: error.code proposal_not_recorded and error.message "The proposal could not be recorded. Retry." No proposal is committed. The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message "The workspace is busy. Retry the operation shortly." Retry-After is 1 second.
      */
-    503: WorkspaceLockTimeout;
+    503: ProposalUnavailable;
 };
 
 export type ActionsApiProposeError = ActionsApiProposeErrors[keyof ActionsApiProposeErrors];
 
 export type ActionsApiProposeResponses = {
     /**
-     * Saved idempotent proposal.
+     * Saved idempotent proposal. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
      */
     200: ActionProposalRead;
     /**
-     * New proposal created.
+     * New proposal created. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
      */
     201: ActionProposalRead;
 };
@@ -1888,7 +2002,7 @@ export type ActionsApiPolicyErrors = {
      */
     401: ErrorMessage;
     /**
-     * The key lacks the propose-actions grant.
+     * The key lacks the read-actions grant.
      */
     403: ErrorMessage;
     /**
@@ -1936,7 +2050,7 @@ export type ActionsApiDecisionReceiptErrors = {
      */
     401: ErrorMessage;
     /**
-     * The key lacks the propose-actions grant.
+     * The key lacks the read-actions grant.
      */
     403: ErrorMessage;
     /**
@@ -1984,7 +2098,7 @@ export type ActionsApiShowErrors = {
      */
     401: ErrorMessage;
     /**
-     * The key lacks the propose-actions grant.
+     * The key lacks the read-actions grant.
      */
     403: ErrorMessage;
     /**
@@ -2022,6 +2136,14 @@ export type ActionsApiBatchData = {
          * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
          */
         account_id?: number;
+        /**
+         * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+         */
+        cursor?: number;
+        /**
+         * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
+         */
+        limit?: number;
     };
     url: '/agent/workspaces/{workspace}/action-batches/{actionBatch}';
 };
@@ -2032,7 +2154,7 @@ export type ActionsApiBatchErrors = {
      */
     401: ErrorMessage;
     /**
-     * The key lacks the propose-actions grant.
+     * The key lacks the read-actions grant.
      */
     403: ErrorMessage;
     /**
@@ -2049,12 +2171,81 @@ export type ActionsApiBatchError = ActionsApiBatchErrors[keyof ActionsApiBatchEr
 
 export type ActionsApiBatchResponses = {
     /**
-     * Authorized Actions resource.
+     * Authorized Actions resource. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
      */
     200: ActionBatchRead;
 };
 
 export type ActionsApiBatchResponse = ActionsApiBatchResponses[keyof ActionsApiBatchResponses];
+
+export type ActionsRulesIndexData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: {
+        page?: number;
+        /**
+         * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+         */
+        cursor?: string;
+        /**
+         * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
+         */
+        per_page?: number;
+    };
+    url: '/agent/workspaces/{workspace}/action-rules';
+};
+
+export type ActionsRulesIndexErrors = {
+    /**
+     * Invalid or missing Server secret.
+     */
+    401: ErrorMessage;
+};
+
+export type ActionsRulesIndexError = ActionsRulesIndexErrors[keyof ActionsRulesIndexErrors];
+
+export type ActionsRulesIndexResponses = {
+    /**
+     * Bounded rows; no nested history is included in rule summaries. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
+     */
+    200: {
+        /**
+         * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
+         */
+        rules: {
+            data?: Array<{
+                id: string;
+                name: string;
+                status: 'enabled' | 'disabled' | 'suspended';
+                account: {
+                    id?: number;
+                    name?: string | null;
+                };
+                current_revision: {
+                    [key: string]: unknown;
+                };
+                last_run_status: string | null;
+                last_run_at: string | null;
+                counts: {
+                    revisions?: number;
+                    runs?: number;
+                };
+            }>;
+            total?: number;
+            per_page?: number;
+            next_cursor?: string | null;
+            truncated?: boolean;
+            continuation?: string;
+        };
+    };
+};
+
+export type ActionsRulesIndexResponse = ActionsRulesIndexResponses[keyof ActionsRulesIndexResponses];
 
 export type ActionsTestsApiIndexData = {
     body?: never;
@@ -2258,6 +2449,79 @@ export type GetCookieDeclarationResponses = {
 };
 
 export type GetCookieDeclarationResponse = GetCookieDeclarationResponses[keyof GetCookieDeclarationResponses];
+
+export type LaunchCreativesIndexData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: {
+        page?: number;
+        /**
+         * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+         */
+        cursor?: number;
+        /**
+         * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
+         */
+        per_page?: number;
+    };
+    url: '/workspaces/{workspace}/admin/creatives';
+};
+
+export type LaunchCreativesIndexErrors = {
+    /**
+     * Invalid or missing Server secret.
+     */
+    401: ErrorMessage;
+};
+
+export type LaunchCreativesIndexError = LaunchCreativesIndexErrors[keyof LaunchCreativesIndexErrors];
+
+export type LaunchCreativesIndexResponses = {
+    /**
+     * Bounded rows; no nested history is included in rule summaries. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
+     */
+    200: {
+        /**
+         * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
+         */
+        creatives: {
+            data?: Array<{
+                id: string;
+                fingerprint: string;
+                type: 'image' | 'video';
+                mime_type: string;
+                byte_size: number;
+                width: number | null;
+                height: number | null;
+                aspect_ratio: number | null;
+                duration_ms: number | null;
+                original_filename?: string | null;
+                source_ref: string | null;
+                /**
+                 * Stored tags, including provenance when supplied. An empty map is returned as an empty array. Existing creatives keep their original tags.
+                 */
+                tags: {
+                    [key: string]: string;
+                } | Array<string>;
+                status: 'draft' | 'approved' | 'retired';
+                created_at: string | null;
+                updated_at: string | null;
+            }>;
+            total?: number;
+            per_page?: number;
+            next_cursor?: number | null;
+            truncated?: boolean;
+            continuation?: string;
+        };
+    };
+};
+
+export type LaunchCreativesIndexResponse = LaunchCreativesIndexResponses[keyof LaunchCreativesIndexResponses];
 
 export type StoreCreativeData = {
     body: {
@@ -2505,9 +2769,9 @@ export type LaunchPlansExecuteErrors = {
      */
     500: ErrorMessage;
     /**
-     * The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message "The workspace is busy. Retry the operation shortly." Retry-After is 1 second.
+     * The proposal could not be recorded: error.code proposal_not_recorded and error.message "The proposal could not be recorded. Retry." No proposal is committed. The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message "The workspace is busy. Retry the operation shortly." Retry-After is 1 second.
      */
-    503: WorkspaceLockTimeout;
+    503: ProposalUnavailable;
 };
 
 export type LaunchPlansExecuteError = LaunchPlansExecuteErrors[keyof LaunchPlansExecuteErrors];
@@ -2530,6 +2794,14 @@ export type LaunchPlansIndexData = {
         workspace: number;
     };
     query?: {
+        page?: number;
+        /**
+         * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+         */
+        cursor?: number;
+        /**
+         * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
+         */
         per_page?: number;
     };
     url: '/workspaces/{workspace}/admin/plans';
@@ -2554,7 +2826,7 @@ export type LaunchPlansIndexError = LaunchPlansIndexErrors[keyof LaunchPlansInde
 
 export type LaunchPlansIndexResponses = {
     /**
-     * Plans with their current review version.
+     * Plans with their current review version. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
      */
     200: {
         plans: {
@@ -2577,7 +2849,16 @@ export type LaunchPlansShowData = {
         workspace: number;
         deployment_plan: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+         */
+        cursor?: number;
+        /**
+         * Maximum complete rows; the byte budget may return fewer. Defaults to 5.
+         */
+        limit?: number;
+    };
     url: '/workspaces/{workspace}/admin/plans/{deployment_plan}';
 };
 
@@ -2600,7 +2881,7 @@ export type LaunchPlansShowError = LaunchPlansShowErrors[keyof LaunchPlansShowEr
 
 export type LaunchPlansShowResponses = {
     /**
-     * Plans with their current review version.
+     * Plans with their current review version. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
      */
     200: {
         plan: DeploymentPlanRead;
@@ -2935,6 +3216,8 @@ export type GetEventResponses = {
                 } | Array<unknown> | null;
                 platform_trace_id: string | null;
                 next_attempt_at: string | null;
+                upload_deadline_at: string | null;
+                freshness_basis: string | null;
                 created_at: string;
                 updated_at: string | null;
             }>;
@@ -3051,6 +3334,8 @@ export type GetEventResponses = {
             } | Array<unknown> | null;
             platform_trace_id: string | null;
             next_attempt_at: string | null;
+            upload_deadline_at: string | null;
+            freshness_basis: string | null;
             created_at: string;
             updated_at: string | null;
         } & {
@@ -3060,6 +3345,75 @@ export type GetEventResponses = {
 };
 
 export type GetEventResponse = GetEventResponses[keyof GetEventResponses];
+
+export type GetAccountInventoryData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        account_id: string;
+    };
+    query?: {
+        level?: 'campaign' | 'adset' | 'ad' | null;
+        effective_status?: string | null;
+        campaign_id?: string | null;
+        adset_id?: string | null;
+        /**
+         * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+         */
+        after_id?: number;
+        /**
+         * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
+         */
+        limit?: number;
+    };
+    url: '/workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory';
+};
+
+export type GetAccountInventoryErrors = {
+    /**
+     * Invalid or missing Server secret.
+     */
+    401: ErrorMessage;
+    404: {
+        message: 'Account not found.';
+    };
+};
+
+export type GetAccountInventoryError = GetAccountInventoryErrors[keyof GetAccountInventoryErrors];
+
+export type GetAccountInventoryResponses = {
+    /**
+     * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
+     */
+    200: {
+        account: {
+            [key: string]: unknown;
+        };
+        sync: {
+            [key: string]: unknown;
+        };
+        staleness: {
+            [key: string]: unknown;
+        };
+        summary: {
+            total?: number;
+            by_level?: {
+                [key: string]: number;
+            };
+        };
+        objects: Array<{
+            [key: string]: unknown;
+        }>;
+        next_cursor: number | null;
+        truncated: boolean;
+        continuation: string;
+    };
+};
+
+export type GetAccountInventoryResponse = GetAccountInventoryResponses[keyof GetAccountInventoryResponses];
 
 export type GetInventoryMetricsData = {
     body?: never;
@@ -3077,6 +3431,8 @@ export type GetInventoryMetricsData = {
         adset_id?: string | null;
         ad_id?: string | null;
         include_changes?: boolean;
+        limit?: number;
+        cursor?: string | null;
     };
     url: '/workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory/metrics';
 };
@@ -3185,6 +3541,14 @@ export type GetInventoryMetricsResponses = {
             parent_creative?: string | null;
         }>;
         unmatched_arrivals: number | null;
+        pagination?: {
+            [key: string]: {
+                total: number;
+                truncated: boolean;
+                next_cursor: number | null;
+            };
+        };
+        next_cursor?: string | null;
     };
 };
 
@@ -3283,6 +3647,8 @@ export type ListEventsResponses = {
                     } | Array<unknown> | null;
                     platform_trace_id: string | null;
                     next_attempt_at: string | null;
+                    upload_deadline_at: string | null;
+                    freshness_basis: string | null;
                     created_at: string;
                     updated_at: string | null;
                 }>;
@@ -3410,6 +3776,8 @@ export type ListEventsByCursorResponses = {
                     } | Array<unknown> | null;
                     platform_trace_id: string | null;
                     next_attempt_at: string | null;
+                    upload_deadline_at: string | null;
+                    freshness_basis: string | null;
                     created_at: string;
                     updated_at: string | null;
                 }>;
@@ -3481,6 +3849,13 @@ export type SetDestinationTestModeResponses = {
             platform_ad_account_id: number | null;
             type: DestinationType;
             credential_source: DestinationCredentialSource;
+            attention_reason: {
+                [key: string]: unknown;
+            } | Array<unknown> | null;
+            held_count: number;
+            notices: Array<{
+                [key: string]: unknown;
+            }>;
             config: {
                 [key: string]: unknown;
             } | Array<unknown> | null;
@@ -3659,6 +4034,13 @@ export type GetReconciliationReportResponses = {
                 platform_ad_account_id: number | null;
                 type: DestinationType;
                 credential_source: DestinationCredentialSource;
+                attention_reason: {
+                    [key: string]: unknown;
+                } | Array<unknown> | null;
+                held_count: number;
+                notices: Array<{
+                    [key: string]: unknown;
+                }>;
                 config: {
                     [key: string]: unknown;
                 } | Array<unknown> | null;

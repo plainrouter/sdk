@@ -12,8 +12,8 @@ from ...models.execute_deployment_plan_request import ExecuteDeploymentPlanReque
 from ...models.launch_intent_read import LaunchIntentRead
 from ...models.plan_execute_conflict import PlanExecuteConflict
 from ...models.plan_execute_rejected import PlanExecuteRejected
+from ...models.proposal_unavailable import ProposalUnavailable
 from ...models.validation_error import ValidationError
-from ...models.workspace_lock_timeout import WorkspaceLockTimeout
 from ...types import Response
 
 
@@ -50,7 +50,7 @@ def _parse_response(
     | PlanExecuteConflict
     | PlanExecuteRejected
     | ValidationError
-    | WorkspaceLockTimeout
+    | ProposalUnavailable
     | None
 ):
     if response.status_code == 200:
@@ -115,7 +115,7 @@ def _parse_response(
         return response_500
 
     if response.status_code == 503:
-        response_503 = WorkspaceLockTimeout.from_dict(response.json())
+        response_503 = ProposalUnavailable.from_dict(response.json())
 
         return response_503
 
@@ -134,7 +134,7 @@ def _build_response(
     | PlanExecuteConflict
     | PlanExecuteRejected
     | ValidationError
-    | WorkspaceLockTimeout
+    | ProposalUnavailable
 ]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -157,7 +157,7 @@ def sync_detailed(
     | PlanExecuteConflict
     | PlanExecuteRejected
     | ValidationError
-    | WorkspaceLockTimeout
+    | ProposalUnavailable
 ]:
     """Execute a deployment plan
 
@@ -174,7 +174,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiRouteNotFound | ErrorMessage | LaunchIntentRead | PlanExecuteConflict | PlanExecuteRejected | ValidationError | WorkspaceLockTimeout]
+        Response[ApiRouteNotFound | ErrorMessage | LaunchIntentRead | PlanExecuteConflict | PlanExecuteRejected | ValidationError | ProposalUnavailable]
     """
 
     kwargs = _get_kwargs(
@@ -203,7 +203,7 @@ def sync(
     | PlanExecuteConflict
     | PlanExecuteRejected
     | ValidationError
-    | WorkspaceLockTimeout
+    | ProposalUnavailable
     | None
 ):
     """Execute a deployment plan
@@ -221,7 +221,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiRouteNotFound | ErrorMessage | LaunchIntentRead | PlanExecuteConflict | PlanExecuteRejected | ValidationError | WorkspaceLockTimeout
+        ApiRouteNotFound | ErrorMessage | LaunchIntentRead | PlanExecuteConflict | PlanExecuteRejected | ValidationError | ProposalUnavailable
     """
 
     return sync_detailed(
@@ -245,7 +245,7 @@ async def asyncio_detailed(
     | PlanExecuteConflict
     | PlanExecuteRejected
     | ValidationError
-    | WorkspaceLockTimeout
+    | ProposalUnavailable
 ]:
     """Execute a deployment plan
 
@@ -262,7 +262,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiRouteNotFound | ErrorMessage | LaunchIntentRead | PlanExecuteConflict | PlanExecuteRejected | ValidationError | WorkspaceLockTimeout]
+        Response[ApiRouteNotFound | ErrorMessage | LaunchIntentRead | PlanExecuteConflict | PlanExecuteRejected | ValidationError | ProposalUnavailable]
     """
 
     kwargs = _get_kwargs(
@@ -289,7 +289,7 @@ async def asyncio(
     | PlanExecuteConflict
     | PlanExecuteRejected
     | ValidationError
-    | WorkspaceLockTimeout
+    | ProposalUnavailable
     | None
 ):
     """Execute a deployment plan
@@ -307,7 +307,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiRouteNotFound | ErrorMessage | LaunchIntentRead | PlanExecuteConflict | PlanExecuteRejected | ValidationError | WorkspaceLockTimeout
+        ApiRouteNotFound | ErrorMessage | LaunchIntentRead | PlanExecuteConflict | PlanExecuteRejected | ValidationError | ProposalUnavailable
     """
 
     return (

@@ -19,6 +19,8 @@ def _get_kwargs(
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -32,6 +34,10 @@ def _get_kwargs(
     params["page"] = page
 
     params["account_id"] = account_id
+
+    params["cursor"] = cursor
+
+    params["limit"] = limit
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -98,6 +104,8 @@ def sync_detailed(
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> Response[ActionListRead | ErrorMessage | ValidationError]:
     """List actions
 
@@ -109,6 +117,8 @@ def sync_detailed(
         status (ActionsApiIndexStatus | Unset):
         page (int | Unset):
         account_id (int | Unset):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 25.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -123,6 +133,8 @@ def sync_detailed(
         status=status,
         page=page,
         account_id=account_id,
+        cursor=cursor,
+        limit=limit,
     )
 
     response = client.get_httpx_client().request(
@@ -139,6 +151,8 @@ def sync(
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> ActionListRead | ErrorMessage | ValidationError | None:
     """List actions
 
@@ -150,6 +164,8 @@ def sync(
         status (ActionsApiIndexStatus | Unset):
         page (int | Unset):
         account_id (int | Unset):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 25.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -165,6 +181,8 @@ def sync(
         status=status,
         page=page,
         account_id=account_id,
+        cursor=cursor,
+        limit=limit,
     ).parsed
 
 
@@ -175,6 +193,8 @@ async def asyncio_detailed(
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> Response[ActionListRead | ErrorMessage | ValidationError]:
     """List actions
 
@@ -186,6 +206,8 @@ async def asyncio_detailed(
         status (ActionsApiIndexStatus | Unset):
         page (int | Unset):
         account_id (int | Unset):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 25.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -200,6 +222,8 @@ async def asyncio_detailed(
         status=status,
         page=page,
         account_id=account_id,
+        cursor=cursor,
+        limit=limit,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -214,6 +238,8 @@ async def asyncio(
     status: ActionsApiIndexStatus | Unset = UNSET,
     page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> ActionListRead | ErrorMessage | ValidationError | None:
     """List actions
 
@@ -225,6 +251,8 @@ async def asyncio(
         status (ActionsApiIndexStatus | Unset):
         page (int | Unset):
         account_id (int | Unset):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 25.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -241,5 +269,7 @@ async def asyncio(
             status=status,
             page=page,
             account_id=account_id,
+            cursor=cursor,
+            limit=limit,
         )
     ).parsed

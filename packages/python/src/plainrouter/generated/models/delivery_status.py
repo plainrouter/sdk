@@ -7,6 +7,7 @@ class DeliveryStatus(str, Enum):
     FAILEDAUTH = "failed:auth"
     FAILEDPERMANENT = "failed:permanent"
     FAILEDUNKNOWN = "failed:unknown"
+    HELD = "held"
     QUEUED = "queued"
     RETRYING = "retrying"
     SENT = "sent"
