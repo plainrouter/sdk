@@ -56,6 +56,36 @@ client = create_client(os.environ["PLAINROUTER_TOKEN"])
 response = launch_plans_copy.sync_detailed(1, "failed-plan-id", client=client)
 ```
 
-The same operation provides `asyncio` and `asyncio_detailed` entry points.
+The same operation provides `asyncio` and `asyncio_detailed` entry points. The
+public `plainrouter.launch_plans_copy.PlanCopyResponse` type alias describes the
+parsed result union, including `ProposalUnavailable` and `WorkspaceLockTimeout`.
+The detailed entry points return `Response[PlanCopyResponse]`; `sync` and
+`asyncio` return `PlanCopyResponse | None`.
+
+## Retryable proposal errors
+
+Pass the detailed response or raw HTTPX response to the helper, including for
+async calls and endpoints with no documented 503. It recognizes only 503 error
+envelopes with a string message and either `workspace_lock_timeout` or
+`proposal_not_recorded`; other bodies return `False`.
+
+```python
+import json
+from plainrouter import is_retryable_proposal_error
+
+retryable = is_retryable_proposal_error(response.status_code, response)
+error_code = json.loads(response.content)["error"]["code"] if retryable else None
+retry_after = response.headers.get("Retry-After") if retryable else None
+```
+
+This example also distinguishes lock timeout (`error_code ==
+"workspace_lock_timeout"`) without relying on `response.parsed`. If generated
+parsing raises before returning a detailed response, capture the raw response
+with an HTTPX response hook and call `response.read()` there; in an async hook,
+await `response.aread()`. Run the same example on that captured response. Use
+the public copy facade rather than calling generated copy directly.
+
+No automatic retry is added. Honor `Retry-After` when present (delta seconds or
+an HTTP date) when scheduling a retry.
 
 Licensed under Apache-2.0.
