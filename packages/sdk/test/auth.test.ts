@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import * as generatedOperations from '../src/generated/sdk.gen.js';
+import * as exportedOperations from '../src/operation-exports.js';
 
 import {
   ApiRedirectError,
@@ -166,6 +168,7 @@ describe('plan copy', () => {
 
 describe('JSON API transport', () => {
   it('defaults Accept to JSON and preserves case-insensitive caller overrides', async () => {
+    expect(Object.keys(exportedOperations).sort()).toEqual(Object.keys(generatedOperations).sort());
     const requests: Request[] = [];
     const fetchMock: typeof globalThis.fetch = async (input, init) => {
       requests.push(new Request(input, init));
@@ -189,7 +192,7 @@ describe('JSON API transport', () => {
       });
       const request = requests.at(-1)!;
       expect.soft(request.headers.get('Accept'), `body operation with ${shape}`).toBe(accept);
-      expect.soft(request.headers.get('Authorization'), `body operation with ${shape}`).toBe('Bearer caller-token');
+      expect.soft(request.headers.get('Authorization'), `body operation with ${shape}`).toBe('Bearer test');
       expect.soft(Array.from(request.headers.keys()).filter((name) => /^\d+$/.test(name)), `body operation with ${shape}`).toEqual([]);
       expect(request.headers.get('Content-Type')).toBe('application/json');
       expect(await request.json()).toEqual({ event_name: 'Purchase', consent_basis: 'consent' });

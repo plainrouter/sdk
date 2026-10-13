@@ -2,7 +2,7 @@
 
 ## 0.10.0 (unreleased)
 
-- Normalize header names case-insensitively for plain objects, `Headers` instances, tuple arrays and array-value request options before generated merging, on every operation including those that send a body. Caller values replace defaults; Accept and Authorization each send one header line, and tuple indexes never become header names.
+- Normalize header names case-insensitively for plain objects, `Headers` instances, tuple arrays and array-value request options before generated merging, on every operation including those that send a body. Caller headers replace defaults, except that on a client configured with a token the SDK's token is sent as Authorization unless a per-call `auth` option overrides it. Accept and Authorization each send at most one header line, and tuple indexes never become header names.
 
 - Export `ApiRedirectError` (response/status/headers) and the optional `PlainrouterConfig.headers` configuration field for caller overrides.
 
