@@ -1,4 +1,5 @@
 node_modules/
+packages/sdk/src/operation-exports.ts
 build/
 dist/
 coverage/

@@ -14,7 +14,7 @@
   "packageManager": "npm@11.19.0",
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "generate": "openapi-ts",
+    "generate": "openapi-ts && node scripts/generate-operation-exports.mjs",
     "smoke:cli": "node scripts/cli-smoke.mjs",
     "smoke:live": "node scripts/live-smoke.mjs",
     "smoke:production": "node scripts/production-smoke.mjs",

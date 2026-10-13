@@ -1,5 +1,5 @@
 import { client } from './generated/client.gen.js';
-import type { Config } from './generated/client/types.gen.js';
+import { normalizeHeaders } from './headers.js';
 
 /** An API redirect is an error, even when its destination is a successful HTML page. */
 export class ApiRedirectError extends Error {
@@ -13,19 +13,6 @@ export class ApiRedirectError extends Error {
     this.headers = response.headers;
   }
 }
-
-const normalizeHeaders = (headers: Config['headers']): Record<string, string | null | undefined> => {
-  const result: Record<string, string | null | undefined> = Object.create(null);
-  const entries = headers instanceof Headers
-    ? Array.from(headers.entries())
-    : Array.isArray(headers) ? headers : Object.entries(headers ?? {});
-  for (const [name, value] of entries) {
-    result[name.toLowerCase()] = value === null || value === undefined ? value
-      : Array.isArray(value) ? value.map(String).join(', ')
-      : typeof value === 'object' ? JSON.stringify(value) : String(value);
-  }
-  return result;
-};
 
 // Normalize public request options before the generated merger handles them.
 for (const method of ['connect', 'delete', 'get', 'head', 'options', 'patch', 'post', 'put', 'trace'] as const) {

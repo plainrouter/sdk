@@ -3,7 +3,7 @@
 ## 0.10.0 (unreleased)
 
 - The exported `plainrouter.AuthenticatedClient` is a subclass of the generated client, and `plainrouter.Client` is a new zero-auth policy-applying export. `create_client` returns the subclass.
-- Header merges are case-insensitive, including repeated `with_headers` calls and derivation after first use, and in-place updates to live clients. A dict with multiple spellings of Accept or Authorization sends exactly one line; the last spelling in caller order wins.
+- Header merges are case-insensitive, including repeated `with_headers` calls and derivation after first use, and in-place updates to live clients. A dict with multiple spellings of Accept or Authorization sends exactly one line; the last spelling in caller order wins. On a token client, the client `with_headers` returns always sends the SDK's own token as Authorization; the live client and an injected client send the caller's last spelling.
 - Injected sync/async HTTPX clients get JSON Accept when absent or exactly `*/*`; other configured values are kept. `set_httpx_client` and `set_async_httpx_client` set Accept on the HTTPX client object passed in, so other code sharing that object sees the change. HTTPX cannot distinguish its automatic wildcard from an explicit one. Use SDK `with_headers({"Accept": "*/*"})` after injection for an explicit wildcard. The live smoke script now constructs the policy-applying exports for all calls.
 - Retry classification returns `False` for unread streamed responses (previously `ResponseNotRead`); read/aread the body before classification.
 
