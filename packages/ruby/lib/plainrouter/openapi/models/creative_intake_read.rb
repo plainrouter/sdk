@@ -37,7 +37,7 @@ module PlainRouter::OpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
-        :'creative' => :'CreativeIntakeReadCreative'
+        :'creative' => :'LaunchCreativesIndex200ResponseCreativesDataInner'
       }
     end
 

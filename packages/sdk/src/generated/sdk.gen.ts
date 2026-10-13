@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client/index.js';
-import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, ActionsTestsApiIndexData, ActionsTestsApiIndexErrors, ActionsTestsApiIndexResponses, ActionsTestsApiShowData, ActionsTestsApiShowErrors, ActionsTestsApiShowResponses, ActionsTestsApiStoreData, ActionsTestsApiStoreErrors, ActionsTestsApiStoreResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetCookieDeclarationData, GetCookieDeclarationErrors, GetCookieDeclarationResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetInventoryMetricsData, GetInventoryMetricsErrors, GetInventoryMetricsResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, LaunchPlansCopyData, LaunchPlansCopyErrors, LaunchPlansCopyResponses, LaunchPlansExecuteData, LaunchPlansExecuteErrors, LaunchPlansExecuteResponses, LaunchPlansIndexData, LaunchPlansIndexErrors, LaunchPlansIndexResponses, LaunchPlansShowData, LaunchPlansShowErrors, LaunchPlansShowResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, StoreCreativeData, StoreCreativeErrors, StoreCreativeFromUrlData, StoreCreativeFromUrlErrors, StoreCreativeFromUrlResponses, StoreCreativeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
+import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, ActionsRulesIndexData, ActionsRulesIndexErrors, ActionsRulesIndexResponses, ActionsTestsApiIndexData, ActionsTestsApiIndexErrors, ActionsTestsApiIndexResponses, ActionsTestsApiShowData, ActionsTestsApiShowErrors, ActionsTestsApiShowResponses, ActionsTestsApiStoreData, ActionsTestsApiStoreErrors, ActionsTestsApiStoreResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetAccountInventoryData, GetAccountInventoryErrors, GetAccountInventoryResponses, GetCookieDeclarationData, GetCookieDeclarationErrors, GetCookieDeclarationResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetInventoryMetricsData, GetInventoryMetricsErrors, GetInventoryMetricsResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, LaunchCreativesIndexData, LaunchCreativesIndexErrors, LaunchCreativesIndexResponses, LaunchPlansCopyData, LaunchPlansCopyErrors, LaunchPlansCopyResponses, LaunchPlansExecuteData, LaunchPlansExecuteErrors, LaunchPlansExecuteResponses, LaunchPlansIndexData, LaunchPlansIndexErrors, LaunchPlansIndexResponses, LaunchPlansShowData, LaunchPlansShowErrors, LaunchPlansShowResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, StoreCreativeData, StoreCreativeErrors, StoreCreativeFromUrlData, StoreCreativeFromUrlErrors, StoreCreativeFromUrlResponses, StoreCreativeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -132,6 +132,21 @@ export const actionsApiBatch = <ThrowOnError extends boolean = false>(options: O
 });
 
 /**
+ * List rule summaries
+ *
+ * Read rule summaries, current revision and last-run status without histories or decisions. Continue with cursor; use actions.rules.show for detail.
+ */
+export const actionsRulesIndex = <ThrowOnError extends boolean = false>(options: Options<ActionsRulesIndexData, ThrowOnError>): RequestResult<ActionsRulesIndexResponses, ActionsRulesIndexErrors, ThrowOnError> => (options.client ?? client).get<ActionsRulesIndexResponses, ActionsRulesIndexErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/action-rules',
+    ...options
+});
+
+/**
  * List Tests and observed conversion event choices
  *
  * Lists scoped Tests, their loser pause candidate status and reasons, and observed conversion event choices with last-30-day recorded counts.
@@ -186,6 +201,21 @@ export const actionsTestsApiShow = <ThrowOnError extends boolean = false>(option
  * Public on every plan. Returns latest completed scan metadata, never values. Invalid keys return 404 before the 300/minute per-key limiter.
  */
 export const getCookieDeclaration = <ThrowOnError extends boolean = false>(options: Options<GetCookieDeclarationData, ThrowOnError>): RequestResult<GetCookieDeclarationResponses, GetCookieDeclarationErrors, ThrowOnError> => (options.client ?? client).get<GetCookieDeclarationResponses, GetCookieDeclarationErrors, ThrowOnError>({ url: '/cookie-declarations/{publishableKey}', ...options });
+
+/**
+ * List workspace creatives
+ *
+ * Read complete workspace creative rows within the shared MCP byte budget. Continue with next_cursor as cursor in the same workspace.
+ */
+export const launchCreativesIndex = <ThrowOnError extends boolean = false>(options: Options<LaunchCreativesIndexData, ThrowOnError>): RequestResult<LaunchCreativesIndexResponses, LaunchCreativesIndexErrors, ThrowOnError> => (options.client ?? client).get<LaunchCreativesIndexResponses, LaunchCreativesIndexErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/creatives',
+    ...options
+});
 
 /**
  * Upload a creative
@@ -336,6 +366,21 @@ export const getEvent = <ThrowOnError extends boolean = false>(options: Options<
             type: 'http'
         }],
     url: '/events/{event}',
+    ...options
+});
+
+/**
+ * Read account inventory
+ *
+ * Read complete Meta objects with account-wide totals on every page. Continue with next_cursor as after_id; scope and filters stay unchanged.
+ */
+export const getAccountInventory = <ThrowOnError extends boolean = false>(options: Options<GetAccountInventoryData, ThrowOnError>): RequestResult<GetAccountInventoryResponses, GetAccountInventoryErrors, ThrowOnError> => (options.client ?? client).get<GetAccountInventoryResponses, GetAccountInventoryErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory',
     ...options
 });
 

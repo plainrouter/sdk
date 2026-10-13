@@ -15,10 +15,16 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     workspace: int,
     *,
+    page: int | Unset = 1,
+    cursor: int | Unset = UNSET,
     per_page: int | Unset = 25,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
+
+    params["page"] = page
+
+    params["cursor"] = cursor
 
     params["per_page"] = per_page
 
@@ -79,6 +85,8 @@ def sync_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient,
+    page: int | Unset = 1,
+    cursor: int | Unset = UNSET,
     per_page: int | Unset = 25,
 ) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200]:
     """List deployment plans
@@ -88,6 +96,8 @@ def sync_detailed(
 
     Args:
         workspace (int):
+        page (int | Unset):  Default: 1.
+        cursor (int | Unset):
         per_page (int | Unset):  Default: 25.
 
     Raises:
@@ -100,6 +110,8 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         workspace=workspace,
+        page=page,
+        cursor=cursor,
         per_page=per_page,
     )
 
@@ -114,6 +126,8 @@ def sync(
     workspace: int,
     *,
     client: AuthenticatedClient,
+    page: int | Unset = 1,
+    cursor: int | Unset = UNSET,
     per_page: int | Unset = 25,
 ) -> ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | None:
     """List deployment plans
@@ -123,6 +137,8 @@ def sync(
 
     Args:
         workspace (int):
+        page (int | Unset):  Default: 1.
+        cursor (int | Unset):
         per_page (int | Unset):  Default: 25.
 
     Raises:
@@ -136,6 +152,8 @@ def sync(
     return sync_detailed(
         workspace=workspace,
         client=client,
+        page=page,
+        cursor=cursor,
         per_page=per_page,
     ).parsed
 
@@ -144,6 +162,8 @@ async def asyncio_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient,
+    page: int | Unset = 1,
+    cursor: int | Unset = UNSET,
     per_page: int | Unset = 25,
 ) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200]:
     """List deployment plans
@@ -153,6 +173,8 @@ async def asyncio_detailed(
 
     Args:
         workspace (int):
+        page (int | Unset):  Default: 1.
+        cursor (int | Unset):
         per_page (int | Unset):  Default: 25.
 
     Raises:
@@ -165,6 +187,8 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         workspace=workspace,
+        page=page,
+        cursor=cursor,
         per_page=per_page,
     )
 
@@ -177,6 +201,8 @@ async def asyncio(
     workspace: int,
     *,
     client: AuthenticatedClient,
+    page: int | Unset = 1,
+    cursor: int | Unset = UNSET,
     per_page: int | Unset = 25,
 ) -> ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | None:
     """List deployment plans
@@ -186,6 +212,8 @@ async def asyncio(
 
     Args:
         workspace (int):
+        page (int | Unset):  Default: 1.
+        cursor (int | Unset):
         per_page (int | Unset):  Default: 25.
 
     Raises:
@@ -200,6 +228,8 @@ async def asyncio(
         await asyncio_detailed(
             workspace=workspace,
             client=client,
+            page=page,
+            cursor=cursor,
             per_page=per_page,
         )
     ).parsed

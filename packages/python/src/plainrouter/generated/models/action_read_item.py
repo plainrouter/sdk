@@ -17,6 +17,7 @@ from ..types import UNSET, Unset
 if TYPE_CHECKING:
     from ..models.action_current_disposition import ActionCurrentDisposition
     from ..models.action_policy_result import ActionPolicyResult
+    from ..models.action_read_item_counted_evidence_type_0 import ActionReadItemCountedEvidenceType0
     from ..models.action_read_item_evidence_type_0 import ActionReadItemEvidenceType0
     from ..models.action_read_item_evidence_type_1 import ActionReadItemEvidenceType1
     from ..models.action_read_item_evidence_type_2 import ActionReadItemEvidenceType2
@@ -48,6 +49,10 @@ class ActionReadItem:
         policy_reasons (list[str]):
         policy_result (ActionPolicyResult | None):
         policy_results (list[ActionPolicyResult]):
+        counted_evidence (ActionReadItemCountedEvidenceType0 | None | Unset): Frozen proposal-time target figures over
+            completed account-local dates. Purchase values are decimal strings in the account currency; counted values in
+            other currencies are excluded and never converted. Null means figures were not captured. Display only; never an
+            enforcement input.
         proposer (ActionReadItemProposer | Unset):
         evidence (ActionReadItemEvidenceType0 | ActionReadItemEvidenceType1 | ActionReadItemEvidenceType2 | Unset):
             System evidence cites either the original action and its counted outcome or the rule, revision, run and
@@ -75,12 +80,14 @@ class ActionReadItem:
     policy_reasons: list[str]
     policy_result: ActionPolicyResult | None
     policy_results: list[ActionPolicyResult]
+    counted_evidence: ActionReadItemCountedEvidenceType0 | None | Unset = UNSET
     proposer: ActionReadItemProposer | Unset = UNSET
     evidence: ActionReadItemEvidenceType0 | ActionReadItemEvidenceType1 | ActionReadItemEvidenceType2 | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.action_policy_result import ActionPolicyResult
+        from ..models.action_read_item_counted_evidence_type_0 import ActionReadItemCountedEvidenceType0
         from ..models.action_read_item_evidence_type_0 import ActionReadItemEvidenceType0
         from ..models.action_read_item_evidence_type_1 import ActionReadItemEvidenceType1
         from ..models.action_read_item_params_type_0 import ActionReadItemParamsType0
@@ -137,6 +144,14 @@ class ActionReadItem:
             policy_results_item = policy_results_item_data.to_dict()
             policy_results.append(policy_results_item)
 
+        counted_evidence: dict[str, Any] | None | Unset
+        if isinstance(self.counted_evidence, Unset):
+            counted_evidence = UNSET
+        elif isinstance(self.counted_evidence, ActionReadItemCountedEvidenceType0):
+            counted_evidence = self.counted_evidence.to_dict()
+        else:
+            counted_evidence = self.counted_evidence
+
         proposer: dict[str, Any] | Unset = UNSET
         if not isinstance(self.proposer, Unset):
             proposer = self.proposer.to_dict()
@@ -173,6 +188,8 @@ class ActionReadItem:
                 "policy_results": policy_results,
             }
         )
+        if counted_evidence is not UNSET:
+            field_dict["counted_evidence"] = counted_evidence
         if proposer is not UNSET:
             field_dict["proposer"] = proposer
         if evidence is not UNSET:
@@ -184,6 +201,7 @@ class ActionReadItem:
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.action_current_disposition import ActionCurrentDisposition
         from ..models.action_policy_result import ActionPolicyResult
+        from ..models.action_read_item_counted_evidence_type_0 import ActionReadItemCountedEvidenceType0
         from ..models.action_read_item_evidence_type_0 import ActionReadItemEvidenceType0
         from ..models.action_read_item_evidence_type_1 import ActionReadItemEvidenceType1
         from ..models.action_read_item_evidence_type_2 import ActionReadItemEvidenceType2
@@ -303,6 +321,23 @@ class ActionReadItem:
 
             policy_results.append(policy_results_item)
 
+        def _parse_counted_evidence(data: object) -> ActionReadItemCountedEvidenceType0 | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                counted_evidence_type_0 = ActionReadItemCountedEvidenceType0.from_dict(data)
+
+                return counted_evidence_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(ActionReadItemCountedEvidenceType0 | None | Unset, data)
+
+        counted_evidence = _parse_counted_evidence(d.pop("counted_evidence", UNSET))
+
         _proposer = d.pop("proposer", UNSET)
         proposer: ActionReadItemProposer | Unset
         if isinstance(_proposer, Unset):
@@ -356,6 +391,7 @@ class ActionReadItem:
             policy_reasons=policy_reasons,
             policy_result=policy_result,
             policy_results=policy_results,
+            counted_evidence=counted_evidence,
             proposer=proposer,
             evidence=evidence,
         )

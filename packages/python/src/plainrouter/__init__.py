@@ -1,8 +1,7 @@
-from . import create_event
+from . import create_event, launch_plans_copy
 from .client import DEFAULT_BASE_URL, create_client
 from .create_event import CreateEventBodyInput
 from .generated import AuthenticatedClient
-from .generated.api.deployment_plan import launch_plans_copy
 from .generated.api.event import get_event, verify_signal_ingestion
 from .generated.api.operations import (
     delete_user_data,
@@ -13,6 +12,7 @@ from .generated.api.operations import (
     send_test_purchase,
     set_destination_test_mode,
 )
+from .proposal_errors import is_retryable_proposal_error
 from .validation import (
     CAPTURED_AT_PATTERN,
     CreateEventValidationError,
@@ -23,6 +23,7 @@ __all__ = (
     "DEFAULT_BASE_URL",
     "AuthenticatedClient",
     "create_client",
+    "is_retryable_proposal_error",
     "create_event",
     "CreateEventBodyInput",
     "CAPTURED_AT_PATTERN",

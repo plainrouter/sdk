@@ -17,11 +17,17 @@ def _get_kwargs(
     action_batch: str,
     *,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
 
     params["account_id"] = account_id
+
+    params["cursor"] = cursor
+
+    params["limit"] = limit
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -88,6 +94,8 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> Response[ActionBatchRead | ErrorMessage | ValidationError]:
     """Get action batch
 
@@ -98,6 +106,8 @@ def sync_detailed(
         workspace (int):
         action_batch (str):
         account_id (int | Unset):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 25.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -111,6 +121,8 @@ def sync_detailed(
         workspace=workspace,
         action_batch=action_batch,
         account_id=account_id,
+        cursor=cursor,
+        limit=limit,
     )
 
     response = client.get_httpx_client().request(
@@ -126,6 +138,8 @@ def sync(
     *,
     client: AuthenticatedClient,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> ActionBatchRead | ErrorMessage | ValidationError | None:
     """Get action batch
 
@@ -136,6 +150,8 @@ def sync(
         workspace (int):
         action_batch (str):
         account_id (int | Unset):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 25.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -150,6 +166,8 @@ def sync(
         action_batch=action_batch,
         client=client,
         account_id=account_id,
+        cursor=cursor,
+        limit=limit,
     ).parsed
 
 
@@ -159,6 +177,8 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> Response[ActionBatchRead | ErrorMessage | ValidationError]:
     """Get action batch
 
@@ -169,6 +189,8 @@ async def asyncio_detailed(
         workspace (int):
         action_batch (str):
         account_id (int | Unset):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 25.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -182,6 +204,8 @@ async def asyncio_detailed(
         workspace=workspace,
         action_batch=action_batch,
         account_id=account_id,
+        cursor=cursor,
+        limit=limit,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -195,6 +219,8 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     account_id: int | Unset = UNSET,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 25,
 ) -> ActionBatchRead | ErrorMessage | ValidationError | None:
     """Get action batch
 
@@ -205,6 +231,8 @@ async def asyncio(
         workspace (int):
         action_batch (str):
         account_id (int | Unset):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 25.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -220,5 +248,7 @@ async def asyncio(
             action_batch=action_batch,
             client=client,
             account_id=account_id,
+            cursor=cursor,
+            limit=limit,
         )
     ).parsed

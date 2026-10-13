@@ -36,6 +36,12 @@ module PlainRouter::OpenAPI
 
     attr_accessor :updated_at
 
+    attr_accessor :attention_reason
+
+    attr_accessor :held_count
+
+    attr_accessor :notices
+
     class EnumAttributeValidator
       attr_reader :datatype
       attr_reader :allowable_values
@@ -70,7 +76,10 @@ module PlainRouter::OpenAPI
         :'config' => :'config',
         :'status' => :'status',
         :'created_at' => :'created_at',
-        :'updated_at' => :'updated_at'
+        :'updated_at' => :'updated_at',
+        :'attention_reason' => :'attention_reason',
+        :'held_count' => :'held_count',
+        :'notices' => :'notices'
       }
     end
 
@@ -96,7 +105,10 @@ module PlainRouter::OpenAPI
         :'config' => :'Array<Object>',
         :'status' => :'DestinationStatus',
         :'created_at' => :'Time',
-        :'updated_at' => :'Time'
+        :'updated_at' => :'Time',
+        :'attention_reason' => :'String',
+        :'held_count' => :'String',
+        :'notices' => :'String'
       }
     end
 
@@ -105,7 +117,7 @@ module PlainRouter::OpenAPI
       Set.new([
         :'platform_ad_account_id',
         :'created_at',
-        :'updated_at'
+        :'updated_at',
       ])
     end
 
@@ -186,6 +198,24 @@ module PlainRouter::OpenAPI
       else
         self.updated_at = nil
       end
+
+      if attributes.key?(:'attention_reason')
+        self.attention_reason = attributes[:'attention_reason']
+      else
+        self.attention_reason = nil
+      end
+
+      if attributes.key?(:'held_count')
+        self.held_count = attributes[:'held_count']
+      else
+        self.held_count = nil
+      end
+
+      if attributes.key?(:'notices')
+        self.notices = attributes[:'notices']
+      else
+        self.notices = nil
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -221,6 +251,18 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "status", status cannot be nil.')
       end
 
+      if @attention_reason.nil?
+        invalid_properties.push('invalid value for "attention_reason", attention_reason cannot be nil.')
+      end
+
+      if @held_count.nil?
+        invalid_properties.push('invalid value for "held_count", held_count cannot be nil.')
+      end
+
+      if @notices.nil?
+        invalid_properties.push('invalid value for "notices", notices cannot be nil.')
+      end
+
       invalid_properties
     end
 
@@ -235,6 +277,9 @@ module PlainRouter::OpenAPI
       return false if @credential_source.nil?
       return false if @config.nil?
       return false if @status.nil?
+      return false if @attention_reason.nil?
+      return false if @held_count.nil?
+      return false if @notices.nil?
       true
     end
 
@@ -308,6 +353,36 @@ module PlainRouter::OpenAPI
       @status = status
     end
 
+    # Custom attribute writer method with validation
+    # @param [Object] attention_reason Value to be assigned
+    def attention_reason=(attention_reason)
+      if attention_reason.nil?
+        fail ArgumentError, 'attention_reason cannot be nil'
+      end
+
+      @attention_reason = attention_reason
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] held_count Value to be assigned
+    def held_count=(held_count)
+      if held_count.nil?
+        fail ArgumentError, 'held_count cannot be nil'
+      end
+
+      @held_count = held_count
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] notices Value to be assigned
+    def notices=(notices)
+      if notices.nil?
+        fail ArgumentError, 'notices cannot be nil'
+      end
+
+      @notices = notices
+    end
+
     # Checks equality by comparing each attribute.
     # @param [Object] Object to be compared
     def ==(o)
@@ -322,7 +397,10 @@ module PlainRouter::OpenAPI
           config == o.config &&
           status == o.status &&
           created_at == o.created_at &&
-          updated_at == o.updated_at
+          updated_at == o.updated_at &&
+          attention_reason == o.attention_reason &&
+          held_count == o.held_count &&
+          notices == o.notices
     end
 
     # @see the `==` method
@@ -334,7 +412,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, workspace_id, signal_tracker_id, platform_ad_account_id, type, credential_source, config, status, created_at, updated_at].hash
+      [id, workspace_id, signal_tracker_id, platform_ad_account_id, type, credential_source, config, status, created_at, updated_at, attention_reason, held_count, notices].hash
     end
 
     # Builds the object from hash

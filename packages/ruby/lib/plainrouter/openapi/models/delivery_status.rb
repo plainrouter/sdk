@@ -17,6 +17,7 @@ module PlainRouter::OpenAPI
   class DeliveryStatus
     QUEUED = "queued".freeze
     SENT = "sent".freeze
+    HELD = "held".freeze
     ACCEPTED = "accepted".freeze
     RETRYING = "retrying".freeze
     FAILED_AUTH = "failed:auth".freeze
@@ -28,7 +29,7 @@ module PlainRouter::OpenAPI
     SKIPPED_DUPLICATE = "skipped:duplicate".freeze
 
     def self.all_vars
-      @all_vars ||= [QUEUED, SENT, ACCEPTED, RETRYING, FAILED_AUTH, FAILED_PERMANENT, FAILED_UNKNOWN, EXPIRED, SKIPPED_CONSENT, SKIPPED_NO_DESTINATION, SKIPPED_DUPLICATE].freeze
+      @all_vars ||= [QUEUED, SENT, HELD, ACCEPTED, RETRYING, FAILED_AUTH, FAILED_PERMANENT, FAILED_UNKNOWN, EXPIRED, SKIPPED_CONSENT, SKIPPED_NO_DESTINATION, SKIPPED_DUPLICATE].freeze
     end
 
     # Builds the enum from string

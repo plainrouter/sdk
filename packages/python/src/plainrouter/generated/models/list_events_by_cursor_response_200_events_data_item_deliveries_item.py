@@ -37,6 +37,8 @@ class ListEventsByCursorResponse200EventsDataItemDeliveriesItem:
             None):
         platform_trace_id (None | str):
         next_attempt_at (None | str):
+        upload_deadline_at (None | str):
+        freshness_basis (None | str):
         created_at (str):
         updated_at (None | str):
     """
@@ -53,6 +55,8 @@ class ListEventsByCursorResponse200EventsDataItemDeliveriesItem:
     platform_response: list[Any] | ListEventsByCursorResponse200EventsDataItemDeliveriesItemPlatformResponseType0 | None
     platform_trace_id: None | str
     next_attempt_at: None | str
+    upload_deadline_at: None | str
+    freshness_basis: None | str
     created_at: str
     updated_at: None | str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -108,6 +112,12 @@ class ListEventsByCursorResponse200EventsDataItemDeliveriesItem:
         next_attempt_at: None | str
         next_attempt_at = self.next_attempt_at
 
+        upload_deadline_at: None | str
+        upload_deadline_at = self.upload_deadline_at
+
+        freshness_basis: None | str
+        freshness_basis = self.freshness_basis
+
         created_at = self.created_at
 
         updated_at: None | str
@@ -129,6 +139,8 @@ class ListEventsByCursorResponse200EventsDataItemDeliveriesItem:
                 "platform_response": platform_response,
                 "platform_trace_id": platform_trace_id,
                 "next_attempt_at": next_attempt_at,
+                "upload_deadline_at": upload_deadline_at,
+                "freshness_basis": freshness_basis,
                 "created_at": created_at,
                 "updated_at": updated_at,
             }
@@ -239,6 +251,20 @@ class ListEventsByCursorResponse200EventsDataItemDeliveriesItem:
 
         next_attempt_at = _parse_next_attempt_at(d.pop("next_attempt_at"))
 
+        def _parse_upload_deadline_at(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        upload_deadline_at = _parse_upload_deadline_at(d.pop("upload_deadline_at"))
+
+        def _parse_freshness_basis(data: object) -> None | str:
+            if data is None:
+                return data
+            return cast(None | str, data)
+
+        freshness_basis = _parse_freshness_basis(d.pop("freshness_basis"))
+
         created_at = d.pop("created_at")
 
         def _parse_updated_at(data: object) -> None | str:
@@ -261,6 +287,8 @@ class ListEventsByCursorResponse200EventsDataItemDeliveriesItem:
             platform_response=platform_response,
             platform_trace_id=platform_trace_id,
             next_attempt_at=next_attempt_at,
+            upload_deadline_at=upload_deadline_at,
+            freshness_basis=freshness_basis,
             created_at=created_at,
             updated_at=updated_at,
         )

@@ -14,6 +14,7 @@ require 'date'
 require 'time'
 
 module PlainRouter::OpenAPI
+  # Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
   class DeploymentPlanRead < ApiModelBase
     attr_accessor :name
 
@@ -30,6 +31,14 @@ module PlainRouter::OpenAPI
 
     attr_accessor :creatives
 
+    attr_accessor :next_cursor
+
+    attr_accessor :truncated
+
+    attr_accessor :continuation
+
+    attr_accessor :creative_count
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
@@ -39,7 +48,11 @@ module PlainRouter::OpenAPI
         :'review_version' => :'review_version',
         :'copy' => :'copy',
         :'landing_page' => :'landing_page',
-        :'creatives' => :'creatives'
+        :'creatives' => :'creatives',
+        :'next_cursor' => :'next_cursor',
+        :'truncated' => :'truncated',
+        :'continuation' => :'continuation',
+        :'creative_count' => :'creative_count'
       }
     end
 
@@ -62,7 +75,11 @@ module PlainRouter::OpenAPI
         :'review_version' => :'String',
         :'copy' => :'DeploymentPlanReadCopy',
         :'landing_page' => :'String',
-        :'creatives' => :'Array<DeploymentPlanReadCreativesInner>'
+        :'creatives' => :'Array<DeploymentPlanReadCreativesInner>',
+        :'next_cursor' => :'Integer',
+        :'truncated' => :'Boolean',
+        :'continuation' => :'String',
+        :'creative_count' => :'Integer'
       }
     end
 
@@ -71,6 +88,7 @@ module PlainRouter::OpenAPI
       Set.new([
         :'name',
         :'copy',
+        :'next_cursor',
       ])
     end
 
@@ -124,6 +142,22 @@ module PlainRouter::OpenAPI
         if (value = attributes[:'creatives']).is_a?(Array)
           self.creatives = value
         end
+      end
+
+      if attributes.key?(:'next_cursor')
+        self.next_cursor = attributes[:'next_cursor']
+      end
+
+      if attributes.key?(:'truncated')
+        self.truncated = attributes[:'truncated']
+      end
+
+      if attributes.key?(:'continuation')
+        self.continuation = attributes[:'continuation']
+      end
+
+      if attributes.key?(:'creative_count')
+        self.creative_count = attributes[:'creative_count']
       end
     end
 
@@ -209,7 +243,11 @@ module PlainRouter::OpenAPI
           review_version == o.review_version &&
           copy == o.copy &&
           landing_page == o.landing_page &&
-          creatives == o.creatives
+          creatives == o.creatives &&
+          next_cursor == o.next_cursor &&
+          truncated == o.truncated &&
+          continuation == o.continuation &&
+          creative_count == o.creative_count
     end
 
     # @see the `==` method
@@ -221,7 +259,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [name, id, platform_ad_account_id, review_version, copy, landing_page, creatives].hash
+      [name, id, platform_ad_account_id, review_version, copy, landing_page, creatives, next_cursor, truncated, continuation, creative_count].hash
     end
 
     # Builds the object from hash

@@ -29,6 +29,8 @@ module PlainRouter::OpenAPI
 
     attr_accessor :target_entity_name
 
+    attr_accessor :counted_evidence
+
     attr_accessor :params
 
     attr_accessor :rationale
@@ -83,6 +85,7 @@ module PlainRouter::OpenAPI
         :'target_entity_type' => :'target_entity_type',
         :'target_entity_id' => :'target_entity_id',
         :'target_entity_name' => :'target_entity_name',
+        :'counted_evidence' => :'counted_evidence',
         :'params' => :'params',
         :'rationale' => :'rationale',
         :'proposer' => :'proposer',
@@ -117,6 +120,7 @@ module PlainRouter::OpenAPI
         :'target_entity_type' => :'String',
         :'target_entity_id' => :'String',
         :'target_entity_name' => :'String',
+        :'counted_evidence' => :'ActionReadItemCountedEvidence',
         :'params' => :'ActionProposalReadProposalActionsInnerParams',
         :'rationale' => :'String',
         :'proposer' => :'ActionReadItemProposer',
@@ -135,6 +139,7 @@ module PlainRouter::OpenAPI
     def self.openapi_nullable
       Set.new([
         :'target_entity_name',
+        :'counted_evidence',
         :'policy_decision',
         :'policy_result',
       ])
@@ -196,6 +201,10 @@ module PlainRouter::OpenAPI
         self.target_entity_name = attributes[:'target_entity_name']
       else
         self.target_entity_name = nil
+      end
+
+      if attributes.key?(:'counted_evidence')
+        self.counted_evidence = attributes[:'counted_evidence']
       end
 
       if attributes.key?(:'params')
@@ -505,6 +514,7 @@ module PlainRouter::OpenAPI
           target_entity_type == o.target_entity_type &&
           target_entity_id == o.target_entity_id &&
           target_entity_name == o.target_entity_name &&
+          counted_evidence == o.counted_evidence &&
           params == o.params &&
           rationale == o.rationale &&
           proposer == o.proposer &&
@@ -527,7 +537,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [id, batch_id, workspace_id, type, target_entity_type, target_entity_id, target_entity_name, params, rationale, proposer, evidence, status, batch_status, disposition, policy_decision, policy_reasons, policy_result, policy_results].hash
+      [id, batch_id, workspace_id, type, target_entity_type, target_entity_id, target_entity_name, counted_evidence, params, rationale, proposer, evidence, status, batch_status, disposition, policy_decision, policy_reasons, policy_result, policy_results].hash
     end
 
     # Builds the object from hash

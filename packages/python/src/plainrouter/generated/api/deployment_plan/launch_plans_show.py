@@ -9,13 +9,24 @@ from ...client import AuthenticatedClient, Client
 from ...models.api_route_not_found import ApiRouteNotFound
 from ...models.error_message import ErrorMessage
 from ...models.launch_plans_show_response_200 import LaunchPlansShowResponse200
-from ...types import Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     workspace: int,
     deployment_plan: str,
+    *,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 5,
 ) -> dict[str, Any]:
+
+    params: dict[str, Any] = {}
+
+    params["cursor"] = cursor
+
+    params["limit"] = limit
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     _kwargs: dict[str, Any] = {
         "method": "get",
@@ -23,6 +34,7 @@ def _get_kwargs(
             workspace=quote(str(workspace), safe=""),
             deployment_plan=quote(str(deployment_plan), safe=""),
         ),
+        "params": params,
     }
 
     return _kwargs
@@ -73,6 +85,8 @@ def sync_detailed(
     deployment_plan: str,
     *,
     client: AuthenticatedClient,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 5,
 ) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansShowResponse200]:
     """Read a deployment plan
 
@@ -82,6 +96,8 @@ def sync_detailed(
     Args:
         workspace (int):
         deployment_plan (str):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 5.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -94,6 +110,8 @@ def sync_detailed(
     kwargs = _get_kwargs(
         workspace=workspace,
         deployment_plan=deployment_plan,
+        cursor=cursor,
+        limit=limit,
     )
 
     response = client.get_httpx_client().request(
@@ -108,6 +126,8 @@ def sync(
     deployment_plan: str,
     *,
     client: AuthenticatedClient,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 5,
 ) -> ApiRouteNotFound | ErrorMessage | LaunchPlansShowResponse200 | None:
     """Read a deployment plan
 
@@ -117,6 +137,8 @@ def sync(
     Args:
         workspace (int):
         deployment_plan (str):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 5.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -130,6 +152,8 @@ def sync(
         workspace=workspace,
         deployment_plan=deployment_plan,
         client=client,
+        cursor=cursor,
+        limit=limit,
     ).parsed
 
 
@@ -138,6 +162,8 @@ async def asyncio_detailed(
     deployment_plan: str,
     *,
     client: AuthenticatedClient,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 5,
 ) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansShowResponse200]:
     """Read a deployment plan
 
@@ -147,6 +173,8 @@ async def asyncio_detailed(
     Args:
         workspace (int):
         deployment_plan (str):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 5.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -159,6 +187,8 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         workspace=workspace,
         deployment_plan=deployment_plan,
+        cursor=cursor,
+        limit=limit,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -171,6 +201,8 @@ async def asyncio(
     deployment_plan: str,
     *,
     client: AuthenticatedClient,
+    cursor: int | Unset = UNSET,
+    limit: int | Unset = 5,
 ) -> ApiRouteNotFound | ErrorMessage | LaunchPlansShowResponse200 | None:
     """Read a deployment plan
 
@@ -180,6 +212,8 @@ async def asyncio(
     Args:
         workspace (int):
         deployment_plan (str):
+        cursor (int | Unset):
+        limit (int | Unset):  Default: 5.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -194,5 +228,7 @@ async def asyncio(
             workspace=workspace,
             deployment_plan=deployment_plan,
             client=client,
+            cursor=cursor,
+            limit=limit,
         )
     ).parsed

@@ -28,6 +28,9 @@ class Destination:
         status (DestinationStatus):
         created_at (datetime.datetime | None):
         updated_at (datetime.datetime | None):
+        attention_reason (str):
+        held_count (str):
+        notices (str):
     """
 
     id: str
@@ -40,6 +43,9 @@ class Destination:
     status: DestinationStatus
     created_at: datetime.datetime | None
     updated_at: datetime.datetime | None
+    attention_reason: str
+    held_count: str
+    notices: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -72,6 +78,12 @@ class Destination:
         else:
             updated_at = self.updated_at
 
+        attention_reason = self.attention_reason
+
+        held_count = self.held_count
+
+        notices = self.notices
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -86,6 +98,9 @@ class Destination:
                 "status": status,
                 "created_at": created_at,
                 "updated_at": updated_at,
+                "attention_reason": attention_reason,
+                "held_count": held_count,
+                "notices": notices,
             }
         )
 
@@ -145,6 +160,12 @@ class Destination:
 
         updated_at = _parse_updated_at(d.pop("updated_at"))
 
+        attention_reason = d.pop("attention_reason")
+
+        held_count = d.pop("held_count")
+
+        notices = d.pop("notices")
+
         destination = cls(
             id=id,
             workspace_id=workspace_id,
@@ -156,6 +177,9 @@ class Destination:
             status=status,
             created_at=created_at,
             updated_at=updated_at,
+            attention_reason=attention_reason,
+            held_count=held_count,
+            notices=notices,
         )
 
         destination.additional_properties = d

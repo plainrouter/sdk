@@ -14,6 +14,7 @@ require 'date'
 require 'time'
 
 module PlainRouter::OpenAPI
+  # Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
   class ActionListReadMeta < ApiModelBase
     attr_accessor :current_page
 
@@ -23,13 +24,22 @@ module PlainRouter::OpenAPI
 
     attr_accessor :total
 
+    attr_accessor :next_cursor
+
+    attr_accessor :truncated
+
+    attr_accessor :continuation
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
         :'current_page' => :'current_page',
         :'last_page' => :'last_page',
         :'per_page' => :'per_page',
-        :'total' => :'total'
+        :'total' => :'total',
+        :'next_cursor' => :'next_cursor',
+        :'truncated' => :'truncated',
+        :'continuation' => :'continuation'
       }
     end
 
@@ -49,13 +59,17 @@ module PlainRouter::OpenAPI
         :'current_page' => :'Integer',
         :'last_page' => :'Integer',
         :'per_page' => :'Integer',
-        :'total' => :'Integer'
+        :'total' => :'Integer',
+        :'next_cursor' => :'Integer',
+        :'truncated' => :'Boolean',
+        :'continuation' => :'String'
       }
     end
 
     # List of attributes with nullable: true
     def self.openapi_nullable
       Set.new([
+        :'next_cursor',
       ])
     end
 
@@ -97,6 +111,18 @@ module PlainRouter::OpenAPI
         self.total = attributes[:'total']
       else
         self.total = nil
+      end
+
+      if attributes.key?(:'next_cursor')
+        self.next_cursor = attributes[:'next_cursor']
+      end
+
+      if attributes.key?(:'truncated')
+        self.truncated = attributes[:'truncated']
+      end
+
+      if attributes.key?(:'continuation')
+        self.continuation = attributes[:'continuation']
       end
     end
 
@@ -183,7 +209,10 @@ module PlainRouter::OpenAPI
           current_page == o.current_page &&
           last_page == o.last_page &&
           per_page == o.per_page &&
-          total == o.total
+          total == o.total &&
+          next_cursor == o.next_cursor &&
+          truncated == o.truncated &&
+          continuation == o.continuation
     end
 
     # @see the `==` method
@@ -195,7 +224,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [current_page, last_page, per_page, total].hash
+      [current_page, last_page, per_page, total, next_cursor, truncated, continuation].hash
     end
 
     # Builds the object from hash

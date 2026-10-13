@@ -8,6 +8,7 @@ from attrs import field as _attrs_field
 
 from ..models.action_proposal_read_proposal_policy_decision import ActionProposalReadProposalPolicyDecision
 from ..models.action_proposal_read_proposal_status import ActionProposalReadProposalStatus
+from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.action_proposal_read_proposal_actions_item import ActionProposalReadProposalActionsItem
@@ -19,20 +20,27 @@ T = TypeVar("T", bound="ActionProposalReadProposal")
 
 @_attrs_define
 class ActionProposalReadProposal:
-    """
-    Attributes:
-        id (str):
-        scope (Any):
-        evidence_provenance (Any):
-        status (ActionProposalReadProposalStatus):
-        policy_decision (ActionProposalReadProposalPolicyDecision):
-        policy_reasons (list[str]):
-        approval_required (bool):
-        inbox_url (str):
-        approval_queue_url (str):
-        rationale (str):
-        proposed_by (ActionProposalReadProposalProposedBy):
-        actions (list[ActionProposalReadProposalActionsItem]):
+    """Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are
+    bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are
+    never silently clipped.
+
+        Attributes:
+            id (str):
+            scope (Any):
+            evidence_provenance (Any):
+            status (ActionProposalReadProposalStatus):
+            policy_decision (ActionProposalReadProposalPolicyDecision):
+            policy_reasons (list[str]):
+            approval_required (bool):
+            inbox_url (str):
+            approval_queue_url (str):
+            rationale (str):
+            proposed_by (ActionProposalReadProposalProposedBy):
+            actions (list[ActionProposalReadProposalActionsItem]):
+            next_cursor (int | None | Unset):
+            truncated (bool | Unset):
+            continuation (str | Unset):
+            total (int | Unset):
     """
 
     id: str
@@ -47,6 +55,10 @@ class ActionProposalReadProposal:
     rationale: str
     proposed_by: ActionProposalReadProposalProposedBy
     actions: list[ActionProposalReadProposalActionsItem]
+    next_cursor: int | None | Unset = UNSET
+    truncated: bool | Unset = UNSET
+    continuation: str | Unset = UNSET
+    total: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -77,6 +89,18 @@ class ActionProposalReadProposal:
             actions_item = actions_item_data.to_dict()
             actions.append(actions_item)
 
+        next_cursor: int | None | Unset
+        if isinstance(self.next_cursor, Unset):
+            next_cursor = UNSET
+        else:
+            next_cursor = self.next_cursor
+
+        truncated = self.truncated
+
+        continuation = self.continuation
+
+        total = self.total
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -95,6 +119,14 @@ class ActionProposalReadProposal:
                 "actions": actions,
             }
         )
+        if next_cursor is not UNSET:
+            field_dict["next_cursor"] = next_cursor
+        if truncated is not UNSET:
+            field_dict["truncated"] = truncated
+        if continuation is not UNSET:
+            field_dict["continuation"] = continuation
+        if total is not UNSET:
+            field_dict["total"] = total
 
         return field_dict
 
@@ -133,6 +165,21 @@ class ActionProposalReadProposal:
 
             actions.append(actions_item)
 
+        def _parse_next_cursor(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        next_cursor = _parse_next_cursor(d.pop("next_cursor", UNSET))
+
+        truncated = d.pop("truncated", UNSET)
+
+        continuation = d.pop("continuation", UNSET)
+
+        total = d.pop("total", UNSET)
+
         action_proposal_read_proposal = cls(
             id=id,
             scope=scope,
@@ -146,6 +193,10 @@ class ActionProposalReadProposal:
             rationale=rationale,
             proposed_by=proposed_by,
             actions=actions,
+            next_cursor=next_cursor,
+            truncated=truncated,
+            continuation=continuation,
+            total=total,
         )
 
         action_proposal_read_proposal.additional_properties = d

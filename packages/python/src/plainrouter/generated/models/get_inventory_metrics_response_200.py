@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..types import UNSET, Unset
+
 if TYPE_CHECKING:
     from ..models.get_inventory_metrics_response_200_account import GetInventoryMetricsResponse200Account
     from ..models.get_inventory_metrics_response_200_changes_item import GetInventoryMetricsResponse200ChangesItem
@@ -16,6 +18,7 @@ if TYPE_CHECKING:
     from ..models.get_inventory_metrics_response_200_object_metrics_item import (
         GetInventoryMetricsResponse200ObjectMetricsItem,
     )
+    from ..models.get_inventory_metrics_response_200_pagination import GetInventoryMetricsResponse200Pagination
     from ..models.get_inventory_metrics_response_200_staleness import GetInventoryMetricsResponse200Staleness
     from ..models.get_inventory_metrics_response_200_sync import GetInventoryMetricsResponse200Sync
 
@@ -35,6 +38,8 @@ class GetInventoryMetricsResponse200:
         effective_range (GetInventoryMetricsResponse200EffectiveRangeType0 | None):
         object_metrics (list[GetInventoryMetricsResponse200ObjectMetricsItem]):
         unmatched_arrivals (int | None):
+        pagination (GetInventoryMetricsResponse200Pagination | Unset):
+        next_cursor (None | str | Unset):
     """
 
     account: GetInventoryMetricsResponse200Account
@@ -45,6 +50,8 @@ class GetInventoryMetricsResponse200:
     effective_range: GetInventoryMetricsResponse200EffectiveRangeType0 | None
     object_metrics: list[GetInventoryMetricsResponse200ObjectMetricsItem]
     unmatched_arrivals: int | None
+    pagination: GetInventoryMetricsResponse200Pagination | Unset = UNSET
+    next_cursor: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -82,6 +89,16 @@ class GetInventoryMetricsResponse200:
         unmatched_arrivals: int | None
         unmatched_arrivals = self.unmatched_arrivals
 
+        pagination: dict[str, Any] | Unset = UNSET
+        if not isinstance(self.pagination, Unset):
+            pagination = self.pagination.to_dict()
+
+        next_cursor: None | str | Unset
+        if isinstance(self.next_cursor, Unset):
+            next_cursor = UNSET
+        else:
+            next_cursor = self.next_cursor
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -96,6 +113,10 @@ class GetInventoryMetricsResponse200:
                 "unmatched_arrivals": unmatched_arrivals,
             }
         )
+        if pagination is not UNSET:
+            field_dict["pagination"] = pagination
+        if next_cursor is not UNSET:
+            field_dict["next_cursor"] = next_cursor
 
         return field_dict
 
@@ -110,6 +131,7 @@ class GetInventoryMetricsResponse200:
         from ..models.get_inventory_metrics_response_200_object_metrics_item import (
             GetInventoryMetricsResponse200ObjectMetricsItem,
         )
+        from ..models.get_inventory_metrics_response_200_pagination import GetInventoryMetricsResponse200Pagination
         from ..models.get_inventory_metrics_response_200_staleness import GetInventoryMetricsResponse200Staleness
         from ..models.get_inventory_metrics_response_200_sync import GetInventoryMetricsResponse200Sync
 
@@ -163,6 +185,22 @@ class GetInventoryMetricsResponse200:
 
         unmatched_arrivals = _parse_unmatched_arrivals(d.pop("unmatched_arrivals"))
 
+        _pagination = d.pop("pagination", UNSET)
+        pagination: GetInventoryMetricsResponse200Pagination | Unset
+        if isinstance(_pagination, Unset):
+            pagination = UNSET
+        else:
+            pagination = GetInventoryMetricsResponse200Pagination.from_dict(_pagination)
+
+        def _parse_next_cursor(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        next_cursor = _parse_next_cursor(d.pop("next_cursor", UNSET))
+
         get_inventory_metrics_response_200 = cls(
             account=account,
             sync=sync,
@@ -172,6 +210,8 @@ class GetInventoryMetricsResponse200:
             effective_range=effective_range,
             object_metrics=object_metrics,
             unmatched_arrivals=unmatched_arrivals,
+            pagination=pagination,
+            next_cursor=next_cursor,
         )
 
         get_inventory_metrics_response_200.additional_properties = d

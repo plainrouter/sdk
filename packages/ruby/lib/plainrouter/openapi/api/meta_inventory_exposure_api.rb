@@ -19,6 +19,121 @@ module PlainRouter::OpenAPI
     def initialize(api_client = ApiClient.default)
       @api_client = api_client
     end
+    # Read account inventory
+    # Read complete Meta objects with account-wide totals on every page. Continue with next_cursor as after_id; scope and filters stay unchanged.
+    # @param workspace [Integer] The workspace ID
+    # @param account_id [String]
+    # @param [Hash] opts the optional parameters
+    # @option opts [String] :level
+    # @option opts [String] :effective_status
+    # @option opts [String] :campaign_id
+    # @option opts [String] :adset_id
+    # @option opts [Integer] :after_id Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+    # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
+    # @return [GetAccountInventory200Response]
+    def get_account_inventory(workspace, account_id, opts = {})
+      data, _status_code, _headers = get_account_inventory_with_http_info(workspace, account_id, opts)
+      data
+    end
+
+    # Read account inventory
+    # Read complete Meta objects with account-wide totals on every page. Continue with next_cursor as after_id; scope and filters stay unchanged.
+    # @param workspace [Integer] The workspace ID
+    # @param account_id [String]
+    # @param [Hash] opts the optional parameters
+    # @option opts [String] :level
+    # @option opts [String] :effective_status
+    # @option opts [String] :campaign_id
+    # @option opts [String] :adset_id
+    # @option opts [Integer] :after_id Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
+    # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
+    # @return [Array<(GetAccountInventory200Response, Integer, Hash)>] GetAccountInventory200Response data, response status code and response headers
+    def get_account_inventory_with_http_info(workspace, account_id, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: MetaInventoryExposureApi.get_account_inventory ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling MetaInventoryExposureApi.get_account_inventory"
+      end
+      # verify the required parameter 'account_id' is set
+      if @api_client.config.client_side_validation && account_id.nil?
+        fail ArgumentError, "Missing the required parameter 'account_id' when calling MetaInventoryExposureApi.get_account_inventory"
+      end
+      allowable_values = ["campaign", "adset", "ad"]
+      if @api_client.config.client_side_validation && opts[:'level'] && !allowable_values.include?(opts[:'level'])
+        fail ArgumentError, "invalid value for \"level\", must be one of #{allowable_values}"
+      end
+      if @api_client.config.client_side_validation && !opts[:'effective_status'].nil? && opts[:'effective_status'].to_s.length > 50
+        fail ArgumentError, 'invalid value for "opts[:"effective_status"]" when calling MetaInventoryExposureApi.get_account_inventory, the character length must be smaller than or equal to 50.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'campaign_id'].nil? && opts[:'campaign_id'].to_s.length > 128
+        fail ArgumentError, 'invalid value for "opts[:"campaign_id"]" when calling MetaInventoryExposureApi.get_account_inventory, the character length must be smaller than or equal to 128.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'adset_id'].nil? && opts[:'adset_id'].to_s.length > 128
+        fail ArgumentError, 'invalid value for "opts[:"adset_id"]" when calling MetaInventoryExposureApi.get_account_inventory, the character length must be smaller than or equal to 128.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'after_id'].nil? && opts[:'after_id'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"after_id"]" when calling MetaInventoryExposureApi.get_account_inventory, must be greater than or equal to 1.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 200
+        fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling MetaInventoryExposureApi.get_account_inventory, must be smaller than or equal to 200.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling MetaInventoryExposureApi.get_account_inventory, must be greater than or equal to 1.'
+      end
+
+      # resource path
+      local_var_path = '/workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{account_id}', CGI.escape(account_id.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+      query_params[:'level'] = opts[:'level'] if !opts[:'level'].nil?
+      query_params[:'effective_status'] = opts[:'effective_status'] if !opts[:'effective_status'].nil?
+      query_params[:'campaign_id'] = opts[:'campaign_id'] if !opts[:'campaign_id'].nil?
+      query_params[:'adset_id'] = opts[:'adset_id'] if !opts[:'adset_id'].nil?
+      query_params[:'after_id'] = opts[:'after_id'] if !opts[:'after_id'].nil?
+      query_params[:'limit'] = opts[:'limit'] if !opts[:'limit'].nil?
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'GetAccountInventory200Response'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
+
+      new_options = opts.merge(
+        :operation => :"MetaInventoryExposureApi.get_account_inventory",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: MetaInventoryExposureApi#get_account_inventory\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
     # Compare Meta metrics with counted arrivals
     # Compare daily Meta metrics with PlainRouter arrivals in the account timezone, within plan retention. Unknown object IDs are never exposed.
     # @param workspace [Integer] The workspace ID
@@ -30,6 +145,8 @@ module PlainRouter::OpenAPI
     # @option opts [String] :adset_id
     # @option opts [String] :ad_id
     # @option opts [Boolean] :include_changes
+    # @option opts [Integer] :limit
+    # @option opts [String] :cursor
     # @return [GetInventoryMetrics200Response]
     def get_inventory_metrics(workspace, account_id, opts = {})
       data, _status_code, _headers = get_inventory_metrics_with_http_info(workspace, account_id, opts)
@@ -47,6 +164,8 @@ module PlainRouter::OpenAPI
     # @option opts [String] :adset_id
     # @option opts [String] :ad_id
     # @option opts [Boolean] :include_changes
+    # @option opts [Integer] :limit
+    # @option opts [String] :cursor
     # @return [Array<(GetInventoryMetrics200Response, Integer, Hash)>] GetInventoryMetrics200Response data, response status code and response headers
     def get_inventory_metrics_with_http_info(workspace, account_id, opts = {})
       if @api_client.config.debugging
@@ -72,6 +191,18 @@ module PlainRouter::OpenAPI
         fail ArgumentError, 'invalid value for "opts[:"ad_id"]" when calling MetaInventoryExposureApi.get_inventory_metrics, the character length must be smaller than or equal to 128.'
       end
 
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 100
+        fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling MetaInventoryExposureApi.get_inventory_metrics, must be smaller than or equal to 100.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling MetaInventoryExposureApi.get_inventory_metrics, must be greater than or equal to 1.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && opts[:'cursor'].to_s.length > 500
+        fail ArgumentError, 'invalid value for "opts[:"cursor"]" when calling MetaInventoryExposureApi.get_inventory_metrics, the character length must be smaller than or equal to 500.'
+      end
+
       # resource path
       local_var_path = '/workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory/metrics'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{account_id}', CGI.escape(account_id.to_s))
 
@@ -83,6 +214,8 @@ module PlainRouter::OpenAPI
       query_params[:'adset_id'] = opts[:'adset_id'] if !opts[:'adset_id'].nil?
       query_params[:'ad_id'] = opts[:'ad_id'] if !opts[:'ad_id'].nil?
       query_params[:'include_changes'] = opts[:'include_changes'] if !opts[:'include_changes'].nil?
+      query_params[:'limit'] = opts[:'limit'] if !opts[:'limit'].nil?
+      query_params[:'cursor'] = opts[:'cursor'] if !opts[:'cursor'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}

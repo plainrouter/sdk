@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+
+from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.action_dry_run_read_dry_run_actions_item_type_0 import ActionDryRunReadDryRunActionsItemType0
@@ -16,12 +18,23 @@ T = TypeVar("T", bound="ActionDryRunReadDryRun")
 
 @_attrs_define
 class ActionDryRunReadDryRun:
-    """
-    Attributes:
-        actions (list[ActionDryRunReadDryRunActionsItemType0 | ActionDryRunReadDryRunActionsItemType1]):
+    """Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are
+    bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are
+    never silently clipped.
+
+        Attributes:
+            actions (list[ActionDryRunReadDryRunActionsItemType0 | ActionDryRunReadDryRunActionsItemType1]):
+            next_cursor (int | None | Unset):
+            truncated (bool | Unset):
+            continuation (str | Unset):
+            total (int | Unset):
     """
 
     actions: list[ActionDryRunReadDryRunActionsItemType0 | ActionDryRunReadDryRunActionsItemType1]
+    next_cursor: int | None | Unset = UNSET
+    truncated: bool | Unset = UNSET
+    continuation: str | Unset = UNSET
+    total: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -37,6 +50,18 @@ class ActionDryRunReadDryRun:
 
             actions.append(actions_item)
 
+        next_cursor: int | None | Unset
+        if isinstance(self.next_cursor, Unset):
+            next_cursor = UNSET
+        else:
+            next_cursor = self.next_cursor
+
+        truncated = self.truncated
+
+        continuation = self.continuation
+
+        total = self.total
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -44,6 +69,14 @@ class ActionDryRunReadDryRun:
                 "actions": actions,
             }
         )
+        if next_cursor is not UNSET:
+            field_dict["next_cursor"] = next_cursor
+        if truncated is not UNSET:
+            field_dict["truncated"] = truncated
+        if continuation is not UNSET:
+            field_dict["continuation"] = continuation
+        if total is not UNSET:
+            field_dict["total"] = total
 
         return field_dict
 
@@ -78,8 +111,27 @@ class ActionDryRunReadDryRun:
 
             actions.append(actions_item)
 
+        def _parse_next_cursor(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        next_cursor = _parse_next_cursor(d.pop("next_cursor", UNSET))
+
+        truncated = d.pop("truncated", UNSET)
+
+        continuation = d.pop("continuation", UNSET)
+
+        total = d.pop("total", UNSET)
+
         action_dry_run_read_dry_run = cls(
             actions=actions,
+            next_cursor=next_cursor,
+            truncated=truncated,
+            continuation=continuation,
+            total=total,
         )
 
         action_dry_run_read_dry_run.additional_properties = d

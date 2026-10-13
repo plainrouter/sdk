@@ -45,6 +45,9 @@ class ActionProposalInput:
         idempotency_key (str):
         evidence (list[ActionProposalInputEvidenceItem]):
         target_source (ActionProposalInputTargetSource):
+        limit (int | Unset): Maximum complete result actions; the shared JSON byte budget can return fewer. Default: 25.
+        cursor (int | Unset): Continue using next_cursor. Read saved proposal actions with get_action_batch to avoid
+            another write; dry runs repeat the same inputs.
         account_id (int | Unset):
         workspace_id (int | Unset):
     """
@@ -69,6 +72,8 @@ class ActionProposalInput:
     idempotency_key: str
     evidence: list[ActionProposalInputEvidenceItem]
     target_source: ActionProposalInputTargetSource
+    limit: int | Unset = 25
+    cursor: int | Unset = UNSET
     account_id: int | Unset = UNSET
     workspace_id: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -133,6 +138,10 @@ class ActionProposalInput:
 
         target_source = self.target_source.value
 
+        limit = self.limit
+
+        cursor = self.cursor
+
         account_id = self.account_id
 
         workspace_id = self.workspace_id
@@ -148,6 +157,10 @@ class ActionProposalInput:
                 "target_source": target_source,
             }
         )
+        if limit is not UNSET:
+            field_dict["limit"] = limit
+        if cursor is not UNSET:
+            field_dict["cursor"] = cursor
         if account_id is not UNSET:
             field_dict["account_id"] = account_id
         if workspace_id is not UNSET:
@@ -323,6 +336,10 @@ class ActionProposalInput:
 
         target_source = ActionProposalInputTargetSource(d.pop("target_source"))
 
+        limit = d.pop("limit", UNSET)
+
+        cursor = d.pop("cursor", UNSET)
+
         account_id = d.pop("account_id", UNSET)
 
         workspace_id = d.pop("workspace_id", UNSET)
@@ -333,6 +350,8 @@ class ActionProposalInput:
             idempotency_key=idempotency_key,
             evidence=evidence,
             target_source=target_source,
+            limit=limit,
+            cursor=cursor,
             account_id=account_id,
             workspace_id=workspace_id,
         )

@@ -15,7 +15,7 @@ require 'time'
 
 module PlainRouter::OpenAPI
   # Stored tags, including provenance when supplied. An empty map is returned as an empty array. Existing creatives keep their original tags.
-  module CreativeIntakeReadCreativeTags
+  module LaunchCreativesIndex200ResponseCreativesDataInnerTags
     class << self
       # List of class defined in anyOf (OpenAPI v3)
       def openapi_any_of

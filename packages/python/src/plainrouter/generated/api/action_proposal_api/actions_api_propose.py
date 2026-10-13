@@ -12,8 +12,8 @@ from ...models.agent_credential_error import AgentCredentialError
 from ...models.api_route_not_found import ApiRouteNotFound
 from ...models.error_message import ErrorMessage
 from ...models.proposal_replay_conflict import ProposalReplayConflict
+from ...models.proposal_unavailable import ProposalUnavailable
 from ...models.validation_error import ValidationError
-from ...models.workspace_lock_timeout import WorkspaceLockTimeout
 from ...types import Response
 
 
@@ -48,8 +48,8 @@ def _parse_response(
     | ApiRouteNotFound
     | ErrorMessage
     | ProposalReplayConflict
+    | ProposalUnavailable
     | ValidationError
-    | WorkspaceLockTimeout
     | None
 ):
     if response.status_code == 200:
@@ -135,7 +135,7 @@ def _parse_response(
         return response_500
 
     if response.status_code == 503:
-        response_503 = WorkspaceLockTimeout.from_dict(response.json())
+        response_503 = ProposalUnavailable.from_dict(response.json())
 
         return response_503
 
@@ -154,8 +154,8 @@ def _build_response(
     | ApiRouteNotFound
     | ErrorMessage
     | ProposalReplayConflict
+    | ProposalUnavailable
     | ValidationError
-    | WorkspaceLockTimeout
 ]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -177,8 +177,8 @@ def sync_detailed(
     | ApiRouteNotFound
     | ErrorMessage
     | ProposalReplayConflict
+    | ProposalUnavailable
     | ValidationError
-    | WorkspaceLockTimeout
 ]:
     """Propose actions
 
@@ -194,7 +194,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionProposalRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ProposalReplayConflict | ValidationError | WorkspaceLockTimeout]
+        Response[ActionProposalRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ProposalReplayConflict | ProposalUnavailable | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -221,8 +221,8 @@ def sync(
     | ApiRouteNotFound
     | ErrorMessage
     | ProposalReplayConflict
+    | ProposalUnavailable
     | ValidationError
-    | WorkspaceLockTimeout
     | None
 ):
     """Propose actions
@@ -239,7 +239,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionProposalRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ProposalReplayConflict | ValidationError | WorkspaceLockTimeout
+        ActionProposalRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ProposalReplayConflict | ProposalUnavailable | ValidationError
     """
 
     return sync_detailed(
@@ -261,8 +261,8 @@ async def asyncio_detailed(
     | ApiRouteNotFound
     | ErrorMessage
     | ProposalReplayConflict
+    | ProposalUnavailable
     | ValidationError
-    | WorkspaceLockTimeout
 ]:
     """Propose actions
 
@@ -278,7 +278,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ActionProposalRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ProposalReplayConflict | ValidationError | WorkspaceLockTimeout]
+        Response[ActionProposalRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ProposalReplayConflict | ProposalUnavailable | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -303,8 +303,8 @@ async def asyncio(
     | ApiRouteNotFound
     | ErrorMessage
     | ProposalReplayConflict
+    | ProposalUnavailable
     | ValidationError
-    | WorkspaceLockTimeout
     | None
 ):
     """Propose actions
@@ -321,7 +321,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ActionProposalRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ProposalReplayConflict | ValidationError | WorkspaceLockTimeout
+        ActionProposalRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ProposalReplayConflict | ProposalUnavailable | ValidationError
     """
 
     return (

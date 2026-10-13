@@ -17,7 +17,9 @@ T = TypeVar("T", bound="ActionProposalRead")
 class ActionProposalRead:
     """
     Attributes:
-        proposal (ActionProposalReadProposal):
+        proposal (ActionProposalReadProposal): Complete projection rows are paged within 80,000 JSON bytes, accounting
+            for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One
+            oversized row is explicitly refused; fields are never silently clipped.
     """
 
     proposal: ActionProposalReadProposal

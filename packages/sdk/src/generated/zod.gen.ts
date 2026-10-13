@@ -166,7 +166,11 @@ export const zActionDryRunRead = z.object({
                 }),
                 status: z.enum(['dry_run_unavailable']),
                 reason: z.string()
-            })]))
+            })])),
+        next_cursor: z.int().nullish(),
+        truncated: z.boolean().optional(),
+        continuation: z.string().optional(),
+        total: z.int().optional()
     })
 });
 
@@ -210,6 +214,8 @@ export const zActionPolicyResult = z.object({
  * ActionProposalInput
  */
 export const zActionProposalInput = z.object({
+    limit: z.int().gte(1).lte(100).optional().default(25),
+    cursor: z.int().gte(0).optional(),
     actions: z.array(z.union([
         z.object({
             type: z.enum(['increase_budget']),
@@ -462,6 +468,7 @@ export const zActionProposalInput = z.object({
             'get_account_state',
             'get_signal_health',
             'get_performance',
+            'get_inventory_metrics',
             'get-creative-library',
             'staged-asset-manifest'
         ]),
@@ -555,7 +562,11 @@ export const zActionProposalRead = z.object({
             ]),
             policy_reasons: z.array(z.string()),
             policy_evidence: z.unknown()
-        }))
+        })),
+        next_cursor: z.int().nullish(),
+        truncated: z.boolean().optional(),
+        continuation: z.string().optional(),
+        total: z.int().optional()
     })
 });
 
@@ -587,6 +598,47 @@ export const zActionReadItem = z.object({
     target_entity_type: z.string(),
     target_entity_id: z.string(),
     target_entity_name: z.string().nullable(),
+    counted_evidence: z.object({
+        target: z.object({
+            kind: z.string(),
+            id: z.string()
+        }),
+        captured_at: z.string(),
+        window: z.object({
+            since: z.string(),
+            until: z.string(),
+            timezone: z.string(),
+            days: z.int().optional()
+        }).nullable(),
+        currency: z.string().nullable(),
+        currency_note: z.string(),
+        meta_reported: z.object({
+            inline_link_clicks: z.int().nullable(),
+            purchase_count: z.int().nullable(),
+            purchase_value: z.string().nullable(),
+            spend: z.string().nullable(),
+            impressions: z.int().nullable()
+        }),
+        counted: z.object({
+            arrivals: z.int().nullable(),
+            purchase_count: z.int().nullable(),
+            purchase_value: z.string().nullable()
+        }),
+        coverage: z.object({
+            arrivals: z.object({
+                since: z.string(),
+                until: z.string(),
+                timezone: z.string(),
+                days: z.int().optional()
+            }).nullable(),
+            purchases: z.object({
+                since: z.string(),
+                until: z.string(),
+                timezone: z.string(),
+                days: z.int().optional()
+            }).nullable()
+        })
+    }).nullish(),
     params: z.union([
         z.record(z.string(), z.unknown()),
         z.array(z.unknown())
@@ -754,7 +806,11 @@ export const zActionBatchRead = z.object({
         policy_reasons: z.array(z.string()),
         rationale: z.string(),
         idempotency_key: z.string(),
-        actions: z.array(zActionReadItem)
+        actions: z.array(zActionReadItem),
+        next_cursor: z.int().nullish(),
+        truncated: z.boolean().optional(),
+        continuation: z.string().optional(),
+        total: z.int().optional()
     })
 });
 
@@ -774,7 +830,10 @@ export const zActionListRead = z.object({
         current_page: z.int(),
         last_page: z.int(),
         per_page: z.int(),
-        total: z.int()
+        total: z.int(),
+        next_cursor: z.int().nullish(),
+        truncated: z.boolean().optional(),
+        continuation: z.string().optional()
     })
 });
 
@@ -1511,11 +1570,73 @@ export const zCreativeIntakeTags = z.object({
 });
 
 /**
+ * CreativeMcpGrantOperation
+ *
+ * Workspace grants alone authorize creative MCP tools. Read: list_templates, get_render, list_creatives, preview_creatives. Write: render_ad, resume_render. No advertising account is required; account_id and platform_ad_account_id are refused. Images enter the library by upload or launch.creatives.store-from-url; render_ad renders a template over a library image.
+ */
+export const zCreativeMcpGrantOperation = z.enum([
+    'launch.creatives.index',
+    'launch.templates.index',
+    'launch.renders.show',
+    'launch.creatives.preview',
+    'launch.renders.store',
+    'launch.renders.resume'
+]);
+
+/**
+ * CreativeMcpPreview
+ *
+ * Missing derivatives return pending and queue a creative-queue build, including creatives created before these tools shipped. No image bytes are sent to the model.
+ */
+export const zCreativeMcpPreview = z.object({
+    id: z.string(),
+    state: z.enum([
+        'pending',
+        'ready',
+        'refused'
+    ]),
+    url: z.string().optional(),
+    mime_type: z.enum(['image/jpeg']).optional(),
+    width: z.int().optional(),
+    height: z.int().optional(),
+    byte_size: z.int().optional(),
+    expires_at: z.string().optional()
+});
+
+/**
+ * CreativeMcpRefusal
+ */
+export const zCreativeMcpRefusal = z.enum([
+    'request_key_conflict',
+    'rate_limited',
+    'invalid_arguments',
+    'insufficient_scope',
+    'invalid_token',
+    'not_found',
+    'workspace_required'
+]);
+
+/**
+ * CreativeMcpTool
+ *
+ * Rendering: 6/minute per grant and 12/minute per workspace. Reads and preview signing share 60/minute per grant. list_creatives returns metadata and unchanged Library provenance, accepts kind/status filters and an ID cursor, and returns at most 50 items per page without storage keys or URLs. Matching request_key replays return the original job without reservation, queueing or write-limit counting. Changed normalized payloads return request_key_conflict. Resume queues held states only; running states return inspect guidance.
+ */
+export const zCreativeMcpTool = z.enum([
+    'list_templates',
+    'render_ad',
+    'get_render',
+    'resume_render',
+    'list_creatives',
+    'preview_creatives'
+]);
+
+/**
  * DeliveryStatus
  */
 export const zDeliveryStatus = z.enum([
     'queued',
     'sent',
+    'held',
     'accepted',
     'retrying',
     'failed:auth',
@@ -1528,37 +1649,9 @@ export const zDeliveryStatus = z.enum([
 ]);
 
 /**
- * DeploymentPlan
- */
-export const zDeploymentPlan = z.object({
-    id: z.string(),
-    workspace_id: z.int(),
-    platform_ad_account_id: z.int(),
-    platform: z.string(),
-    campaign_ref: z.string().nullable(),
-    campaign_spec: z.array(z.unknown()).nullable(),
-    ad_set_ref: z.string().nullable(),
-    ad_set_spec: z.array(z.unknown()).nullable(),
-    budget_type: z.string(),
-    budget_amount_minor: z.int(),
-    currency: z.string(),
-    copy: z.array(z.unknown()),
-    landing_page: z.string(),
-    utm_policy_id: z.string().nullable(),
-    naming_policy_id: z.string().nullable(),
-    status: z.string(),
-    validation_result: z.array(z.unknown()).nullable(),
-    diff: z.array(z.unknown()).nullable(),
-    validated_at: z.iso.datetime().nullable(),
-    approval_id: z.string().nullable(),
-    created_at: z.iso.datetime().nullable(),
-    updated_at: z.iso.datetime().nullable(),
-    platform_object_ids: z.array(z.unknown()),
-    name: z.string().nullable()
-});
-
-/**
  * DeploymentPlanRead
+ *
+ * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
  */
 export const zDeploymentPlanRead = z.object({
     name: z.string().nullish(),
@@ -1603,7 +1696,11 @@ export const zDeploymentPlanRead = z.object({
         resolved_landing_page: z.string(),
         copy_differs: z.boolean(),
         landing_page_differs: z.boolean()
-    })).optional()
+    })).optional(),
+    next_cursor: z.int().nullish(),
+    truncated: z.boolean().optional(),
+    continuation: z.string().optional(),
+    creative_count: z.int().optional()
 });
 
 /**
@@ -1614,7 +1711,11 @@ export const zDestinationCredentialSource = z.enum(['oauth_connection']);
 /**
  * DestinationStatus
  */
-export const zDestinationStatus = z.enum(['active', 'inactive']);
+export const zDestinationStatus = z.enum([
+    'active',
+    'needs_attention',
+    'inactive'
+]);
 
 /**
  * DestinationType
@@ -1634,7 +1735,10 @@ export const zDestination = z.object({
     config: z.array(z.unknown()),
     status: zDestinationStatus,
     created_at: z.iso.datetime().nullable(),
-    updated_at: z.iso.datetime().nullable()
+    updated_at: z.iso.datetime().nullable(),
+    attention_reason: z.string(),
+    held_count: z.string(),
+    notices: z.string()
 });
 
 /**
@@ -1838,6 +1942,16 @@ export const zProposalReplayConflict = z.object({
 });
 
 /**
+ * ProposalUnavailable
+ */
+export const zProposalUnavailable = z.object({
+    error: z.object({
+        code: z.enum(['workspace_lock_timeout', 'proposal_not_recorded']),
+        message: z.string()
+    })
+});
+
+/**
  * ReconciliationReport
  */
 export const zReconciliationReport = z.object({
@@ -1956,7 +2070,7 @@ export const zActionsApiDryRunPath = z.object({
 });
 
 /**
- * Evaluated dry-run preview.
+ * Evaluated dry-run preview. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
  */
 export const zActionsApiDryRunResponse = zActionDryRunRead;
 
@@ -1980,11 +2094,13 @@ export const zActionsApiIndexQuery = z.object({
         'blocked'
     ]).optional(),
     page: z.int().gte(1).optional(),
-    account_id: z.int().gte(1).optional()
+    account_id: z.int().gte(1).optional(),
+    cursor: z.int().gte(0).optional(),
+    limit: z.int().gte(1).lte(100).optional().default(25)
 });
 
 /**
- * Authorized Actions resource.
+ * Authorized Actions resource. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
  */
 export const zActionsApiIndexResponse = zActionListRead;
 
@@ -1995,7 +2111,7 @@ export const zActionsApiProposePath = z.object({
 });
 
 /**
- * Saved idempotent proposal.
+ * Saved idempotent proposal. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
  */
 export const zActionsApiProposeResponse = zActionProposalRead;
 
@@ -2046,13 +2162,58 @@ export const zActionsApiBatchPath = z.object({
 });
 
 export const zActionsApiBatchQuery = z.object({
-    account_id: z.int().gte(1).optional()
+    account_id: z.int().gte(1).optional(),
+    cursor: z.int().gte(0).optional(),
+    limit: z.int().gte(1).lte(100).optional().default(25)
 });
 
 /**
- * Authorized Actions resource.
+ * Authorized Actions resource. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
  */
 export const zActionsApiBatchResponse = zActionBatchRead;
+
+export const zActionsRulesIndexPath = z.object({
+    workspace: z.int()
+});
+
+export const zActionsRulesIndexQuery = z.object({
+    page: z.int().gte(1).optional(),
+    cursor: z.string().optional(),
+    per_page: z.int().gte(1).lte(100).optional().default(25)
+});
+
+/**
+ * Bounded rows; no nested history is included in rule summaries. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
+ */
+export const zActionsRulesIndexResponse = z.object({
+    rules: z.object({
+        data: z.array(z.object({
+            id: z.string(),
+            name: z.string(),
+            status: z.enum([
+                'enabled',
+                'disabled',
+                'suspended'
+            ]),
+            account: z.object({
+                id: z.int().optional(),
+                name: z.string().nullish()
+            }),
+            current_revision: z.record(z.string(), z.unknown()),
+            last_run_status: z.string().nullable(),
+            last_run_at: z.string().nullable(),
+            counts: z.object({
+                revisions: z.int().optional(),
+                runs: z.int().optional()
+            })
+        })).optional(),
+        total: z.int().optional(),
+        per_page: z.int().optional(),
+        next_cursor: z.string().nullish(),
+        truncated: z.boolean().optional(),
+        continuation: z.string().optional()
+    })
+});
 
 export const zActionsTestsApiIndexPath = z.object({
     workspace: z.int()
@@ -2121,6 +2282,53 @@ export const zGetCookieDeclarationPath = z.object({
  */
 export const zGetCookieDeclarationResponse = zCookieDeclaration;
 
+export const zLaunchCreativesIndexPath = z.object({
+    workspace: z.int()
+});
+
+export const zLaunchCreativesIndexQuery = z.object({
+    page: z.int().optional().default(1),
+    cursor: z.int().gte(0).optional(),
+    per_page: z.int().gte(1).lte(100).optional().default(25)
+});
+
+/**
+ * Bounded rows; no nested history is included in rule summaries. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
+ */
+export const zLaunchCreativesIndexResponse = z.object({
+    creatives: z.object({
+        data: z.array(z.object({
+            id: z.string().regex(/^[0-7][0-9a-hjkmnp-tv-z]{25}$/),
+            fingerprint: z.string(),
+            type: z.enum(['image', 'video']),
+            mime_type: z.string(),
+            byte_size: z.int(),
+            width: z.int().nullable(),
+            height: z.int().nullable(),
+            aspect_ratio: z.number().nullable(),
+            duration_ms: z.int().nullable(),
+            original_filename: z.string().nullish(),
+            source_ref: z.string().nullable(),
+            tags: z.union([
+                z.record(z.string(), z.string()),
+                z.array(z.string()).max(0)
+            ]),
+            status: z.enum([
+                'draft',
+                'approved',
+                'retired'
+            ]),
+            created_at: z.string().nullable(),
+            updated_at: z.string().nullable()
+        })).optional(),
+        total: z.int().optional(),
+        per_page: z.int().optional(),
+        next_cursor: z.int().nullish(),
+        truncated: z.boolean().optional(),
+        continuation: z.string().optional()
+    })
+});
+
 export const zStoreCreativeBody = z.object({
     file: z.string(),
     tags: z.object({
@@ -2186,11 +2394,13 @@ export const zLaunchPlansIndexPath = z.object({
 });
 
 export const zLaunchPlansIndexQuery = z.object({
+    page: z.int().optional().default(1),
+    cursor: z.int().gte(0).optional(),
     per_page: z.int().optional().default(25)
 });
 
 /**
- * Plans with their current review version.
+ * Plans with their current review version. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
  */
 export const zLaunchPlansIndexResponse = z.object({
     plans: z.object({
@@ -2206,8 +2416,13 @@ export const zLaunchPlansShowPath = z.object({
     deployment_plan: z.string()
 });
 
+export const zLaunchPlansShowQuery = z.object({
+    cursor: z.int().gte(0).optional(),
+    limit: z.int().gte(1).lte(100).optional().default(5)
+});
+
 /**
- * Plans with their current review version.
+ * Plans with their current review version. Result projections share the 80,000-byte MCP JSON budget; defaults are bounded, next_cursor continues complete rows, and oversized single rows are explicitly refused. Plan creative continuation uses the read endpoint; proposal continuation uses the batch read endpoint.
  */
 export const zLaunchPlansShowResponse = z.object({
     plan: zDeploymentPlanRead
@@ -2367,6 +2582,8 @@ export const zGetEventResponse = z.object({
             ]).nullable(),
             platform_trace_id: z.string().nullable(),
             next_attempt_at: z.string().nullable(),
+            upload_deadline_at: z.string().nullable(),
+            freshness_basis: z.string().nullable(),
             created_at: z.string(),
             updated_at: z.string().nullable()
         }))
@@ -2474,11 +2691,48 @@ export const zGetEventResponse = z.object({
         ]).nullable(),
         platform_trace_id: z.string().nullable(),
         next_attempt_at: z.string().nullable(),
+        upload_deadline_at: z.string().nullable(),
+        freshness_basis: z.string().nullable(),
         created_at: z.string(),
         updated_at: z.string().nullable()
     }).and(z.object({
         explanation: z.string()
     })))
+});
+
+export const zGetAccountInventoryPath = z.object({
+    workspace: z.int(),
+    account_id: z.string()
+});
+
+export const zGetAccountInventoryQuery = z.object({
+    level: z.enum([
+        'campaign',
+        'adset',
+        'ad'
+    ]).nullish(),
+    effective_status: z.string().max(50).nullish(),
+    campaign_id: z.string().max(128).nullish(),
+    adset_id: z.string().max(128).nullish(),
+    after_id: z.int().gte(1).optional(),
+    limit: z.int().gte(1).lte(200).optional().default(25)
+});
+
+/**
+ * Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
+ */
+export const zGetAccountInventoryResponse = z.object({
+    account: z.record(z.string(), z.unknown()),
+    sync: z.record(z.string(), z.unknown()),
+    staleness: z.record(z.string(), z.unknown()),
+    summary: z.object({
+        total: z.int().optional(),
+        by_level: z.record(z.string(), z.int()).optional()
+    }),
+    objects: z.array(z.record(z.string(), z.unknown())),
+    next_cursor: z.int().nullable(),
+    truncated: z.boolean(),
+    continuation: z.string()
 });
 
 export const zGetInventoryMetricsPath = z.object({
@@ -2492,7 +2746,9 @@ export const zGetInventoryMetricsQuery = z.object({
     campaign_id: z.string().max(128).nullish(),
     adset_id: z.string().max(128).nullish(),
     ad_id: z.string().max(128).nullish(),
-    include_changes: z.boolean().optional()
+    include_changes: z.boolean().optional(),
+    limit: z.int().gte(1).lte(100).optional(),
+    cursor: z.string().max(500).nullish()
 });
 
 /**
@@ -2582,7 +2838,13 @@ export const zGetInventoryMetricsResponse = z.object({
         generator_job: z.string().nullish(),
         parent_creative: z.string().nullish()
     })),
-    unmatched_arrivals: z.int().nullable()
+    unmatched_arrivals: z.int().nullable(),
+    pagination: z.record(z.string(), z.object({
+        total: z.int(),
+        truncated: z.boolean(),
+        next_cursor: z.int().nullable()
+    })).optional(),
+    next_cursor: z.string().nullish()
 });
 
 export const zListEventsQuery = z.object({
@@ -2654,6 +2916,8 @@ export const zListEventsResponse = z.object({
                 ]).nullable(),
                 platform_trace_id: z.string().nullable(),
                 next_attempt_at: z.string().nullable(),
+                upload_deadline_at: z.string().nullable(),
+                freshness_basis: z.string().nullable(),
                 created_at: z.string(),
                 updated_at: z.string().nullable()
             }))
@@ -2751,6 +3015,8 @@ export const zListEventsByCursorResponse = z.object({
                 ]).nullable(),
                 platform_trace_id: z.string().nullable(),
                 next_attempt_at: z.string().nullable(),
+                upload_deadline_at: z.string().nullable(),
+                freshness_basis: z.string().nullable(),
                 created_at: z.string(),
                 updated_at: z.string().nullable()
             }))
@@ -2790,6 +3056,12 @@ export const zSetDestinationTestModeResponse = z.object({
         platform_ad_account_id: z.int().nullable(),
         type: zDestinationType,
         credential_source: zDestinationCredentialSource,
+        attention_reason: z.union([
+            z.record(z.string(), z.unknown()),
+            z.array(z.unknown())
+        ]).nullable(),
+        held_count: z.int(),
+        notices: z.array(z.record(z.string(), z.unknown())),
         config: z.union([
             z.record(z.string(), z.unknown()),
             z.array(z.unknown())
@@ -2880,6 +3152,12 @@ export const zGetReconciliationReportResponse = z.object({
             platform_ad_account_id: z.int().nullable(),
             type: zDestinationType,
             credential_source: zDestinationCredentialSource,
+            attention_reason: z.union([
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown())
+            ]).nullable(),
+            held_count: z.int(),
+            notices: z.array(z.record(z.string(), z.unknown())),
             config: z.union([
                 z.record(z.string(), z.unknown()),
                 z.array(z.unknown())

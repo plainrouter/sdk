@@ -18,15 +18,22 @@ T = TypeVar("T", bound="DeploymentPlanRead")
 
 @_attrs_define
 class DeploymentPlanRead:
-    """
-    Attributes:
-        id (str):
-        platform_ad_account_id (int):
-        review_version (str): Current review version. Pass this value when executing the plan you reviewed.
-        name (None | str | Unset):
-        copy (DeploymentPlanReadCopyType0 | None | Unset):
-        landing_page (str | Unset):
-        creatives (list[DeploymentPlanReadCreativesItem] | Unset):
+    """Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are
+    bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are
+    never silently clipped.
+
+        Attributes:
+            id (str):
+            platform_ad_account_id (int):
+            review_version (str): Current review version. Pass this value when executing the plan you reviewed.
+            name (None | str | Unset):
+            copy (DeploymentPlanReadCopyType0 | None | Unset):
+            landing_page (str | Unset):
+            creatives (list[DeploymentPlanReadCreativesItem] | Unset):
+            next_cursor (int | None | Unset):
+            truncated (bool | Unset):
+            continuation (str | Unset):
+            creative_count (int | Unset):
     """
 
     id: str
@@ -36,6 +43,10 @@ class DeploymentPlanRead:
     copy: DeploymentPlanReadCopyType0 | None | Unset = UNSET
     landing_page: str | Unset = UNSET
     creatives: list[DeploymentPlanReadCreativesItem] | Unset = UNSET
+    next_cursor: int | None | Unset = UNSET
+    truncated: bool | Unset = UNSET
+    continuation: str | Unset = UNSET
+    creative_count: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -70,6 +81,18 @@ class DeploymentPlanRead:
                 creatives_item = creatives_item_data.to_dict()
                 creatives.append(creatives_item)
 
+        next_cursor: int | None | Unset
+        if isinstance(self.next_cursor, Unset):
+            next_cursor = UNSET
+        else:
+            next_cursor = self.next_cursor
+
+        truncated = self.truncated
+
+        continuation = self.continuation
+
+        creative_count = self.creative_count
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -87,6 +110,14 @@ class DeploymentPlanRead:
             field_dict["landing_page"] = landing_page
         if creatives is not UNSET:
             field_dict["creatives"] = creatives
+        if next_cursor is not UNSET:
+            field_dict["next_cursor"] = next_cursor
+        if truncated is not UNSET:
+            field_dict["truncated"] = truncated
+        if continuation is not UNSET:
+            field_dict["continuation"] = continuation
+        if creative_count is not UNSET:
+            field_dict["creative_count"] = creative_count
 
         return field_dict
 
@@ -139,6 +170,21 @@ class DeploymentPlanRead:
 
                 creatives.append(creatives_item)
 
+        def _parse_next_cursor(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        next_cursor = _parse_next_cursor(d.pop("next_cursor", UNSET))
+
+        truncated = d.pop("truncated", UNSET)
+
+        continuation = d.pop("continuation", UNSET)
+
+        creative_count = d.pop("creative_count", UNSET)
+
         deployment_plan_read = cls(
             id=id,
             platform_ad_account_id=platform_ad_account_id,
@@ -147,6 +193,10 @@ class DeploymentPlanRead:
             copy=copy,
             landing_page=landing_page,
             creatives=creatives,
+            next_cursor=next_cursor,
+            truncated=truncated,
+            continuation=continuation,
+            creative_count=creative_count,
         )
 
         deployment_plan_read.additional_properties = d

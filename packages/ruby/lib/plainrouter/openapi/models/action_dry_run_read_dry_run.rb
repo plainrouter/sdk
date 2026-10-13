@@ -14,13 +14,26 @@ require 'date'
 require 'time'
 
 module PlainRouter::OpenAPI
+  # Complete projection rows are paged within 80,000 JSON bytes, accounting for both MCP representations. Defaults are bounded. Follow next_cursor with the same scope and filters. One oversized row is explicitly refused; fields are never silently clipped.
   class ActionDryRunReadDryRun < ApiModelBase
     attr_accessor :actions
+
+    attr_accessor :next_cursor
+
+    attr_accessor :truncated
+
+    attr_accessor :continuation
+
+    attr_accessor :total
 
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
-        :'actions' => :'actions'
+        :'actions' => :'actions',
+        :'next_cursor' => :'next_cursor',
+        :'truncated' => :'truncated',
+        :'continuation' => :'continuation',
+        :'total' => :'total'
       }
     end
 
@@ -37,13 +50,18 @@ module PlainRouter::OpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
-        :'actions' => :'Array<ActionDryRunReadDryRunActionsInner>'
+        :'actions' => :'Array<ActionDryRunReadDryRunActionsInner>',
+        :'next_cursor' => :'Integer',
+        :'truncated' => :'Boolean',
+        :'continuation' => :'String',
+        :'total' => :'Integer'
       }
     end
 
     # List of attributes with nullable: true
     def self.openapi_nullable
       Set.new([
+        :'next_cursor',
       ])
     end
 
@@ -69,6 +87,22 @@ module PlainRouter::OpenAPI
         end
       else
         self.actions = nil
+      end
+
+      if attributes.key?(:'next_cursor')
+        self.next_cursor = attributes[:'next_cursor']
+      end
+
+      if attributes.key?(:'truncated')
+        self.truncated = attributes[:'truncated']
+      end
+
+      if attributes.key?(:'continuation')
+        self.continuation = attributes[:'continuation']
+      end
+
+      if attributes.key?(:'total')
+        self.total = attributes[:'total']
       end
     end
 
@@ -107,7 +141,11 @@ module PlainRouter::OpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
-          actions == o.actions
+          actions == o.actions &&
+          next_cursor == o.next_cursor &&
+          truncated == o.truncated &&
+          continuation == o.continuation &&
+          total == o.total
     end
 
     # @see the `==` method
@@ -119,7 +157,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [actions].hash
+      [actions, next_cursor, truncated, continuation, total].hash
     end
 
     # Builds the object from hash

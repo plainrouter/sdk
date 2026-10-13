@@ -15,6 +15,12 @@ require 'time'
 
 module PlainRouter::OpenAPI
   class ActionProposalInput < ApiModelBase
+    # Maximum complete result actions; the shared JSON byte budget can return fewer.
+    attr_accessor :limit
+
+    # Continue using next_cursor. Read saved proposal actions with get_action_batch to avoid another write; dry runs repeat the same inputs.
+    attr_accessor :cursor
+
     attr_accessor :actions
 
     attr_accessor :rationale
@@ -54,6 +60,8 @@ module PlainRouter::OpenAPI
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
+        :'limit' => :'limit',
+        :'cursor' => :'cursor',
         :'actions' => :'actions',
         :'rationale' => :'rationale',
         :'idempotency_key' => :'idempotency_key',
@@ -77,6 +85,8 @@ module PlainRouter::OpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
+        :'limit' => :'Integer',
+        :'cursor' => :'Integer',
         :'actions' => :'Array<ActionProposalInputActionsInner>',
         :'rationale' => :'String',
         :'idempotency_key' => :'String',
@@ -108,6 +118,16 @@ module PlainRouter::OpenAPI
         end
         h[k.to_sym] = v
       }
+
+      if attributes.key?(:'limit')
+        self.limit = attributes[:'limit']
+      else
+        self.limit = 25
+      end
+
+      if attributes.key?(:'cursor')
+        self.cursor = attributes[:'cursor']
+      end
 
       if attributes.key?(:'actions')
         if (value = attributes[:'actions']).is_a?(Array)
@@ -157,6 +177,18 @@ module PlainRouter::OpenAPI
     def list_invalid_properties
       warn '[DEPRECATED] the `list_invalid_properties` method is obsolete'
       invalid_properties = Array.new
+      if !@limit.nil? && @limit > 100
+        invalid_properties.push('invalid value for "limit", must be smaller than or equal to 100.')
+      end
+
+      if !@limit.nil? && @limit < 1
+        invalid_properties.push('invalid value for "limit", must be greater than or equal to 1.')
+      end
+
+      if !@cursor.nil? && @cursor < 0
+        invalid_properties.push('invalid value for "cursor", must be greater than or equal to 0.')
+      end
+
       if @actions.nil?
         invalid_properties.push('invalid value for "actions", actions cannot be nil.')
       end
@@ -216,6 +248,9 @@ module PlainRouter::OpenAPI
     # @return true if the model is valid
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
+      return false if !@limit.nil? && @limit > 100
+      return false if !@limit.nil? && @limit < 1
+      return false if !@cursor.nil? && @cursor < 0
       return false if @actions.nil?
       return false if @actions.length > 25
       return false if @actions.length < 1
@@ -232,6 +267,38 @@ module PlainRouter::OpenAPI
       return false if !@account_id.nil? && @account_id < 1
       return false if !@workspace_id.nil? && @workspace_id < 1
       true
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] limit Value to be assigned
+    def limit=(limit)
+      if limit.nil?
+        fail ArgumentError, 'limit cannot be nil'
+      end
+
+      if limit > 100
+        fail ArgumentError, 'invalid value for "limit", must be smaller than or equal to 100.'
+      end
+
+      if limit < 1
+        fail ArgumentError, 'invalid value for "limit", must be greater than or equal to 1.'
+      end
+
+      @limit = limit
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] cursor Value to be assigned
+    def cursor=(cursor)
+      if cursor.nil?
+        fail ArgumentError, 'cursor cannot be nil'
+      end
+
+      if cursor < 0
+        fail ArgumentError, 'invalid value for "cursor", must be greater than or equal to 0.'
+      end
+
+      @cursor = cursor
     end
 
     # Custom attribute writer method with validation
@@ -341,6 +408,8 @@ module PlainRouter::OpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
+          limit == o.limit &&
+          cursor == o.cursor &&
           actions == o.actions &&
           rationale == o.rationale &&
           idempotency_key == o.idempotency_key &&
@@ -359,7 +428,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [actions, rationale, idempotency_key, evidence, target_source, account_id, workspace_id].hash
+      [limit, cursor, actions, rationale, idempotency_key, evidence, target_source, account_id, workspace_id].hash
     end
 
     # Builds the object from hash
