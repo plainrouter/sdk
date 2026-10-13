@@ -9,7 +9,7 @@
 ### Breaking changes
 
 - `DeploymentPlan` and `zDeploymentPlan` are removed. Migration: use `DeploymentPlanRead` and `zDeploymentPlanRead`.
-- `ActionsApiProposeErrors[503]` and `LaunchPlansExecuteErrors[503]` now use `ProposalUnavailable` instead of `WorkspaceLockTimeout` (core #1063). Migration: accept the broader type and detect lock timeout by checking `error.code` for `"workspace_lock_timeout"`, or use `isRetryableProposalError`.
+- `ActionsApiProposeErrors[503]` and `LaunchPlansExecuteErrors[503]` now use `ProposalUnavailable` instead of `WorkspaceLockTimeout` (core #1063). Migration: accept the broader type and detect lock timeout by using the guarded expression `isRetryableProposalError(status, error) && error.error.code === "workspace_lock_timeout"`; a non-envelope body fails the guard without reading a missing code.
 - `DeliveryStatus` adds `"held"` and `DestinationStatus` adds `"needs_attention"`, breaking exhaustive switches. Migration: add handlers for both states before the exhaustive/default rejection.
 - `Destination` now requires `attention_reason`, `held_count`, and `notices`, breaking manually constructed object literals. Migration: supply all three using the generated component’s declared types when constructing `Destination`; endpoint projection types remain distinct.
 - Plan `creatives` is capped at 5 by default (≤30 KB) on `plans.show` and every plan body (index, store, copy, update, validate), with `creative_count`, `next_cursor`, `truncated`, and `continuation`. Migration: request further creatives through the plan read endpoint using each returned `next_cursor` until complete; do not treat an embedded plan body as the full creative list.

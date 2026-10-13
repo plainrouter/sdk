@@ -124,3 +124,28 @@ async def test_copy_classifies_both_codes_and_preserves_retry_after(code: str, r
     assert len(calls) == 2
     client.get_httpx_client().close()
     await client.get_async_httpx_client().aclose()
+
+
+@pytest.mark.parametrize("code", ["workspace_lock_timeout", "proposal_not_recorded"])
+def test_undocumented_503_is_retryable_from_response_or_raw_body(code: str) -> None:
+    from plainrouter.generated.api.creative import store_creative_from_url
+    from plainrouter.generated.models import StoreCreativeFromUrlBody
+
+    envelope = {"error": {"code": code, "message": "Retry."}}
+    client = create_client("test-token", base_url="https://example.test/api/v1")
+    client.set_httpx_client(
+        httpx.Client(
+            base_url="https://example.test/api/v1",
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(503, json=envelope, headers={"Retry-After": "1"})
+            ),
+        )
+    )
+    response = store_creative_from_url.sync_detailed(
+        1, client=client, body=StoreCreativeFromUrlBody(url="https://example.test/a.jpg")
+    )
+    assert response.parsed is None
+    assert is_retryable_proposal_error(response.status_code, response)
+    assert is_retryable_proposal_error(response.status_code, response.content)
+    assert response.headers["Retry-After"] == "1"
+    client.get_httpx_client().close()
