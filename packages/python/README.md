@@ -89,3 +89,5 @@ No automatic retry is added. Honor `Retry-After` when present (delta seconds or
 an HTTP date) when scheduling a retry.
 
 Licensed under Apache-2.0.
+
+Use `create_client()` or the hand-written `plainrouter.AuthenticatedClient` / `plainrouter.Client` for JSON negotiation and redirect protection. Headers default to `Accept: application/json`; override with `client.with_headers({"Accept": "..."})` or constructor `headers`. A 3xx raises `httpx.HTTPStatusError` before parsing or following, even with `follow_redirects=True`; inspect `error.response.status_code` and `error.response.headers["Location"]`. The separate generated namespace provides raw clients without this policy.

@@ -76,18 +76,40 @@ module PlainRouter
       end
     end
 
-    attr_reader :events, :operations, :sandbox, :plans
+    class RejectRedirects < Faraday::Middleware
+      def on_complete(env)
+        return unless (300...400).cover?(env.status)
 
-    def initialize(token: nil, base_url: DEFAULT_BASE_URL, timeout: 30, user_agent: nil)
+        raise OpenAPI::ApiError.new(code: env.status, response_headers: env.response_headers, response_body: env.body)
+      end
+    end
+
+    class JsonApiClient < OpenAPI::ApiClient
+      def initialize(configuration, accept:)
+        super(configuration)
+        @accept = accept
+      end
+
+      def build_request(http_method, path, request, opts = {})
+        headers = (opts[:header_params] || {}).reject { |key, _| key.casecmp?("Accept") }
+        super(http_method, path, request, opts.merge(header_params: headers.merge("Accept" => @accept)))
+      end
+    end
+
+    attr_reader :events, :operations, :sandbox, :plans, :actions
+
+    def initialize(token: nil, base_url: DEFAULT_BASE_URL, timeout: 30, user_agent: nil, accept: "application/json")
       configuration = OpenAPI::Configuration.new
       configure_base_url(configuration, base_url)
       configuration.access_token = token
       configuration.timeout = timeout
       yield configuration if block_given?
+      configuration.configure_faraday_connection { |connection| connection.use RejectRedirects }
 
-      api_client = OpenAPI::ApiClient.new(configuration)
+      api_client = JsonApiClient.new(configuration, accept: accept)
       api_client.user_agent = user_agent || "plainrouter-ruby/#{VERSION}"
 
+      @actions = OpenAPI::ActionProposalApiApi.new(api_client)
       @events = OpenAPI::EventApi.new(api_client)
       @events.singleton_class.prepend(EventsValidation)
       @operations = OpenAPI::OperationsApi.new(api_client)

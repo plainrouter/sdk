@@ -9,24 +9,28 @@ def is_retryable_proposal_error(status_code: int, error: object) -> bool:
     """Classify a parsed model, detailed response, HTTPX response, or raw JSON body by its envelope."""
     if status_code != 503:
         return False
-    payload: object = error
-    if isinstance(error, (Response, httpx.Response)):
-        payload = error.content
-    if isinstance(payload, (str, bytes)):
-        try:
-            payload = json.loads(payload)
-        except (ValueError, UnicodeError):
+    try:
+        payload: object = error
+        if isinstance(error, (Response, httpx.Response)):
+            payload = error.content
+        if isinstance(payload, (str, bytes)):
+            try:
+                payload = json.loads(payload)
+            except (ValueError, UnicodeError, RecursionError):
+                return False
+        else:
+            to_dict = getattr(payload, "to_dict", None)
+            if not callable(to_dict):
+                return False
+            payload = to_dict()
+        if not isinstance(payload, dict):
             return False
-    else:
-        to_dict = getattr(payload, "to_dict", None)
-        if not callable(to_dict):
-            return False
-        payload = to_dict()
-    if not isinstance(payload, dict):
+        envelope = payload.get("error")
+        return (
+            isinstance(envelope, dict)
+            and isinstance(envelope.get("message"), str)
+            and envelope.get("code") in ("workspace_lock_timeout", "proposal_not_recorded")
+        )
+    except Exception:
+        # Classification must be safe for malformed bodies and model adapters alike.
         return False
-    envelope = payload.get("error")
-    return (
-        isinstance(envelope, dict)
-        and isinstance(envelope.get("message"), str)
-        and envelope.get("code") in ("workspace_lock_timeout", "proposal_not_recorded")
-    )

@@ -2,6 +2,8 @@
 
 ## 0.10.0 (unreleased)
 
+- Default hand-written clients to `Accept: application/json` (caller headers can override it). Reject 3xx responses with `httpx.HTTPStatusError`, retaining status and Location, before parsing or following. Retry classification returns `False` for deeply nested JSON, including `RecursionError`.
+
 - On propose/execute, the 503 ProposalUnavailable model includes proposal_not_recorded and workspace_lock_timeout. `is_retryable_proposal_error(response.status_code, response)` classifies the detailed or raw HTTPX response on every endpoint, including when no model was parsed; `response.headers` retains `Retry-After`.
 - Regenerate from core main `40a2c3f1563aaa489d5658ef6058ffb6a613709c` with the existing pinned generator and settings.
 - Include core contract changes: bounded Actions and Launch projections/continuations, rule summaries, workspace creative and account inventory reads, frozen target evidence, and delivery incident attention/held states. The unused DeploymentPlan schema is removed upstream; creative MCP metadata schemas reflect the template-only connector contract.

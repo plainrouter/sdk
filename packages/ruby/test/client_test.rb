@@ -86,7 +86,7 @@ class PlainRouterClientTest < Minitest::Test
       %i[CONTRACT_VERSION Client DEFAULT_BASE_URL OpenAPI VERSION],
       PlainRouter.constants(false).sort
     )
-    assert_equal %i[events operations plans sandbox], PlainRouter::Client.public_instance_methods(false).sort
+    assert_equal %i[actions events operations plans sandbox], PlainRouter::Client.public_instance_methods(false).sort
   end
 
   def test_exposes_all_signed_contract_operations_through_service_groups
@@ -357,6 +357,26 @@ class PlainRouterClientTest < Minitest::Test
       else
         error = assert_raises(ArgumentError) { client.events.create_event(request) }
         assert_match(/consent\.captured_at/i, error.message)
+      end
+    end
+  end
+
+  def test_json_accept_default_override_and_redirect_errors
+    ["application/json", "text/html", "*/*"].each do |accept|
+      [300, 301, 302, 303, 304, 307, 308, 399].each do |status|
+        stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+          stub.get("/api/v1/dashboard/events") do |env|
+            assert_equal accept, env.request_headers["Accept"]
+            [status, { "Location" => "/html" }, "<html>Redirect</html>"]
+          end
+        end
+        client = PlainRouter::Client.new(base_url: "https://example.test/api/v1", accept: accept) do |config|
+          config.configure_faraday_connection { |connection| connection.adapter :test, stubs }
+        end
+        error = assert_raises(PlainRouter::OpenAPI::ApiError) { client.operations.list_events }
+        assert_equal status, error.code
+        assert_equal "/html", error.response_headers["Location"]
+        stubs.verify_stubbed_calls
       end
     end
   end
