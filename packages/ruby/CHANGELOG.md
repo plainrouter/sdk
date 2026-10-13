@@ -2,7 +2,7 @@
 
 ## 0.6.0 (unreleased)
 
-- The existing `api_client.default_headers` Accept override is retained. Per-call `header_params` overrides remain supported in any header-name case, including Accept; they take precedence over `accept:`. Caller Faraday Accept is retained when `accept:` is omitted; an exact wildcard counts as unset.
+- The `api_client.default_headers` Accept override takes effect from this release; it had no effect before. Per-call `header_params` overrides remain supported in any header-name case, including Accept; they take precedence over `accept:`. Caller Faraday Accept is retained when `accept:` is omitted; an exact wildcard counts as unset.
 - The hand-written `Client::JsonApiClient` and `Client::RejectRedirects` transport classes apply this policy to the curated groups.
 
 - Default the hand-written client to `Accept: application/json`; override with `accept:`. API 3xx responses raise `OpenAPI::ApiError` with status and Location without following redirects. Actions propose is available through the hand-written client's `actions` service group.

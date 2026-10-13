@@ -2,7 +2,7 @@
 
 ## 0.10.0 (unreleased)
 
-- Normalize header names case-insensitively for object, Headers, tuple and array-value request options before generated merging; caller values replace defaults.
+- Normalize header names case-insensitively for object, Headers, tuple and array-value request options before generated merging; caller values replace defaults. On the 13 operations that send a body, a per-call `Headers` instance or tuple array is not applied, as on main; a plain object works on every operation.
 
 - Export `ApiRedirectError` (response/status/headers) and the optional `PlainrouterConfig.headers` configuration field for caller overrides.
 
