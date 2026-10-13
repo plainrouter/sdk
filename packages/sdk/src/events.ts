@@ -1,4 +1,4 @@
-import { createEvent as generatedCreateEvent } from './generated/sdk.gen.js';
+import { createEvent as generatedCreateEvent } from './operations.js';
 import type {
   CreateEventData,
   CreateEventErrors,

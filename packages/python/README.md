@@ -96,6 +96,9 @@ Header names merge case-insensitively, including repeated `with_headers` calls
 and clients derived after first use. In-place updates to a live client also merge
 names case-insensitively: if a dict names Accept or Authorization in multiple
 letter cases, the last spelling in caller order wins and sends exactly one line.
+On a token client, the client `with_headers` returns always sends the SDK's own
+token as Authorization; the live client and an injected client send the caller's
+last spelling.
 
 Injected HTTPX clients receive JSON Accept
 when it is absent or exactly `*/*` (HTTPX's automatic default is indistinguishable
