@@ -2,6 +2,13 @@
 
 ## 0.10.0 (unreleased)
 
+- The exported `plainrouter.AuthenticatedClient` is a subclass of the generated client, and `plainrouter.Client` is a new zero-auth policy-applying export. `create_client` returns the subclass.
+- Header merges are case-insensitive, including repeated `with_headers` calls and derivation after first use, and in-place updates to live clients. A dict with multiple spellings of Accept or Authorization sends exactly one line; the last spelling in caller order wins.
+- Injected sync/async HTTPX clients get JSON Accept when absent or exactly `*/*`; other configured values are kept. `set_httpx_client` and `set_async_httpx_client` set Accept on the HTTPX client object passed in, so other code sharing that object sees the change. HTTPX cannot distinguish its automatic wildcard from an explicit one. Use SDK `with_headers({"Accept": "*/*"})` after injection for an explicit wildcard. The live smoke script now constructs the policy-applying exports for all calls.
+- Retry classification returns `False` for unread streamed responses (previously `ResponseNotRead`); read/aread the body before classification.
+
+- Default hand-written clients to `Accept: application/json` (caller headers can override it). Reject 3xx responses with `httpx.HTTPStatusError`, retaining status and Location, before parsing or following. Retry classification returns `False` for deeply nested JSON, including `RecursionError`.
+
 - On propose/execute, the 503 ProposalUnavailable model includes proposal_not_recorded and workspace_lock_timeout. `is_retryable_proposal_error(response.status_code, response)` classifies the detailed or raw HTTPX response on every endpoint, including when no model was parsed; `response.headers` retains `Retry-After`.
 - Regenerate from core main `40a2c3f1563aaa489d5658ef6058ffb6a613709c` with the existing pinned generator and settings.
 - Include core contract changes: bounded Actions and Launch projections/continuations, rule summaries, workspace creative and account inventory reads, frozen target evidence, and delivery incident attention/held states. The unused DeploymentPlan schema is removed upstream; creative MCP metadata schemas reflect the template-only connector contract.

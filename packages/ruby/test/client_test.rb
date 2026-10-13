@@ -86,7 +86,7 @@ class PlainRouterClientTest < Minitest::Test
       %i[CONTRACT_VERSION Client DEFAULT_BASE_URL OpenAPI VERSION],
       PlainRouter.constants(false).sort
     )
-    assert_equal %i[events operations plans sandbox], PlainRouter::Client.public_instance_methods(false).sort
+    assert_equal %i[actions events operations plans sandbox], PlainRouter::Client.public_instance_methods(false).sort
   end
 
   def test_exposes_all_signed_contract_operations_through_service_groups
@@ -359,6 +359,77 @@ class PlainRouterClientTest < Minitest::Test
         assert_match(/consent\.captured_at/i, error.message)
       end
     end
+  end
+
+  def test_json_accept_default_override_and_redirect_errors
+    ["application/json", "text/html", "*/*"].each do |accept|
+      [300, 301, 302, 303, 304, 307, 308, 399].each do |status|
+        stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+          stub.get("/api/v1/dashboard/events") do |env|
+            assert_equal accept, env.request_headers["Accept"]
+            [status, { "Location" => "/html" }, "<html>Redirect</html>"]
+          end
+        end
+        client = PlainRouter::Client.new(base_url: "https://example.test/api/v1", accept: accept) do |config|
+          config.configure_faraday_connection { |connection| connection.adapter :test, stubs }
+        end
+        error = assert_raises(PlainRouter::OpenAPI::ApiError) { client.operations.list_events }
+        assert_equal status, error.code
+        assert_equal "/html", error.response_headers["Location"]
+        stubs.verify_stubbed_calls
+      end
+    end
+  end
+
+  def test_per_call_accept_overrides_are_case_insensitive_and_take_precedence
+    ["Accept", "ACCEPT", "accept"].each do |name|
+      stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+        stub.get("/api/v1/dashboard/events") do |env|
+          assert_equal "text/html", env.request_headers["Accept"]
+          assert_equal "Bearer ruby-test", env.request_headers["Authorization"]
+          assert_equal 1, env.request_headers.keys.count { |key| key.casecmp?("Accept") }
+          assert_equal 1, env.request_headers.keys.count { |key| key.casecmp?("Authorization") }
+          [401, { "Content-Type" => "application/json" }, '{"message":"Unauthenticated."}']
+        end
+      end
+      client = PlainRouter::Client.new(token: "ruby-test", accept: "text/csv") do |config|
+        config.configure_faraday_connection { |connection| connection.adapter :test, stubs }
+      end
+      assert_raises(PlainRouter::OpenAPI::ApiError) { client.operations.list_events(header_params: { name => "text/html", "authorization" => "caller-token" }) }
+      stubs.verify_stubbed_calls
+    end
+  end
+
+  def test_caller_faraday_accept_is_preserved_without_constructor_override
+    ["application/vnd.x+json", "*/*"].each do |accept|
+      stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+        stub.get("/api/v1/dashboard/events") do |env|
+          assert_equal accept == "*/*" ? "application/json" : accept, env.request_headers["Accept"]
+          [401, { "Content-Type" => "application/json" }, '{"message":"Unauthenticated."}']
+        end
+      end
+      client = PlainRouter::Client.new do |config|
+        config.configure_faraday_connection do |connection|
+          connection.headers["Accept"] = accept
+          connection.adapter :test, stubs
+        end
+      end
+      assert_raises(PlainRouter::OpenAPI::ApiError) { client.operations.list_events }
+      stubs.verify_stubbed_calls
+    end
+  end
+
+  def test_default_headers_accept_override_remains_supported
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.get("/api/v1/dashboard/events") do |env|
+        assert_equal "text/html", env.request_headers["Accept"]
+        [401, { "Content-Type" => "application/json" }, '{"message":"Unauthenticated."}']
+      end
+    end
+    client = stubbed_client(stubs)
+    client.operations.api_client.default_headers["accept"] = "text/html"
+    assert_raises(PlainRouter::OpenAPI::ApiError) { client.operations.list_events }
+    stubs.verify_stubbed_calls
   end
 
   private

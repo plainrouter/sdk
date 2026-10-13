@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import {
+  ApiRedirectError,
   configurePlainrouter,
   createEvent,
   getEmqReport,
@@ -159,5 +160,44 @@ describe('plan copy', () => {
     );
     expect(requests[0]?.headers.get('Authorization')).toBe('Bearer plan-writer-test-token');
     expect(await requests[0]?.text()).toBe('');
+  });
+});
+
+
+describe('JSON API transport', () => {
+  it('defaults Accept to JSON and preserves case-insensitive caller overrides', async () => {
+    const requests: Request[] = [];
+    const fetchMock: typeof globalThis.fetch = async (input, init) => {
+      requests.push(new Request(input, init));
+      return new Response('{"snapshots":[]}', { headers: { 'Content-Type': 'application/json' } });
+    };
+    configurePlainrouter({ signalTrackerSecret: 'test', fetch: fetchMock });
+    await getEmqReport();
+    await getEmqReport({ headers: { accept: 'text/html' } });
+    await getEmqReport({ headers: { ACCEPT: ['text/csv'] } });
+    await getEmqReport({ headers: [['AcCePt', 'text/xml']] });
+    configurePlainrouter({ signalTrackerSecret: 'test', fetch: fetchMock, headers: { accept: '*/*' } });
+    await getEmqReport();
+    expect(requests.map((request) => request.headers.get('Accept'))).toEqual(['application/json', 'text/html', 'text/csv', 'text/xml', '*/*']);
+  });
+
+  it.each([300, 301, 302, 303, 304, 307, 308, 399])('rejects HTTP %i before parsing, for every result style', async (status) => {
+    const fetchMock: typeof globalThis.fetch = async (input, init) => {
+      expect(new Request(input, init).redirect).toBe('manual');
+      return new Response(status === 304 ? null : '<html>Redirect</html>', { status, headers: { Location: '/html' } });
+    };
+    configurePlainrouter({ signalTrackerSecret: 'test', fetch: fetchMock });
+    for (const responseStyle of ['fields', 'data'] as const) {
+      for (const throwOnError of [false, true]) {
+        try {
+          await getEmqReport({ responseStyle, throwOnError, redirect: 'follow' });
+          expect.unreachable('a redirect must never return data');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ApiRedirectError);
+          expect((error as ApiRedirectError).status).toBe(status);
+          expect((error as ApiRedirectError).headers.get('Location')).toBe('/html');
+        }
+      }
+    }
   });
 });

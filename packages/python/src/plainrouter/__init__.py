@@ -1,7 +1,6 @@
 from . import create_event, launch_plans_copy
-from .client import DEFAULT_BASE_URL, create_client
+from .client import DEFAULT_BASE_URL, AuthenticatedClient, Client, create_client
 from .create_event import CreateEventBodyInput
-from .generated import AuthenticatedClient
 from .generated.api.event import get_event, verify_signal_ingestion
 from .generated.api.operations import (
     delete_user_data,
@@ -22,6 +21,7 @@ from .validation import (
 __all__ = (
     "DEFAULT_BASE_URL",
     "AuthenticatedClient",
+    "Client",
     "create_client",
     "is_retryable_proposal_error",
     "create_event",

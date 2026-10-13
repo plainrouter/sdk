@@ -26,3 +26,5 @@ const result = await launchPlansCopy({
   path: { workspace: 1, deployment_plan: 'failed-plan-id' },
 });
 ```
+
+`configurePlainrouter()` defaults to `Accept: application/json`. Override it with `headers: { Accept: "..." }` in configuration or per call. API redirects use manual handling and throw `ApiRedirectError`, carrying `status`, `headers`, and `response`, regardless of `throwOnError` or result style. Browsers can hide cross-origin redirect status and Location (opaque redirects); these fail without returning data. These defaults apply to the configured SDK client. Independently constructed generated clients require their own transport policy.

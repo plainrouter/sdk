@@ -76,18 +76,60 @@ module PlainRouter
       end
     end
 
-    attr_reader :events, :operations, :sandbox, :plans
+    class RejectRedirects < Faraday::Middleware
+      def on_complete(env)
+        return unless (300...400).cover?(env.status)
 
-    def initialize(token: nil, base_url: DEFAULT_BASE_URL, timeout: 30, user_agent: nil)
+        raise OpenAPI::ApiError.new(code: env.status, response_headers: env.response_headers, response_body: env.body)
+      end
+    end
+
+    # Distinguish generator defaults from caller values without changing operation signatures.
+    DefaultAccept = Class.new(String)
+    private_constant :DefaultAccept
+
+    class JsonApiClient < OpenAPI::ApiClient
+      def initialize(configuration, accept:)
+        super(configuration)
+        @accept = accept
+        @default_headers = Faraday::Utils::Headers.new(@default_headers)
+        @default_headers["Accept"] = accept || "application/json"
+      end
+
+      def select_header_accept(accepts)
+        DefaultAccept.new(super(accepts) || "application/json")
+      end
+
+      def build_request(http_method, path, request, opts = {})
+        headers = Faraday::Utils::Headers.new
+        (opts[:header_params] || {}).each do |name, value|
+          next if name.casecmp?("Accept") && value.is_a?(DefaultAccept)
+
+          headers[name] = value
+        end
+        unless headers.key?("Accept")
+          caller_accept = request.headers["Accept"]
+          caller_accept = nil if caller_accept == "*/*"
+          headers["Accept"] = @accept || caller_accept || @default_headers["Accept"] || "application/json"
+        end
+        super(http_method, path, request, opts.merge(header_params: headers))
+      end
+    end
+
+    attr_reader :events, :operations, :sandbox, :plans, :actions
+
+    def initialize(token: nil, base_url: DEFAULT_BASE_URL, timeout: 30, user_agent: nil, accept: nil)
       configuration = OpenAPI::Configuration.new
       configure_base_url(configuration, base_url)
       configuration.access_token = token
       configuration.timeout = timeout
       yield configuration if block_given?
+      configuration.configure_faraday_connection { |connection| connection.use RejectRedirects }
 
-      api_client = OpenAPI::ApiClient.new(configuration)
+      api_client = JsonApiClient.new(configuration, accept: accept)
       api_client.user_agent = user_agent || "plainrouter-ruby/#{VERSION}"
 
+      @actions = OpenAPI::ActionProposalApiApi.new(api_client)
       @events = OpenAPI::EventApi.new(api_client)
       @events.singleton_class.prepend(EventsValidation)
       @operations = OpenAPI::OperationsApi.new(api_client)

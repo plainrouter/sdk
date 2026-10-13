@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import os
 
-from plainrouter import DEFAULT_BASE_URL, create_client, list_events
-from plainrouter.generated import AuthenticatedClient, Client
+from plainrouter import DEFAULT_BASE_URL, AuthenticatedClient, Client, create_client, list_events
 from plainrouter.generated.api.sandbox import (
     get_sandbox,
     validate_sandbox_event,

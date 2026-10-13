@@ -149,3 +149,18 @@ def test_undocumented_503_is_retryable_from_response_or_raw_body(code: str) -> N
     assert is_retryable_proposal_error(response.status_code, response.content)
     assert response.headers["Retry-After"] == "1"
     client.get_httpx_client().close()
+
+
+@pytest.mark.parametrize("body", [b"[" * 5000 + b"0" + b"]" * 5000, b"\xff", b"<html>503</html>", b"", b"null"])
+def test_retry_helper_never_raises_on_malformed_body(body: bytes) -> None:
+    assert is_retryable_proposal_error(503, body) is False
+
+
+def test_retry_helper_never_raises_from_unread_response_or_model_adapter() -> None:
+    class BrokenModel:
+        def to_dict(self) -> object:
+            raise RecursionError("nested model")
+
+    assert is_retryable_proposal_error(503, BrokenModel()) is False
+    response = httpx.Response(503, stream=httpx.ByteStream(b"nested"))
+    assert is_retryable_proposal_error(503, response) is False
