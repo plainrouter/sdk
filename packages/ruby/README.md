@@ -66,3 +66,8 @@ scripts/check-ruby-generated.sh
 Releases use `ruby-v<version>` tags so they remain separate from the npm and Python package tags in this repository. RubyGems publication is performed only by the trusted `publish-ruby.yml` workflow.
 
 Licensed under Apache-2.0.
+
+Per-call `header_params`, including `Accept`, remain supported and merge names
+case-insensitively, e.g. `client.operations.list_events(header_params: { "accept" => "text/html" })`.
+They override `accept:`. A caller Faraday connection's configured Accept is kept
+when `accept:` is omitted; an exact `*/*` counts as unset at that boundary.

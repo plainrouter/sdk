@@ -2,6 +2,10 @@
 
 ## 0.10.0 (unreleased)
 
+- Normalize header names case-insensitively for object, Headers, tuple and array-value request options before generated merging; caller values replace defaults.
+
+- Export `ApiRedirectError` (response/status/headers) and the optional `PlainrouterConfig.headers` configuration field for caller overrides.
+
 - Default to `Accept: application/json` (caller headers can override it). Reject API redirects with `ApiRedirectError`, retaining status and response headers; requests use manual redirect handling.
 
 - The 503 ProposalUnavailable body includes proposal_not_recorded and workspace_lock_timeout. isRetryableProposalError(status, error) narrows the known retryable body; result.response.headers retains Retry-After.

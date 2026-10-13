@@ -1,4 +1,5 @@
 import { client } from './generated/client.gen.js';
+import type { Config } from './generated/client/types.gen.js';
 
 /** An API redirect is an error, even when its destination is a successful HTML page. */
 export class ApiRedirectError extends Error {
@@ -12,6 +13,34 @@ export class ApiRedirectError extends Error {
     this.headers = response.headers;
   }
 }
+
+const normalizeHeaders = (headers: Config['headers']): Record<string, string | null | undefined> => {
+  const result: Record<string, string | null | undefined> = Object.create(null);
+  const entries = headers instanceof Headers
+    ? Array.from(headers.entries())
+    : Array.isArray(headers) ? headers : Object.entries(headers ?? {});
+  for (const [name, value] of entries) {
+    result[name.toLowerCase()] = value === null || value === undefined ? value
+      : Array.isArray(value) ? value.map(String).join(', ')
+      : typeof value === 'object' ? JSON.stringify(value) : String(value);
+  }
+  return result;
+};
+
+// Normalize public request options before the generated merger handles them.
+for (const method of ['connect', 'delete', 'get', 'head', 'options', 'patch', 'post', 'put', 'trace'] as const) {
+  const send = client[method];
+  client[method] = ((options: Parameters<typeof send>[0]) => send({
+    ...options,
+    headers: normalizeHeaders(options.headers),
+  })) as typeof send;
+}
+
+const sendRequest = client.request;
+client.request = ((options: Parameters<typeof sendRequest>[0]) => sendRequest({
+  ...options,
+  headers: normalizeHeaders(options.headers),
+})) as typeof sendRequest;
 
 client.setConfig({ headers: { Accept: 'application/json' } });
 client.interceptors.request.use((request) => new Request(request, { redirect: 'manual' }));

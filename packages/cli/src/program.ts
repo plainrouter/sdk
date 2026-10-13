@@ -1,4 +1,5 @@
 import {
+  ApiRedirectError,
   configurePlainrouter,
   createEvent,
   deleteUserData,
@@ -480,6 +481,12 @@ export const runCli = async (
   } catch (error) {
     if (error instanceof CommanderError) {
       return error.exitCode;
+    }
+
+    if (error instanceof ApiRedirectError) {
+      const location = error.headers.get('Location');
+      dependencies.writeErr(`API error (HTTP ${error.status}): ${error.message}${location === null ? '' : `; Location: ${location}`}\n`);
+      return 1;
     }
 
     if (error instanceof ApiError) {

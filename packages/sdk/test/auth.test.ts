@@ -174,9 +174,11 @@ describe('JSON API transport', () => {
     configurePlainrouter({ signalTrackerSecret: 'test', fetch: fetchMock });
     await getEmqReport();
     await getEmqReport({ headers: { accept: 'text/html' } });
+    await getEmqReport({ headers: { ACCEPT: ['text/csv'] } });
+    await getEmqReport({ headers: [['AcCePt', 'text/xml']] });
     configurePlainrouter({ signalTrackerSecret: 'test', fetch: fetchMock, headers: { accept: '*/*' } });
     await getEmqReport();
-    expect(requests.map((request) => request.headers.get('Accept'))).toEqual(['application/json', 'text/html', '*/*']);
+    expect(requests.map((request) => request.headers.get('Accept'))).toEqual(['application/json', 'text/html', 'text/csv', 'text/xml', '*/*']);
   });
 
   it.each([300, 301, 302, 303, 304, 307, 308, 399])('rejects HTTP %i before parsing, for every result style', async (status) => {

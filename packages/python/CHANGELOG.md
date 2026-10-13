@@ -2,6 +2,11 @@
 
 ## 0.10.0 (unreleased)
 
+- The exported `plainrouter.AuthenticatedClient` is a subclass of the generated client, and `plainrouter.Client` is a new zero-auth policy-applying export. `create_client` returns the subclass.
+- Header merges are case-insensitive, including repeated `with_headers` calls and derivation after first use, so Accept and Authorization are never duplicated by SDK merges.
+- Injected sync/async HTTPX clients get JSON Accept when absent or exactly `*/*`; other configured values are kept. HTTPX cannot distinguish its automatic wildcard from an explicit one. Use SDK `with_headers({"Accept": "*/*"})` after injection for an explicit wildcard. The live smoke script now constructs the policy-applying exports for all calls.
+- Retry classification returns `False` for unread streamed responses (previously `ResponseNotRead`); read/aread the body before classification.
+
 - Default hand-written clients to `Accept: application/json` (caller headers can override it). Reject 3xx responses with `httpx.HTTPStatusError`, retaining status and Location, before parsing or following. Retry classification returns `False` for deeply nested JSON, including `RecursionError`.
 
 - On propose/execute, the 503 ProposalUnavailable model includes proposal_not_recorded and workspace_lock_timeout. `is_retryable_proposal_error(response.status_code, response)` classifies the detailed or raw HTTPX response on every endpoint, including when no model was parsed; `response.headers` retains `Retry-After`.

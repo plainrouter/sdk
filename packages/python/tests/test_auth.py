@@ -60,8 +60,9 @@ async def test_async_client_injects_signal_tracker_bearer_token() -> None:
     assert observed[0].headers["Authorization"] == "Bearer async-secret"
 
 
+@pytest.mark.parametrize("name", ["Accept", "ACCEPT", "accept"])
 @pytest.mark.parametrize("accept", [None, "text/html", "*/*"])
-async def test_json_accept_default_and_override_sync_and_async(accept: str | None) -> None:
+async def test_json_accept_default_and_override_sync_and_async(name: str, accept: str | None) -> None:
     observed: list[str] = []
 
     def handle(request: httpx.Request) -> httpx.Response:
@@ -69,7 +70,7 @@ async def test_json_accept_default_and_override_sync_and_async(accept: str | Non
         return httpx.Response(401, json={"message": "Unauthenticated."})
 
     client = create_client("test", httpx_args={"transport": httpx.MockTransport(handle)})
-    configured = client.with_headers({"accept": accept}) if accept is not None else client
+    configured = client.with_headers({name: accept}) if accept is not None else client
     with configured:
         list_events.sync_detailed(client=configured)
     async with configured:
@@ -97,3 +98,49 @@ async def test_redirect_raises_before_parsing_or_following_sync_and_async(status
         assert error.response.status_code == status
         assert error.response.headers["Location"] == "/html"
     assert len(observed) == 2
+
+
+@pytest.mark.parametrize("name", ["Accept", "ACCEPT", "accept"])
+async def test_repeated_header_overrides_and_derivation_do_not_duplicate_headers(name: str) -> None:
+    requests: list[httpx.Request] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(401, json={"message": "Unauthenticated."})
+
+    client = create_client("derived-test", httpx_args={"transport": httpx.MockTransport(handle)})
+    list_events.sync_detailed(client=client)
+    await list_events.asyncio_detailed(client=client)
+    derived = client.with_headers({name: "text/html"}).with_headers({name.swapcase(): "text/csv"})
+    variants = [derived, derived.with_timeout(httpx.Timeout(10)), derived.with_cookies({"test": "cookie"})]
+    for variant in variants:
+        list_events.sync_detailed(client=variant)
+        await list_events.asyncio_detailed(client=variant)
+    for request in requests[2:]:
+        assert [value for key, value in request.headers.raw if key.lower() == b"accept"] == [b"text/csv"]
+        assert [value for key, value in request.headers.raw if key.lower() == b"authorization"] == [b"Bearer derived-test"]
+    for variant in [client, *variants]:
+        variant.get_httpx_client().close()
+        await variant.get_async_httpx_client().aclose()
+
+
+@pytest.mark.parametrize("accept", [None, "*/*", "application/vnd.x+json"])
+async def test_injected_clients_apply_json_default_and_preserve_custom_accept(accept: str | None) -> None:
+    requests: list[httpx.Request] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(401, json={"message": "Unauthenticated."})
+
+    headers = {} if accept is None else {"Accept": accept}
+    client = create_client("injected-test")
+    client.set_httpx_client(httpx.Client(base_url="https://example.test", headers=headers, transport=httpx.MockTransport(handle)))
+    client.set_async_httpx_client(httpx.AsyncClient(base_url="https://example.test", headers=headers, transport=httpx.MockTransport(handle)))
+    with client:
+        list_events.sync_detailed(client=client)
+    async with client:
+        await list_events.asyncio_detailed(client=client)
+    expected = "application/vnd.x+json" if accept == "application/vnd.x+json" else "application/json"
+    assert len(requests) == 2
+    for request in requests:
+        assert [value.decode() for key, value in request.headers.raw if key.lower() == b"accept"] == [expected]

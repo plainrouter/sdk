@@ -91,3 +91,9 @@ an HTTP date) when scheduling a retry.
 Licensed under Apache-2.0.
 
 Use `create_client()` or the hand-written `plainrouter.AuthenticatedClient` / `plainrouter.Client` for JSON negotiation and redirect protection. Headers default to `Accept: application/json`; override with `client.with_headers({"Accept": "..."})` or constructor `headers`. A 3xx raises `httpx.HTTPStatusError` before parsing or following, even with `follow_redirects=True`; inspect `error.response.status_code` and `error.response.headers["Location"]`. The separate generated namespace provides raw clients without this policy.
+
+Header names merge case-insensitively, including repeated `with_headers` calls
+and clients derived after first use. Injected HTTPX clients receive JSON Accept
+when it is absent or exactly `*/*` (HTTPX's automatic default is indistinguishable
+from an explicit wildcard); any other configured value is retained. To request
+an explicit wildcard after injection, use `client.with_headers({"Accept": "*/*"})`.

@@ -1,3 +1,5 @@
+import { ApiRedirectError } from '@plainrouter/sdk';
+
 import { describe, expect, it, vi } from 'vitest';
 
 import {
@@ -298,4 +300,14 @@ describe('authentication commands', () => {
     expect(stdout.join('')).toContain('PLAINROUTER_TOKEN');
     expect(stdout.join('')).not.toContain('fixture-token-1234');
   });
+});
+
+
+it('reports redirect status and Location without successful output', async () => {
+  const { dependencies, sdk, stderr, stdout } = createHarness();
+  sdk.listEvents = vi.fn(async () => { throw new ApiRedirectError(new Response(null, { status: 302, headers: { Location: '/login' } })); });
+  expect(await run(dependencies, 'events', 'list')).toBe(1);
+  expect(stderr.join('')).toContain('HTTP 302');
+  expect(stderr.join('')).toContain('Location: /login');
+  expect(stdout).toEqual([]);
 });
