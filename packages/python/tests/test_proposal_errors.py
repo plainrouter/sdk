@@ -5,7 +5,7 @@ from typing import TypeVar
 import httpx
 import pytest
 
-from plainrouter import create_client, is_retryable_proposal_error
+from plainrouter import create_client, is_retryable_proposal_error, launch_plans_copy
 from plainrouter.generated.api.action_proposal_api import actions_api_propose
 from plainrouter.generated.api.deployment_plan import launch_plans_execute
 from plainrouter.generated.models import (
@@ -14,6 +14,7 @@ from plainrouter.generated.models import (
     ExecuteDeploymentPlanRequest,
     ProposalUnavailable,
     ProposalUnavailableErrorCode,
+    WorkspaceLockTimeout,
 )
 from plainrouter.generated.types import Response
 
@@ -75,3 +76,51 @@ def test_unrelated_errors_are_not_retryable_proposal_refusals() -> None:
     error = ProposalUnavailable.from_dict({"error": {"code": "proposal_not_recorded", "message": "Retry."}})
     assert not is_retryable_proposal_error(422, error)
     assert not is_retryable_proposal_error(503, {"error": {"code": "proposal_not_recorded", "message": "Retry."}})
+
+
+@pytest.mark.parametrize("code", ["workspace_lock_timeout", "proposal_not_recorded"])
+@pytest.mark.parametrize("retry_after", ["1", "Wed, 14 Oct 2026 12:00:00 GMT", None])
+@pytest.mark.asyncio
+async def test_copy_classifies_both_codes_and_preserves_retry_after(code: str, retry_after: str | None) -> None:
+    envelope = {"error": {"code": code, "message": "Retry the proposal."}}
+    calls: list[httpx.Request] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        assert request.method == "POST"
+        assert request.url.path == "/api/v1/workspaces/1/admin/plans/failed-plan/copy"
+        assert request.headers["Authorization"] == "Bearer proposal-test-token"
+        assert request.read() == b""
+        return httpx.Response(503, json=envelope, headers={} if retry_after is None else {"Retry-After": retry_after})
+
+    client = create_client("proposal-test-token", base_url="https://example.test/api/v1")
+    transport = httpx.MockTransport(handle)
+    client.set_httpx_client(
+        httpx.Client(
+            transport=transport,
+            base_url="https://example.test/api/v1",
+            headers={"Authorization": "Bearer proposal-test-token"},
+        )
+    )
+    client.set_async_httpx_client(
+        httpx.AsyncClient(
+            transport=transport,
+            base_url="https://example.test/api/v1",
+            headers={"Authorization": "Bearer proposal-test-token"},
+        )
+    )
+    responses = [
+        launch_plans_copy.sync_detailed(1, "failed-plan", client=client),
+        await launch_plans_copy.asyncio_detailed(1, "failed-plan", client=client),
+    ]
+    for response in responses:
+        assert response.status_code == 503
+        assert isinstance(
+            response.parsed, WorkspaceLockTimeout if code == "workspace_lock_timeout" else ProposalUnavailable
+        )
+        assert response.parsed.to_dict() == envelope
+        assert response.headers.get("Retry-After") == retry_after
+        assert is_retryable_proposal_error(response.status_code, response.parsed)
+    assert len(calls) == 2
+    client.get_httpx_client().close()
+    await client.get_async_httpx_client().aclose()

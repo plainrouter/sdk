@@ -38,6 +38,33 @@ class PlainRouterProposalErrorsTest < Minitest::Test
     end
   end
 
+  def test_copy_classifies_both_codes_and_preserves_retry_after
+    %w[workspace_lock_timeout proposal_not_recorded].each do |code|
+      ["1", "Wed, 14 Oct 2026 12:00:00 GMT", nil].each do |retry_after|
+        envelope = { "error" => { "code" => code, "message" => "Retry the proposal." } }
+        headers = { "Content-Type" => "application/json" }
+        headers["Retry-After"] = retry_after unless retry_after.nil?
+        stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+          stub.post("/api/v1/workspaces/1/admin/plans/failed-plan/copy") { [503, headers, envelope.to_json] }
+        end
+        client = PlainRouter::Client.new do |config|
+          config.configure_faraday_connection { |connection| connection.adapter :test, stubs }
+        end
+        error = assert_raises(PlainRouter::OpenAPI::ApiError) { client.plans.launch_plans_copy(1, "failed-plan") }
+        assert_equal 503, error.code
+        assert_instance_of PlainRouter::OpenAPI::ProposalUnavailable, error.response_object
+        assert_equal code, error.response_object.error.code
+        assert error.retryable?
+        if retry_after.nil?
+          assert_nil error.retry_after
+        else
+          assert_equal retry_after, error.retry_after
+        end
+        stubs.verify_stubbed_calls
+      end
+    end
+  end
+
   def test_unrelated_and_malformed_errors_are_not_retryable_proposal_refusals
     [
       [422, { error: { code: "proposal_not_recorded", message: "Retry." } }.to_json],

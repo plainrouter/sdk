@@ -5,6 +5,7 @@ import {
   configurePlainrouter,
   isRetryableProposalError,
   launchPlansExecute,
+  launchPlansCopy,
   type ProposalUnavailable,
   zProposalUnavailable,
 } from '../src/index.js';
@@ -62,4 +63,32 @@ describe('retryable proposal refusals', () => {
     expect(isRetryableProposalError(503, { error: { code: 'unknown', message: 'Failed.' } })).toBe(false);
     expect(isRetryableProposalError(503, { error: { code: 'proposal_not_recorded' } })).toBe(false);
   });
+});
+
+
+describe('copy retry classification', () => {
+  it.each(['workspace_lock_timeout', 'proposal_not_recorded'] as const)(
+    'classifies %s and preserves Retry-After when present',
+    async (code) => {
+      for (const retryAfter of ['1', 'Wed, 14 Oct 2026 12:00:00 GMT', undefined]) {
+        const envelope = { error: { code, message: 'Retry the proposal.' } };
+        configurePlainrouter({
+          signalTrackerSecret: 'proposal-test-token',
+          baseUrl: 'https://example.test/api/v1',
+          fetch: async () => new Response(JSON.stringify(envelope), {
+            status: 503,
+            headers: {
+              'Content-Type': 'application/json',
+              ...(retryAfter === undefined ? {} : { 'Retry-After': retryAfter }),
+            },
+          }),
+        });
+        const result = await launchPlansCopy({ path: { workspace: 1, deployment_plan: 'failed-plan' } });
+        expect(result.response?.status).toBe(503);
+        expect(result.error).toEqual(envelope);
+        expect(isRetryableProposalError(503, result.error)).toBe(true);
+        expect(result.response?.headers.get('Retry-After')).toBe(retryAfter ?? null);
+      }
+    },
+  );
 });
