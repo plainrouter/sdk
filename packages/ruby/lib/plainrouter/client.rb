@@ -116,7 +116,8 @@ module PlainRouter
       end
     end
 
-    attr_reader :events, :operations, :sandbox, :plans, :actions
+    attr_reader :actions, :action_dry_run, :action_reads, :action_rules, :agent_context,
+                :ad_tests, :cookie_declarations, :creatives, :events, :inventory, :operations, :plans, :sandbox
 
     def initialize(token: nil, base_url: DEFAULT_BASE_URL, timeout: 30, user_agent: nil, accept: nil)
       configuration = OpenAPI::Configuration.new
@@ -130,11 +131,19 @@ module PlainRouter
       api_client.user_agent = user_agent || "plainrouter-ruby/#{VERSION}"
 
       @actions = OpenAPI::ActionProposalApiApi.new(api_client)
+      @action_dry_run = OpenAPI::ActionDryRunApiApi.new(api_client)
+      @action_reads = OpenAPI::ActionReadApiApi.new(api_client)
+      @action_rules = OpenAPI::ActionRuleApiApi.new(api_client)
+      @agent_context = OpenAPI::AgentContextApi.new(api_client)
+      @cookie_declarations = OpenAPI::CookieDeclarationApi.new(api_client)
+      @creatives = OpenAPI::CreativeApi.new(api_client)
       @events = OpenAPI::EventApi.new(api_client)
       @events.singleton_class.prepend(EventsValidation)
+      @inventory = OpenAPI::MetaInventoryExposureApi.new(api_client)
       @operations = OpenAPI::OperationsApi.new(api_client)
       @sandbox = OpenAPI::SandboxApi.new(api_client)
       @plans = OpenAPI::DeploymentPlanApi.new(api_client)
+      @ad_tests = OpenAPI::AdTestApiApi.new(api_client)
     end
 
     private

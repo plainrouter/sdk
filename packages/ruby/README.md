@@ -45,7 +45,7 @@ example = sandbox.sandbox.get_sandbox
 
 For response metadata, append `_with_http_info` to a generated operation. Models, API errors, configuration, and every generated operation are available in the deliberately separate `PlainRouter::OpenAPI` namespace.
 
-`PlainRouter::Client` defaults to `Accept: application/json`; override with `accept: "..."`. API redirects raise `OpenAPI::ApiError` with `code` and `response_headers`, without following. `client.actions` exposes Actions propose through this transport. The separate generated namespace provides raw clients without this policy.
+`PlainRouter::Client` defaults to `Accept: application/json`; override with `accept: "..."`. API redirects raise `OpenAPI::ApiError` with `code` and `response_headers`, without following. Every generated operation is available through the curated groups: `actions`, `action_dry_run`, `action_reads`, `action_rules`, `ad_tests`, `agent_context`, `cookie_declarations`, `creatives`, `events`, `inventory`, `operations`, `plans`, and `sandbox`. The generated namespace remains available for direct access without this policy.
 
 ## Development
 
