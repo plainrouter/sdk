@@ -86,14 +86,40 @@ class PlainRouterClientTest < Minitest::Test
       %i[CONTRACT_VERSION Client DEFAULT_BASE_URL OpenAPI VERSION],
       PlainRouter.constants(false).sort
     )
-    assert_equal %i[actions events operations plans sandbox], PlainRouter::Client.public_instance_methods(false).sort
+    assert_equal(
+      %i[
+        action_dry_run action_reads action_rules actions ad_tests agent_context cookie_declarations
+        creatives events inventory operations plans sandbox
+      ],
+      PlainRouter::Client.public_instance_methods(false).sort
+    )
   end
 
   def test_exposes_all_signed_contract_operations_through_service_groups
     client = PlainRouter::Client.new
 
+    generated = generated_operation_names
+    curated = curated_operation_names(client)
+    missing = generated - curated
+    unexpected = curated - generated
+    assert_equal generated, curated,
+                 "Missing generated operations: #{missing.join(', ')}; curated operations absent from generated SDK: #{unexpected.join(', ')}"
+
+    assert_equal %i[actions_api_dry_run], operation_names(client.action_dry_run)
+    assert_equal(
+      %i[actions_api_batch actions_api_decision_receipt actions_api_index actions_api_policy actions_api_show],
+      operation_names(client.action_reads)
+    )
+    assert_equal(
+      %i[actions_rules_index actions_rules_show actions_rules_store actions_rules_update],
+      operation_names(client.action_rules)
+    )
+    assert_equal %i[agent_context], operation_names(client.agent_context)
+    assert_equal %i[get_cookie_declaration], operation_names(client.cookie_declarations)
+    assert_equal %i[launch_creatives_index store_creative store_creative_from_url], operation_names(client.creatives)
     assert_equal %i[launch_plans_copy launch_plans_execute launch_plans_index launch_plans_show], operation_names(client.plans)
     assert_equal %i[create_event get_event verify_signal_ingestion], operation_names(client.events)
+    assert_equal %i[get_account_inventory get_inventory_metrics], operation_names(client.inventory)
     assert_equal(
       %i[
         delete_user_data
@@ -111,6 +137,7 @@ class PlainRouterClientTest < Minitest::Test
       %i[create_sandbox_key get_sandbox get_sandbox_key validate_sandbox_event validate_sandbox_event_with_key],
       operation_names(client.sandbox)
     )
+    assert_equal %i[actions_tests_api_index actions_tests_api_show actions_tests_api_store], operation_names(client.ad_tests)
   end
 
   def test_configures_bearer_auth_timeout_base_url_and_user_agent
@@ -439,6 +466,26 @@ class PlainRouterClientTest < Minitest::Test
       .grep_v(/_with_http_info\z/)
       .reject { |method| method == :api_client || method == :api_client= }
       .sort
+  end
+
+  def generated_operation_names
+    PlainRouter::OpenAPI.constants(false).flat_map do |constant|
+      api_class = PlainRouter::OpenAPI.const_get(constant)
+      next [] unless api_class.is_a?(Class)
+
+      api_class.instance_methods(false).filter_map do |method|
+        method.to_s.delete_suffix("_with_http_info").to_sym if method.to_s.end_with?("_with_http_info")
+      end
+    end.sort
+  end
+
+  def curated_operation_names(client)
+    PlainRouter::Client.public_instance_methods(false).flat_map do |reader|
+      group = client.public_send(reader)
+      next [] unless group.class.instance_methods(false).any? { |method| method.to_s.end_with?("_with_http_info") }
+
+      operation_names(group)
+    end.uniq.sort
   end
 
   def stubbed_client(stubs, token: nil)
