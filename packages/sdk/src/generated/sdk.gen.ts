@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client/index.js';
-import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, ActionsRulesIndexData, ActionsRulesIndexErrors, ActionsRulesIndexResponses, ActionsTestsApiIndexData, ActionsTestsApiIndexErrors, ActionsTestsApiIndexResponses, ActionsTestsApiShowData, ActionsTestsApiShowErrors, ActionsTestsApiShowResponses, ActionsTestsApiStoreData, ActionsTestsApiStoreErrors, ActionsTestsApiStoreResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetAccountInventoryData, GetAccountInventoryErrors, GetAccountInventoryResponses, GetCookieDeclarationData, GetCookieDeclarationErrors, GetCookieDeclarationResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetInventoryMetricsData, GetInventoryMetricsErrors, GetInventoryMetricsResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, LaunchCreativesIndexData, LaunchCreativesIndexErrors, LaunchCreativesIndexResponses, LaunchPlansCopyData, LaunchPlansCopyErrors, LaunchPlansCopyResponses, LaunchPlansExecuteData, LaunchPlansExecuteErrors, LaunchPlansExecuteResponses, LaunchPlansIndexData, LaunchPlansIndexErrors, LaunchPlansIndexResponses, LaunchPlansShowData, LaunchPlansShowErrors, LaunchPlansShowResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, StoreCreativeData, StoreCreativeErrors, StoreCreativeFromUrlData, StoreCreativeFromUrlErrors, StoreCreativeFromUrlResponses, StoreCreativeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
+import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, ActionsRulesIndexData, ActionsRulesIndexErrors, ActionsRulesIndexResponses, ActionsRulesShowData, ActionsRulesShowErrors, ActionsRulesShowResponses, ActionsRulesStoreData, ActionsRulesStoreErrors, ActionsRulesStoreResponses, ActionsRulesUpdateData, ActionsRulesUpdateErrors, ActionsRulesUpdateResponses, ActionsTestsApiIndexData, ActionsTestsApiIndexErrors, ActionsTestsApiIndexResponses, ActionsTestsApiShowData, ActionsTestsApiShowErrors, ActionsTestsApiShowResponses, ActionsTestsApiStoreData, ActionsTestsApiStoreErrors, ActionsTestsApiStoreResponses, AgentContextData, AgentContextErrors, AgentContextResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetAccountInventoryData, GetAccountInventoryErrors, GetAccountInventoryResponses, GetCookieDeclarationData, GetCookieDeclarationErrors, GetCookieDeclarationResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetInventoryMetricsData, GetInventoryMetricsErrors, GetInventoryMetricsResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, LaunchCreativesIndexData, LaunchCreativesIndexErrors, LaunchCreativesIndexResponses, LaunchPlansCopyData, LaunchPlansCopyErrors, LaunchPlansCopyResponses, LaunchPlansExecuteData, LaunchPlansExecuteErrors, LaunchPlansExecuteResponses, LaunchPlansIndexData, LaunchPlansIndexErrors, LaunchPlansIndexResponses, LaunchPlansShowData, LaunchPlansShowErrors, LaunchPlansShowResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, StoreCreativeData, StoreCreativeErrors, StoreCreativeFromUrlData, StoreCreativeFromUrlErrors, StoreCreativeFromUrlResponses, StoreCreativeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -40,7 +40,7 @@ export const actionsApiDryRun = <ThrowOnError extends boolean = false>(options: 
 /**
  * List actions
  *
- * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ * Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
  */
 export const actionsApiIndex = <ThrowOnError extends boolean = false>(options: Options<ActionsApiIndexData, ThrowOnError>): RequestResult<ActionsApiIndexResponses, ActionsApiIndexErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiIndexResponses, ActionsApiIndexErrors, ThrowOnError>({
     security: [{
@@ -74,7 +74,7 @@ export const actionsApiPropose = <ThrowOnError extends boolean = false>(options:
 /**
  * Get action policy
  *
- * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ * Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
  */
 export const actionsApiPolicy = <ThrowOnError extends boolean = false>(options: Options<ActionsApiPolicyData, ThrowOnError>): RequestResult<ActionsApiPolicyResponses, ActionsApiPolicyErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiPolicyResponses, ActionsApiPolicyErrors, ThrowOnError>({
     security: [{
@@ -89,7 +89,7 @@ export const actionsApiPolicy = <ThrowOnError extends boolean = false>(options: 
 /**
  * Get decision receipt
  *
- * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ * Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
  */
 export const actionsApiDecisionReceipt = <ThrowOnError extends boolean = false>(options: Options<ActionsApiDecisionReceiptData, ThrowOnError>): RequestResult<ActionsApiDecisionReceiptResponses, ActionsApiDecisionReceiptErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiDecisionReceiptResponses, ActionsApiDecisionReceiptErrors, ThrowOnError>({
     security: [{
@@ -104,7 +104,7 @@ export const actionsApiDecisionReceipt = <ThrowOnError extends boolean = false>(
 /**
  * Get action
  *
- * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ * Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
  */
 export const actionsApiShow = <ThrowOnError extends boolean = false>(options: Options<ActionsApiShowData, ThrowOnError>): RequestResult<ActionsApiShowResponses, ActionsApiShowErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiShowResponses, ActionsApiShowErrors, ThrowOnError>({
     security: [{
@@ -119,7 +119,7 @@ export const actionsApiShow = <ThrowOnError extends boolean = false>(options: Op
 /**
  * Get action batch
  *
- * Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+ * Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
  */
 export const actionsApiBatch = <ThrowOnError extends boolean = false>(options: Options<ActionsApiBatchData, ThrowOnError>): RequestResult<ActionsApiBatchResponses, ActionsApiBatchErrors, ThrowOnError> => (options.client ?? client).get<ActionsApiBatchResponses, ActionsApiBatchErrors, ThrowOnError>({
     security: [{
@@ -138,12 +138,65 @@ export const actionsApiBatch = <ThrowOnError extends boolean = false>(options: O
  */
 export const actionsRulesIndex = <ThrowOnError extends boolean = false>(options: Options<ActionsRulesIndexData, ThrowOnError>): RequestResult<ActionsRulesIndexResponses, ActionsRulesIndexErrors, ThrowOnError> => (options.client ?? client).get<ActionsRulesIndexResponses, ActionsRulesIndexErrors, ThrowOnError>({
     security: [{
-            key: 'workspaceSecret',
+            key: 'ruleReader',
             scheme: 'bearer',
             type: 'http'
         }],
     url: '/agent/workspaces/{workspace}/action-rules',
     ...options
+});
+
+/**
+ * Create an action rule
+ *
+ * Write an account-scoped rule using its validated definition. Send Accept: application/json for JSON errors. New rules start disabled.
+ */
+export const actionsRulesStore = <ThrowOnError extends boolean = false>(options: Options<ActionsRulesStoreData, ThrowOnError>): RequestResult<ActionsRulesStoreResponses, ActionsRulesStoreErrors, ThrowOnError> => (options.client ?? client).post<ActionsRulesStoreResponses, ActionsRulesStoreErrors, ThrowOnError>({
+    security: [{
+            key: 'ruleWriter',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/action-rules',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get an action rule
+ *
+ * Read the account-scoped rule, immutable revisions and recent run decisions. Send Accept: application/json for the documented JSON errors.
+ */
+export const actionsRulesShow = <ThrowOnError extends boolean = false>(options: Options<ActionsRulesShowData, ThrowOnError>): RequestResult<ActionsRulesShowResponses, ActionsRulesShowErrors, ThrowOnError> => (options.client ?? client).get<ActionsRulesShowResponses, ActionsRulesShowErrors, ThrowOnError>({
+    security: [{
+            key: 'ruleReader',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/action-rules/{action_rule}',
+    ...options
+});
+
+/**
+ * Update an action rule
+ *
+ * Write an account-scoped rule using its validated definition. Send Accept: application/json for JSON errors. New rules start disabled.
+ */
+export const actionsRulesUpdate = <ThrowOnError extends boolean = false>(options: Options<ActionsRulesUpdateData, ThrowOnError>): RequestResult<ActionsRulesUpdateResponses, ActionsRulesUpdateErrors, ThrowOnError> => (options.client ?? client).patch<ActionsRulesUpdateResponses, ActionsRulesUpdateErrors, ThrowOnError>({
+    security: [{
+            key: 'ruleWriter',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/workspaces/{workspace}/action-rules/{action_rule}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**
@@ -192,6 +245,25 @@ export const actionsTestsApiShow = <ThrowOnError extends boolean = false>(option
             type: 'http'
         }],
     url: '/agent/workspaces/{workspace}/tests/{ad_test}',
+    ...options
+});
+
+/**
+ * Get agent context
+ *
+ * Read the authenticated agent and authorized account. With no active account, returns null and connection next steps.
+ */
+export const agentContext = <ThrowOnError extends boolean = false>(options?: Options<AgentContextData, ThrowOnError>): RequestResult<AgentContextResponses, AgentContextErrors, ThrowOnError> => (options?.client ?? client).get<AgentContextResponses, AgentContextErrors, ThrowOnError>({
+    security: [{
+            key: 'agentContextKey',
+            scheme: 'bearer',
+            type: 'http'
+        }, {
+            key: 'agentContextOAuth',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/agent/context',
     ...options
 });
 

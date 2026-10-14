@@ -290,6 +290,34 @@ module PlainRouter::OpenAPI
             key: 'Authorization',
             value: "Bearer #{access_token_with_refresh}"
           },
+        'ruleReader' =>
+          {
+            type: 'bearer',
+            in: 'header',
+            key: 'Authorization',
+            value: "Bearer #{access_token_with_refresh}"
+          },
+        'ruleWriter' =>
+          {
+            type: 'bearer',
+            in: 'header',
+            key: 'Authorization',
+            value: "Bearer #{access_token_with_refresh}"
+          },
+        'agentContextKey' =>
+          {
+            type: 'bearer',
+            in: 'header',
+            key: 'Authorization',
+            value: "Bearer #{access_token_with_refresh}"
+          },
+        'agentContextOAuth' =>
+          {
+            type: 'oauth2',
+            in: 'header',
+            key: 'Authorization',
+            value: "Bearer #{access_token_with_refresh}"
+          },
         'creativeWriter' =>
           {
             type: 'bearer',

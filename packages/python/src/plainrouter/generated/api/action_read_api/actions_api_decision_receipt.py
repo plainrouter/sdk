@@ -91,8 +91,8 @@ def sync_detailed(
 ) -> Response[ActionDecisionReceiptRead | ErrorMessage | ValidationError]:
     """Get decision receipt
 
-     Read persisted Actions data for an account available to this workspace key. An unbound key selects
-    account_id; a bound key stays limited to its own account.
+     Read persisted Actions data for the authorized account. Unbound keys require exactly one active
+    account; account_id cannot select among multiple accounts.
 
     Args:
         workspace (int):
@@ -129,8 +129,8 @@ def sync(
 ) -> ActionDecisionReceiptRead | ErrorMessage | ValidationError | None:
     """Get decision receipt
 
-     Read persisted Actions data for an account available to this workspace key. An unbound key selects
-    account_id; a bound key stays limited to its own account.
+     Read persisted Actions data for the authorized account. Unbound keys require exactly one active
+    account; account_id cannot select among multiple accounts.
 
     Args:
         workspace (int):
@@ -162,8 +162,8 @@ async def asyncio_detailed(
 ) -> Response[ActionDecisionReceiptRead | ErrorMessage | ValidationError]:
     """Get decision receipt
 
-     Read persisted Actions data for an account available to this workspace key. An unbound key selects
-    account_id; a bound key stays limited to its own account.
+     Read persisted Actions data for the authorized account. Unbound keys require exactly one active
+    account; account_id cannot select among multiple accounts.
 
     Args:
         workspace (int):
@@ -198,8 +198,8 @@ async def asyncio(
 ) -> ActionDecisionReceiptRead | ErrorMessage | ValidationError | None:
     """Get decision receipt
 
-     Read persisted Actions data for an account available to this workspace key. An unbound key selects
-    account_id; a bound key stays limited to its own account.
+     Read persisted Actions data for the authorized account. Unbound keys require exactly one active
+    account; account_id cannot select among multiple accounts.
 
     Args:
         workspace (int):

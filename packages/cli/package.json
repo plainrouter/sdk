@@ -36,8 +36,11 @@
     "access": "public"
   },
   "scripts": {
+    "prebuild": "node ../../scripts/generate-operation-exports.mjs && npm run build --workspace @plainrouter/sdk",
     "build": "tsc --project tsconfig.build.json",
+    "pretest": "node ../../scripts/generate-operation-exports.mjs",
     "test": "vitest run",
+    "pretypecheck": "node ../../scripts/generate-operation-exports.mjs",
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {

@@ -102,13 +102,13 @@ module PlainRouter::OpenAPI
         :'platform_ad_account_id' => :'Integer',
         :'type' => :'DestinationType',
         :'credential_source' => :'DestinationCredentialSource',
-        :'config' => :'Array<Object>',
+        :'config' => :'DestinationConfig',
         :'status' => :'DestinationStatus',
         :'created_at' => :'Time',
         :'updated_at' => :'Time',
-        :'attention_reason' => :'String',
-        :'held_count' => :'String',
-        :'notices' => :'String'
+        :'attention_reason' => :'GetEvent200ResponseEventConsent',
+        :'held_count' => :'Integer',
+        :'notices' => :'Array<Hash<String, Object>>'
       }
     end
 
@@ -118,6 +118,7 @@ module PlainRouter::OpenAPI
         :'platform_ad_account_id',
         :'created_at',
         :'updated_at',
+        :'attention_reason',
       ])
     end
 
@@ -174,9 +175,7 @@ module PlainRouter::OpenAPI
       end
 
       if attributes.key?(:'config')
-        if (value = attributes[:'config']).is_a?(Array)
-          self.config = value
-        end
+        self.config = attributes[:'config']
       else
         self.config = nil
       end
@@ -212,7 +211,9 @@ module PlainRouter::OpenAPI
       end
 
       if attributes.key?(:'notices')
-        self.notices = attributes[:'notices']
+        if (value = attributes[:'notices']).is_a?(Array)
+          self.notices = value
+        end
       else
         self.notices = nil
       end
@@ -251,10 +252,6 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "status", status cannot be nil.')
       end
 
-      if @attention_reason.nil?
-        invalid_properties.push('invalid value for "attention_reason", attention_reason cannot be nil.')
-      end
-
       if @held_count.nil?
         invalid_properties.push('invalid value for "held_count", held_count cannot be nil.')
       end
@@ -277,7 +274,6 @@ module PlainRouter::OpenAPI
       return false if @credential_source.nil?
       return false if @config.nil?
       return false if @status.nil?
-      return false if @attention_reason.nil?
       return false if @held_count.nil?
       return false if @notices.nil?
       true
@@ -351,16 +347,6 @@ module PlainRouter::OpenAPI
       end
 
       @status = status
-    end
-
-    # Custom attribute writer method with validation
-    # @param [Object] attention_reason Value to be assigned
-    def attention_reason=(attention_reason)
-      if attention_reason.nil?
-        fail ArgumentError, 'attention_reason cannot be nil'
-      end
-
-      @attention_reason = attention_reason
     end
 
     # Custom attribute writer method with validation

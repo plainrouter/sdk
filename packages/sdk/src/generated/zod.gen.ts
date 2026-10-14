@@ -838,6 +838,148 @@ export const zActionListRead = z.object({
 });
 
 /**
+ * ActionRuleDetailRead
+ */
+export const zActionRuleDetailRead = z.object({
+    rule: z.object({
+        id: z.string(),
+        workspace_id: z.int(),
+        platform_ad_account_id: z.int(),
+        name: z.string(),
+        enabled: z.boolean(),
+        suspended_at: z.iso.datetime().nullable(),
+        suspended_reason: z.string().nullable(),
+        window: z.object({
+            days: z.literal(3),
+            kind: z.enum(['last_complete_days']),
+            timezone: z.string()
+        }),
+        current_revision: z.object({
+            id: z.string(),
+            target_level: z.enum([
+                'ad',
+                'ad_set',
+                'campaign'
+            ]),
+            action: z.enum([
+                'pause',
+                'increase_budget',
+                'decrease_budget'
+            ]),
+            budget_change_percent: z.int().nullable(),
+            minimum_counted_arrivals: z.int(),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.string(),
+            author_type: z.enum(['user', 'agent']),
+            created_at: z.iso.datetime()
+        }),
+        revisions: z.array(z.object({
+            id: z.string(),
+            target_level: z.enum([
+                'ad',
+                'ad_set',
+                'campaign'
+            ]),
+            action: z.enum([
+                'pause',
+                'increase_budget',
+                'decrease_budget'
+            ]),
+            budget_change_percent: z.int().nullable(),
+            minimum_counted_arrivals: z.int(),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.string(),
+            author_type: z.enum(['user', 'agent']),
+            created_at: z.iso.datetime()
+        })),
+        runs: z.array(z.object({
+            id: z.string(),
+            revision_id: z.string(),
+            window_start: z.iso.datetime(),
+            window_end: z.iso.datetime(),
+            timezone: z.string(),
+            status: z.string(),
+            reason: z.string().nullable(),
+            account_spend_minor: z.string().nullable(),
+            account_counted_arrivals: z.int().nullable(),
+            evaluated_at: z.iso.datetime().nullable(),
+            decisions: z.array(z.object({
+                id: z.string(),
+                target_type: z.string(),
+                target_id: z.string(),
+                target_name: z.string().nullable(),
+                target_spend_minor: z.string(),
+                target_counted_arrivals: z.int(),
+                decision: z.string(),
+                reason: z.string(),
+                action_type: z.string(),
+                new_daily_budget_minor: z.int().nullable(),
+                action_batch_id: z.string().nullable()
+            })),
+            decisions_truncated: z.boolean()
+        }))
+    })
+});
+
+/**
+ * ActionRuleWriteRead
+ */
+export const zActionRuleWriteRead = z.object({
+    rule: z.object({
+        id: z.string(),
+        workspace_id: z.int(),
+        platform_ad_account_id: z.int(),
+        name: z.string(),
+        enabled: z.boolean(),
+        suspended_at: z.iso.datetime().nullable(),
+        suspended_reason: z.string().nullable(),
+        window: z.object({
+            days: z.literal(3),
+            kind: z.enum(['last_complete_days']),
+            timezone: z.string()
+        }),
+        current_revision: z.object({
+            id: z.string(),
+            target_level: z.enum([
+                'ad',
+                'ad_set',
+                'campaign'
+            ]),
+            action: z.enum([
+                'pause',
+                'increase_budget',
+                'decrease_budget'
+            ]),
+            budget_change_percent: z.int().nullable(),
+            minimum_counted_arrivals: z.int(),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.string(),
+            author_type: z.enum(['user', 'agent']),
+            created_at: z.iso.datetime()
+        }),
+        revisions: z.array(z.object({
+            id: z.string(),
+            target_level: z.enum([
+                'ad',
+                'ad_set',
+                'campaign'
+            ]),
+            action: z.enum([
+                'pause',
+                'increase_budget',
+                'decrease_budget'
+            ]),
+            budget_change_percent: z.int().nullable(),
+            minimum_counted_arrivals: z.int(),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.string(),
+            author_type: z.enum(['user', 'agent']),
+            created_at: z.iso.datetime()
+        }))
+    })
+});
+
+/**
  * AdTest
  */
 export const zAdTest = z.object({
@@ -1452,6 +1594,14 @@ export const zAdTestVerdictRead = z.object({
 });
 
 /**
+ * AgentContextAuthError
+ */
+export const zAgentContextAuthError = z.object({
+    error: z.string(),
+    error_description: z.string()
+});
+
+/**
  * AgentCredentialError
  */
 export const zAgentCredentialError = z.object({
@@ -1732,13 +1882,19 @@ export const zDestination = z.object({
     platform_ad_account_id: z.int().nullable(),
     type: zDestinationType,
     credential_source: zDestinationCredentialSource,
-    config: z.array(z.unknown()),
+    config: z.union([
+        z.record(z.string(), z.unknown()),
+        z.array(z.unknown()).max(0)
+    ]),
     status: zDestinationStatus,
     created_at: z.iso.datetime().nullable(),
     updated_at: z.iso.datetime().nullable(),
-    attention_reason: z.string(),
-    held_count: z.string(),
-    notices: z.string()
+    attention_reason: z.union([
+        z.record(z.string(), z.unknown()),
+        z.array(z.unknown())
+    ]).nullable(),
+    held_count: z.int(),
+    notices: z.array(z.record(z.string(), z.unknown()))
 });
 
 /**
@@ -2178,6 +2334,8 @@ export const zActionsRulesIndexPath = z.object({
 
 export const zActionsRulesIndexQuery = z.object({
     page: z.int().gte(1).optional(),
+    account_id: z.int().gte(1).optional(),
+    platform_ad_account_id: z.int().gte(1).optional(),
     cursor: z.string().optional(),
     per_page: z.int().gte(1).lte(100).optional().default(25)
 });
@@ -2214,6 +2372,167 @@ export const zActionsRulesIndexResponse = z.object({
         continuation: z.string().optional()
     })
 });
+
+/**
+ * Creates a disabled rule. enabled must be absent. window, window_days, author_type and current_revision_id must be absent or empty.
+ */
+export const zActionsRulesStoreBody = z.object({
+    name: z.string().max(255).regex(/\S/),
+    definition: z.union([
+        z.object({
+            target_level: z.enum(['ad', 'ad_set']),
+            action: z.enum(['pause']),
+            minimum_counted_arrivals: z.int().gte(50).lte(9223372036854776000),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.union([
+                z.number().gte(0.1).lte(10),
+                z.string().regex(/^\+?0*(?:\.[1-9][0-9]?|[1-9](?:\.[0-9]{0,2})?|10(?:\.0{0,2})?)$/)
+            ])
+        }),
+        z.object({
+            target_level: z.enum(['ad_set', 'campaign']),
+            action: z.enum(['increase_budget']),
+            minimum_counted_arrivals: z.int().gte(100).lte(9223372036854776000),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.union([
+                z.number().gte(0.1).lte(10),
+                z.string().regex(/^\+?0*(?:\.[1-9][0-9]?|[1-9](?:\.[0-9]{0,2})?|10(?:\.0{0,2})?)$/)
+            ]),
+            budget_change_percent: z.int().gte(1).lte(50)
+        }),
+        z.object({
+            target_level: z.enum(['ad_set', 'campaign']),
+            action: z.enum(['decrease_budget']),
+            minimum_counted_arrivals: z.int().gte(50).lte(9223372036854776000),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.union([
+                z.number().gte(0.1).lte(10),
+                z.string().regex(/^\+?0*(?:\.[1-9][0-9]?|[1-9](?:\.[0-9]{0,2})?|10(?:\.0{0,2})?)$/)
+            ]),
+            budget_change_percent: z.int().gte(1).lte(50)
+        })
+    ]),
+    account_id: z.int().gte(1).optional(),
+    platform_ad_account_id: z.int().gte(1),
+    enabled: z.unknown().optional(),
+    window: z.union([
+        z.literal(''),
+        z.array(z.unknown()).max(0),
+        z.record(z.string(), z.unknown())
+    ]).nullish(),
+    window_days: z.union([
+        z.literal(''),
+        z.array(z.unknown()).max(0),
+        z.record(z.string(), z.unknown())
+    ]).nullish(),
+    author_type: z.union([
+        z.literal(''),
+        z.array(z.unknown()).max(0),
+        z.record(z.string(), z.unknown())
+    ]).nullish(),
+    current_revision_id: z.union([
+        z.literal(''),
+        z.array(z.unknown()).max(0),
+        z.record(z.string(), z.unknown())
+    ]).nullish()
+});
+
+export const zActionsRulesStorePath = z.object({
+    workspace: z.int()
+});
+
+/**
+ * Saved rule with immutable revisions; no runs are included.
+ */
+export const zActionsRulesStoreResponse = zActionRuleWriteRead;
+
+export const zActionsRulesShowPath = z.object({
+    workspace: z.int(),
+    action_rule: z.string()
+});
+
+export const zActionsRulesShowQuery = z.object({
+    account_id: z.int().gte(1).optional()
+});
+
+/**
+ * Rule with revisions and recent runs.
+ */
+export const zActionsRulesShowResponse = zActionRuleDetailRead;
+
+/**
+ * All fields are optional. platform_ad_account_id must be absent. window, window_days, author_type and current_revision_id must be absent or empty.
+ */
+export const zActionsRulesUpdateBody = z.object({
+    name: z.string().max(255).regex(/\S/).optional(),
+    definition: z.union([
+        z.object({
+            target_level: z.enum(['ad', 'ad_set']),
+            action: z.enum(['pause']),
+            minimum_counted_arrivals: z.int().gte(50).lte(9223372036854776000),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.union([
+                z.number().gte(0.1).lte(10),
+                z.string().regex(/^\+?0*(?:\.[1-9][0-9]?|[1-9](?:\.[0-9]{0,2})?|10(?:\.0{0,2})?)$/)
+            ])
+        }),
+        z.object({
+            target_level: z.enum(['ad_set', 'campaign']),
+            action: z.enum(['increase_budget']),
+            minimum_counted_arrivals: z.int().gte(100).lte(9223372036854776000),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.union([
+                z.number().gte(0.1).lte(10),
+                z.string().regex(/^\+?0*(?:\.[1-9][0-9]?|[1-9](?:\.[0-9]{0,2})?|10(?:\.0{0,2})?)$/)
+            ]),
+            budget_change_percent: z.int().gte(1).lte(50)
+        }),
+        z.object({
+            target_level: z.enum(['ad_set', 'campaign']),
+            action: z.enum(['decrease_budget']),
+            minimum_counted_arrivals: z.int().gte(50).lte(9223372036854776000),
+            cost_comparison: z.enum(['at_least', 'at_most']),
+            cost_ratio: z.union([
+                z.number().gte(0.1).lte(10),
+                z.string().regex(/^\+?0*(?:\.[1-9][0-9]?|[1-9](?:\.[0-9]{0,2})?|10(?:\.0{0,2})?)$/)
+            ]),
+            budget_change_percent: z.int().gte(1).lte(50)
+        })
+    ]).optional(),
+    account_id: z.int().gte(1).optional(),
+    enabled: z.boolean().optional(),
+    platform_ad_account_id: z.unknown().optional(),
+    window: z.union([
+        z.literal(''),
+        z.array(z.unknown()).max(0),
+        z.record(z.string(), z.unknown())
+    ]).nullish(),
+    window_days: z.union([
+        z.literal(''),
+        z.array(z.unknown()).max(0),
+        z.record(z.string(), z.unknown())
+    ]).nullish(),
+    author_type: z.union([
+        z.literal(''),
+        z.array(z.unknown()).max(0),
+        z.record(z.string(), z.unknown())
+    ]).nullish(),
+    current_revision_id: z.union([
+        z.literal(''),
+        z.array(z.unknown()).max(0),
+        z.record(z.string(), z.unknown())
+    ]).nullish()
+});
+
+export const zActionsRulesUpdatePath = z.object({
+    workspace: z.int(),
+    action_rule: z.string()
+});
+
+/**
+ * Saved rule with immutable revisions; no runs are included.
+ */
+export const zActionsRulesUpdateResponse = zActionRuleWriteRead;
 
 export const zActionsTestsApiIndexPath = z.object({
     workspace: z.int()
@@ -2272,6 +2591,37 @@ export const zActionsTestsApiShowPath = z.object({
  * The Test and its stored verdict facts.
  */
 export const zActionsTestsApiShowResponse = zAdTestShowRead;
+
+export const zAgentContextQuery = z.object({
+    account_id: z.int().gte(1).optional(),
+    workspace_id: z.int().gte(1).optional()
+});
+
+/**
+ * Agent identity and account context.
+ */
+export const zAgentContextResponse = z.object({
+    meta_connected: z.boolean(),
+    agent: z.object({
+        id: z.string(),
+        name: z.string(),
+        scopes: z.array(z.string()),
+        authentication: z.enum(['personal_access_token', 'oauth2'])
+    }),
+    platform_ad_account: z.object({
+        id: z.int(),
+        external_id: z.string(),
+        name: z.string(),
+        platform: z.string(),
+        currency: z.string().nullable(),
+        timezone: z.string().nullable(),
+        workspace: z.object({
+            id: z.int(),
+            name: z.string()
+        })
+    }).nullable(),
+    next_steps: z.array(z.string()).optional()
+});
 
 export const zGetCookieDeclarationPath = z.object({
     publishableKey: z.string().regex(/^pk_live_[A-Za-z0-9]{32}$/)
@@ -2407,7 +2757,21 @@ export const zLaunchPlansIndexResponse = z.object({
         data: z.array(zDeploymentPlanRead),
         current_page: z.int(),
         per_page: z.int(),
-        total: z.int()
+        total: z.int(),
+        last_page: z.int(),
+        next_cursor: z.int().nullable(),
+        truncated: z.boolean(),
+        next_page_arguments: z.union([
+            z.object({
+                page: z.int(),
+                per_page: z.int()
+            }),
+            z.object({
+                cursor: z.int(),
+                per_page: z.int()
+            })
+        ]).nullable(),
+        continuation: z.string()
     })
 });
 

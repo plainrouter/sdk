@@ -2,6 +2,9 @@
 
 ## 0.6.0 (unreleased)
 
+- Add `GET /agent/context` and action-rule `POST` collection, item `GET`, and item `PATCH` operations.
+- Correct Destination `config`, `attention_reason`, `held_count` and `notices` types; expose plans-list `last_page`, `next_cursor`, `truncated`, `next_page_arguments` and `continuation`; clarify that `account_id` is the internal platform-account ID; correct action-rule list authentication and account/workspace selectors; fix the empty-array branches of action-rule write unions so Python generation succeeds with `--fail-on-warning`.
+
 - The `api_client.default_headers` Accept override takes effect from this release; it had no effect before. Per-call `header_params` overrides remain supported in any header-name case, including Accept; they take precedence over `accept:`. Caller Faraday Accept is retained when `accept:` is omitted; an exact wildcard counts as unset.
 - The hand-written `Client::JsonApiClient` and `Client::RejectRedirects` transport classes apply this policy to the curated groups.
 
