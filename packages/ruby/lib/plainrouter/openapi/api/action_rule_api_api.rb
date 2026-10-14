@@ -24,6 +24,8 @@ module PlainRouter::OpenAPI
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :page
+    # @option opts [Integer] :account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+    # @option opts [Integer] :platform_ad_account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.
     # @option opts [String] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :per_page Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [ActionsRulesIndex200Response]
@@ -37,6 +39,8 @@ module PlainRouter::OpenAPI
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :page
+    # @option opts [Integer] :account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+    # @option opts [Integer] :platform_ad_account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.
     # @option opts [String] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :per_page Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [Array<(ActionsRulesIndex200Response, Integer, Hash)>] ActionsRulesIndex200Response data, response status code and response headers
@@ -50,6 +54,14 @@ module PlainRouter::OpenAPI
       end
       if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] < 1
         fail ArgumentError, 'invalid value for "opts[:"page"]" when calling ActionRuleApiApi.actions_rules_index, must be greater than or equal to 1.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionRuleApiApi.actions_rules_index, must be greater than or equal to 1.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'platform_ad_account_id'].nil? && opts[:'platform_ad_account_id'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"platform_ad_account_id"]" when calling ActionRuleApiApi.actions_rules_index, must be greater than or equal to 1.'
       end
 
       if @api_client.config.client_side_validation && !opts[:'per_page'].nil? && opts[:'per_page'] > 100
@@ -66,6 +78,8 @@ module PlainRouter::OpenAPI
       # query parameters
       query_params = opts[:query_params] || {}
       query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
+      query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
+      query_params[:'platform_ad_account_id'] = opts[:'platform_ad_account_id'] if !opts[:'platform_ad_account_id'].nil?
       query_params[:'cursor'] = opts[:'cursor'] if !opts[:'cursor'].nil?
       query_params[:'per_page'] = opts[:'per_page'] if !opts[:'per_page'].nil?
 
@@ -84,7 +98,7 @@ module PlainRouter::OpenAPI
       return_type = opts[:debug_return_type] || 'ActionsRulesIndex200Response'
 
       # auth_names
-      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
+      auth_names = opts[:debug_auth_names] || ['ruleReader']
 
       new_options = opts.merge(
         :operation => :"ActionRuleApiApi.actions_rules_index",
@@ -99,6 +113,232 @@ module PlainRouter::OpenAPI
       data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
       if @api_client.config.debugging
         @api_client.config.logger.debug "API called: ActionRuleApiApi#actions_rules_index\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Get an action rule
+    # Read the account-scoped rule, immutable revisions and recent run decisions. Send Accept: application/json for the documented JSON errors.
+    # @param workspace [Integer] The workspace ID
+    # @param action_rule [String]
+    # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+    # @return [ActionRuleDetailRead]
+    def actions_rules_show(workspace, action_rule, opts = {})
+      data, _status_code, _headers = actions_rules_show_with_http_info(workspace, action_rule, opts)
+      data
+    end
+
+    # Get an action rule
+    # Read the account-scoped rule, immutable revisions and recent run decisions. Send Accept: application/json for the documented JSON errors.
+    # @param workspace [Integer] The workspace ID
+    # @param action_rule [String]
+    # @param [Hash] opts the optional parameters
+    # @option opts [Integer] :account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+    # @return [Array<(ActionRuleDetailRead, Integer, Hash)>] ActionRuleDetailRead data, response status code and response headers
+    def actions_rules_show_with_http_info(workspace, action_rule, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: ActionRuleApiApi.actions_rules_show ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling ActionRuleApiApi.actions_rules_show"
+      end
+      # verify the required parameter 'action_rule' is set
+      if @api_client.config.client_side_validation && action_rule.nil?
+        fail ArgumentError, "Missing the required parameter 'action_rule' when calling ActionRuleApiApi.actions_rules_show"
+      end
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionRuleApiApi.actions_rules_show, must be greater than or equal to 1.'
+      end
+
+      # resource path
+      local_var_path = '/agent/workspaces/{workspace}/action-rules/{action_rule}'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{action_rule}', CGI.escape(action_rule.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+      query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'ActionRuleDetailRead'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['ruleReader']
+
+      new_options = opts.merge(
+        :operation => :"ActionRuleApiApi.actions_rules_show",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: ActionRuleApiApi#actions_rules_show\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Create an action rule
+    # Write an account-scoped rule using its validated definition. Send Accept: application/json for JSON errors. New rules start disabled.
+    # @param workspace [Integer] The workspace ID
+    # @param actions_rules_store_request [ActionsRulesStoreRequest]
+    # @param [Hash] opts the optional parameters
+    # @return [ActionRuleWriteRead]
+    def actions_rules_store(workspace, actions_rules_store_request, opts = {})
+      data, _status_code, _headers = actions_rules_store_with_http_info(workspace, actions_rules_store_request, opts)
+      data
+    end
+
+    # Create an action rule
+    # Write an account-scoped rule using its validated definition. Send Accept: application/json for JSON errors. New rules start disabled.
+    # @param workspace [Integer] The workspace ID
+    # @param actions_rules_store_request [ActionsRulesStoreRequest]
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(ActionRuleWriteRead, Integer, Hash)>] ActionRuleWriteRead data, response status code and response headers
+    def actions_rules_store_with_http_info(workspace, actions_rules_store_request, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: ActionRuleApiApi.actions_rules_store ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling ActionRuleApiApi.actions_rules_store"
+      end
+      # verify the required parameter 'actions_rules_store_request' is set
+      if @api_client.config.client_side_validation && actions_rules_store_request.nil?
+        fail ArgumentError, "Missing the required parameter 'actions_rules_store_request' when calling ActionRuleApiApi.actions_rules_store"
+      end
+      # resource path
+      local_var_path = '/agent/workspaces/{workspace}/action-rules'.sub('{workspace}', CGI.escape(workspace.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+      # HTTP header 'Content-Type'
+      content_type = @api_client.select_header_content_type(['application/json'])
+      if !content_type.nil?
+          header_params['Content-Type'] = content_type
+      end
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body] || @api_client.object_to_http_body(actions_rules_store_request)
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'ActionRuleWriteRead'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['ruleWriter']
+
+      new_options = opts.merge(
+        :operation => :"ActionRuleApiApi.actions_rules_store",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:POST, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: ActionRuleApiApi#actions_rules_store\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Update an action rule
+    # Write an account-scoped rule using its validated definition. Send Accept: application/json for JSON errors. New rules start disabled.
+    # @param workspace [Integer] The workspace ID
+    # @param action_rule [String]
+    # @param [Hash] opts the optional parameters
+    # @option opts [ActionsRulesUpdateRequest] :actions_rules_update_request
+    # @return [ActionRuleWriteRead]
+    def actions_rules_update(workspace, action_rule, opts = {})
+      data, _status_code, _headers = actions_rules_update_with_http_info(workspace, action_rule, opts)
+      data
+    end
+
+    # Update an action rule
+    # Write an account-scoped rule using its validated definition. Send Accept: application/json for JSON errors. New rules start disabled.
+    # @param workspace [Integer] The workspace ID
+    # @param action_rule [String]
+    # @param [Hash] opts the optional parameters
+    # @option opts [ActionsRulesUpdateRequest] :actions_rules_update_request
+    # @return [Array<(ActionRuleWriteRead, Integer, Hash)>] ActionRuleWriteRead data, response status code and response headers
+    def actions_rules_update_with_http_info(workspace, action_rule, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: ActionRuleApiApi.actions_rules_update ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling ActionRuleApiApi.actions_rules_update"
+      end
+      # verify the required parameter 'action_rule' is set
+      if @api_client.config.client_side_validation && action_rule.nil?
+        fail ArgumentError, "Missing the required parameter 'action_rule' when calling ActionRuleApiApi.actions_rules_update"
+      end
+      # resource path
+      local_var_path = '/agent/workspaces/{workspace}/action-rules/{action_rule}'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{action_rule}', CGI.escape(action_rule.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+      # HTTP header 'Content-Type'
+      content_type = @api_client.select_header_content_type(['application/json'])
+      if !content_type.nil?
+          header_params['Content-Type'] = content_type
+      end
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body] || @api_client.object_to_http_body(opts[:'actions_rules_update_request'])
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'ActionRuleWriteRead'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['ruleWriter']
+
+      new_options = opts.merge(
+        :operation => :"ActionRuleApiApi.actions_rules_update",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:PATCH, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: ActionRuleApiApi#actions_rules_update\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
       end
       return data, status_code, headers
     end

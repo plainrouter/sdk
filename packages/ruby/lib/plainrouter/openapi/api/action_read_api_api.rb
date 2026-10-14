@@ -20,11 +20,11 @@ module PlainRouter::OpenAPI
       @api_client = api_client
     end
     # Get action batch
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param action_batch [String]
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [ActionBatchRead]
@@ -34,11 +34,11 @@ module PlainRouter::OpenAPI
     end
 
     # Get action batch
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param action_batch [String]
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [Array<(ActionBatchRead, Integer, Hash)>] ActionBatchRead data, response status code and response headers
@@ -114,11 +114,11 @@ module PlainRouter::OpenAPI
     end
 
     # Get decision receipt
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param action [String]
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @return [ActionDecisionReceiptRead]
     def actions_api_decision_receipt(workspace, action, opts = {})
       data, _status_code, _headers = actions_api_decision_receipt_with_http_info(workspace, action, opts)
@@ -126,11 +126,11 @@ module PlainRouter::OpenAPI
     end
 
     # Get decision receipt
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param action [String]
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @return [Array<(ActionDecisionReceiptRead, Integer, Hash)>] ActionDecisionReceiptRead data, response status code and response headers
     def actions_api_decision_receipt_with_http_info(workspace, action, opts = {})
       if @api_client.config.debugging
@@ -190,12 +190,12 @@ module PlainRouter::OpenAPI
     end
 
     # List actions
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [String] :status
     # @option opts [Integer] :page
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [ActionListRead]
@@ -205,12 +205,12 @@ module PlainRouter::OpenAPI
     end
 
     # List actions
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [String] :status
     # @option opts [Integer] :page
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [Array<(ActionListRead, Integer, Hash)>] ActionListRead data, response status code and response headers
@@ -292,10 +292,10 @@ module PlainRouter::OpenAPI
     end
 
     # Get action policy
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @return [ActionPolicyRead]
     def actions_api_policy(workspace, opts = {})
       data, _status_code, _headers = actions_api_policy_with_http_info(workspace, opts)
@@ -303,10 +303,10 @@ module PlainRouter::OpenAPI
     end
 
     # Get action policy
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @return [Array<(ActionPolicyRead, Integer, Hash)>] ActionPolicyRead data, response status code and response headers
     def actions_api_policy_with_http_info(workspace, opts = {})
       if @api_client.config.debugging
@@ -362,11 +362,11 @@ module PlainRouter::OpenAPI
     end
 
     # Get action
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param action [String]
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @return [ActionDetailRead]
     def actions_api_show(workspace, action, opts = {})
       data, _status_code, _headers = actions_api_show_with_http_info(workspace, action, opts)
@@ -374,11 +374,11 @@ module PlainRouter::OpenAPI
     end
 
     # Get action
-    # Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.
+    # Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.
     # @param workspace [Integer] The workspace ID
     # @param action [String]
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+    # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @return [Array<(ActionDetailRead, Integer, Hash)>] ActionDetailRead data, response status code and response headers
     def actions_api_show_with_http_info(workspace, action, opts = {})
       if @api_client.config.debugging

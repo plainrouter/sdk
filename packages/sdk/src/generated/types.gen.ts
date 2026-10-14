@@ -613,6 +613,125 @@ export type ActionReadItem = {
 };
 
 /**
+ * ActionRuleDetailRead
+ */
+export type ActionRuleDetailRead = {
+    rule: {
+        id: string;
+        workspace_id: number;
+        platform_ad_account_id: number;
+        name: string;
+        enabled: boolean;
+        suspended_at: string | null;
+        suspended_reason: string | null;
+        window: {
+            days: 3;
+            kind: 'last_complete_days';
+            timezone: string;
+        };
+        current_revision: {
+            id: string;
+            target_level: 'ad' | 'ad_set' | 'campaign';
+            action: 'pause' | 'increase_budget' | 'decrease_budget';
+            budget_change_percent: number | null;
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            cost_ratio: string;
+            author_type: 'user' | 'agent';
+            created_at: string;
+        };
+        /**
+         * Present on show and write responses.
+         */
+        revisions: Array<{
+            id: string;
+            target_level: 'ad' | 'ad_set' | 'campaign';
+            action: 'pause' | 'increase_budget' | 'decrease_budget';
+            budget_change_percent: number | null;
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            cost_ratio: string;
+            author_type: 'user' | 'agent';
+            created_at: string;
+        }>;
+        /**
+         * Show only; at most five recent runs, each with at most 100 decisions.
+         */
+        runs: Array<{
+            id: string;
+            revision_id: string;
+            window_start: string;
+            window_end: string;
+            timezone: string;
+            status: string;
+            reason: string | null;
+            account_spend_minor: string | null;
+            account_counted_arrivals: number | null;
+            evaluated_at: string | null;
+            decisions: Array<{
+                id: string;
+                target_type: string;
+                target_id: string;
+                target_name: string | null;
+                target_spend_minor: string;
+                target_counted_arrivals: number;
+                decision: string;
+                reason: string;
+                action_type: string;
+                new_daily_budget_minor: number | null;
+                action_batch_id: string | null;
+            }>;
+            decisions_truncated: boolean;
+        }>;
+    };
+};
+
+/**
+ * ActionRuleWriteRead
+ */
+export type ActionRuleWriteRead = {
+    rule: {
+        id: string;
+        workspace_id: number;
+        platform_ad_account_id: number;
+        name: string;
+        enabled: boolean;
+        suspended_at: string | null;
+        suspended_reason: string | null;
+        window: {
+            days: 3;
+            kind: 'last_complete_days';
+            timezone: string;
+        };
+        current_revision: {
+            id: string;
+            target_level: 'ad' | 'ad_set' | 'campaign';
+            action: 'pause' | 'increase_budget' | 'decrease_budget';
+            budget_change_percent: number | null;
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            cost_ratio: string;
+            author_type: 'user' | 'agent';
+            created_at: string;
+        };
+        /**
+         * Present on show and write responses.
+         */
+        revisions: Array<{
+            id: string;
+            target_level: 'ad' | 'ad_set' | 'campaign';
+            action: 'pause' | 'increase_budget' | 'decrease_budget';
+            budget_change_percent: number | null;
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            cost_ratio: string;
+            author_type: 'user' | 'agent';
+            created_at: string;
+        }>;
+    };
+};
+
+/**
  * AdTest
  */
 export type AdTest = {
@@ -1252,6 +1371,14 @@ export type AdTestVerdictRead = {
 };
 
 /**
+ * AgentContextAuthError
+ */
+export type AgentContextAuthError = {
+    error: string;
+    error_description: string;
+};
+
+/**
  * AgentCredentialError
  */
 export type AgentCredentialError = {
@@ -1499,13 +1626,19 @@ export type Destination = {
     platform_ad_account_id: number | null;
     type: DestinationType;
     credential_source: DestinationCredentialSource;
-    config: Array<unknown>;
+    config: {
+        [key: string]: unknown;
+    } | Array<unknown>;
     status: DestinationStatus;
     created_at: string | null;
     updated_at: string | null;
-    attention_reason: string;
-    held_count: string;
-    notices: string;
+    attention_reason: {
+        [key: string]: unknown;
+    } | Array<unknown> | null;
+    held_count: number;
+    notices: Array<{
+        [key: string]: unknown;
+    }>;
 };
 
 /**
@@ -1832,7 +1965,7 @@ export type ActionsApiDryRunErrors = {
      */
     413: ErrorMessage;
     /**
-     * Invalid input, account selection, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.
+     * Invalid input or account ID, mismatched account binding, ambiguous active accounts, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.
      */
     422: ValidationError;
     /**
@@ -1868,7 +2001,7 @@ export type ActionsApiIndexData = {
         status?: 'pending' | 'approved_without_execution' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'verified' | 'failed' | 'execution_uncertain' | 'rolled_back' | 'blocked';
         page?: number;
         /**
-         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         * Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
          */
         account_id?: number;
         /**
@@ -1947,7 +2080,7 @@ export type ActionsApiProposeErrors = {
      */
     413: ErrorMessage;
     /**
-     * Invalid input, account selection, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.
+     * Invalid input or account ID, mismatched account binding, ambiguous active accounts, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.
      */
     422: ValidationError;
     /**
@@ -1989,7 +2122,7 @@ export type ActionsApiPolicyData = {
     };
     query?: {
         /**
-         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         * Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
          */
         account_id?: number;
     };
@@ -2037,7 +2170,7 @@ export type ActionsApiDecisionReceiptData = {
     };
     query?: {
         /**
-         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         * Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
          */
         account_id?: number;
     };
@@ -2085,7 +2218,7 @@ export type ActionsApiShowData = {
     };
     query?: {
         /**
-         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         * Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
          */
         account_id?: number;
     };
@@ -2133,7 +2266,7 @@ export type ActionsApiBatchData = {
     };
     query?: {
         /**
-         * Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.
+         * Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
          */
         account_id?: number;
         /**
@@ -2189,6 +2322,14 @@ export type ActionsRulesIndexData = {
     query?: {
         page?: number;
         /**
+         * Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+         */
+        account_id?: number;
+        /**
+         * Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.
+         */
+        platform_ad_account_id?: number;
+        /**
          * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
          */
         cursor?: string;
@@ -2202,9 +2343,28 @@ export type ActionsRulesIndexData = {
 
 export type ActionsRulesIndexErrors = {
     /**
-     * Invalid or missing Server secret.
+     * Missing, invalid, expired or revoked workspace key.
      */
     401: ErrorMessage;
+    /**
+     * Insufficient ability or grant, or a conflicting workspace selector.
+     */
+    403: ErrorMessage | {
+        error: 'insufficient_scope';
+        error_description: string;
+    };
+    /**
+     * Workspace, account or rule unavailable in this scope.
+     */
+    404: ApiRouteNotFound;
+    /**
+     * Invalid rule input or account ID, mismatched account binding, or ambiguous active accounts.
+     */
+    422: ValidationError;
+    /**
+     * The shared API rate limit is exceeded.
+     */
+    429: ErrorMessage;
 };
 
 export type ActionsRulesIndexError = ActionsRulesIndexErrors[keyof ActionsRulesIndexErrors];
@@ -2246,6 +2406,274 @@ export type ActionsRulesIndexResponses = {
 };
 
 export type ActionsRulesIndexResponse = ActionsRulesIndexResponses[keyof ActionsRulesIndexResponses];
+
+export type ActionsRulesStoreData = {
+    /**
+     * Creates a disabled rule. enabled must be absent. window, window_days, author_type and current_revision_id must be absent or empty.
+     */
+    body: {
+        name: string;
+        definition: {
+            target_level: 'ad' | 'ad_set';
+            action: 'pause';
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            /**
+             * Numeric value from 0.10 to 10.00, with zero to two decimal places.
+             */
+            cost_ratio: number | string;
+        } | {
+            target_level: 'ad_set' | 'campaign';
+            action: 'increase_budget';
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            /**
+             * Numeric value from 0.10 to 10.00, with zero to two decimal places.
+             */
+            cost_ratio: number | string;
+            budget_change_percent: number;
+        } | {
+            target_level: 'ad_set' | 'campaign';
+            action: 'decrease_budget';
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            /**
+             * Numeric value from 0.10 to 10.00, with zero to two decimal places.
+             */
+            cost_ratio: number | string;
+            budget_change_percent: number;
+        };
+        /**
+         * Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+         */
+        account_id?: number;
+        platform_ad_account_id: number;
+        enabled?: unknown;
+        window?: null | '' | Array<unknown> | {
+            [key: string]: unknown;
+        };
+        window_days?: null | '' | Array<unknown> | {
+            [key: string]: unknown;
+        };
+        author_type?: null | '' | Array<unknown> | {
+            [key: string]: unknown;
+        };
+        current_revision_id?: null | '' | Array<unknown> | {
+            [key: string]: unknown;
+        };
+    };
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/action-rules';
+};
+
+export type ActionsRulesStoreErrors = {
+    /**
+     * Missing, invalid, expired or revoked workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * Insufficient ability or grant, or a conflicting workspace selector.
+     */
+    403: ErrorMessage | {
+        error: 'insufficient_scope';
+        error_description: string;
+    };
+    /**
+     * Workspace, account or rule unavailable in this scope.
+     */
+    404: ApiRouteNotFound;
+    /**
+     * Invalid rule input or account ID, mismatched account binding, or ambiguous active accounts.
+     */
+    422: ValidationError;
+    /**
+     * The shared API rate limit is exceeded.
+     */
+    429: ErrorMessage;
+    /**
+     * The bounded workspace transaction timed out; retry after one second.
+     */
+    503: WorkspaceLockTimeout;
+};
+
+export type ActionsRulesStoreError = ActionsRulesStoreErrors[keyof ActionsRulesStoreErrors];
+
+export type ActionsRulesStoreResponses = {
+    /**
+     * Saved rule with immutable revisions; no runs are included.
+     */
+    201: ActionRuleWriteRead;
+};
+
+export type ActionsRulesStoreResponse = ActionsRulesStoreResponses[keyof ActionsRulesStoreResponses];
+
+export type ActionsRulesShowData = {
+    body?: never;
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        action_rule: string;
+    };
+    query?: {
+        /**
+         * Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+         */
+        account_id?: number;
+    };
+    url: '/agent/workspaces/{workspace}/action-rules/{action_rule}';
+};
+
+export type ActionsRulesShowErrors = {
+    /**
+     * Missing, invalid, expired or revoked workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * Insufficient ability or grant, or a conflicting workspace selector.
+     */
+    403: ErrorMessage | {
+        error: 'insufficient_scope';
+        error_description: string;
+    };
+    /**
+     * Workspace, account or rule unavailable in this scope.
+     */
+    404: ApiRouteNotFound;
+    /**
+     * Invalid rule input or account ID, mismatched account binding, or ambiguous active accounts.
+     */
+    422: ValidationError;
+    /**
+     * The shared API rate limit is exceeded.
+     */
+    429: ErrorMessage;
+};
+
+export type ActionsRulesShowError = ActionsRulesShowErrors[keyof ActionsRulesShowErrors];
+
+export type ActionsRulesShowResponses = {
+    /**
+     * Rule with revisions and recent runs.
+     */
+    200: ActionRuleDetailRead;
+};
+
+export type ActionsRulesShowResponse = ActionsRulesShowResponses[keyof ActionsRulesShowResponses];
+
+export type ActionsRulesUpdateData = {
+    /**
+     * All fields are optional. platform_ad_account_id must be absent. window, window_days, author_type and current_revision_id must be absent or empty.
+     */
+    body?: {
+        name?: string;
+        definition?: {
+            target_level: 'ad' | 'ad_set';
+            action: 'pause';
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            /**
+             * Numeric value from 0.10 to 10.00, with zero to two decimal places.
+             */
+            cost_ratio: number | string;
+        } | {
+            target_level: 'ad_set' | 'campaign';
+            action: 'increase_budget';
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            /**
+             * Numeric value from 0.10 to 10.00, with zero to two decimal places.
+             */
+            cost_ratio: number | string;
+            budget_change_percent: number;
+        } | {
+            target_level: 'ad_set' | 'campaign';
+            action: 'decrease_budget';
+            minimum_counted_arrivals: number;
+            cost_comparison: 'at_least' | 'at_most';
+            /**
+             * Numeric value from 0.10 to 10.00, with zero to two decimal places.
+             */
+            cost_ratio: number | string;
+            budget_change_percent: number;
+        };
+        /**
+         * Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+         */
+        account_id?: number;
+        enabled?: boolean;
+        platform_ad_account_id?: unknown;
+        window?: null | '' | Array<unknown> | {
+            [key: string]: unknown;
+        };
+        window_days?: null | '' | Array<unknown> | {
+            [key: string]: unknown;
+        };
+        author_type?: null | '' | Array<unknown> | {
+            [key: string]: unknown;
+        };
+        current_revision_id?: null | '' | Array<unknown> | {
+            [key: string]: unknown;
+        };
+    };
+    path: {
+        /**
+         * The workspace ID
+         */
+        workspace: number;
+        action_rule: string;
+    };
+    query?: never;
+    url: '/agent/workspaces/{workspace}/action-rules/{action_rule}';
+};
+
+export type ActionsRulesUpdateErrors = {
+    /**
+     * Missing, invalid, expired or revoked workspace key.
+     */
+    401: ErrorMessage;
+    /**
+     * Insufficient ability or grant, or a conflicting workspace selector.
+     */
+    403: ErrorMessage | {
+        error: 'insufficient_scope';
+        error_description: string;
+    };
+    /**
+     * Workspace, account or rule unavailable in this scope.
+     */
+    404: ApiRouteNotFound;
+    /**
+     * Invalid rule input or account ID, mismatched account binding, or ambiguous active accounts.
+     */
+    422: ValidationError;
+    /**
+     * The shared API rate limit is exceeded.
+     */
+    429: ErrorMessage;
+    /**
+     * The bounded workspace transaction timed out; retry after one second.
+     */
+    503: WorkspaceLockTimeout;
+};
+
+export type ActionsRulesUpdateError = ActionsRulesUpdateErrors[keyof ActionsRulesUpdateErrors];
+
+export type ActionsRulesUpdateResponses = {
+    /**
+     * Saved rule with immutable revisions; no runs are included.
+     */
+    200: ActionRuleWriteRead;
+};
+
+export type ActionsRulesUpdateResponse = ActionsRulesUpdateResponses[keyof ActionsRulesUpdateResponses];
 
 export type ActionsTestsApiIndexData = {
     body?: never;
@@ -2415,6 +2843,80 @@ export type ActionsTestsApiShowResponses = {
 };
 
 export type ActionsTestsApiShowResponse = ActionsTestsApiShowResponses[keyof ActionsTestsApiShowResponses];
+
+export type AgentContextData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. With no active available account, a valid account_id is ignored and platform_ad_account is null.
+         */
+        account_id?: number;
+        /**
+         * Optional workspace grant selector. Required for credentials with multiple workspace grants; it must identify an authorized workspace.
+         */
+        workspace_id?: number;
+    };
+    url: '/agent/context';
+};
+
+export type AgentContextErrors = {
+    /**
+     * Malformed URL encoding.
+     */
+    400: ErrorMessage;
+    /**
+     * Missing, invalid, expired or revoked token, inactive binding, insufficient agent permission, or a management API key.
+     */
+    401: AgentContextAuthError | ErrorMessage;
+    /**
+     * Workspace selector, grant or operation is unauthorized; malformed or missing workspace selection can fail authorization before validation.
+     */
+    403: AgentContextAuthError | ErrorMessage;
+    /**
+     * Empty workspace_id, invalid account ID, mismatched account binding, or ambiguous active accounts.
+     */
+    422: ValidationError;
+    /**
+     * The shared API rate limit is exceeded.
+     */
+    429: ErrorMessage;
+};
+
+export type AgentContextError = AgentContextErrors[keyof AgentContextErrors];
+
+export type AgentContextResponses = {
+    /**
+     * Agent identity and account context.
+     */
+    200: {
+        meta_connected: boolean;
+        agent: {
+            id: string;
+            name: string;
+            scopes: Array<string>;
+            authentication: 'personal_access_token' | 'oauth2';
+        };
+        platform_ad_account: {
+            id: number;
+            external_id: string;
+            name: string;
+            platform: string;
+            currency: string | null;
+            timezone: string | null;
+            workspace: {
+                id: number;
+                name: string;
+            };
+        } | null;
+        /**
+         * Present only when meta_connected is false.
+         */
+        next_steps?: Array<string>;
+    };
+};
+
+export type AgentContextResponse = AgentContextResponses[keyof AgentContextResponses];
 
 export type GetCookieDeclarationData = {
     body?: never;
@@ -2834,6 +3336,23 @@ export type LaunchPlansIndexResponses = {
             current_page: number;
             per_page: number;
             total: number;
+            last_page: number;
+            /**
+             * Always present. The next row offset, or null when the list is complete.
+             */
+            next_cursor: number | null;
+            truncated: boolean;
+            /**
+             * Always present. Page and per_page for aligned offsets, cursor and per_page after a byte-limited page, or null when complete.
+             */
+            next_page_arguments: {
+                page: number;
+                per_page: number;
+            } | {
+                cursor: number;
+                per_page: number;
+            } | null;
+            continuation: string;
         };
     };
 };

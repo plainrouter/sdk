@@ -1,4 +1,5 @@
 {
+    "x-signed": true,
     "x-action-types": [
         "increase_budget",
         "decrease_budget",
@@ -115,7 +116,7 @@
                         }
                     },
                     "422": {
-                        "description": "Invalid input, account selection, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.",
+                        "description": "Invalid input or account ID, mismatched account binding, ambiguous active accounts, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -266,7 +267,7 @@
                         }
                     },
                     "422": {
-                        "description": "Invalid input, account selection, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.",
+                        "description": "Invalid input or account ID, mismatched account binding, ambiguous active accounts, evidence, parameters, targets, repeated management targets, missing staged assets or source ads, and invalid budget direction return message plus errors mapping field names to arrays of messages. Stable reason codes are prefixes of field messages, not an error.code property.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -352,7 +353,7 @@
             },
             "get": {
                 "operationId": "actions.api.index",
-                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "description": "Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.",
                 "summary": "List actions",
                 "tags": [
                     "ActionReadApi"
@@ -399,7 +400,7 @@
                     {
                         "name": "account_id",
                         "in": "query",
-                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
+                        "description": "Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                         "schema": {
                             "type": "integer",
                             "minimum": 1
@@ -488,7 +489,7 @@
         "/agent/workspaces/{workspace}/actions/policy": {
             "get": {
                 "operationId": "actions.api.policy",
-                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "description": "Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.",
                 "summary": "Get action policy",
                 "tags": [
                     "ActionReadApi"
@@ -506,7 +507,7 @@
                     {
                         "name": "account_id",
                         "in": "query",
-                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
+                        "description": "Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                         "schema": {
                             "type": "integer",
                             "minimum": 1
@@ -575,7 +576,7 @@
         "/agent/workspaces/{workspace}/actions/{action}/decision-receipt": {
             "get": {
                 "operationId": "actions.api.decision-receipt",
-                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "description": "Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.",
                 "summary": "Get decision receipt",
                 "tags": [
                     "ActionReadApi"
@@ -601,7 +602,7 @@
                     {
                         "name": "account_id",
                         "in": "query",
-                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
+                        "description": "Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                         "schema": {
                             "type": "integer",
                             "minimum": 1
@@ -670,7 +671,7 @@
         "/agent/workspaces/{workspace}/actions/{action}": {
             "get": {
                 "operationId": "actions.api.show",
-                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "description": "Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.",
                 "summary": "Get action",
                 "tags": [
                     "ActionReadApi"
@@ -696,7 +697,7 @@
                     {
                         "name": "account_id",
                         "in": "query",
-                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
+                        "description": "Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                         "schema": {
                             "type": "integer",
                             "minimum": 1
@@ -765,7 +766,7 @@
         "/agent/workspaces/{workspace}/action-batches/{actionBatch}": {
             "get": {
                 "operationId": "actions.api.batch",
-                "description": "Read persisted Actions data for an account available to this workspace key. An unbound key selects account_id; a bound key stays limited to its own account.",
+                "description": "Read persisted Actions data for the authorized account. Unbound keys require exactly one active account; account_id cannot select among multiple accounts.",
                 "summary": "Get action batch",
                 "tags": [
                     "ActionReadApi"
@@ -791,7 +792,7 @@
                     {
                         "name": "account_id",
                         "in": "query",
-                        "description": "Optional positive account ID. A bound key may name only its own account; any other value returns 422. An unbound key may name only an active account with an active connection in its workspace, and must name one when the workspace has more than one.",
+                        "description": "Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                         "schema": {
                             "type": "integer",
                             "minimum": 1
@@ -904,6 +905,24 @@
                         }
                     },
                     {
+                        "name": "account_id",
+                        "in": "query",
+                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "platform_ad_account_id",
+                        "in": "query",
+                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
                         "name": "cursor",
                         "in": "query",
                         "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
@@ -925,11 +944,81 @@
                 ],
                 "responses": {
                     "401": {
-                        "description": "Invalid or missing Server secret.",
+                        "description": "Missing, invalid, expired or revoked workspace key.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient ability or grant, or a conflicting workspace selector.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "insufficient_scope"
+                                                    ]
+                                                },
+                                                "error_description": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "error",
+                                                "error_description"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account or rule unavailable in this scope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid rule input or account ID, mismatched account binding, or ambiguous active accounts.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "The shared API rate limit is exceeded.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until a retry is allowed.",
+                                "schema": {
+                                    "type": "integer"
                                 }
                             }
                         }
@@ -1046,7 +1135,1002 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "ruleReader": []
+                    }
+                ]
+            },
+            "post": {
+                "operationId": "actions.rules.store",
+                "description": "Write an account-scoped rule using its validated definition. Send Accept: application/json for JSON errors. New rules start disabled.",
+                "summary": "Create an action rule",
+                "tags": [
+                    "ActionRuleApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "description": "Creates a disabled rule. enabled must be absent. window, window_days, author_type and current_revision_id must be absent or empty.",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "pattern": "\\S",
+                                        "maxLength": 255
+                                    },
+                                    "definition": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "description": "Only target_level, action, budget_change_percent, minimum_counted_arrivals, cost_comparison and cost_ratio are accepted.",
+                                                "properties": {
+                                                    "target_level": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "ad",
+                                                            "ad_set"
+                                                        ]
+                                                    },
+                                                    "action": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "pause"
+                                                        ]
+                                                    },
+                                                    "minimum_counted_arrivals": {
+                                                        "type": "integer",
+                                                        "minimum": 50,
+                                                        "maximum": 9223372036854775807
+                                                    },
+                                                    "cost_comparison": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "at_least",
+                                                            "at_most"
+                                                        ]
+                                                    },
+                                                    "cost_ratio": {
+                                                        "description": "Numeric value from 0.10 to 10.00, with zero to two decimal places.",
+                                                        "anyOf": [
+                                                            {
+                                                                "type": "number",
+                                                                "minimum": 0.1,
+                                                                "maximum": 10,
+                                                                "multipleOf": 0.01
+                                                            },
+                                                            {
+                                                                "type": "string",
+                                                                "pattern": "^\\+?0*(?:\\.[1-9][0-9]?|[1-9](?:\\.[0-9]{0,2})?|10(?:\\.0{0,2})?)$"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "target_level",
+                                                    "action",
+                                                    "minimum_counted_arrivals",
+                                                    "cost_comparison",
+                                                    "cost_ratio"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            {
+                                                "type": "object",
+                                                "description": "Only target_level, action, budget_change_percent, minimum_counted_arrivals, cost_comparison and cost_ratio are accepted.",
+                                                "properties": {
+                                                    "target_level": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "ad_set",
+                                                            "campaign"
+                                                        ]
+                                                    },
+                                                    "action": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "increase_budget"
+                                                        ]
+                                                    },
+                                                    "minimum_counted_arrivals": {
+                                                        "type": "integer",
+                                                        "minimum": 100,
+                                                        "maximum": 9223372036854775807
+                                                    },
+                                                    "cost_comparison": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "at_least",
+                                                            "at_most"
+                                                        ]
+                                                    },
+                                                    "cost_ratio": {
+                                                        "description": "Numeric value from 0.10 to 10.00, with zero to two decimal places.",
+                                                        "anyOf": [
+                                                            {
+                                                                "type": "number",
+                                                                "minimum": 0.1,
+                                                                "maximum": 10,
+                                                                "multipleOf": 0.01
+                                                            },
+                                                            {
+                                                                "type": "string",
+                                                                "pattern": "^\\+?0*(?:\\.[1-9][0-9]?|[1-9](?:\\.[0-9]{0,2})?|10(?:\\.0{0,2})?)$"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "budget_change_percent": {
+                                                        "type": "integer",
+                                                        "minimum": 1,
+                                                        "maximum": 50
+                                                    }
+                                                },
+                                                "required": [
+                                                    "target_level",
+                                                    "action",
+                                                    "minimum_counted_arrivals",
+                                                    "cost_comparison",
+                                                    "cost_ratio",
+                                                    "budget_change_percent"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            {
+                                                "type": "object",
+                                                "description": "Only target_level, action, budget_change_percent, minimum_counted_arrivals, cost_comparison and cost_ratio are accepted.",
+                                                "properties": {
+                                                    "target_level": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "ad_set",
+                                                            "campaign"
+                                                        ]
+                                                    },
+                                                    "action": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "decrease_budget"
+                                                        ]
+                                                    },
+                                                    "minimum_counted_arrivals": {
+                                                        "type": "integer",
+                                                        "minimum": 50,
+                                                        "maximum": 9223372036854775807
+                                                    },
+                                                    "cost_comparison": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "at_least",
+                                                            "at_most"
+                                                        ]
+                                                    },
+                                                    "cost_ratio": {
+                                                        "description": "Numeric value from 0.10 to 10.00, with zero to two decimal places.",
+                                                        "anyOf": [
+                                                            {
+                                                                "type": "number",
+                                                                "minimum": 0.1,
+                                                                "maximum": 10,
+                                                                "multipleOf": 0.01
+                                                            },
+                                                            {
+                                                                "type": "string",
+                                                                "pattern": "^\\+?0*(?:\\.[1-9][0-9]?|[1-9](?:\\.[0-9]{0,2})?|10(?:\\.0{0,2})?)$"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "budget_change_percent": {
+                                                        "type": "integer",
+                                                        "minimum": 1,
+                                                        "maximum": 50
+                                                    }
+                                                },
+                                                "required": [
+                                                    "target_level",
+                                                    "action",
+                                                    "minimum_counted_arrivals",
+                                                    "cost_comparison",
+                                                    "cost_ratio",
+                                                    "budget_change_percent"
+                                                ],
+                                                "additionalProperties": false
+                                            }
+                                        ]
+                                    },
+                                    "account_id": {
+                                        "type": "integer",
+                                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
+                                        "minimum": 1
+                                    },
+                                    "platform_ad_account_id": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    },
+                                    "enabled": {
+                                        "not": {}
+                                    },
+                                    "window": {
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "const": ""
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {},
+                                                "maxItems": 0
+                                            },
+                                            {
+                                                "type": "object",
+                                                "maxProperties": 0
+                                            }
+                                        ]
+                                    },
+                                    "window_days": {
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "const": ""
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {},
+                                                "maxItems": 0
+                                            },
+                                            {
+                                                "type": "object",
+                                                "maxProperties": 0
+                                            }
+                                        ]
+                                    },
+                                    "author_type": {
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "const": ""
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {},
+                                                "maxItems": 0
+                                            },
+                                            {
+                                                "type": "object",
+                                                "maxProperties": 0
+                                            }
+                                        ]
+                                    },
+                                    "current_revision_id": {
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "const": ""
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {},
+                                                "maxItems": 0
+                                            },
+                                            {
+                                                "type": "object",
+                                                "maxProperties": 0
+                                            }
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "platform_ad_account_id",
+                                    "definition"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Saved rule with immutable revisions; no runs are included.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ActionRuleWriteRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, expired or revoked workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient ability or grant, or a conflicting workspace selector.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "insufficient_scope"
+                                                    ]
+                                                },
+                                                "error_description": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "error",
+                                                "error_description"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account or rule unavailable in this scope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid rule input or account ID, mismatched account binding, or ambiguous active accounts.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "The shared API rate limit is exceeded.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until a retry is allowed.",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "The bounded workspace transaction timed out; retry after one second.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceLockTimeout"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the operation may be retried.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer",
+                                    "enum": [
+                                        1
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ruleWriter": []
+                    }
+                ]
+            }
+        },
+        "/agent/workspaces/{workspace}/action-rules/{action_rule}": {
+            "get": {
+                "operationId": "actions.rules.show",
+                "description": "Read the account-scoped rule, immutable revisions and recent run decisions. Send Accept: application/json for the documented JSON errors.",
+                "summary": "Get an action rule",
+                "tags": [
+                    "ActionRuleApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "action_rule",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "account_id",
+                        "in": "query",
+                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rule with revisions and recent runs.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ActionRuleDetailRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, expired or revoked workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient ability or grant, or a conflicting workspace selector.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "insufficient_scope"
+                                                    ]
+                                                },
+                                                "error_description": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "error",
+                                                "error_description"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account or rule unavailable in this scope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid rule input or account ID, mismatched account binding, or ambiguous active accounts.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "The shared API rate limit is exceeded.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until a retry is allowed.",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ruleReader": []
+                    }
+                ]
+            },
+            "patch": {
+                "operationId": "actions.rules.update",
+                "description": "Write an account-scoped rule using its validated definition. Send Accept: application/json for JSON errors. New rules start disabled.",
+                "summary": "Update an action rule",
+                "tags": [
+                    "ActionRuleApi"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "action_rule",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "description": "All fields are optional. platform_ad_account_id must be absent. window, window_days, author_type and current_revision_id must be absent or empty.",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "pattern": "\\S",
+                                        "maxLength": 255
+                                    },
+                                    "definition": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "description": "Only target_level, action, budget_change_percent, minimum_counted_arrivals, cost_comparison and cost_ratio are accepted.",
+                                                "properties": {
+                                                    "target_level": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "ad",
+                                                            "ad_set"
+                                                        ]
+                                                    },
+                                                    "action": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "pause"
+                                                        ]
+                                                    },
+                                                    "minimum_counted_arrivals": {
+                                                        "type": "integer",
+                                                        "minimum": 50,
+                                                        "maximum": 9223372036854775807
+                                                    },
+                                                    "cost_comparison": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "at_least",
+                                                            "at_most"
+                                                        ]
+                                                    },
+                                                    "cost_ratio": {
+                                                        "description": "Numeric value from 0.10 to 10.00, with zero to two decimal places.",
+                                                        "anyOf": [
+                                                            {
+                                                                "type": "number",
+                                                                "minimum": 0.1,
+                                                                "maximum": 10,
+                                                                "multipleOf": 0.01
+                                                            },
+                                                            {
+                                                                "type": "string",
+                                                                "pattern": "^\\+?0*(?:\\.[1-9][0-9]?|[1-9](?:\\.[0-9]{0,2})?|10(?:\\.0{0,2})?)$"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "target_level",
+                                                    "action",
+                                                    "minimum_counted_arrivals",
+                                                    "cost_comparison",
+                                                    "cost_ratio"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            {
+                                                "type": "object",
+                                                "description": "Only target_level, action, budget_change_percent, minimum_counted_arrivals, cost_comparison and cost_ratio are accepted.",
+                                                "properties": {
+                                                    "target_level": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "ad_set",
+                                                            "campaign"
+                                                        ]
+                                                    },
+                                                    "action": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "increase_budget"
+                                                        ]
+                                                    },
+                                                    "minimum_counted_arrivals": {
+                                                        "type": "integer",
+                                                        "minimum": 100,
+                                                        "maximum": 9223372036854775807
+                                                    },
+                                                    "cost_comparison": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "at_least",
+                                                            "at_most"
+                                                        ]
+                                                    },
+                                                    "cost_ratio": {
+                                                        "description": "Numeric value from 0.10 to 10.00, with zero to two decimal places.",
+                                                        "anyOf": [
+                                                            {
+                                                                "type": "number",
+                                                                "minimum": 0.1,
+                                                                "maximum": 10,
+                                                                "multipleOf": 0.01
+                                                            },
+                                                            {
+                                                                "type": "string",
+                                                                "pattern": "^\\+?0*(?:\\.[1-9][0-9]?|[1-9](?:\\.[0-9]{0,2})?|10(?:\\.0{0,2})?)$"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "budget_change_percent": {
+                                                        "type": "integer",
+                                                        "minimum": 1,
+                                                        "maximum": 50
+                                                    }
+                                                },
+                                                "required": [
+                                                    "target_level",
+                                                    "action",
+                                                    "minimum_counted_arrivals",
+                                                    "cost_comparison",
+                                                    "cost_ratio",
+                                                    "budget_change_percent"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            {
+                                                "type": "object",
+                                                "description": "Only target_level, action, budget_change_percent, minimum_counted_arrivals, cost_comparison and cost_ratio are accepted.",
+                                                "properties": {
+                                                    "target_level": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "ad_set",
+                                                            "campaign"
+                                                        ]
+                                                    },
+                                                    "action": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "decrease_budget"
+                                                        ]
+                                                    },
+                                                    "minimum_counted_arrivals": {
+                                                        "type": "integer",
+                                                        "minimum": 50,
+                                                        "maximum": 9223372036854775807
+                                                    },
+                                                    "cost_comparison": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "at_least",
+                                                            "at_most"
+                                                        ]
+                                                    },
+                                                    "cost_ratio": {
+                                                        "description": "Numeric value from 0.10 to 10.00, with zero to two decimal places.",
+                                                        "anyOf": [
+                                                            {
+                                                                "type": "number",
+                                                                "minimum": 0.1,
+                                                                "maximum": 10,
+                                                                "multipleOf": 0.01
+                                                            },
+                                                            {
+                                                                "type": "string",
+                                                                "pattern": "^\\+?0*(?:\\.[1-9][0-9]?|[1-9](?:\\.[0-9]{0,2})?|10(?:\\.0{0,2})?)$"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "budget_change_percent": {
+                                                        "type": "integer",
+                                                        "minimum": 1,
+                                                        "maximum": 50
+                                                    }
+                                                },
+                                                "required": [
+                                                    "target_level",
+                                                    "action",
+                                                    "minimum_counted_arrivals",
+                                                    "cost_comparison",
+                                                    "cost_ratio",
+                                                    "budget_change_percent"
+                                                ],
+                                                "additionalProperties": false
+                                            }
+                                        ]
+                                    },
+                                    "account_id": {
+                                        "type": "integer",
+                                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
+                                        "minimum": 1
+                                    },
+                                    "enabled": {
+                                        "type": "boolean"
+                                    },
+                                    "platform_ad_account_id": {
+                                        "not": {}
+                                    },
+                                    "window": {
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "const": ""
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {},
+                                                "maxItems": 0
+                                            },
+                                            {
+                                                "type": "object",
+                                                "maxProperties": 0
+                                            }
+                                        ]
+                                    },
+                                    "window_days": {
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "const": ""
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {},
+                                                "maxItems": 0
+                                            },
+                                            {
+                                                "type": "object",
+                                                "maxProperties": 0
+                                            }
+                                        ]
+                                    },
+                                    "author_type": {
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "const": ""
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {},
+                                                "maxItems": 0
+                                            },
+                                            {
+                                                "type": "object",
+                                                "maxProperties": 0
+                                            }
+                                        ]
+                                    },
+                                    "current_revision_id": {
+                                        "anyOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "const": ""
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {},
+                                                "maxItems": 0
+                                            },
+                                            {
+                                                "type": "object",
+                                                "maxProperties": 0
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Saved rule with immutable revisions; no runs are included.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ActionRuleWriteRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, expired or revoked workspace key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Insufficient ability or grant, or a conflicting workspace selector.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "insufficient_scope"
+                                                    ]
+                                                },
+                                                "error_description": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "error",
+                                                "error_description"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Workspace, account or rule unavailable in this scope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid rule input or account ID, mismatched account binding, or ambiguous active accounts.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "The shared API rate limit is exceeded.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until a retry is allowed.",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "The bounded workspace transaction timed out; retry after one second.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceLockTimeout"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the operation may be retried.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer",
+                                    "enum": [
+                                        1
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "ruleWriter": []
+                    }
+                ]
             }
         },
         "/agent/workspaces/{workspace}/tests": {
@@ -1512,6 +2596,241 @@
                 ]
             }
         },
+        "/agent/context": {
+            "get": {
+                "operationId": "agent.context",
+                "description": "Read the authenticated agent and authorized account. With no active account, returns null and connection next steps.",
+                "summary": "Get agent context",
+                "tags": [
+                    "AgentContext"
+                ],
+                "parameters": [
+                    {
+                        "name": "account_id",
+                        "in": "query",
+                        "description": "Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. With no active available account, a valid account_id is ignored and platform_ad_account is null.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "workspace_id",
+                        "in": "query",
+                        "description": "Optional workspace grant selector. Required for credentials with multiple workspace grants; it must identify an authorized workspace.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agent identity and account context.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "meta_connected": {
+                                            "type": "boolean"
+                                        },
+                                        "agent": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "scopes": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "authentication": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "personal_access_token",
+                                                        "oauth2"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "name",
+                                                "scopes",
+                                                "authentication"
+                                            ]
+                                        },
+                                        "platform_ad_account": {
+                                            "type": [
+                                                "object",
+                                                "null"
+                                            ],
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "external_id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "platform": {
+                                                    "type": "string"
+                                                },
+                                                "currency": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "timezone": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "workspace": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "external_id",
+                                                "name",
+                                                "platform",
+                                                "currency",
+                                                "timezone",
+                                                "workspace"
+                                            ]
+                                        },
+                                        "next_steps": {
+                                            "type": "array",
+                                            "description": "Present only when meta_connected is false.",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "meta_connected",
+                                        "agent",
+                                        "platform_ad_account"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Malformed URL encoding.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, expired or revoked token, inactive binding, insufficient agent permission, or a management API key.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentContextAuthError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "WWW-Authenticate": {
+                                "description": "Bearer error and protected resource metadata.",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Workspace selector, grant or operation is unauthorized; malformed or missing workspace selection can fail authorization before validation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentContextAuthError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Empty workspace_id, invalid account ID, mismatched account binding, or ambiguous active accounts.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "The shared API rate limit is exceeded.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until a retry is allowed.",
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "agentContextKey": []
+                    },
+                    {
+                        "agentContextOAuth": [
+                            "mcp:use"
+                        ]
+                    }
+                ]
+            }
+        },
         "/cookie-declarations/{publishableKey}": {
             "get": {
                 "operationId": "getCookieDeclaration",
@@ -1658,7 +2977,7 @@
                                     },
                                     "tags": {
                                         "type": "object",
-                                        "description": "Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter’s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.",
+                                        "description": "Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter\u2019s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.",
                                         "properties": {
                                             "generator": {
                                                 "type": "string",
@@ -1669,7 +2988,7 @@
                                             },
                                             "generator_job": {
                                                 "type": "string",
-                                                "description": "Printable characters naming the tool’s job or render; control and other non-printable characters are refused.",
+                                                "description": "Printable characters naming the tool\u2019s job or render; control and other non-printable characters are refused.",
                                                 "minLength": 1,
                                                 "maxLength": 255
                                             },
@@ -2038,7 +3357,7 @@
                                     },
                                     "tags": {
                                         "type": "object",
-                                        "description": "Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter’s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.",
+                                        "description": "Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter\u2019s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.",
                                         "properties": {
                                             "generator": {
                                                 "type": "string",
@@ -2049,7 +3368,7 @@
                                             },
                                             "generator_job": {
                                                 "type": "string",
-                                                "description": "Printable characters naming the tool’s job or render; control and other non-printable characters are refused.",
+                                                "description": "Printable characters naming the tool\u2019s job or render; control and other non-printable characters are refused.",
                                                 "minLength": 1,
                                                 "maxLength": 255
                                             },
@@ -2568,13 +3887,72 @@
                                                 },
                                                 "total": {
                                                     "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                },
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Always present. The next row offset, or null when the list is complete."
+                                                },
+                                                "truncated": {
+                                                    "type": "boolean"
+                                                },
+                                                "next_page_arguments": {
+                                                    "description": "Always present. Page and per_page for aligned offsets, cursor and per_page after a byte-limited page, or null when complete.",
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "page": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "per_page": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "page",
+                                                                "per_page"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "cursor": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "per_page": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "cursor",
+                                                                "per_page"
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "null"
+                                                        }
+                                                    ]
+                                                },
+                                                "continuation": {
+                                                    "type": "string"
                                                 }
                                             },
                                             "required": [
                                                 "data",
                                                 "current_page",
                                                 "per_page",
-                                                "total"
+                                                "total",
+                                                "last_page",
+                                                "next_cursor",
+                                                "truncated",
+                                                "next_page_arguments",
+                                                "continuation"
                                             ]
                                         }
                                     },
@@ -7382,7 +8760,7 @@
             },
             "workspaceActionKey": {
                 "type": "http",
-                "description": "Workspace key with read-actions for reads or propose-actions for writes. Unbound keys select an available advertising account with account_id.",
+                "description": "Workspace key with read-actions for reads or propose-actions for writes. Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                 "scheme": "bearer"
             },
             "planWriter": {
@@ -7399,6 +8777,35 @@
                 "type": "http",
                 "description": "An OAuth agent or account-bound Workspace Key with read access to the approved ad account.",
                 "scheme": "bearer"
+            },
+            "ruleReader": {
+                "type": "http",
+                "description": "A workspace-scoped key with read ability and actions.rules.index or actions.rules.show access to the bound account. Send Accept: application/json.",
+                "scheme": "bearer"
+            },
+            "ruleWriter": {
+                "type": "http",
+                "description": "A workspace-scoped key with write ability and the actions.rules.store or actions.rules.update grant. Send Accept: application/json.",
+                "scheme": "bearer"
+            },
+            "agentContextKey": {
+                "type": "http",
+                "description": "Workspace key with read ability, ad-account.read permission and the agent.context grant.",
+                "scheme": "bearer"
+            },
+            "agentContextOAuth": {
+                "type": "oauth2",
+                "description": "OAuth access token for an active approved agent principal with mcp:use, ad-account.read and agent.context authorization. Authorization code with PKCE and device authorization tokens are accepted. This scheme applies only to agent context.",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "https://plainrouter.com/oauth2/authorize",
+                        "tokenUrl": "https://plainrouter.com/oauth2/token",
+                        "refreshUrl": "https://plainrouter.com/oauth2/token",
+                        "scopes": {
+                            "mcp:use": "Use the approved agent principal."
+                        }
+                    }
+                }
             },
             "creativeWriter": {
                 "type": "http",
@@ -10116,6 +11523,567 @@
                 ],
                 "title": "ActionReadItem"
             },
+            "ActionRuleDetailRead": {
+                "type": "object",
+                "properties": {
+                    "rule": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "workspace_id": {
+                                "type": "integer"
+                            },
+                            "platform_ad_account_id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "enabled": {
+                                "type": "boolean"
+                            },
+                            "suspended_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "date-time"
+                            },
+                            "suspended_reason": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "window": {
+                                "type": "object",
+                                "properties": {
+                                    "days": {
+                                        "type": "integer",
+                                        "enum": [
+                                            3
+                                        ]
+                                    },
+                                    "kind": {
+                                        "type": "string",
+                                        "enum": [
+                                            "last_complete_days"
+                                        ]
+                                    },
+                                    "timezone": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "days",
+                                    "kind",
+                                    "timezone"
+                                ]
+                            },
+                            "current_revision": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "target_level": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ad",
+                                            "ad_set",
+                                            "campaign"
+                                        ]
+                                    },
+                                    "action": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pause",
+                                            "increase_budget",
+                                            "decrease_budget"
+                                        ]
+                                    },
+                                    "budget_change_percent": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "minimum_counted_arrivals": {
+                                        "type": "integer"
+                                    },
+                                    "cost_comparison": {
+                                        "type": "string",
+                                        "enum": [
+                                            "at_least",
+                                            "at_most"
+                                        ]
+                                    },
+                                    "cost_ratio": {
+                                        "type": "string"
+                                    },
+                                    "author_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "user",
+                                            "agent"
+                                        ]
+                                    },
+                                    "created_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "target_level",
+                                    "action",
+                                    "budget_change_percent",
+                                    "minimum_counted_arrivals",
+                                    "cost_comparison",
+                                    "cost_ratio",
+                                    "author_type",
+                                    "created_at"
+                                ]
+                            },
+                            "revisions": {
+                                "type": "array",
+                                "description": "Present on show and write responses.",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "target_level": {
+                                            "type": "string",
+                                            "enum": [
+                                                "ad",
+                                                "ad_set",
+                                                "campaign"
+                                            ]
+                                        },
+                                        "action": {
+                                            "type": "string",
+                                            "enum": [
+                                                "pause",
+                                                "increase_budget",
+                                                "decrease_budget"
+                                            ]
+                                        },
+                                        "budget_change_percent": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "minimum_counted_arrivals": {
+                                            "type": "integer"
+                                        },
+                                        "cost_comparison": {
+                                            "type": "string",
+                                            "enum": [
+                                                "at_least",
+                                                "at_most"
+                                            ]
+                                        },
+                                        "cost_ratio": {
+                                            "type": "string"
+                                        },
+                                        "author_type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "user",
+                                                "agent"
+                                            ]
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "target_level",
+                                        "action",
+                                        "budget_change_percent",
+                                        "minimum_counted_arrivals",
+                                        "cost_comparison",
+                                        "cost_ratio",
+                                        "author_type",
+                                        "created_at"
+                                    ]
+                                }
+                            },
+                            "runs": {
+                                "type": "array",
+                                "description": "Show only; at most five recent runs, each with at most 100 decisions.",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "revision_id": {
+                                            "type": "string"
+                                        },
+                                        "window_start": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "window_end": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "timezone": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "reason": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "account_spend_minor": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "account_counted_arrivals": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "evaluated_at": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        },
+                                        "decisions": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_name": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "target_spend_minor": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_counted_arrivals": {
+                                                        "type": "integer"
+                                                    },
+                                                    "decision": {
+                                                        "type": "string"
+                                                    },
+                                                    "reason": {
+                                                        "type": "string"
+                                                    },
+                                                    "action_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "new_daily_budget_minor": {
+                                                        "type": [
+                                                            "integer",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "action_batch_id": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "target_type",
+                                                    "target_id",
+                                                    "target_name",
+                                                    "target_spend_minor",
+                                                    "target_counted_arrivals",
+                                                    "decision",
+                                                    "reason",
+                                                    "action_type",
+                                                    "new_daily_budget_minor",
+                                                    "action_batch_id"
+                                                ]
+                                            }
+                                        },
+                                        "decisions_truncated": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "revision_id",
+                                        "window_start",
+                                        "window_end",
+                                        "timezone",
+                                        "status",
+                                        "reason",
+                                        "account_spend_minor",
+                                        "account_counted_arrivals",
+                                        "evaluated_at",
+                                        "decisions",
+                                        "decisions_truncated"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "workspace_id",
+                            "platform_ad_account_id",
+                            "name",
+                            "enabled",
+                            "suspended_at",
+                            "suspended_reason",
+                            "window",
+                            "current_revision",
+                            "revisions",
+                            "runs"
+                        ]
+                    }
+                },
+                "required": [
+                    "rule"
+                ],
+                "title": "ActionRuleDetailRead"
+            },
+            "ActionRuleWriteRead": {
+                "type": "object",
+                "properties": {
+                    "rule": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "workspace_id": {
+                                "type": "integer"
+                            },
+                            "platform_ad_account_id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "enabled": {
+                                "type": "boolean"
+                            },
+                            "suspended_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "date-time"
+                            },
+                            "suspended_reason": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "window": {
+                                "type": "object",
+                                "properties": {
+                                    "days": {
+                                        "type": "integer",
+                                        "enum": [
+                                            3
+                                        ]
+                                    },
+                                    "kind": {
+                                        "type": "string",
+                                        "enum": [
+                                            "last_complete_days"
+                                        ]
+                                    },
+                                    "timezone": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "days",
+                                    "kind",
+                                    "timezone"
+                                ]
+                            },
+                            "current_revision": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "target_level": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ad",
+                                            "ad_set",
+                                            "campaign"
+                                        ]
+                                    },
+                                    "action": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pause",
+                                            "increase_budget",
+                                            "decrease_budget"
+                                        ]
+                                    },
+                                    "budget_change_percent": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "minimum_counted_arrivals": {
+                                        "type": "integer"
+                                    },
+                                    "cost_comparison": {
+                                        "type": "string",
+                                        "enum": [
+                                            "at_least",
+                                            "at_most"
+                                        ]
+                                    },
+                                    "cost_ratio": {
+                                        "type": "string"
+                                    },
+                                    "author_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "user",
+                                            "agent"
+                                        ]
+                                    },
+                                    "created_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "target_level",
+                                    "action",
+                                    "budget_change_percent",
+                                    "minimum_counted_arrivals",
+                                    "cost_comparison",
+                                    "cost_ratio",
+                                    "author_type",
+                                    "created_at"
+                                ]
+                            },
+                            "revisions": {
+                                "type": "array",
+                                "description": "Present on show and write responses.",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "target_level": {
+                                            "type": "string",
+                                            "enum": [
+                                                "ad",
+                                                "ad_set",
+                                                "campaign"
+                                            ]
+                                        },
+                                        "action": {
+                                            "type": "string",
+                                            "enum": [
+                                                "pause",
+                                                "increase_budget",
+                                                "decrease_budget"
+                                            ]
+                                        },
+                                        "budget_change_percent": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "minimum_counted_arrivals": {
+                                            "type": "integer"
+                                        },
+                                        "cost_comparison": {
+                                            "type": "string",
+                                            "enum": [
+                                                "at_least",
+                                                "at_most"
+                                            ]
+                                        },
+                                        "cost_ratio": {
+                                            "type": "string"
+                                        },
+                                        "author_type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "user",
+                                                "agent"
+                                            ]
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "target_level",
+                                        "action",
+                                        "budget_change_percent",
+                                        "minimum_counted_arrivals",
+                                        "cost_comparison",
+                                        "cost_ratio",
+                                        "author_type",
+                                        "created_at"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "workspace_id",
+                            "platform_ad_account_id",
+                            "name",
+                            "enabled",
+                            "suspended_at",
+                            "suspended_reason",
+                            "window",
+                            "current_revision",
+                            "revisions"
+                        ]
+                    }
+                },
+                "required": [
+                    "rule"
+                ],
+                "title": "ActionRuleWriteRead"
+            },
             "AdTest": {
                 "type": "object",
                 "properties": {
@@ -12760,6 +14728,22 @@
                 ],
                 "title": "AdTestVerdictRead"
             },
+            "AgentContextAuthError": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string"
+                    },
+                    "error_description": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "error",
+                    "error_description"
+                ],
+                "title": "AgentContextAuthError"
+            },
             "AgentCredentialError": {
                 "type": "object",
                 "properties": {
@@ -13165,7 +15149,7 @@
             },
             "CreativeIntakeTags": {
                 "type": "object",
-                "description": "Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter’s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.",
+                "description": "Optional flat map of at most 32 string tags; reserved keys count toward the cap. For a creative from an outside tool, set generator and generator_job, plus parent_creative for a variation. Values are stored unchanged. PlainRouter\u2019s own creative tools will set these on every creative they make; intake performs no generation, rendering or scoring.",
                 "properties": {
                     "generator": {
                         "type": "string",
@@ -13176,7 +15160,7 @@
                     },
                     "generator_job": {
                         "type": "string",
-                        "description": "Printable characters naming the tool’s job or render; control and other non-printable characters are refused.",
+                        "description": "Printable characters naming the tool\u2019s job or render; control and other non-printable characters are refused.",
                         "minLength": 1,
                         "maxLength": 255
                     },
@@ -13503,8 +15487,17 @@
                         "$ref": "#/components/schemas/DestinationCredentialSource"
                     },
                     "config": {
-                        "type": "array",
-                        "items": {}
+                        "anyOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": {}
+                            },
+                            {
+                                "type": "array",
+                                "items": {},
+                                "maxItems": 0
+                            }
+                        ]
                     },
                     "status": {
                         "$ref": "#/components/schemas/DestinationStatus"
@@ -13524,13 +15517,29 @@
                         "format": "date-time"
                     },
                     "attention_reason": {
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": {}
+                            },
+                            {
+                                "type": "array",
+                                "items": {}
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "held_count": {
-                        "type": "string"
+                        "type": "integer"
                     },
                     "notices": {
-                        "type": "string"
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        }
                     }
                 },
                 "required": [
@@ -14438,6 +16447,5 @@
                 "title": "WorkspaceLockTimeout"
             }
         }
-    },
-    "x-signed": true
+    }
 }

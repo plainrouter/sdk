@@ -4,6 +4,11 @@ import * as exportedOperations from '../src/operation-exports.js';
 
 import {
   ApiRedirectError,
+  actionsRulesIndex,
+  actionsRulesShow,
+  actionsRulesStore,
+  actionsRulesUpdate,
+  agentContext,
   configurePlainrouter,
   createEvent,
   getEmqReport,
@@ -197,7 +202,66 @@ describe('JSON API transport', () => {
       expect(request.headers.get('Content-Type')).toBe('application/json');
       expect(await request.json()).toEqual({ event_name: 'Purchase', consent_basis: 'consent' });
     }
-    expect(requests).toHaveLength(7);
+
+    configurePlainrouter({ signalTrackerSecret: 'test', fetch: fetchMock });
+    await agentContext({ query: { workspace_id: 7 } });
+    await actionsRulesIndex({ path: { workspace: 7 } });
+    await actionsRulesStore({
+      path: { workspace: 7 },
+      body: {
+        name: 'Test rule',
+        platform_ad_account_id: 123,
+        definition: {
+          target_level: 'ad_set',
+          action: 'pause',
+          minimum_counted_arrivals: 50,
+          cost_comparison: 'at_least',
+          cost_ratio: '1',
+        },
+      },
+    });
+    await actionsRulesShow({ path: { workspace: 7, action_rule: 'rule-1' } });
+    await actionsRulesUpdate({
+      path: { workspace: 7, action_rule: 'rule-1' },
+      body: { name: 'Updated rule' },
+    });
+
+    expect(requests).toHaveLength(12);
+    expect(requests.slice(7).map((request) => [request.method, new URL(request.url).pathname])).toEqual([
+      ['GET', '/api/v1/agent/context'],
+      ['GET', '/api/v1/agent/workspaces/7/action-rules'],
+      ['POST', '/api/v1/agent/workspaces/7/action-rules'],
+      ['GET', '/api/v1/agent/workspaces/7/action-rules/rule-1'],
+      ['PATCH', '/api/v1/agent/workspaces/7/action-rules/rule-1'],
+    ]);
+    expect(requests.slice(7).map((request) => request.headers.get('Accept'))).toEqual([
+      'application/json',
+      'application/json',
+      'application/json',
+      'application/json',
+      'application/json',
+    ]);
+    expect(requests.slice(7).map((request) => request.headers.get('Authorization'))).toEqual([
+      'Bearer test',
+      'Bearer test',
+      'Bearer test',
+      'Bearer test',
+      'Bearer test',
+    ]);
+    expect(requests[9]?.headers.get('Content-Type')).toBe('application/json');
+    expect(requests[11]?.headers.get('Content-Type')).toBe('application/json');
+    await expect(requests[9]?.json()).resolves.toEqual({
+      name: 'Test rule',
+      platform_ad_account_id: 123,
+      definition: {
+        target_level: 'ad_set',
+        action: 'pause',
+        minimum_counted_arrivals: 50,
+        cost_comparison: 'at_least',
+        cost_ratio: '1',
+      },
+    });
+    await expect(requests[11]?.json()).resolves.toEqual({ name: 'Updated rule' });
   });
 
   it.each([300, 301, 302, 303, 304, 307, 308, 399])('rejects HTTP %i before parsing, for every result style', async (status) => {

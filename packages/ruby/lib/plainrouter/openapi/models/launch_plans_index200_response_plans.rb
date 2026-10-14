@@ -23,13 +23,29 @@ module PlainRouter::OpenAPI
 
     attr_accessor :total
 
+    attr_accessor :last_page
+
+    # Always present. The next row offset, or null when the list is complete.
+    attr_accessor :next_cursor
+
+    attr_accessor :truncated
+
+    attr_accessor :next_page_arguments
+
+    attr_accessor :continuation
+
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
         :'data' => :'data',
         :'current_page' => :'current_page',
         :'per_page' => :'per_page',
-        :'total' => :'total'
+        :'total' => :'total',
+        :'last_page' => :'last_page',
+        :'next_cursor' => :'next_cursor',
+        :'truncated' => :'truncated',
+        :'next_page_arguments' => :'next_page_arguments',
+        :'continuation' => :'continuation'
       }
     end
 
@@ -49,13 +65,20 @@ module PlainRouter::OpenAPI
         :'data' => :'Array<DeploymentPlanRead>',
         :'current_page' => :'Integer',
         :'per_page' => :'Integer',
-        :'total' => :'Integer'
+        :'total' => :'Integer',
+        :'last_page' => :'Integer',
+        :'next_cursor' => :'Integer',
+        :'truncated' => :'Boolean',
+        :'next_page_arguments' => :'LaunchPlansIndex200ResponsePlansNextPageArguments',
+        :'continuation' => :'String'
       }
     end
 
     # List of attributes with nullable: true
     def self.openapi_nullable
       Set.new([
+        :'next_cursor',
+        :'next_page_arguments',
       ])
     end
 
@@ -100,6 +123,36 @@ module PlainRouter::OpenAPI
       else
         self.total = nil
       end
+
+      if attributes.key?(:'last_page')
+        self.last_page = attributes[:'last_page']
+      else
+        self.last_page = nil
+      end
+
+      if attributes.key?(:'next_cursor')
+        self.next_cursor = attributes[:'next_cursor']
+      else
+        self.next_cursor = nil
+      end
+
+      if attributes.key?(:'truncated')
+        self.truncated = attributes[:'truncated']
+      else
+        self.truncated = nil
+      end
+
+      if attributes.key?(:'next_page_arguments')
+        self.next_page_arguments = attributes[:'next_page_arguments']
+      else
+        self.next_page_arguments = nil
+      end
+
+      if attributes.key?(:'continuation')
+        self.continuation = attributes[:'continuation']
+      else
+        self.continuation = nil
+      end
     end
 
     # Show invalid properties with the reasons. Usually used together with valid?
@@ -123,6 +176,18 @@ module PlainRouter::OpenAPI
         invalid_properties.push('invalid value for "total", total cannot be nil.')
       end
 
+      if @last_page.nil?
+        invalid_properties.push('invalid value for "last_page", last_page cannot be nil.')
+      end
+
+      if @truncated.nil?
+        invalid_properties.push('invalid value for "truncated", truncated cannot be nil.')
+      end
+
+      if @continuation.nil?
+        invalid_properties.push('invalid value for "continuation", continuation cannot be nil.')
+      end
+
       invalid_properties
     end
 
@@ -134,6 +199,9 @@ module PlainRouter::OpenAPI
       return false if @current_page.nil?
       return false if @per_page.nil?
       return false if @total.nil?
+      return false if @last_page.nil?
+      return false if @truncated.nil?
+      return false if @continuation.nil?
       true
     end
 
@@ -177,6 +245,36 @@ module PlainRouter::OpenAPI
       @total = total
     end
 
+    # Custom attribute writer method with validation
+    # @param [Object] last_page Value to be assigned
+    def last_page=(last_page)
+      if last_page.nil?
+        fail ArgumentError, 'last_page cannot be nil'
+      end
+
+      @last_page = last_page
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] truncated Value to be assigned
+    def truncated=(truncated)
+      if truncated.nil?
+        fail ArgumentError, 'truncated cannot be nil'
+      end
+
+      @truncated = truncated
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] continuation Value to be assigned
+    def continuation=(continuation)
+      if continuation.nil?
+        fail ArgumentError, 'continuation cannot be nil'
+      end
+
+      @continuation = continuation
+    end
+
     # Checks equality by comparing each attribute.
     # @param [Object] Object to be compared
     def ==(o)
@@ -185,7 +283,12 @@ module PlainRouter::OpenAPI
           data == o.data &&
           current_page == o.current_page &&
           per_page == o.per_page &&
-          total == o.total
+          total == o.total &&
+          last_page == o.last_page &&
+          next_cursor == o.next_cursor &&
+          truncated == o.truncated &&
+          next_page_arguments == o.next_page_arguments &&
+          continuation == o.continuation
     end
 
     # @see the `==` method
@@ -197,7 +300,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [data, current_page, per_page, total].hash
+      [data, current_page, per_page, total, last_page, next_cursor, truncated, next_page_arguments, continuation].hash
     end
 
     # Builds the object from hash

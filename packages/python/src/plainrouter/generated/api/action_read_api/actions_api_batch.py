@@ -99,8 +99,8 @@ def sync_detailed(
 ) -> Response[ActionBatchRead | ErrorMessage | ValidationError]:
     """Get action batch
 
-     Read persisted Actions data for an account available to this workspace key. An unbound key selects
-    account_id; a bound key stays limited to its own account.
+     Read persisted Actions data for the authorized account. Unbound keys require exactly one active
+    account; account_id cannot select among multiple accounts.
 
     Args:
         workspace (int):
@@ -143,8 +143,8 @@ def sync(
 ) -> ActionBatchRead | ErrorMessage | ValidationError | None:
     """Get action batch
 
-     Read persisted Actions data for an account available to this workspace key. An unbound key selects
-    account_id; a bound key stays limited to its own account.
+     Read persisted Actions data for the authorized account. Unbound keys require exactly one active
+    account; account_id cannot select among multiple accounts.
 
     Args:
         workspace (int):
@@ -182,8 +182,8 @@ async def asyncio_detailed(
 ) -> Response[ActionBatchRead | ErrorMessage | ValidationError]:
     """Get action batch
 
-     Read persisted Actions data for an account available to this workspace key. An unbound key selects
-    account_id; a bound key stays limited to its own account.
+     Read persisted Actions data for the authorized account. Unbound keys require exactly one active
+    account; account_id cannot select among multiple accounts.
 
     Args:
         workspace (int):
@@ -224,8 +224,8 @@ async def asyncio(
 ) -> ActionBatchRead | ErrorMessage | ValidationError | None:
     """Get action batch
 
-     Read persisted Actions data for an account available to this workspace key. An unbound key selects
-    account_id; a bound key stays limited to its own account.
+     Read persisted Actions data for the authorized account. Unbound keys require exactly one active
+    account; account_id cannot select among multiple accounts.
 
     Args:
         workspace (int):
