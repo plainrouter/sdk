@@ -838,6 +838,16 @@ export const zActionListRead = z.object({
 });
 
 /**
+ * ActionReceiptUnavailable
+ */
+export const zActionReceiptUnavailable = z.object({
+    error: z.object({
+        code: z.enum(['receipt_not_available']),
+        message: z.string()
+    })
+});
+
+/**
  * ActionRuleDetailRead
  */
 export const zActionRuleDetailRead = z.object({
@@ -2414,7 +2424,6 @@ export const zActionsRulesStoreBody = z.object({
     ]),
     account_id: z.int().gte(1).optional(),
     platform_ad_account_id: z.int().gte(1),
-    enabled: z.unknown().optional(),
     window: z.union([
         z.literal(''),
         z.array(z.unknown()).max(0),
@@ -2501,7 +2510,6 @@ export const zActionsRulesUpdateBody = z.object({
     ]).optional(),
     account_id: z.int().gte(1).optional(),
     enabled: z.boolean().optional(),
-    platform_ad_account_id: z.unknown().optional(),
     window: z.union([
         z.literal(''),
         z.array(z.unknown()).max(0),

@@ -613,6 +613,16 @@ export type ActionReadItem = {
 };
 
 /**
+ * ActionReceiptUnavailable
+ */
+export type ActionReceiptUnavailable = {
+    error: {
+        code: 'receipt_not_available';
+        message: string;
+    };
+};
+
+/**
  * ActionRuleDetailRead
  */
 export type ActionRuleDetailRead = {
@@ -2018,17 +2028,17 @@ export type ActionsApiIndexData = {
 
 export type ActionsApiIndexErrors = {
     /**
-     * Missing, invalid, or expired workspace key.
+     * Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.
      */
-    401: ErrorMessage;
+    401: AgentCredentialError | ErrorMessage;
     /**
      * The key lacks the read-actions grant.
      */
-    403: ErrorMessage;
+    403: AgentCredentialError;
     /**
      * Workspace, account, or Actions resource not found.
      */
-    404: ErrorMessage;
+    404: ApiRouteNotFound;
     /**
      * Request validation failed.
      */
@@ -2131,17 +2141,17 @@ export type ActionsApiPolicyData = {
 
 export type ActionsApiPolicyErrors = {
     /**
-     * Missing, invalid, or expired workspace key.
+     * Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.
      */
-    401: ErrorMessage;
+    401: AgentCredentialError | ErrorMessage;
     /**
      * The key lacks the read-actions grant.
      */
-    403: ErrorMessage;
+    403: AgentCredentialError;
     /**
      * Workspace, account, or Actions resource not found.
      */
-    404: ErrorMessage;
+    404: ApiRouteNotFound;
     /**
      * Request validation failed.
      */
@@ -2179,17 +2189,17 @@ export type ActionsApiDecisionReceiptData = {
 
 export type ActionsApiDecisionReceiptErrors = {
     /**
-     * Missing, invalid, or expired workspace key.
+     * Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.
      */
-    401: ErrorMessage;
+    401: AgentCredentialError | ErrorMessage;
     /**
      * The key lacks the read-actions grant.
      */
-    403: ErrorMessage;
+    403: AgentCredentialError;
     /**
      * Workspace, account, or Actions resource not found. A visible action without an execution receipt returns error.code receipt_not_available and error.message "No execution receipt exists for this action because it was not executed."
      */
-    404: ErrorMessage;
+    404: ActionReceiptUnavailable | ApiRouteNotFound;
     /**
      * Request validation failed.
      */
@@ -2227,17 +2237,17 @@ export type ActionsApiShowData = {
 
 export type ActionsApiShowErrors = {
     /**
-     * Missing, invalid, or expired workspace key.
+     * Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.
      */
-    401: ErrorMessage;
+    401: AgentCredentialError | ErrorMessage;
     /**
      * The key lacks the read-actions grant.
      */
-    403: ErrorMessage;
+    403: AgentCredentialError;
     /**
      * Workspace, account, or Actions resource not found.
      */
-    404: ErrorMessage;
+    404: ApiRouteNotFound;
     /**
      * Request validation failed.
      */
@@ -2283,17 +2293,17 @@ export type ActionsApiBatchData = {
 
 export type ActionsApiBatchErrors = {
     /**
-     * Missing, invalid, or expired workspace key.
+     * Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.
      */
-    401: ErrorMessage;
+    401: AgentCredentialError | ErrorMessage;
     /**
      * The key lacks the read-actions grant.
      */
-    403: ErrorMessage;
+    403: AgentCredentialError;
     /**
      * Workspace, account, or Actions resource not found.
      */
-    404: ErrorMessage;
+    404: ApiRouteNotFound;
     /**
      * Request validation failed.
      */
@@ -2448,7 +2458,6 @@ export type ActionsRulesStoreData = {
          */
         account_id?: number;
         platform_ad_account_id: number;
-        enabled?: unknown;
         window?: null | '' | Array<unknown> | {
             [key: string]: unknown;
         };
@@ -2609,7 +2618,6 @@ export type ActionsRulesUpdateData = {
          */
         account_id?: number;
         enabled?: boolean;
-        platform_ad_account_id?: unknown;
         window?: null | '' | Array<unknown> | {
             [key: string]: unknown;
         };
