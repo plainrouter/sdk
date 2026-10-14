@@ -36,7 +36,6 @@ class ActionsRulesUpdateBody:
                 one active available advertising account with an active connection; omission uses that account and a supplied ID
                 must match it. Multiple active accounts return 422 even when account_id is supplied.
             enabled (bool | Unset):
-            platform_ad_account_id (Any | Unset):
             window (ActionsRulesUpdateBodyWindowType3 | list[Any] | Literal[''] | None | Unset):
             window_days (ActionsRulesUpdateBodyWindowDaysType3 | list[Any] | Literal[''] | None | Unset):
             author_type (ActionsRulesUpdateBodyAuthorTypeType3 | list[Any] | Literal[''] | None | Unset):
@@ -52,7 +51,6 @@ class ActionsRulesUpdateBody:
     ) = UNSET
     account_id: int | Unset = UNSET
     enabled: bool | Unset = UNSET
-    platform_ad_account_id: Any | Unset = UNSET
     window: ActionsRulesUpdateBodyWindowType3 | list[Any] | Literal[""] | None | Unset = UNSET
     window_days: ActionsRulesUpdateBodyWindowDaysType3 | list[Any] | Literal[""] | None | Unset = UNSET
     author_type: ActionsRulesUpdateBodyAuthorTypeType3 | list[Any] | Literal[""] | None | Unset = UNSET
@@ -84,8 +82,6 @@ class ActionsRulesUpdateBody:
         account_id = self.account_id
 
         enabled = self.enabled
-
-        platform_ad_account_id = self.platform_ad_account_id
 
         window: dict[str, Any] | list[Any] | Literal[""] | None | Unset
         if isinstance(self.window, Unset):
@@ -142,8 +138,6 @@ class ActionsRulesUpdateBody:
             field_dict["account_id"] = account_id
         if enabled is not UNSET:
             field_dict["enabled"] = enabled
-        if platform_ad_account_id is not UNSET:
-            field_dict["platform_ad_account_id"] = platform_ad_account_id
         if window is not UNSET:
             field_dict["window"] = window
         if window_days is not UNSET:
@@ -207,8 +201,6 @@ class ActionsRulesUpdateBody:
         account_id = d.pop("account_id", UNSET)
 
         enabled = d.pop("enabled", UNSET)
-
-        platform_ad_account_id = d.pop("platform_ad_account_id", UNSET)
 
         def _parse_window(data: object) -> ActionsRulesUpdateBodyWindowType3 | list[Any] | Literal[""] | None | Unset:
             if data is None:
@@ -337,7 +329,6 @@ class ActionsRulesUpdateBody:
             definition=definition,
             account_id=account_id,
             enabled=enabled,
-            platform_ad_account_id=platform_ad_account_id,
             window=window,
             window_days=window_days,
             author_type=author_type,

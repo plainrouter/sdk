@@ -2,6 +2,7 @@
 
 ## 0.10.0 (unreleased)
 
+- Correct `actions.api.index`, `actions.api.policy`, `actions.api.show`, `actions.api.batch`, and `actions.api.decision-receipt` errors: 401 is `AgentCredentialError` or `ErrorMessage`, and 403 is `AgentCredentialError`; list, policy, show, and batch 404 is `ApiRouteNotFound`, while decision-receipt 404 is `ActionReceiptUnavailable` or `ApiRouteNotFound`. Remove `enabled` from action-rule create requests and `platform_ad_account_id` from update requests; both fields are prohibited by the contract.
 - Normalize header names case-insensitively for plain objects, `Headers` instances, tuple arrays and array-value request options before generated merging, on every operation including those that send a body. Caller headers replace defaults, except that on a client configured with a token the SDK's token is sent as Authorization on operations that authenticate unless a per-call `auth` option overrides it. Accept and Authorization each send at most one header line, and tuple indexes never become header names.
 
 - Add `GET /agent/context` and action-rule `POST` collection, item `GET`, and item `PATCH` operations.

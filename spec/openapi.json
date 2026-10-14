@@ -439,11 +439,18 @@
                         }
                     },
                     "401": {
-                        "description": "Missing, invalid, or expired workspace key.",
+                        "description": "Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentCredentialError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -453,7 +460,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "$ref": "#/components/schemas/AgentCredentialError"
                                 }
                             }
                         }
@@ -463,7 +470,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
                                 }
                             }
                         }
@@ -526,11 +533,18 @@
                         }
                     },
                     "401": {
-                        "description": "Missing, invalid, or expired workspace key.",
+                        "description": "Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentCredentialError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -540,7 +554,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "$ref": "#/components/schemas/AgentCredentialError"
                                 }
                             }
                         }
@@ -550,7 +564,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
                                 }
                             }
                         }
@@ -621,11 +635,18 @@
                         }
                     },
                     "401": {
-                        "description": "Missing, invalid, or expired workspace key.",
+                        "description": "Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentCredentialError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -635,7 +656,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "$ref": "#/components/schemas/AgentCredentialError"
                                 }
                             }
                         }
@@ -645,7 +666,14 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ActionReceiptUnavailable"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ApiRouteNotFound"
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -716,11 +744,18 @@
                         }
                     },
                     "401": {
-                        "description": "Missing, invalid, or expired workspace key.",
+                        "description": "Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentCredentialError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -730,7 +765,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "$ref": "#/components/schemas/AgentCredentialError"
                                 }
                             }
                         }
@@ -740,7 +775,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
                                 }
                             }
                         }
@@ -831,11 +866,18 @@
                         }
                     },
                     "401": {
-                        "description": "Missing, invalid, or expired workspace key.",
+                        "description": "Missing, invalid, expired or revoked credentials and inactive account bindings return error and error_description. Insufficient principal permission or lost issuer authority returns error insufficient_scope and error_description. A management key returns message instead.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/AgentCredentialError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -845,7 +887,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "$ref": "#/components/schemas/AgentCredentialError"
                                 }
                             }
                         }
@@ -855,7 +897,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
                                 }
                             }
                         }
@@ -1360,9 +1402,6 @@
                                         "type": "integer",
                                         "minimum": 1
                                     },
-                                    "enabled": {
-                                        "not": {}
-                                    },
                                     "window": {
                                         "anyOf": [
                                             {
@@ -1444,7 +1483,12 @@
                                     "name",
                                     "platform_ad_account_id",
                                     "definition"
-                                ]
+                                ],
+                                "not": {
+                                    "required": [
+                                        "enabled"
+                                    ]
+                                }
                             }
                         }
                     }
@@ -1928,9 +1972,6 @@
                                     "enabled": {
                                         "type": "boolean"
                                     },
-                                    "platform_ad_account_id": {
-                                        "not": {}
-                                    },
                                     "window": {
                                         "anyOf": [
                                             {
@@ -2007,6 +2048,11 @@
                                             }
                                         ]
                                     }
+                                },
+                                "not": {
+                                    "required": [
+                                        "platform_ad_account_id"
+                                    ]
                                 }
                             }
                         }
@@ -11522,6 +11568,33 @@
                     "policy_results"
                 ],
                 "title": "ActionReadItem"
+            },
+            "ActionReceiptUnavailable": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "receipt_not_available"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "ActionReceiptUnavailable"
             },
             "ActionRuleDetailRead": {
                 "type": "object",

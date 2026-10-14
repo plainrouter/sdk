@@ -249,6 +249,9 @@ from .action_read_item_proposer import ActionReadItemProposer
 from .action_read_item_proposer_type import ActionReadItemProposerType
 from .action_read_item_status import ActionReadItemStatus
 from .action_read_item_type import ActionReadItemType
+from .action_receipt_unavailable import ActionReceiptUnavailable
+from .action_receipt_unavailable_error import ActionReceiptUnavailableError
+from .action_receipt_unavailable_error_code import ActionReceiptUnavailableErrorCode
 from .action_rule_detail_read import ActionRuleDetailRead
 from .action_rule_detail_read_rule import ActionRuleDetailReadRule
 from .action_rule_detail_read_rule_current_revision import ActionRuleDetailReadRuleCurrentRevision
@@ -1049,6 +1052,9 @@ __all__ = (
     "ActionReadItemProposerType",
     "ActionReadItemStatus",
     "ActionReadItemType",
+    "ActionReceiptUnavailable",
+    "ActionReceiptUnavailableError",
+    "ActionReceiptUnavailableErrorCode",
     "ActionRuleDetailRead",
     "ActionRuleDetailReadRule",
     "ActionRuleDetailReadRuleCurrentRevision",

@@ -25,8 +25,6 @@ module PlainRouter::OpenAPI
 
     attr_accessor :enabled
 
-    attr_accessor :platform_ad_account_id
-
     attr_accessor :window
 
     attr_accessor :window_days
@@ -42,7 +40,6 @@ module PlainRouter::OpenAPI
         :'definition' => :'definition',
         :'account_id' => :'account_id',
         :'enabled' => :'enabled',
-        :'platform_ad_account_id' => :'platform_ad_account_id',
         :'window' => :'window',
         :'window_days' => :'window_days',
         :'author_type' => :'author_type',
@@ -67,7 +64,6 @@ module PlainRouter::OpenAPI
         :'definition' => :'ActionsRulesUpdateRequestDefinition',
         :'account_id' => :'Integer',
         :'enabled' => :'Boolean',
-        :'platform_ad_account_id' => :'Object',
         :'window' => :'ActionsRulesStoreRequestWindow',
         :'window_days' => :'ActionsRulesStoreRequestWindow',
         :'author_type' => :'ActionsRulesStoreRequestWindow',
@@ -78,7 +74,6 @@ module PlainRouter::OpenAPI
     # List of attributes with nullable: true
     def self.openapi_nullable
       Set.new([
-        :'platform_ad_account_id',
         :'window',
         :'window_days',
         :'author_type',
@@ -116,10 +111,6 @@ module PlainRouter::OpenAPI
 
       if attributes.key?(:'enabled')
         self.enabled = attributes[:'enabled']
-      end
-
-      if attributes.key?(:'platform_ad_account_id')
-        self.platform_ad_account_id = attributes[:'platform_ad_account_id']
       end
 
       if attributes.key?(:'window')
@@ -212,7 +203,6 @@ module PlainRouter::OpenAPI
           definition == o.definition &&
           account_id == o.account_id &&
           enabled == o.enabled &&
-          platform_ad_account_id == o.platform_ad_account_id &&
           window == o.window &&
           window_days == o.window_days &&
           author_type == o.author_type &&
@@ -228,7 +218,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [name, definition, account_id, enabled, platform_ad_account_id, window, window_days, author_type, current_revision_id].hash
+      [name, definition, account_id, enabled, window, window_days, author_type, current_revision_id].hash
     end
 
     # Builds the object from hash

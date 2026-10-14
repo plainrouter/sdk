@@ -34,7 +34,6 @@ class ActionsRulesStoreBody:
             account_id (int | Unset): Optional account ID, ignored by an account-bound key. An unbound key requires exactly
                 one active available advertising account with an active connection; omission uses that account and a supplied ID
                 must match it. Multiple active accounts return 422 even when account_id is supplied.
-            enabled (Any | Unset):
             window (ActionsRulesStoreBodyWindowType3 | list[Any] | Literal[''] | None | Unset):
             window_days (ActionsRulesStoreBodyWindowDaysType3 | list[Any] | Literal[''] | None | Unset):
             author_type (ActionsRulesStoreBodyAuthorTypeType3 | list[Any] | Literal[''] | None | Unset):
@@ -49,7 +48,6 @@ class ActionsRulesStoreBody:
     )
     platform_ad_account_id: int
     account_id: int | Unset = UNSET
-    enabled: Any | Unset = UNSET
     window: ActionsRulesStoreBodyWindowType3 | list[Any] | Literal[""] | None | Unset = UNSET
     window_days: ActionsRulesStoreBodyWindowDaysType3 | list[Any] | Literal[""] | None | Unset = UNSET
     author_type: ActionsRulesStoreBodyAuthorTypeType3 | list[Any] | Literal[""] | None | Unset = UNSET
@@ -79,8 +77,6 @@ class ActionsRulesStoreBody:
         platform_ad_account_id = self.platform_ad_account_id
 
         account_id = self.account_id
-
-        enabled = self.enabled
 
         window: dict[str, Any] | list[Any] | Literal[""] | None | Unset
         if isinstance(self.window, Unset):
@@ -137,8 +133,6 @@ class ActionsRulesStoreBody:
         )
         if account_id is not UNSET:
             field_dict["account_id"] = account_id
-        if enabled is not UNSET:
-            field_dict["enabled"] = enabled
         if window is not UNSET:
             field_dict["window"] = window
         if window_days is not UNSET:
@@ -199,8 +193,6 @@ class ActionsRulesStoreBody:
         platform_ad_account_id = d.pop("platform_ad_account_id")
 
         account_id = d.pop("account_id", UNSET)
-
-        enabled = d.pop("enabled", UNSET)
 
         def _parse_window(data: object) -> ActionsRulesStoreBodyWindowType3 | list[Any] | Literal[""] | None | Unset:
             if data is None:
@@ -329,7 +321,6 @@ class ActionsRulesStoreBody:
             definition=definition,
             platform_ad_account_id=platform_ad_account_id,
             account_id=account_id,
-            enabled=enabled,
             window=window,
             window_days=window_days,
             author_type=author_type,
