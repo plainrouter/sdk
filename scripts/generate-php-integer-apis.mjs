@@ -26,6 +26,7 @@ for (const file of apiFiles) {
         apiClass: basename(file, '.php'),
         methodName: methods[index][1],
         methodSignature,
+        hostSettingsMethod: body.match(/\$this->(getHostSettingsFor[A-Za-z_][A-Za-z0-9_]*)\(\)/)?.[1] ?? null,
         source: body,
       });
     }
@@ -56,7 +57,14 @@ for (const [operation, fields] of Object.entries(manifest)) {
   if (!fields.query.length && !fields.path.length && !bodyArgument && !bodyFieldArguments.length) continue;
 
   const guarded = guardedByApi.get(generated.apiClass) ?? [];
-  guarded.push({ operation, methodName: generated.methodName, methodSignature: generated.methodSignature, bodyArgument, bodyFieldArguments });
+  guarded.push({
+    operation,
+    methodName: generated.methodName,
+    methodSignature: generated.methodSignature,
+    bodyArgument,
+    bodyFieldArguments,
+    hostSettingsMethod: generated.hostSettingsMethod,
+  });
   guardedByApi.set(generated.apiClass, guarded);
 }
 
@@ -68,6 +76,14 @@ for (const [apiClass, methods] of guardedByApi) {
     {
         IntegerInputGuard::assertArguments('${operation}', self::class, __FUNCTION__, func_get_args(), ${bodyArgument === null ? 'null' : `'${bodyArgument}'`}, ${phpPairs(bodyFieldArguments)});
         return parent::${methodName}(...func_get_args());
+    }`).join('\n\n');
+  const hostOverrides = [...new Set(methods.map(({ hostSettingsMethod }) => hostSettingsMethod).filter(Boolean))]
+    .map((method) => `    protected function ${method}(): array
+    {
+        if ($this->config->getHost() !== \\Plainrouter\\Client::DEFAULT_BASE_URL) {
+            return [['url' => $this->config->getHost(), 'description' => 'Configured base URL']];
+        }
+        return parent::${method}();
     }`).join('\n\n');
   const className = `Guarded${apiClass}`;
   const source = `<?php
@@ -81,7 +97,7 @@ use Plainrouter\\IntegerInputGuard;
 /** Generated from spec/openapi.json by scripts/generate-php-integer-apis.mjs. */
 class ${className} extends \\Plainrouter\\OpenAPI\\Api\\${apiClass}
 {
-${declarations}
+${[declarations, hostOverrides].filter(Boolean).join('\n\n')}
 }
 `;
   await writeFile(join(outputDirectory, `${className}.php`), source);
