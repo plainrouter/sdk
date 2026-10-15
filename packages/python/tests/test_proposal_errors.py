@@ -25,6 +25,7 @@ from plainrouter.generated.models import (
     ActionProposalInputEvidenceItem,
     ActionProposalInputEvidenceItemSourceTool,
     ActionProposalInputTargetSource,
+    ActionsRulesStoreBody,
     ExecuteDeploymentPlanRequest,
     ProposalUnavailable,
     ProposalUnavailableErrorCode,
@@ -185,6 +186,26 @@ def test_retry_helper_never_raises_from_unread_response_or_model_adapter() -> No
 
 
 async def _assert_closed_request_behavior() -> None:
+    budget_rule: dict[str, Any] = {
+        "name": "Increase a qualified budget",
+        "platform_ad_account_id": 1,
+        "definition": {
+            "target_level": "ad_set",
+            "action": "increase_budget",
+            "minimum_counted_arrivals": 1,
+            "cost_comparison": "at_least",
+            "cost_ratio": 1,
+            "budget_change_percent": 1,
+        },
+    }
+    assert ActionsRulesStoreBody.from_dict(budget_rule).to_dict() == budget_rule
+    with pytest.raises(ClosedRequestKeyError, match="review_extra") as budget_error:
+        ActionsRulesStoreBody.from_dict({
+            **budget_rule,
+            "definition": {**budget_rule["definition"], "review_extra": 1},
+        })
+    assert "budget_change_percent" not in str(budget_error.value)
+
     model_cases: list[tuple[type[Any], dict[str, Any], dict[str, Any], str, str]] = [
         (
             ActionProposalInputActionsItemType0Params,
@@ -256,7 +277,8 @@ async def _assert_closed_request_behavior() -> None:
                 "target_source": "human_supplied",
             }
         )
-    assert "ActionProposalInputActionsItemType2Params" in str(nested_error.value)
+    assert "ActionProposalInput.actions[].params" in str(nested_error.value)
+    assert "anyOf/2" in str(nested_error.value)
 
     action_samples: list[tuple[str, dict[str, Any], str, str, str, str]] = [
         (
@@ -330,7 +352,7 @@ async def _assert_closed_request_behavior() -> None:
         with pytest.raises(ClosedRequestKeyError) as converter_error:
             ActionProposalInput.from_dict(body)
         assert unknown_key in str(converter_error.value)
-        assert model_name in str(converter_error.value)
+        assert request_object in str(converter_error.value)
 
     requests: list[httpx.Request] = []
 

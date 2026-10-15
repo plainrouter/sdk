@@ -83,6 +83,35 @@ class PlainRouterClientTest < Minitest::Test
   end
 
   def verify_closed_proposal_objects_refuse_unknown_keys_across_ruby_input_paths
+    rule = {
+      "name" => "Increase a qualified budget",
+      "platform_ad_account_id" => 1,
+      "definition" => {
+        "target_level" => "ad_set", "action" => "increase_budget",
+        "minimum_counted_arrivals" => 1, "cost_comparison" => "at_least",
+        "cost_ratio" => 1, "budget_change_percent" => 1
+      }
+    }
+    rule_requests = []
+    rule_stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post(%r{/agent/workspaces/7/action-rules\z}) do |environment|
+        rule_requests << JSON.parse(environment.body)
+        [204, {}, ""]
+      end
+    end
+    api_client = stubbed_client(rule_stubs).actions.api_client
+    options = { body: rule, header_params: { "Content-Type" => "application/json" }, query_params: {}, form_params: {} }
+    api_client.call_api("POST", "/api/v1/agent/workspaces/7/action-rules", options)
+    assert_equal [rule], rule_requests
+    bad_rule = rule.merge("definition" => rule["definition"].merge("review_extra" => 1))
+    rule_error = assert_raises(ArgumentError) do
+      api_client.call_api("POST", "/api/v1/agent/workspaces/7/action-rules", options.merge(body: bad_rule))
+    end
+    assert_includes rule_error.message, "review_extra"
+    assert_includes rule_error.message, "definition"
+    assert_equal [rule], rule_requests
+    rule_stubs.verify_stubbed_calls
+
     openapi = PlainRouter::OpenAPI
     params_cases = [
       [

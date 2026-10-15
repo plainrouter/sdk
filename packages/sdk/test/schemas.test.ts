@@ -174,6 +174,12 @@ describe('generated response schemas', () => {
     if (!extraParamsResult.success) {
       expect(extraParamsResult.error.issues[0]?.message).toContain('new_daily_budgets_minor');
       expect(extraParamsResult.error.issues[0]?.message).toContain('ActionProposalInput.actions[].params');
+      const issue = extraParamsResult.error.issues[0];
+      expect(issue?.code).toBe('invalid_union');
+      if (issue?.code === 'invalid_union') {
+        expect(issue.errors).toHaveLength(1);
+        expect(issue.errors[0]?.[0]?.message).toContain('anyOf[0]');
+      }
     }
     const budgetCaseVariantResult = zActionProposalInput.safeParse({
       ...proposal,

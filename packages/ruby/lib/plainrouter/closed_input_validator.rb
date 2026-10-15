@@ -40,7 +40,7 @@ module PlainRouter
       end
 
       def validate_request!(http_method, path, options)
-        operation_name = options[:operation].to_s.split(".").last
+        operation_name = options[:operation].to_s.split(".").last.to_s
         pointer = MANIFEST.dig("ruby", "operation_ids", operation_name)
         pointer ||= request_schema_pointer(http_method, path)
         return unless pointer
@@ -67,10 +67,8 @@ module PlainRouter
 
       def request_object_name(operation_name, http_method, path, schema_pointer)
         object_name = if operation_name.empty?
-                        schema_pointer.to_s.split("/").last
-                          .to_s
-                          .gsub("~1", "/")
-                          .gsub("~0", "~")
+                        schema_pointer.to_s.start_with?("#/components/schemas/") ?
+                          schema_pointer.split("/")[3].to_s.gsub("~1", "/").gsub("~0", "~") : ""
                       else
                         operation_name.split("_").map(&:capitalize).join
                       end
@@ -117,7 +115,7 @@ module PlainRouter
               next if allowed_keys.include?(key.to_s)
 
               raise ArgumentError,
-                    "Unknown key #{key.to_s.inspect} in closed request object #{object_path.inspect}."
+                    "Unknown key #{key.to_s.inspect} in closed request object #{object_path.inspect} (schema branch #{resolved_pointer})."
             end
           end
 
@@ -168,8 +166,7 @@ module PlainRouter
             end
           end
 
-          raise errors.first if errors.any? && selected.empty?
-          raise errors.first if errors.any? && selected.length == 1
+          raise errors.first if errors.any?
         end
       end
       private_class_method :validate_compositions
@@ -181,15 +178,17 @@ module PlainRouter
           branch_pointer = branch["$ref"]
           branch_pointer ? schema_properties(branch_pointer) : {}
         end
-        discriminator_names = branch_properties.flat_map do |properties|
-          properties.filter_map do |name, property|
-            child = property["$ref"]
-            next unless child
+        common_names = branch_properties.map(&:keys).reduce { |left, right| left & right } || []
+        discriminator_names = common_names.select do |name|
+          sets = branch_properties.map do |properties|
+            child = properties.dig(name, "$ref")
+            next [] unless child
 
-            _pointer, schema = resolve_schema(child)
-            name if schema.key?("enum") || schema.key?("const")
+            _pointer, property_schema = resolve_schema(child)
+            property_schema.key?("const") ? [property_schema["const"]] : property_schema.fetch("enum", [])
           end
-        end.uniq
+          sets.all? { |values| !values.empty? } && sets.uniq.length > 1
+        end
         present_discriminators = discriminator_names.select do |name|
           value.keys.any? { |key| key.to_s == name }
         end

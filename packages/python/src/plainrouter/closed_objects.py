@@ -8,7 +8,7 @@ import re
 from collections.abc import Callable, Mapping
 from functools import wraps
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, cast, get_args, get_type_hints
 
 from httpx import AsyncClient, Client, Request, RequestNotRead
 
@@ -22,7 +22,7 @@ _CLOSED_REQUEST_MODEL_FIELDS: dict[str, list[str]] = json.loads(
 _HTTP_METHODS = {"delete", "get", "patch", "post", "put"}
 
 
-class ClosedRequestKeyError(RuntimeError):
+class ClosedRequestKeyError(ValueError):
     """Raised when a request contains a key that a closed OpenAPI object does not define."""
 
 
@@ -130,7 +130,7 @@ def _plain_value(value: object) -> object:
     return getattr(value, "value", value)
 
 
-def _matching_union_branch(value: object, branches: list[Any], pointer: str) -> int | None:
+def _matching_union_branches(value: object, branches: list[Any], pointer: str) -> list[int]:
     branch_constraints: list[dict[str, list[Any]]] = []
     union_properties: set[str] = set()
 
@@ -162,7 +162,7 @@ def _matching_union_branch(value: object, branches: list[Any], pointer: str) -> 
 
     value_mapping = _mapping_for_value(value, union_properties)
     if value_mapping is None:
-        return None
+        return list(range(len(branches)))
 
     constraint_names = set.intersection(*(set(constraints) for constraints in branch_constraints)) if branches else set()
     discriminators: dict[str, list[list[Any]]] = {}
@@ -187,12 +187,14 @@ def _matching_union_branch(value: object, branches: list[Any], pointer: str) -> 
         }
         possible_branches.intersection_update(matching_branches)
 
-    return next(iter(possible_branches)) if matched_discriminators and len(possible_branches) == 1 else None
+    return sorted(possible_branches) if matched_discriminators and possible_branches else list(range(len(branches)))
 
 
 def _raise_unknown_key(key: object, pointer: str, schema: Mapping[str, Any], operation: str) -> None:
     object_name = _schema_label(pointer, schema, operation)
-    raise ClosedRequestKeyError(f"Unknown key {key!r} for closed request object {object_name}.")
+    raise ClosedRequestKeyError(
+        f"Unknown key {key!r} for closed request object {object_name} (schema branch {pointer})."
+    )
 
 
 def _validate_value(value: object, schema: Mapping[str, Any], pointer: str, operation: str) -> None:
@@ -202,16 +204,11 @@ def _validate_value(value: object, schema: Mapping[str, Any], pointer: str, oper
         branches = schema.get(union_name)
         if not isinstance(branches, list):
             continue
-        selected = _matching_union_branch(value, branches, f"{pointer}/{union_name}")
-        if selected is not None:
-            branch = branches[selected]
-            if isinstance(branch, Mapping):
-                _validate_value(value, branch, f"{pointer}/{union_name}/{selected}", operation)
-            return
-
+        selected = _matching_union_branches(value, branches, f"{pointer}/{union_name}")
         branch_errors: list[ClosedRequestKeyError] = []
         branch_accepted = False
-        for index, branch in enumerate(branches):
+        for index in selected:
+            branch = branches[index]
             if not isinstance(branch, Mapping):
                 continue
             try:
@@ -304,6 +301,26 @@ def _install_model_guards() -> None:
         setattr(model, "from_dict", classmethod(guarded_from_dict))
 
 
+def _install_request_model_guard(model: Any, schema_pointer: str, operation_name: str) -> None:
+    if not isinstance(model, type) or not callable(getattr(model, "from_dict", None)):
+        for branch in get_args(model):
+            _install_request_model_guard(branch, schema_pointer, operation_name)
+        return
+
+    from_dict = getattr(model, "from_dict")
+    original = cast(Callable[..., Any], getattr(from_dict, "__func__", from_dict))
+    if getattr(original, "_plainrouter_request_body_guard", False):
+        return
+
+    @wraps(original)
+    def guarded_from_dict(cls: type[Any], src_dict: Mapping[str, Any]) -> Any:
+        validate_request_body(src_dict, schema_pointer, operation_name)
+        return original(cls, src_dict)
+
+    setattr(guarded_from_dict, "_plainrouter_request_body_guard", True)
+    setattr(model, "from_dict", classmethod(guarded_from_dict))
+
+
 def _operation_for_function(function: Callable[..., Any]) -> tuple[str, str] | None:
     constants = function.__code__.co_consts
     method = next((value for value in constants if isinstance(value, str) and value in _HTTP_METHODS), None)
@@ -331,6 +348,7 @@ def _install_operation_guards() -> None:
         if getattr(function, "_plainrouter_closed_object_guard", False):
             continue
 
+        _install_request_model_guard(get_type_hints(function).get("body"), schema_pointer, operation_name)
         signature = inspect.signature(function)
 
         @wraps(function)

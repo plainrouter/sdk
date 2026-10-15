@@ -201,13 +201,18 @@ const deserializeMatch = serializer.match(/public static function deserialize\s*
 if (!deserializeMatch) {
   throw new Error('Could not locate generated ObjectSerializer::deserialize');
 }
-if (!serializer.slice(deserializeMatch.index, serializer.indexOf('\n    }', deserializeMatch.index)).includes('ClosedObjectGuard::assertModelInput')) {
-  serializer = insertAfterOpeningBrace(
-    serializer,
-    deserializeMatch.index,
-    deserializeMatch[0],
-    '\\Plainrouter\\ClosedObjectGuard::assertModelInput($class, $data);',
-  );
+if (!serializer.includes('private static function deserializeUnchecked(')) {
+  serializer = serializer.replace(deserializeMatch[0], `public static function deserialize($data, $class, $httpHeaders = null)
+    {
+        return \\Plainrouter\\ClosedObjectGuard::deserialize(
+            $class,
+            $data,
+            static fn () => self::deserializeUnchecked($data, $class, $httpHeaders),
+        );
+    }
+
+    /** Materialize the validated data using the generator's existing model types. */
+    private static function deserializeUnchecked(`);
 }
 await writeFile(serializerPath, serializer);
 

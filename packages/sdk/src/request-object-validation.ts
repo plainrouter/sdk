@@ -85,12 +85,38 @@ const collectUnknownKeyMessages = (value: unknown, messages = new Set<string>())
   return messages;
 };
 
-const errorMapForUnion = (previousError?: ClosedObjectErrorMap): ClosedObjectErrorMap => (issue) => {
+const applicableBranches = (branches: readonly RequestObjectSchema[], input: unknown): number[] => {
+  const indices = branches.map((_, index) => index);
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) return indices;
+  const values = input as Record<string, unknown>;
+  const enumValues = (schema: RequestObjectSchema): readonly unknown[] => (
+    Object.hasOwn(schema, 'const') ? [schema.const] : schema.enum ?? []
+  );
+  const discriminators = Object.keys(branches[0]?.properties ?? {}).filter((key) => {
+    const sets = branches.map((branch) => enumValues(branch.properties?.[key] ?? {}));
+    return sets.every((set) => set.length > 0)
+      && new Set(sets.map((set) => JSON.stringify(set))).size > 1
+      && Object.hasOwn(values, key);
+  });
+  const matches = indices.filter((index) => discriminators.every((key) => (
+    enumValues(branches[index]?.properties?.[key] ?? {}).includes(values[key])
+  )));
+  return matches.length > 0 ? matches : indices;
+};
+
+const errorMapForUnion = (
+  branches: readonly RequestObjectSchema[],
+  previousError?: ClosedObjectErrorMap,
+): ClosedObjectErrorMap => (issue) => {
   if (issue.code === 'invalid_union' && 'errors' in issue && Array.isArray(issue.errors)) {
-    const branchErrors = issue.errors as unknown[][];
-    const leastRestrictiveBranch = branchErrors.reduce<unknown[]>((current, branch) => (
+    const errors = issue.errors as unknown[][];
+    const candidates = applicableBranches(branches, issue.input).map((index) => errors[index] ?? []);
+    // Zod retains branch issues in its public error, as well as the union message.
+    // Keep those diagnostics scoped to the same applicable branches.
+    errors.splice(0, errors.length, ...candidates);
+    const leastRestrictiveBranch = candidates.reduce<unknown[]>((current, branch) => (
       branch.length < current.length ? branch : current
-    ), branchErrors[0] ?? []);
+    ), candidates[0] ?? []);
     const messages = collectUnknownKeyMessages(leastRestrictiveBranch);
     if (messages.size > 0) {
       return [...messages].join('; ');
@@ -109,6 +135,7 @@ const applyClosedObjectRules = <T extends z.ZodType>(
   schema: RequestObjectSchema,
   rootName: string,
   path: SchemaPath = [],
+  branchName = '',
 ): T => {
   if (!containsClosedObject(schema)) {
     return target;
@@ -123,19 +150,19 @@ const applyClosedObjectRules = <T extends z.ZodType>(
     const transformedShape = Object.fromEntries(Object.entries(currentShape).map(([key, child]) => {
       const childSchema = schema.properties?.[key];
       return [key, childSchema && containsClosedObject(childSchema)
-        ? applyClosedObjectRules(child, childSchema, rootName, [...path, key])
+        ? applyClosedObjectRules(child, childSchema, rootName, [...path, key], branchName)
         : child];
     }));
     const originalCatchall = definition.catchall as z.ZodType | undefined;
     const additionalProperties = schema.additionalProperties;
     const catchall = typeof additionalProperties === 'object' && originalCatchall
-      ? applyClosedObjectRules(originalCatchall, additionalProperties, rootName, [...path, '.*'])
+      ? applyClosedObjectRules(originalCatchall, additionalProperties, rootName, [...path, '.*'], branchName)
       : originalCatchall;
     const changes: Record<string, unknown> = { shape: transformedShape };
 
     if (schema.closed) {
       changes.catchall = z.never();
-      changes.error = errorMapForClosedObject(objectName(rootName, path), previousError);
+      changes.error = errorMapForClosedObject(`${objectName(rootName, path)}${branchName ? ` (${branchName})` : ''}`, previousError);
     } else if (catchall !== originalCatchall) {
       changes.catchall = catchall;
     }
@@ -155,14 +182,14 @@ const applyClosedObjectRules = <T extends z.ZodType>(
       const valueDefinition = valueType._zod.def as SchemaDefinition;
       const customNever = valueType.clone({
         ...valueDefinition,
-        error: errorMapForClosedRecord(objectName(rootName, path), valueDefinition.error as ClosedObjectErrorMap | undefined),
+        error: errorMapForClosedRecord(`${objectName(rootName, path)}${branchName ? ` (${branchName})` : ''}`, valueDefinition.error as ClosedObjectErrorMap | undefined),
       } as never);
       return clone({ valueType: customNever });
     }
 
     if (typeof additionalProperties === 'object' && valueType) {
       return clone({
-        valueType: applyClosedObjectRules(valueType, additionalProperties, rootName, [...path, '.*']),
+        valueType: applyClosedObjectRules(valueType, additionalProperties, rootName, [...path, '.*'], branchName),
       });
     }
 
@@ -171,7 +198,7 @@ const applyClosedObjectRules = <T extends z.ZodType>(
 
   if (definition.type === 'array' && schema.items) {
     const element = definition.element as z.ZodType;
-    return clone({ element: applyClosedObjectRules(element, schema.items, rootName, [...path, '[]']) });
+    return clone({ element: applyClosedObjectRules(element, schema.items, rootName, [...path, '[]'], branchName) });
   }
 
   if (definition.type === 'union') {
@@ -181,10 +208,10 @@ const applyClosedObjectRules = <T extends z.ZodType>(
       options: options.map((option, index) => {
         const branch = branches[index];
         return branch && containsClosedObject(branch)
-          ? applyClosedObjectRules(option, branch, rootName, path)
+          ? applyClosedObjectRules(option, branch, rootName, path, `${branchName ? `${branchName}; ` : ''}${schema.anyOf ? 'anyOf' : 'oneOf'}[${index}]`)
           : option;
       }),
-      error: errorMapForUnion(previousError),
+      error: errorMapForUnion(branches, previousError),
     });
   }
 
@@ -194,17 +221,17 @@ const applyClosedObjectRules = <T extends z.ZodType>(
     const right = definition.right as z.ZodType;
     return clone({
       left: branches[0] && containsClosedObject(branches[0])
-        ? applyClosedObjectRules(left, branches[0], rootName, path)
+        ? applyClosedObjectRules(left, branches[0], rootName, path, branchName)
         : left,
       right: branches[1] && containsClosedObject(branches[1])
-        ? applyClosedObjectRules(right, branches[1], rootName, path)
+        ? applyClosedObjectRules(right, branches[1], rootName, path, branchName)
         : right,
     });
   }
 
   if ('innerType' in definition && containsClosedObject(schema)) {
     const innerType = definition.innerType as z.ZodType;
-    return clone({ innerType: applyClosedObjectRules(innerType, schema, rootName, path) });
+    return clone({ innerType: applyClosedObjectRules(innerType, schema, rootName, path, branchName) });
   }
 
   return target;
