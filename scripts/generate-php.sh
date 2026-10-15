@@ -19,6 +19,8 @@ mkdir -p "$GENERATOR_CACHE" "$OUTPUT/src"
 GENERATOR_INPUT="$(mktemp "${TMPDIR:-/tmp}/plainrouter-php-input.XXXXXX.json")"
 trap 'rm -f "$GENERATOR_INPUT"; rm -rf "$GENERATOR_OUTPUT"' EXIT
 
+node "$ROOT/scripts/generate-closed-objects.mjs" "$OUTPUT/src/closed-input-objects.json" "$ROOT/spec/openapi.json"
+
 if [[ ! -f "$GENERATOR_JAR" ]]; then
   curl --fail --location --silent --show-error \
     "https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/$GENERATOR_VERSION/openapi-generator-cli-$GENERATOR_VERSION.jar" \
@@ -54,3 +56,8 @@ node "$ROOT/scripts/generate-php-integer-apis.mjs" \
   "$OUTPUT/src/OpenAPI/Api" \
   "$OUTPUT/src/IntegerInputApis" \
   "$INTEGER_FIELDS"
+node "$ROOT/scripts/generate-php-closed-object-guards.mjs" \
+  "$ROOT/spec/openapi.json" \
+  "$OUTPUT/src/closed-input-objects.json" \
+  "$OUTPUT/src/OpenAPI/Model" \
+  "$OUTPUT/src/OpenAPI/Api"

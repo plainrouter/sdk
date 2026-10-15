@@ -1,0 +1,156 @@
+{
+  "ActionProposalInputActionsItemType0Params": [
+    "new_daily_budget_minor"
+  ],
+  "ActionProposalInputActionsItemType0TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType10Params": [
+    "staged_asset_id",
+    "asset_type",
+    "filename",
+    "content_sha256",
+    "mime_type",
+    "size_bytes"
+  ],
+  "ActionProposalInputActionsItemType10TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType11Params": [
+    "new_daily_budget_minor"
+  ],
+  "ActionProposalInputActionsItemType11TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType12Params": [
+    "status"
+  ],
+  "ActionProposalInputActionsItemType12TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType13Params": [
+    "asset_id",
+    "status",
+    "name_suffix"
+  ],
+  "ActionProposalInputActionsItemType13TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType1Params": [
+    "new_daily_budget_minor"
+  ],
+  "ActionProposalInputActionsItemType1TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType2Params": [],
+  "ActionProposalInputActionsItemType2TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType3Params": [],
+  "ActionProposalInputActionsItemType3TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType4Params": [],
+  "ActionProposalInputActionsItemType4TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType5Params": [],
+  "ActionProposalInputActionsItemType5TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType6Params": [],
+  "ActionProposalInputActionsItemType6TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType7Params": [],
+  "ActionProposalInputActionsItemType7TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType8Params": [],
+  "ActionProposalInputActionsItemType8TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputActionsItemType9Params": [],
+  "ActionProposalInputActionsItemType9TargetEntity": [
+    "type",
+    "id",
+    "name"
+  ],
+  "ActionProposalInputEvidenceItem": [
+    "source_tool",
+    "fields_used",
+    "action_index"
+  ],
+  "ActionsRulesStoreBodyDefinitionType0": [
+    "target_level",
+    "action",
+    "minimum_counted_arrivals",
+    "cost_comparison",
+    "cost_ratio"
+  ],
+  "ActionsRulesStoreBodyDefinitionType1": [
+    "target_level",
+    "action",
+    "minimum_counted_arrivals",
+    "cost_comparison",
+    "cost_ratio",
+    "budget_change_percent"
+  ],
+  "ActionsRulesStoreBodyDefinitionType2": [
+    "target_level",
+    "action",
+    "minimum_counted_arrivals",
+    "cost_comparison",
+    "cost_ratio",
+    "budget_change_percent"
+  ],
+  "ActionsRulesUpdateBodyDefinitionType0": [
+    "target_level",
+    "action",
+    "minimum_counted_arrivals",
+    "cost_comparison",
+    "cost_ratio"
+  ],
+  "ActionsRulesUpdateBodyDefinitionType1": [
+    "target_level",
+    "action",
+    "minimum_counted_arrivals",
+    "cost_comparison",
+    "cost_ratio",
+    "budget_change_percent"
+  ],
+  "ActionsRulesUpdateBodyDefinitionType2": [
+    "target_level",
+    "action",
+    "minimum_counted_arrivals",
+    "cost_comparison",
+    "cost_ratio",
+    "budget_change_percent"
+  ]
+}

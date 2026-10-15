@@ -1,5 +1,6 @@
 from . import create_event, launch_plans_copy
 from .client import DEFAULT_BASE_URL, AuthenticatedClient, Client, create_client
+from .closed_objects import install_closed_object_guards
 from .create_event import CreateEventBodyInput
 from .generated.api.event import get_event, verify_signal_ingestion
 from .generated.api.operations import (
@@ -17,6 +18,8 @@ from .validation import (
     CreateEventValidationError,
     validate_create_event_body,
 )
+
+install_closed_object_guards()
 
 __all__ = (
     "DEFAULT_BASE_URL",

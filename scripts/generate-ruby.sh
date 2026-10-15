@@ -45,3 +45,9 @@ find "$OUTPUT/lib/plainrouter" -type f -name '*.rb' -print0 \
   | xargs -0 perl -pi -e 's/[ \t]+$//'
 
 node "$ROOT/scripts/generate-integer-fields.mjs" "$OUTPUT/lib/plainrouter/integer_input_fields.json"
+node "$ROOT/scripts/generate-closed-objects.mjs" "$OUTPUT/lib/plainrouter/closed_input_objects.json"
+node "$ROOT/scripts/generate-ruby-closed-inputs.mjs" \
+  "$OUTPUT/lib/plainrouter/closed_input_objects.json" \
+  "$ROOT/spec/openapi.json" \
+  "$OUTPUT/lib/plainrouter"
+node "$ROOT/scripts/patch-ruby-closed-inputs.mjs" "$OUTPUT/lib/plainrouter"
