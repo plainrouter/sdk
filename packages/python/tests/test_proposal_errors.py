@@ -287,7 +287,7 @@ async def _assert_closed_request_behavior() -> None:
             "new_daily_budge_minor",
             "New_daily_budget_minor",
             "ActionProposalInput.actions[].params",
-            "ActionProposalInputActionsItemType0Params",
+            "/anyOf/0/properties/params",
         ),
         (
             "set_status",
@@ -295,7 +295,7 @@ async def _assert_closed_request_behavior() -> None:
             "state",
             "Status",
             "ActionProposalInput.actions[].params",
-            "ActionProposalInputActionsItemType12Params",
+            "/anyOf/12/properties/params",
         ),
         (
             "duplicate_ad_with_creative",
@@ -303,11 +303,11 @@ async def _assert_closed_request_behavior() -> None:
             "asset_idd",
             "Asset_id",
             "ActionProposalInput.actions[].params",
-            "ActionProposalInputActionsItemType13Params",
+            "/anyOf/13/properties/params",
         ),
     ]
     invalid_bodies: list[tuple[str, dict[str, Any], str, str]] = []
-    for action_type, params, misspelling, case_variant, request_object, model_name in action_samples:
+    for action_type, params, misspelling, case_variant, request_object, schema_branch in action_samples:
         for unknown_key in (misspelling, case_variant):
             invalid_bodies.append(
                 (
@@ -327,7 +327,7 @@ async def _assert_closed_request_behavior() -> None:
                         "target_source": "human_supplied",
                     },
                     request_object,
-                    model_name,
+                    schema_branch,
                 )
             )
 
@@ -344,15 +344,16 @@ async def _assert_closed_request_behavior() -> None:
                     "target_source": "human_supplied",
                 },
                 "ActionProposalInput.evidence[]",
-                "ActionProposalInputEvidenceItem",
+                "/properties/evidence/items",
             )
         )
 
-    for unknown_key, body, request_object, model_name in invalid_bodies:
+    for unknown_key, body, request_object, schema_branch in invalid_bodies:
         with pytest.raises(ClosedRequestKeyError) as converter_error:
             ActionProposalInput.from_dict(body)
         assert unknown_key in str(converter_error.value)
         assert request_object in str(converter_error.value)
+        assert schema_branch in str(converter_error.value)
 
     requests: list[httpx.Request] = []
 
