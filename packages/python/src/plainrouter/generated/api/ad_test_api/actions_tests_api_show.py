@@ -10,6 +10,7 @@ from ...models.ad_test_show_read import AdTestShowRead
 from ...models.agent_credential_error import AgentCredentialError
 from ...models.api_route_not_found import ApiRouteNotFound
 from ...models.error_message import ErrorMessage
+from ...models.validation_error import ValidationError
 from ...types import Response
 
 
@@ -31,7 +32,16 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage | None:
+) -> (
+    AdTestShowRead
+    | AgentCredentialError
+    | ErrorMessage
+    | ApiRouteNotFound
+    | ErrorMessage
+    | ErrorMessage
+    | ValidationError
+    | None
+):
     if response.status_code == 200:
         response_200 = AdTestShowRead.from_dict(response.json())
 
@@ -100,6 +110,11 @@ def _parse_response(
 
         return response_404
 
+    if response.status_code == 422:
+        response_422 = ValidationError.from_dict(response.json())
+
+        return response_422
+
     if response.status_code == 429:
         response_429 = ErrorMessage.from_dict(response.json())
 
@@ -113,7 +128,15 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage]:
+) -> Response[
+    AdTestShowRead
+    | AgentCredentialError
+    | ErrorMessage
+    | ApiRouteNotFound
+    | ErrorMessage
+    | ErrorMessage
+    | ValidationError
+]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -127,7 +150,15 @@ def sync_detailed(
     ad_test: str,
     *,
     client: AuthenticatedClient,
-) -> Response[AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage]:
+) -> Response[
+    AdTestShowRead
+    | AgentCredentialError
+    | ErrorMessage
+    | ApiRouteNotFound
+    | ErrorMessage
+    | ErrorMessage
+    | ValidationError
+]:
     """Read a Test, verdict, and pause candidates
 
      Reads a scoped Test, its stored daily facts and verdict, and loser pause candidate status and
@@ -142,7 +173,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage]
+        Response[AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -162,7 +193,16 @@ def sync(
     ad_test: str,
     *,
     client: AuthenticatedClient,
-) -> AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage | None:
+) -> (
+    AdTestShowRead
+    | AgentCredentialError
+    | ErrorMessage
+    | ApiRouteNotFound
+    | ErrorMessage
+    | ErrorMessage
+    | ValidationError
+    | None
+):
     """Read a Test, verdict, and pause candidates
 
      Reads a scoped Test, its stored daily facts and verdict, and loser pause candidate status and
@@ -177,7 +217,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage
+        AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage | ValidationError
     """
 
     return sync_detailed(
@@ -192,7 +232,15 @@ async def asyncio_detailed(
     ad_test: str,
     *,
     client: AuthenticatedClient,
-) -> Response[AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage]:
+) -> Response[
+    AdTestShowRead
+    | AgentCredentialError
+    | ErrorMessage
+    | ApiRouteNotFound
+    | ErrorMessage
+    | ErrorMessage
+    | ValidationError
+]:
     """Read a Test, verdict, and pause candidates
 
      Reads a scoped Test, its stored daily facts and verdict, and loser pause candidate status and
@@ -207,7 +255,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage]
+        Response[AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -225,7 +273,16 @@ async def asyncio(
     ad_test: str,
     *,
     client: AuthenticatedClient,
-) -> AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage | None:
+) -> (
+    AdTestShowRead
+    | AgentCredentialError
+    | ErrorMessage
+    | ApiRouteNotFound
+    | ErrorMessage
+    | ErrorMessage
+    | ValidationError
+    | None
+):
     """Read a Test, verdict, and pause candidates
 
      Reads a scoped Test, its stored daily facts and verdict, and loser pause candidate status and
@@ -240,7 +297,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage
+        AdTestShowRead | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ErrorMessage | ErrorMessage | ValidationError
     """
 
     return (

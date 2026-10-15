@@ -103,6 +103,155 @@ module PlainRouter::OpenAPI
       return data, status_code, headers
     end
 
+    # Read a workspace creative
+    # Read a creative or change its approval status within the authorized workspace. Creative content and provider submission remain separate operations.
+    # @param workspace [Integer] The workspace ID
+    # @param creative [String]
+    # @param [Hash] opts the optional parameters
+    # @return [LaunchCreativesStatus200Response]
+    def launch_creatives_show(workspace, creative, opts = {})
+      data, _status_code, _headers = launch_creatives_show_with_http_info(workspace, creative, opts)
+      data
+    end
+
+    # Read a workspace creative
+    # Read a creative or change its approval status within the authorized workspace. Creative content and provider submission remain separate operations.
+    # @param workspace [Integer] The workspace ID
+    # @param creative [String]
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(LaunchCreativesStatus200Response, Integer, Hash)>] LaunchCreativesStatus200Response data, response status code and response headers
+    def launch_creatives_show_with_http_info(workspace, creative, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: CreativeApi.launch_creatives_show ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling CreativeApi.launch_creatives_show"
+      end
+      # verify the required parameter 'creative' is set
+      if @api_client.config.client_side_validation && creative.nil?
+        fail ArgumentError, "Missing the required parameter 'creative' when calling CreativeApi.launch_creatives_show"
+      end
+      # resource path
+      local_var_path = '/workspaces/{workspace}/admin/creatives/{creative}'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{creative}', CGI.escape(creative.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'LaunchCreativesStatus200Response'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
+
+      new_options = opts.merge(
+        :operation => :"CreativeApi.launch_creatives_show",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:GET, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: CreativeApi#launch_creatives_show\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Update a workspace creative status
+    # Read a creative or change its approval status within the authorized workspace. Creative content and provider submission remain separate operations.
+    # @param workspace [Integer] The workspace ID
+    # @param creative [String]
+    # @param update_creative_status_request [UpdateCreativeStatusRequest]
+    # @param [Hash] opts the optional parameters
+    # @return [LaunchCreativesStatus200Response]
+    def launch_creatives_status(workspace, creative, update_creative_status_request, opts = {})
+      data, _status_code, _headers = launch_creatives_status_with_http_info(workspace, creative, update_creative_status_request, opts)
+      data
+    end
+
+    # Update a workspace creative status
+    # Read a creative or change its approval status within the authorized workspace. Creative content and provider submission remain separate operations.
+    # @param workspace [Integer] The workspace ID
+    # @param creative [String]
+    # @param update_creative_status_request [UpdateCreativeStatusRequest]
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(LaunchCreativesStatus200Response, Integer, Hash)>] LaunchCreativesStatus200Response data, response status code and response headers
+    def launch_creatives_status_with_http_info(workspace, creative, update_creative_status_request, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: CreativeApi.launch_creatives_status ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling CreativeApi.launch_creatives_status"
+      end
+      # verify the required parameter 'creative' is set
+      if @api_client.config.client_side_validation && creative.nil?
+        fail ArgumentError, "Missing the required parameter 'creative' when calling CreativeApi.launch_creatives_status"
+      end
+      # verify the required parameter 'update_creative_status_request' is set
+      if @api_client.config.client_side_validation && update_creative_status_request.nil?
+        fail ArgumentError, "Missing the required parameter 'update_creative_status_request' when calling CreativeApi.launch_creatives_status"
+      end
+      # resource path
+      local_var_path = '/workspaces/{workspace}/admin/creatives/{creative}/status'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{creative}', CGI.escape(creative.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+      # HTTP header 'Content-Type'
+      content_type = @api_client.select_header_content_type(['application/json'])
+      if !content_type.nil?
+          header_params['Content-Type'] = content_type
+      end
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body] || @api_client.object_to_http_body(update_creative_status_request)
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'LaunchCreativesStatus200Response'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
+
+      new_options = opts.merge(
+        :operation => :"CreativeApi.launch_creatives_status",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:PATCH, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: CreativeApi#launch_creatives_status\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
     # Upload a creative
     # Store a creative in the credential-bound workspace. Set generator, generator_job and parent_creative tags for output from an outside tool.
     # @param workspace [Integer] The workspace ID

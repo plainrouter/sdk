@@ -13,8 +13,11 @@ GENERATOR_VERSION="7.25.0"
 GENERATOR_SHA256="41ce4f6b07f196676439d710759fa1ced7a08066d06ff1bf314681470289efae"
 GENERATOR_CACHE="${TMPDIR:-/tmp}/plainrouter-openapi-generator"
 GENERATOR_JAR="$GENERATOR_CACHE/openapi-generator-cli-$GENERATOR_VERSION.jar"
+GENERATOR_OUTPUT="$(mktemp -d "${TMPDIR:-/tmp}/plainrouter-php-output.XXXXXX")"
 
-mkdir -p "$GENERATOR_CACHE" "$OUTPUT"
+mkdir -p "$GENERATOR_CACHE" "$OUTPUT/src"
+GENERATOR_INPUT="$(mktemp "${TMPDIR:-/tmp}/plainrouter-php-input.XXXXXX.json")"
+trap 'rm -f "$GENERATOR_INPUT"; rm -rf "$GENERATOR_OUTPUT"' EXIT
 
 if [[ ! -f "$GENERATOR_JAR" ]]; then
   curl --fail --location --silent --show-error \
@@ -30,16 +33,24 @@ fi
 
 node "$ROOT/scripts/verify-spec.mjs"
 
-GENERATOR_INPUT="$(mktemp "${TMPDIR:-/tmp}/plainrouter-php-input.XXXXXX.json")"
-trap 'rm -f "$GENERATOR_INPUT"' EXIT
 node "$ROOT/scripts/prepare-generator-input.mjs" "$ROOT/spec/openapi.json" "$GENERATOR_INPUT"
 
 "$JAVA_BIN" -jar "$GENERATOR_JAR" generate \
   -g php \
   -i "$GENERATOR_INPUT" \
-  -o "$OUTPUT" \
+  -o "$GENERATOR_OUTPUT" \
   --global-property=models,apis,supportingFiles,modelDocs=false,apiDocs=false,modelTests=false,apiTests=false \
   --additional-properties='invokerPackage=Plainrouter\OpenAPI,srcBasePath=src/OpenAPI,artifactVersion=0.4.0,hideGenerationTimestamp=true,disallowAdditionalPropertiesIfNotPresent=false'
 
-find "$OUTPUT/src/OpenAPI" -type f -name '*.php' -print0 \
+find "$GENERATOR_OUTPUT/src/OpenAPI" -type f -name '*.php' -print0 \
   | xargs -0 perl -pi -e 's/[ \t]+$//'
+
+rm -rf "$OUTPUT/src/OpenAPI"
+cp -R "$GENERATOR_OUTPUT/src/OpenAPI" "$OUTPUT/src/OpenAPI"
+
+INTEGER_FIELDS="$OUTPUT/src/integer-input-fields.json"
+node "$ROOT/scripts/generate-integer-fields.mjs" "$INTEGER_FIELDS"
+node "$ROOT/scripts/generate-php-integer-apis.mjs" \
+  "$OUTPUT/src/OpenAPI/Api" \
+  "$OUTPUT/src/IntegerInputApis" \
+  "$INTEGER_FIELDS"

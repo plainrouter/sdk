@@ -297,7 +297,7 @@ export const zActionProposalInput = z.object({
                 id: z.string().max(128),
                 name: z.string().max(255).nullish()
             }),
-            params: z.record(z.string(), z.unknown()),
+            params: z.record(z.string(), z.never()),
             rationale: z.string().max(2000),
             idempotency_key: z.string().max(255).optional()
         }),
@@ -313,7 +313,7 @@ export const zActionProposalInput = z.object({
                 id: z.string().max(128),
                 name: z.string().max(255).nullish()
             }),
-            params: z.record(z.string(), z.unknown()),
+            params: z.record(z.string(), z.never()),
             rationale: z.string().max(2000),
             idempotency_key: z.string().max(255).optional()
         }),
@@ -329,7 +329,7 @@ export const zActionProposalInput = z.object({
                 id: z.string().max(128),
                 name: z.string().max(255).nullish()
             }),
-            params: z.record(z.string(), z.unknown()),
+            params: z.record(z.string(), z.never()),
             rationale: z.string().max(2000),
             idempotency_key: z.string().max(255).optional()
         }),
@@ -345,7 +345,7 @@ export const zActionProposalInput = z.object({
                 id: z.string().max(128),
                 name: z.string().max(255).nullish()
             }),
-            params: z.record(z.string(), z.unknown()),
+            params: z.record(z.string(), z.never()),
             rationale: z.string().max(2000),
             idempotency_key: z.string().max(255).optional()
         }),
@@ -361,7 +361,7 @@ export const zActionProposalInput = z.object({
                 id: z.string().max(128),
                 name: z.string().max(255).nullish()
             }),
-            params: z.record(z.string(), z.unknown()),
+            params: z.record(z.string(), z.never()),
             rationale: z.string().max(2000),
             idempotency_key: z.string().max(255).optional()
         }),
@@ -377,7 +377,7 @@ export const zActionProposalInput = z.object({
                 id: z.string().max(128),
                 name: z.string().max(255).nullish()
             }),
-            params: z.record(z.string(), z.unknown()),
+            params: z.record(z.string(), z.never()),
             rationale: z.string().max(2000),
             idempotency_key: z.string().max(255).optional()
         }),
@@ -1908,6 +1908,29 @@ export const zDestination = z.object({
 });
 
 /**
+ * DraftBatchMode
+ */
+export const zDraftBatchMode = z.enum([
+    'duplicate_adset',
+    'duplicate_adset_per_media',
+    'add_to_adset'
+]);
+
+/**
+ * DraftBatchFileImportRequest
+ */
+export const zDraftBatchFileImportRequest = z.object({
+    file: z.string(),
+    source_adset_id: z.string().regex(/^[0-9]+$/),
+    source_ad_id: z.string().regex(/^[0-9]+$/),
+    mode: zDraftBatchMode,
+    folder_to_adset: z.boolean().optional(),
+    grouping_enabled: z.boolean().optional(),
+    account_id: z.int().gte(1).optional(),
+    workspace_id: z.int().gte(1).optional()
+});
+
+/**
  * EmqSnapshot
  */
 export const zEmqSnapshot = z.object({
@@ -2018,6 +2041,21 @@ export const zLaunchIntentStatus = z.enum([
 ]);
 
 /**
+ * LaunchPolicy
+ */
+export const zLaunchPolicy = z.object({
+    id: z.string(),
+    workspace_id: z.int(),
+    kind: z.string(),
+    name: z.string(),
+    version: z.int(),
+    body: z.array(z.unknown()),
+    status: z.string(),
+    created_at: z.iso.datetime().nullable(),
+    updated_at: z.iso.datetime().nullable()
+});
+
+/**
  * PlanCopyForbidden
  */
 export const zPlanCopyForbidden = z.object({
@@ -2086,6 +2124,7 @@ export const zPlanExecuteRejected = z.object({
             'deployment_plan_not_executable',
             'creative_not_ready',
             'creative_bytes_unavailable',
+            'launch_video_upload_unavailable',
             'ad_set_daily_budget_invalid',
             'ad_set_bid_amount_invalid',
             'currency_mismatch',
@@ -2093,6 +2132,16 @@ export const zPlanExecuteRejected = z.object({
             'budget_invalid',
             'deployment_plan_has_no_actions'
         ]),
+        message: z.string()
+    })
+});
+
+/**
+ * PlanValidateRejected
+ */
+export const zPlanValidateRejected = z.object({
+    error: z.object({
+        code: z.string(),
         message: z.string()
     })
 });
@@ -2157,6 +2206,67 @@ export const zStoreCreativeRequest = z.object({
 });
 
 /**
+ * StoreDeploymentPlanRequest
+ */
+export const zStoreDeploymentPlanRequest = z.object({
+    name: z.string().max(255).nullish(),
+    platform_ad_account_id: z.int().gte(1),
+    platform: z.enum([
+        'google',
+        'meta',
+        'microsoft'
+    ]),
+    campaign_ref: z.string().max(255).nullish(),
+    campaign_spec: z.array(z.string()).nullish(),
+    ad_set_ref: z.string().max(255).nullish(),
+    ad_set_spec: z.object({
+        daily_budget: z.int().gte(1).optional(),
+        bid_amount: z.int().gte(1).optional(),
+        lifetime_budget: z.int().gte(1).nullish()
+    }).nullish(),
+    budget_type: z.enum(['daily', 'lifetime']),
+    budget_amount_minor: z.int().gte(1),
+    currency: z.string().length(3),
+    copy: z.object({
+        primary_text: z.string(),
+        headline: z.string(),
+        description: z.string(),
+        cta: z.enum([
+            'learn_more',
+            'shop_now',
+            'sign_up'
+        ])
+    }),
+    landing_page: z.url().max(2048),
+    utm_policy_name: z.string().max(255).nullish(),
+    naming_policy_name: z.string().max(255).nullish(),
+    creative_ids: z.array(z.string()).optional(),
+    creative_overrides: z.array(z.object({
+        creative_id: z.string(),
+        copy: z.object({
+            primary_text: z.string(),
+            headline: z.string(),
+            description: z.string(),
+            cta: z.enum([
+                'learn_more',
+                'shop_now',
+                'sign_up'
+            ])
+        }),
+        landing_page: z.url().max(2048).nullable()
+    })).optional()
+});
+
+/**
+ * StoreLaunchPolicyRequest
+ */
+export const zStoreLaunchPolicyRequest = z.object({
+    kind: z.enum(['utm', 'naming']),
+    name: z.string().max(255),
+    body: z.array(z.string()).min(1)
+});
+
+/**
  * TrafficClass
  *
  * The only persisted traffic verdicts for passive document arrivals. Request facts and classifier reasons never cross the stripping boundary.
@@ -2209,6 +2319,69 @@ export const zEvent = z.object({
     ]).optional(),
     consent_ui_version: z.int().gte(1).lte(999999).optional(),
     deliveries: z.array(z.unknown())
+});
+
+/**
+ * UpdateCreativeStatusRequest
+ */
+export const zUpdateCreativeStatusRequest = z.object({
+    status: z.enum([
+        'draft',
+        'approved',
+        'retired'
+    ])
+});
+
+/**
+ * UpdateDeploymentPlanRequest
+ */
+export const zUpdateDeploymentPlanRequest = z.object({
+    name: z.string().max(255).nullish(),
+    platform_ad_account_id: z.int().gte(1).optional(),
+    platform: z.enum([
+        'google',
+        'meta',
+        'microsoft'
+    ]).optional(),
+    campaign_ref: z.string().max(255).nullish(),
+    campaign_spec: z.array(z.string()).nullish(),
+    ad_set_ref: z.string().max(255).nullish(),
+    ad_set_spec: z.object({
+        daily_budget: z.int().gte(1).optional(),
+        bid_amount: z.int().gte(1).optional(),
+        lifetime_budget: z.int().gte(1).nullish()
+    }).nullish(),
+    budget_type: z.enum(['daily', 'lifetime']).optional(),
+    budget_amount_minor: z.int().gte(1).optional(),
+    currency: z.string().length(3).optional(),
+    copy: z.object({
+        primary_text: z.string(),
+        headline: z.string(),
+        description: z.string(),
+        cta: z.enum([
+            'learn_more',
+            'shop_now',
+            'sign_up'
+        ])
+    }).optional(),
+    landing_page: z.url().max(2048).optional(),
+    utm_policy_name: z.string().max(255).nullish(),
+    naming_policy_name: z.string().max(255).nullish(),
+    creative_ids: z.array(z.string()).optional(),
+    creative_overrides: z.array(z.object({
+        creative_id: z.string(),
+        copy: z.object({
+            primary_text: z.string(),
+            headline: z.string(),
+            description: z.string(),
+            cta: z.enum([
+                'learn_more',
+                'shop_now',
+                'sign_up'
+            ])
+        }),
+        landing_page: z.url().max(2048).nullable()
+    })).optional()
 });
 
 /**
@@ -2725,27 +2898,25 @@ export const zStoreCreativeFromUrlPath = z.object({
  */
 export const zStoreCreativeFromUrlResponse = zCreativeIntakeRead;
 
-export const zLaunchPlansCopyPath = z.object({
+export const zLaunchCreativesStatusBody = zUpdateCreativeStatusRequest;
+
+export const zLaunchCreativesStatusPath = z.object({
     workspace: z.int(),
-    deployment_plan: z.string()
+    creative: z.string()
 });
 
-/**
- * A new draft was created.
- */
-export const zLaunchPlansCopyResponse = zPlanCopyRead;
-
-export const zLaunchPlansExecuteBody = zExecuteDeploymentPlanRequest;
-
-export const zLaunchPlansExecutePath = z.object({
-    workspace: z.int(),
-    deployment_plan: z.string()
+export const zLaunchCreativesStatusResponse = z.object({
+    creative: z.array(z.unknown())
 });
 
-/**
- * Created or replayed Launch intent, including a blocked intent under the kill switch.
- */
-export const zLaunchPlansExecuteResponse = zLaunchIntentRead;
+export const zLaunchCreativesShowPath = z.object({
+    workspace: z.int(),
+    creative: z.string()
+});
+
+export const zLaunchCreativesShowResponse = z.object({
+    creative: z.array(z.unknown())
+});
 
 export const zLaunchPlansIndexPath = z.object({
     workspace: z.int()
@@ -2783,6 +2954,16 @@ export const zLaunchPlansIndexResponse = z.object({
     })
 });
 
+export const zLaunchPlansStoreBody = zStoreDeploymentPlanRequest;
+
+export const zLaunchPlansStorePath = z.object({
+    workspace: z.int()
+});
+
+export const zLaunchPlansStoreResponse = z.object({
+    plan: z.array(z.unknown())
+});
+
 export const zLaunchPlansShowPath = z.object({
     workspace: z.int(),
     deployment_plan: z.string()
@@ -2799,6 +2980,58 @@ export const zLaunchPlansShowQuery = z.object({
 export const zLaunchPlansShowResponse = z.object({
     plan: zDeploymentPlanRead
 });
+
+export const zLaunchPlansUpdateBody = zUpdateDeploymentPlanRequest;
+
+export const zLaunchPlansUpdatePath = z.object({
+    workspace: z.int(),
+    deployment_plan: z.string()
+});
+
+export const zLaunchPlansUpdateResponse = z.object({
+    plan: z.array(z.unknown())
+});
+
+export const zLaunchPlansCopyPath = z.object({
+    workspace: z.int(),
+    deployment_plan: z.string()
+});
+
+/**
+ * A new draft was created.
+ */
+export const zLaunchPlansCopyResponse = zPlanCopyRead;
+
+export const zLaunchPlansValidatePath = z.object({
+    workspace: z.int(),
+    deployment_plan: z.string()
+});
+
+/**
+ * The plan and its validation result.
+ */
+export const zLaunchPlansValidateResponse = z.object({
+    plan: zDeploymentPlanRead
+});
+
+export const zLaunchPlansExecuteBody = zExecuteDeploymentPlanRequest;
+
+export const zLaunchPlansExecutePath = z.object({
+    workspace: z.int(),
+    deployment_plan: z.string()
+});
+
+/**
+ * Created or replayed Launch intent, including a blocked intent under the kill switch.
+ */
+export const zLaunchPlansExecuteResponse = zLaunchIntentRead;
+
+export const zLauncherFileImportBody = zDraftBatchFileImportRequest;
+
+/**
+ * Draft batch result and syntactic row failures.
+ */
+export const zLauncherFileImportResponse = z.record(z.string(), z.unknown());
 
 /**
  * Authenticated callers using the Server secret may supply client_ip_address and client_user_agent in user_data; browser traffic using the Publishable key takes those fields only from the configured edge.
@@ -3070,6 +3303,56 @@ export const zGetEventResponse = z.object({
     }).and(z.object({
         explanation: z.string()
     })))
+});
+
+export const zLaunchPoliciesIndexPath = z.object({
+    workspace: z.int()
+});
+
+export const zLaunchPoliciesIndexQuery = z.object({
+    page: z.int().optional(),
+    per_page: z.int().optional()
+});
+
+export const zLaunchPoliciesIndexResponse = z.object({
+    policies: z.object({
+        current_page: z.int().gte(1),
+        data: z.array(zLaunchPolicy),
+        first_page_url: z.string().nullable(),
+        from: z.int().gte(1).nullable(),
+        last_page_url: z.string().nullable(),
+        last_page: z.int().gte(1),
+        links: z.array(z.object({
+            url: z.string().nullable(),
+            label: z.string(),
+            active: z.boolean()
+        })),
+        next_page_url: z.string().nullable(),
+        path: z.string().nullable(),
+        per_page: z.int().gte(0),
+        prev_page_url: z.string().nullable(),
+        to: z.int().gte(1).nullable(),
+        total: z.int().gte(0)
+    })
+});
+
+export const zLaunchPoliciesStoreBody = zStoreLaunchPolicyRequest;
+
+export const zLaunchPoliciesStorePath = z.object({
+    workspace: z.int()
+});
+
+export const zLaunchPoliciesStoreResponse = z.object({
+    policy: z.array(z.unknown())
+});
+
+export const zLaunchPoliciesRetirePath = z.object({
+    workspace: z.int(),
+    launch_policy: z.string()
+});
+
+export const zLaunchPoliciesRetireResponse = z.object({
+    policy: z.array(z.unknown())
 });
 
 export const zGetAccountInventoryPath = z.object({

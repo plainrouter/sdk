@@ -89,7 +89,7 @@ class PlainRouterClientTest < Minitest::Test
     assert_equal(
       %i[
         action_dry_run action_reads action_rules actions ad_tests agent_context cookie_declarations
-        creatives events inventory operations plans sandbox
+        creatives events file_imports inventory launch_policies operations plans sandbox
       ],
       PlainRouter::Client.public_instance_methods(false).sort
     )
@@ -116,8 +116,10 @@ class PlainRouterClientTest < Minitest::Test
     )
     assert_equal %i[agent_context], operation_names(client.agent_context)
     assert_equal %i[get_cookie_declaration], operation_names(client.cookie_declarations)
-    assert_equal %i[launch_creatives_index store_creative store_creative_from_url], operation_names(client.creatives)
-    assert_equal %i[launch_plans_copy launch_plans_execute launch_plans_index launch_plans_show], operation_names(client.plans)
+    assert_equal %i[launch_creatives_index launch_creatives_show launch_creatives_status store_creative store_creative_from_url], operation_names(client.creatives)
+    assert_equal %i[launcher_file_import], operation_names(client.file_imports)
+    assert_equal %i[launch_policies_index launch_policies_retire launch_policies_store], operation_names(client.launch_policies)
+    assert_equal %i[launch_plans_copy launch_plans_execute launch_plans_index launch_plans_show launch_plans_store launch_plans_update launch_plans_validate], operation_names(client.plans)
     assert_equal %i[create_event get_event verify_signal_ingestion], operation_names(client.events)
     assert_equal %i[get_account_inventory get_inventory_metrics], operation_names(client.inventory)
     assert_equal(
@@ -260,24 +262,47 @@ class PlainRouterClientTest < Minitest::Test
   end
 
   def test_sends_a_valid_captured_at_byte_identical_to_input
-    observed_body = nil
+    [1, "1"].each do |event_time|
+      observed_body = nil
+      stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+        stub.post("/api/v1/events") do |environment|
+          observed_body = environment.body
+          [202, { "Content-Type" => "application/json" }, '{"event_id":"event-123","duplicate":false,"warnings":[]}']
+        end
+      end
+      client = stubbed_client(stubs, token: "tracker-secret")
+
+      client.events.create_event(
+        "event_name" => "Purchase",
+        "consent_basis" => "consent",
+        "visitor_id" => "visitor-123",
+        "event_time" => event_time,
+        "consent" => { "captured_at" => VALID_CAPTURED_AT }
+      )
+
+      assert_equal event_time, JSON.parse(observed_body).fetch("event_time")
+      assert_includes observed_body, "\"captured_at\":\"#{VALID_CAPTURED_AT}\""
+      stubs.verify_stubbed_calls
+    end
+
+    called = false
     stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-      stub.post("/api/v1/events") do |environment|
-        observed_body = environment.body
-        [202, { "Content-Type" => "application/json" }, '{"event_id":"event-123","duplicate":false,"warnings":[]}']
+      stub.post("/api/v1/events") do
+        called = true
+        [202, { "Content-Type" => "application/json" }, '{"event_id":"unexpected","duplicate":false,"warnings":[]}']
       end
     end
     client = stubbed_client(stubs, token: "tracker-secret")
+    error = assert_raises(ArgumentError) do
+      client.events.create_event(
+        "event_name" => "Purchase",
+        "consent_basis" => "consent",
+        "event_time" => true
+      )
+    end
 
-    client.events.create_event(
-      "event_name" => "Purchase",
-      "consent_basis" => "consent",
-      "visitor_id" => "visitor-123",
-      "consent" => { "captured_at" => VALID_CAPTURED_AT }
-    )
-
-    assert_includes observed_body, "\"captured_at\":\"#{VALID_CAPTURED_AT}\""
-    stubs.verify_stubbed_calls
+    assert_match(/event_time/, error.message)
+    refute called
   end
 
   def test_sends_events_without_identity_when_captured_at_is_absent

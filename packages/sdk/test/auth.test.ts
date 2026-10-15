@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as generatedOperations from '../src/generated/sdk.gen.js';
 import * as exportedOperations from '../src/operation-exports.js';
+import { integerFields } from '../src/generated/integer-fields.gen.js';
 
 import {
   ApiRedirectError,
@@ -16,6 +17,21 @@ import {
   zLaunchPlansCopyResponse,
   verifySignalIngestion,
 } from '../src/index.js';
+
+const operationName = (operationId: string): string => operationId
+  .split(/[._-]+/)
+  .filter(Boolean)
+  .map((part, index) => index === 0
+    ? `${part[0]?.toLowerCase() ?? ''}${part.slice(1)}`
+    : `${part[0]?.toUpperCase() ?? ''}${part.slice(1)}`)
+  .join('');
+
+const valueAtIntegerPath = (path: readonly string[], leaf: unknown = true): unknown => {
+  const [segment, ...rest] = path;
+  if (segment === undefined) return leaf;
+  const value = valueAtIntegerPath(rest, leaf);
+  return segment === '*' ? [value] : { [segment]: value };
+};
 
 describe('signalTrackerSecret authentication', () => {
   it('sets the bearer header from injected configuration without a network call', async () => {
@@ -262,6 +278,43 @@ describe('JSON API transport', () => {
       },
     });
     await expect(requests[11]?.json()).resolves.toEqual({ name: 'Updated rule' });
+
+    const requestCountBeforeIntegerChecks = requests.length;
+    const integerProbes: Array<{
+      operation: (options: unknown) => Promise<unknown>;
+      field: string;
+      options: (value: boolean | number | string) => unknown;
+    }> = [];
+    for (const fields of Object.values(integerFields)) {
+      const name = operationName(fields.operationId);
+      const operation = (exportedOperations as unknown as Record<string, (options: unknown) => Promise<unknown>>)[name];
+      if (!operation) throw new Error(`Missing generated operation ${name}`);
+
+      for (const field of fields.path) {
+        integerProbes.push({ operation, field, options: (value) => ({ path: { [field]: value } }) });
+      }
+      for (const field of fields.query) {
+        integerProbes.push({ operation, field, options: (value) => ({ query: { [field]: value } }) });
+      }
+      for (const selector of fields.body) {
+        const field = selector.filter((part) => part !== '*').at(-1) ?? 'body';
+        integerProbes.push({ operation, field, options: (value) => ({ body: valueAtIntegerPath(selector, value) }) });
+      }
+    }
+    for (const probe of integerProbes) {
+      for (const value of [true, false]) {
+        await expect(probe.operation(probe.options(value))).rejects.toThrow(probe.field);
+      }
+    }
+    expect(requests).toHaveLength(requestCountBeforeIntegerChecks);
+    for (const probe of integerProbes) {
+      for (const value of [1, '1'] as const) {
+        const before = requests.length;
+        await probe.operation(probe.options(value));
+        expect(requests).toHaveLength(before + 1);
+      }
+    }
+    expect(requests).toHaveLength(requestCountBeforeIntegerChecks + integerProbes.length * 2);
   });
 
   it.each([300, 301, 302, 303, 304, 307, 308, 399])('rejects HTTP %i before parsing, for every result style', async (status) => {

@@ -96,17 +96,17 @@ jobs:
         run: >-
           python -m pip install --disable-pip-version-check
           -r ${{ matrix.python-version == '3.11.16' && 'requirements-dev.txt' || 'requirements-test.txt' }}
+      - name: Set up Node.js for request metadata generation
+        if: matrix.python-version == '3.11.16'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
       - name: Verify generated Python SDK drift
         if: matrix.python-version == '3.11.16'
         run: |
-          openapi-python-client generate \
-            --path spec/openapi.json \
-            --config packages/python/openapi-python-client.json \
-            --meta none \
-            --output-path packages/python/src/plainrouter/generated \
-            --overwrite \
-            --fail-on-warning
-          git diff --exit-code -- packages/python/src/plainrouter/generated
+          scripts/generate-python.sh
+          git diff --exit-code -- packages/python/src/plainrouter/generated packages/python/src/plainrouter/_integer_fields.json
       - name: Lint
         if: matrix.python-version == '3.11.16'
         working-directory: packages/python

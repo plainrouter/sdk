@@ -24,8 +24,8 @@ module PlainRouter::OpenAPI
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :page
-    # @option opts [Integer] :account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
-    # @option opts [Integer] :platform_ad_account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.
+    # @option opts [Integer] :account_id Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+    # @option opts [Integer] :platform_ad_account_id Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.
     # @option opts [String] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :per_page Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [ActionsRulesIndex200Response]
@@ -39,8 +39,8 @@ module PlainRouter::OpenAPI
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [Integer] :page
-    # @option opts [Integer] :account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
-    # @option opts [Integer] :platform_ad_account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.
+    # @option opts [Integer] :account_id Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+    # @option opts [Integer] :platform_ad_account_id Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.
     # @option opts [String] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :per_page Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
     # @return [Array<(ActionsRulesIndex200Response, Integer, Hash)>] ActionsRulesIndex200Response data, response status code and response headers
@@ -122,7 +122,7 @@ module PlainRouter::OpenAPI
     # @param workspace [Integer] The workspace ID
     # @param action_rule [String]
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+    # @option opts [Integer] :account_id Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @return [ActionRuleDetailRead]
     def actions_rules_show(workspace, action_rule, opts = {})
       data, _status_code, _headers = actions_rules_show_with_http_info(workspace, action_rule, opts)
@@ -134,7 +134,7 @@ module PlainRouter::OpenAPI
     # @param workspace [Integer] The workspace ID
     # @param action_rule [String]
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :account_id Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
+    # @option opts [Integer] :account_id Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @return [Array<(ActionRuleDetailRead, Integer, Hash)>] ActionRuleDetailRead data, response status code and response headers
     def actions_rules_show_with_http_info(workspace, action_rule, opts = {})
       if @api_client.config.debugging

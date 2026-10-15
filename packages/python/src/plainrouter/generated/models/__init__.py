@@ -598,6 +598,8 @@ from .destination_credential_source import DestinationCredentialSource
 from .destination_notices_item import DestinationNoticesItem
 from .destination_status import DestinationStatus
 from .destination_type import DestinationType
+from .draft_batch_file_import_request import DraftBatchFileImportRequest
+from .draft_batch_mode import DraftBatchMode
 from .emq_snapshot import EmqSnapshot
 from .error_message import ErrorMessage
 from .event import Event
@@ -748,6 +750,8 @@ from .launch_creatives_index_response_200_creatives_data_item_tags_type_0 import
 from .launch_creatives_index_response_200_creatives_data_item_type import (
     LaunchCreativesIndexResponse200CreativesDataItemType,
 )
+from .launch_creatives_show_response_200 import LaunchCreativesShowResponse200
+from .launch_creatives_status_response_200 import LaunchCreativesStatusResponse200
 from .launch_intent_read import LaunchIntentRead
 from .launch_intent_read_intent import LaunchIntentReadIntent
 from .launch_intent_read_intent_actions_item import LaunchIntentReadIntentActionsItem
@@ -763,6 +767,22 @@ from .launch_plans_index_response_200_plans_next_page_arguments_type_1 import (
     LaunchPlansIndexResponse200PlansNextPageArgumentsType1,
 )
 from .launch_plans_show_response_200 import LaunchPlansShowResponse200
+from .launch_plans_store_response_201 import LaunchPlansStoreResponse201
+from .launch_plans_update_response_200 import LaunchPlansUpdateResponse200
+from .launch_plans_validate_response_200 import LaunchPlansValidateResponse200
+from .launch_policies_index_response_200 import LaunchPoliciesIndexResponse200
+from .launch_policies_index_response_200_policies import LaunchPoliciesIndexResponse200Policies
+from .launch_policies_index_response_200_policies_links_item import LaunchPoliciesIndexResponse200PoliciesLinksItem
+from .launch_policies_retire_response_200 import LaunchPoliciesRetireResponse200
+from .launch_policies_store_response_201 import LaunchPoliciesStoreResponse201
+from .launch_policy import LaunchPolicy
+from .launcher_file_import_response_200 import LauncherFileImportResponse200
+from .launcher_file_import_response_403 import LauncherFileImportResponse403
+from .launcher_file_import_response_422_type_1 import LauncherFileImportResponse422Type1
+from .launcher_file_import_response_422_type_1_error import LauncherFileImportResponse422Type1Error
+from .launcher_file_import_response_422_type_1_syntactic_row_failures_item import (
+    LauncherFileImportResponse422Type1SyntacticRowFailuresItem,
+)
 from .list_events_by_cursor_response_200 import ListEventsByCursorResponse200
 from .list_events_by_cursor_response_200_events import ListEventsByCursorResponse200Events
 from .list_events_by_cursor_response_200_events_data_item import ListEventsByCursorResponse200EventsDataItem
@@ -830,6 +850,8 @@ from .plan_execute_conflict_error_code import PlanExecuteConflictErrorCode
 from .plan_execute_rejected import PlanExecuteRejected
 from .plan_execute_rejected_error import PlanExecuteRejectedError
 from .plan_execute_rejected_error_code import PlanExecuteRejectedErrorCode
+from .plan_validate_rejected import PlanValidateRejected
+from .plan_validate_rejected_error import PlanValidateRejectedError
 from .proposal_replay_conflict import ProposalReplayConflict
 from .proposal_replay_conflict_errors import ProposalReplayConflictErrors
 from .proposal_replay_conflict_errors_idempotency_key_item import ProposalReplayConflictErrorsIdempotencyKeyItem
@@ -861,7 +883,37 @@ from .store_creative_from_url_body import StoreCreativeFromUrlBody
 from .store_creative_from_url_body_tags import StoreCreativeFromUrlBodyTags
 from .store_creative_from_url_request import StoreCreativeFromUrlRequest
 from .store_creative_request import StoreCreativeRequest
+from .store_deployment_plan_request import StoreDeploymentPlanRequest
+from .store_deployment_plan_request_ad_set_spec_type_0 import StoreDeploymentPlanRequestAdSetSpecType0
+from .store_deployment_plan_request_budget_type import StoreDeploymentPlanRequestBudgetType
+from .store_deployment_plan_request_copy import StoreDeploymentPlanRequestCopy
+from .store_deployment_plan_request_copy_cta import StoreDeploymentPlanRequestCopyCta
+from .store_deployment_plan_request_creative_overrides_item import StoreDeploymentPlanRequestCreativeOverridesItem
+from .store_deployment_plan_request_creative_overrides_item_copy import (
+    StoreDeploymentPlanRequestCreativeOverridesItemCopy,
+)
+from .store_deployment_plan_request_creative_overrides_item_copy_cta import (
+    StoreDeploymentPlanRequestCreativeOverridesItemCopyCta,
+)
+from .store_deployment_plan_request_platform import StoreDeploymentPlanRequestPlatform
+from .store_launch_policy_request import StoreLaunchPolicyRequest
+from .store_launch_policy_request_kind import StoreLaunchPolicyRequestKind
 from .traffic_class import TrafficClass
+from .update_creative_status_request import UpdateCreativeStatusRequest
+from .update_creative_status_request_status import UpdateCreativeStatusRequestStatus
+from .update_deployment_plan_request import UpdateDeploymentPlanRequest
+from .update_deployment_plan_request_ad_set_spec_type_0 import UpdateDeploymentPlanRequestAdSetSpecType0
+from .update_deployment_plan_request_budget_type import UpdateDeploymentPlanRequestBudgetType
+from .update_deployment_plan_request_copy import UpdateDeploymentPlanRequestCopy
+from .update_deployment_plan_request_copy_cta import UpdateDeploymentPlanRequestCopyCta
+from .update_deployment_plan_request_creative_overrides_item import UpdateDeploymentPlanRequestCreativeOverridesItem
+from .update_deployment_plan_request_creative_overrides_item_copy import (
+    UpdateDeploymentPlanRequestCreativeOverridesItemCopy,
+)
+from .update_deployment_plan_request_creative_overrides_item_copy_cta import (
+    UpdateDeploymentPlanRequestCreativeOverridesItemCopyCta,
+)
+from .update_deployment_plan_request_platform import UpdateDeploymentPlanRequestPlatform
 from .validate_sandbox_event_body import ValidateSandboxEventBody
 from .validate_sandbox_event_body_value_data import ValidateSandboxEventBodyValueData
 from .validate_sandbox_event_response_200 import ValidateSandboxEventResponse200
@@ -1311,6 +1363,8 @@ __all__ = (
     "DestinationNoticesItem",
     "DestinationStatus",
     "DestinationType",
+    "DraftBatchFileImportRequest",
+    "DraftBatchMode",
     "EmqSnapshot",
     "ErrorMessage",
     "Event",
@@ -1399,6 +1453,13 @@ __all__ = (
     "LaunchCreativesIndexResponse200CreativesDataItemStatus",
     "LaunchCreativesIndexResponse200CreativesDataItemTagsType0",
     "LaunchCreativesIndexResponse200CreativesDataItemType",
+    "LaunchCreativesShowResponse200",
+    "LaunchCreativesStatusResponse200",
+    "LauncherFileImportResponse200",
+    "LauncherFileImportResponse403",
+    "LauncherFileImportResponse422Type1",
+    "LauncherFileImportResponse422Type1Error",
+    "LauncherFileImportResponse422Type1SyntacticRowFailuresItem",
     "LaunchIntentRead",
     "LaunchIntentReadIntent",
     "LaunchIntentReadIntentActionsItem",
@@ -1410,6 +1471,15 @@ __all__ = (
     "LaunchPlansIndexResponse200PlansNextPageArgumentsType0",
     "LaunchPlansIndexResponse200PlansNextPageArgumentsType1",
     "LaunchPlansShowResponse200",
+    "LaunchPlansStoreResponse201",
+    "LaunchPlansUpdateResponse200",
+    "LaunchPlansValidateResponse200",
+    "LaunchPoliciesIndexResponse200",
+    "LaunchPoliciesIndexResponse200Policies",
+    "LaunchPoliciesIndexResponse200PoliciesLinksItem",
+    "LaunchPoliciesRetireResponse200",
+    "LaunchPoliciesStoreResponse201",
+    "LaunchPolicy",
     "ListEventsByCursorResponse200",
     "ListEventsByCursorResponse200Events",
     "ListEventsByCursorResponse200EventsDataItem",
@@ -1453,6 +1523,8 @@ __all__ = (
     "PlanExecuteRejected",
     "PlanExecuteRejectedError",
     "PlanExecuteRejectedErrorCode",
+    "PlanValidateRejected",
+    "PlanValidateRejectedError",
     "ProposalReplayConflict",
     "ProposalReplayConflictErrors",
     "ProposalReplayConflictErrorsIdempotencyKeyItem",
@@ -1478,7 +1550,29 @@ __all__ = (
     "StoreCreativeFromUrlBodyTags",
     "StoreCreativeFromUrlRequest",
     "StoreCreativeRequest",
+    "StoreDeploymentPlanRequest",
+    "StoreDeploymentPlanRequestAdSetSpecType0",
+    "StoreDeploymentPlanRequestBudgetType",
+    "StoreDeploymentPlanRequestCopy",
+    "StoreDeploymentPlanRequestCopyCta",
+    "StoreDeploymentPlanRequestCreativeOverridesItem",
+    "StoreDeploymentPlanRequestCreativeOverridesItemCopy",
+    "StoreDeploymentPlanRequestCreativeOverridesItemCopyCta",
+    "StoreDeploymentPlanRequestPlatform",
+    "StoreLaunchPolicyRequest",
+    "StoreLaunchPolicyRequestKind",
     "TrafficClass",
+    "UpdateCreativeStatusRequest",
+    "UpdateCreativeStatusRequestStatus",
+    "UpdateDeploymentPlanRequest",
+    "UpdateDeploymentPlanRequestAdSetSpecType0",
+    "UpdateDeploymentPlanRequestBudgetType",
+    "UpdateDeploymentPlanRequestCopy",
+    "UpdateDeploymentPlanRequestCopyCta",
+    "UpdateDeploymentPlanRequestCreativeOverridesItem",
+    "UpdateDeploymentPlanRequestCreativeOverridesItemCopy",
+    "UpdateDeploymentPlanRequestCreativeOverridesItemCopyCta",
+    "UpdateDeploymentPlanRequestPlatform",
     "ValidateSandboxEventBody",
     "ValidateSandboxEventBodyValueData",
     "ValidateSandboxEventResponse200",

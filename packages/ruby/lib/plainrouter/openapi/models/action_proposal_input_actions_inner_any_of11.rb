@@ -73,7 +73,7 @@ module PlainRouter::OpenAPI
       {
         :'type' => :'String',
         :'target_entity' => :'ActionProposalInputActionsInnerAnyOf4TargetEntity',
-        :'params' => :'ActionProposalInputActionsInnerAnyOf11Params',
+        :'params' => :'ActionProposalInputActionsInnerAnyOfParams',
         :'rationale' => :'String',
         :'idempotency_key' => :'String'
       }

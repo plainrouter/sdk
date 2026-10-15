@@ -8,6 +8,7 @@ from attrs import define, evolve
 
 from .generated import AuthenticatedClient as GeneratedAuthenticatedClient
 from .generated import Client as GeneratedClient
+from .integer_fields import check_integer_fields, check_integer_fields_async
 
 
 def _reject_redirect(response: httpx.Response) -> None:
@@ -40,12 +41,16 @@ def _injected_headers(client: httpx.Client | httpx.AsyncClient) -> None:
 
 
 def _sync_client(client: httpx.Client) -> httpx.Client:
+    if check_integer_fields not in client.event_hooks["request"]:
+        client.event_hooks["request"].append(check_integer_fields)
     if _reject_redirect not in client.event_hooks["response"]:
         client.event_hooks["response"].insert(0, _reject_redirect)
     return client
 
 
 def _async_client(client: httpx.AsyncClient) -> httpx.AsyncClient:
+    if check_integer_fields_async not in client.event_hooks["request"]:
+        client.event_hooks["request"].append(check_integer_fields_async)
     if _reject_redirect_async not in client.event_hooks["response"]:
         client.event_hooks["response"].insert(0, _reject_redirect_async)
     return client

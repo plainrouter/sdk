@@ -14,13 +14,38 @@ require 'date'
 require 'time'
 
 module PlainRouter::OpenAPI
-  class ActionProposalInputActionsInnerAnyOf11Params < ApiModelBase
-    attr_accessor :new_daily_budget_minor
+  class LauncherFileImport403Response < ApiModelBase
+    attr_accessor :error
+
+    attr_accessor :error_description
+
+    class EnumAttributeValidator
+      attr_reader :datatype
+      attr_reader :allowable_values
+
+      def initialize(datatype, allowable_values)
+        @allowable_values = allowable_values.map do |value|
+          case datatype.to_s
+          when /Integer/i
+            value.to_i
+          when /Float/i
+            value.to_f
+          else
+            value
+          end
+        end
+      end
+
+      def valid?(value)
+        !value || allowable_values.include?(value)
+      end
+    end
 
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
-        :'new_daily_budget_minor' => :'new_daily_budget_minor'
+        :'error' => :'error',
+        :'error_description' => :'error_description'
       }
     end
 
@@ -37,7 +62,8 @@ module PlainRouter::OpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
-        :'new_daily_budget_minor' => :'Integer'
+        :'error' => :'String',
+        :'error_description' => :'String'
       }
     end
 
@@ -51,22 +77,28 @@ module PlainRouter::OpenAPI
     # @param [Hash] attributes Model attributes in the form of hash
     def initialize(attributes = {})
       if (!attributes.is_a?(Hash))
-        fail ArgumentError, "The input argument (attributes) must be a hash in `PlainRouter::OpenAPI::ActionProposalInputActionsInnerAnyOf11Params` initialize method"
+        fail ArgumentError, "The input argument (attributes) must be a hash in `PlainRouter::OpenAPI::LauncherFileImport403Response` initialize method"
       end
 
       # check to see if the attribute exists and convert string to symbol for hash key
       acceptable_attribute_map = self.class.acceptable_attribute_map
       attributes = attributes.each_with_object({}) { |(k, v), h|
         if (!acceptable_attribute_map.key?(k.to_sym))
-          fail ArgumentError, "`#{k}` is not a valid attribute in `PlainRouter::OpenAPI::ActionProposalInputActionsInnerAnyOf11Params`. Please check the name to make sure it's valid. List of attributes: " + acceptable_attribute_map.keys.inspect
+          fail ArgumentError, "`#{k}` is not a valid attribute in `PlainRouter::OpenAPI::LauncherFileImport403Response`. Please check the name to make sure it's valid. List of attributes: " + acceptable_attribute_map.keys.inspect
         end
         h[k.to_sym] = v
       }
 
-      if attributes.key?(:'new_daily_budget_minor')
-        self.new_daily_budget_minor = attributes[:'new_daily_budget_minor']
+      if attributes.key?(:'error')
+        self.error = attributes[:'error']
       else
-        self.new_daily_budget_minor = nil
+        self.error = nil
+      end
+
+      if attributes.key?(:'error_description')
+        self.error_description = attributes[:'error_description']
+      else
+        self.error_description = nil
       end
     end
 
@@ -75,12 +107,12 @@ module PlainRouter::OpenAPI
     def list_invalid_properties
       warn '[DEPRECATED] the `list_invalid_properties` method is obsolete'
       invalid_properties = Array.new
-      if @new_daily_budget_minor.nil?
-        invalid_properties.push('invalid value for "new_daily_budget_minor", new_daily_budget_minor cannot be nil.')
+      if @error.nil?
+        invalid_properties.push('invalid value for "error", error cannot be nil.')
       end
 
-      if @new_daily_budget_minor < 1
-        invalid_properties.push('invalid value for "new_daily_budget_minor", must be greater than or equal to 1.')
+      if @error_description.nil?
+        invalid_properties.push('invalid value for "error_description", error_description cannot be nil.')
       end
 
       invalid_properties
@@ -90,23 +122,33 @@ module PlainRouter::OpenAPI
     # @return true if the model is valid
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
-      return false if @new_daily_budget_minor.nil?
-      return false if @new_daily_budget_minor < 1
+      return false if @error.nil?
+      error_validator = EnumAttributeValidator.new('String', ["insufficient_scope"])
+      return false unless error_validator.valid?(@error)
+      return false if @error_description.nil?
+      error_description_validator = EnumAttributeValidator.new('String', ["File import requires at least the workspace write execution tier."])
+      return false unless error_description_validator.valid?(@error_description)
       true
     end
 
-    # Custom attribute writer method with validation
-    # @param [Object] new_daily_budget_minor Value to be assigned
-    def new_daily_budget_minor=(new_daily_budget_minor)
-      if new_daily_budget_minor.nil?
-        fail ArgumentError, 'new_daily_budget_minor cannot be nil'
+    # Custom attribute writer method checking allowed values (enum).
+    # @param [Object] error Object to be assigned
+    def error=(error)
+      validator = EnumAttributeValidator.new('String', ["insufficient_scope"])
+      unless validator.valid?(error)
+        fail ArgumentError, "invalid value for \"error\", must be one of #{validator.allowable_values}."
       end
+      @error = error
+    end
 
-      if new_daily_budget_minor < 1
-        fail ArgumentError, 'invalid value for "new_daily_budget_minor", must be greater than or equal to 1.'
+    # Custom attribute writer method checking allowed values (enum).
+    # @param [Object] error_description Object to be assigned
+    def error_description=(error_description)
+      validator = EnumAttributeValidator.new('String', ["File import requires at least the workspace write execution tier."])
+      unless validator.valid?(error_description)
+        fail ArgumentError, "invalid value for \"error_description\", must be one of #{validator.allowable_values}."
       end
-
-      @new_daily_budget_minor = new_daily_budget_minor
+      @error_description = error_description
     end
 
     # Checks equality by comparing each attribute.
@@ -114,7 +156,8 @@ module PlainRouter::OpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
-          new_daily_budget_minor == o.new_daily_budget_minor
+          error == o.error &&
+          error_description == o.error_description
     end
 
     # @see the `==` method
@@ -126,7 +169,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [new_daily_budget_minor].hash
+      [error, error_description].hash
     end
 
     # Builds the object from hash

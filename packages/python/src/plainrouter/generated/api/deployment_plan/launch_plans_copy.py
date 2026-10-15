@@ -12,6 +12,7 @@ from ...models.plan_copy_forbidden import PlanCopyForbidden
 from ...models.plan_copy_not_found import PlanCopyNotFound
 from ...models.plan_copy_read import PlanCopyRead
 from ...models.plan_copy_rejected import PlanCopyRejected
+from ...models.validation_error import ValidationError
 from ...models.workspace_lock_timeout import WorkspaceLockTimeout
 from ...types import Response
 
@@ -42,6 +43,7 @@ def _parse_response(
     | PlanCopyForbidden
     | PlanCopyRead
     | PlanCopyRejected
+    | ValidationError
     | WorkspaceLockTimeout
     | None
 ):
@@ -103,7 +105,23 @@ def _parse_response(
         return response_413
 
     if response.status_code == 422:
-        response_422 = PlanCopyRejected.from_dict(response.json())
+
+        def _parse_response_422(data: object) -> PlanCopyRejected | ValidationError:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                response_422_type_0 = PlanCopyRejected.from_dict(data)
+
+                return response_422_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            if not isinstance(data, dict):
+                raise TypeError()
+            response_422_type_1 = ValidationError.from_dict(data)
+
+            return response_422_type_1
+
+        response_422 = _parse_response_422(response.json())
 
         return response_422
 
@@ -138,6 +156,7 @@ def _build_response(
     | PlanCopyForbidden
     | PlanCopyRead
     | PlanCopyRejected
+    | ValidationError
     | WorkspaceLockTimeout
 ]:
     return Response(
@@ -161,6 +180,7 @@ def sync_detailed(
     | PlanCopyForbidden
     | PlanCopyRead
     | PlanCopyRejected
+    | ValidationError
     | WorkspaceLockTimeout
 ]:
     """Copy a failed plan to a new draft
@@ -177,7 +197,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiRouteNotFound | PlanCopyNotFound | ErrorMessage | ErrorMessage | PlanCopyForbidden | PlanCopyRead | PlanCopyRejected | WorkspaceLockTimeout]
+        Response[ApiRouteNotFound | PlanCopyNotFound | ErrorMessage | ErrorMessage | PlanCopyForbidden | PlanCopyRead | PlanCopyRejected | ValidationError | WorkspaceLockTimeout]
     """
 
     kwargs = _get_kwargs(
@@ -205,6 +225,7 @@ def sync(
     | PlanCopyForbidden
     | PlanCopyRead
     | PlanCopyRejected
+    | ValidationError
     | WorkspaceLockTimeout
     | None
 ):
@@ -222,7 +243,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiRouteNotFound | PlanCopyNotFound | ErrorMessage | ErrorMessage | PlanCopyForbidden | PlanCopyRead | PlanCopyRejected | WorkspaceLockTimeout
+        ApiRouteNotFound | PlanCopyNotFound | ErrorMessage | ErrorMessage | PlanCopyForbidden | PlanCopyRead | PlanCopyRejected | ValidationError | WorkspaceLockTimeout
     """
 
     return sync_detailed(
@@ -245,6 +266,7 @@ async def asyncio_detailed(
     | PlanCopyForbidden
     | PlanCopyRead
     | PlanCopyRejected
+    | ValidationError
     | WorkspaceLockTimeout
 ]:
     """Copy a failed plan to a new draft
@@ -261,7 +283,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiRouteNotFound | PlanCopyNotFound | ErrorMessage | ErrorMessage | PlanCopyForbidden | PlanCopyRead | PlanCopyRejected | WorkspaceLockTimeout]
+        Response[ApiRouteNotFound | PlanCopyNotFound | ErrorMessage | ErrorMessage | PlanCopyForbidden | PlanCopyRead | PlanCopyRejected | ValidationError | WorkspaceLockTimeout]
     """
 
     kwargs = _get_kwargs(
@@ -287,6 +309,7 @@ async def asyncio(
     | PlanCopyForbidden
     | PlanCopyRead
     | PlanCopyRejected
+    | ValidationError
     | WorkspaceLockTimeout
     | None
 ):
@@ -304,7 +327,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiRouteNotFound | PlanCopyNotFound | ErrorMessage | ErrorMessage | PlanCopyForbidden | PlanCopyRead | PlanCopyRejected | WorkspaceLockTimeout
+        ApiRouteNotFound | PlanCopyNotFound | ErrorMessage | ErrorMessage | PlanCopyForbidden | PlanCopyRead | PlanCopyRejected | ValidationError | WorkspaceLockTimeout
     """
 
     return (

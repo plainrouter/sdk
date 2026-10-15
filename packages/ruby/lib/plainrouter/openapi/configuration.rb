@@ -354,6 +354,12 @@ module PlainRouter::OpenAPI
 
     def operation_server_settings
       {
+        "DraftBatchFileImportApi.launcher_file_import": [
+          {
+          url: "https://plainrouter.com",
+          description: "No description provided",
+          }
+        ],
       }
     end
 
