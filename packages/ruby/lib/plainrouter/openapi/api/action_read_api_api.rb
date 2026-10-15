@@ -54,19 +54,19 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action_batch.nil?
         fail ArgumentError, "Missing the required parameter 'action_batch' when calling ActionReadApiApi.actions_api_batch"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && opts[:'cursor'] < 0
+      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && !opts[:'cursor'].is_a?(String) && opts[:'cursor'] < 0
         fail ArgumentError, 'invalid value for "opts[:"cursor"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 0.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 100
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] > 100
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_batch, must be smaller than or equal to 100.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] < 1
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 1.'
       end
 
@@ -144,7 +144,7 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action.nil?
         fail ArgumentError, "Missing the required parameter 'action' when calling ActionReadApiApi.actions_api_decision_receipt"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_decision_receipt, must be greater than or equal to 1.'
       end
 
@@ -194,10 +194,10 @@ module PlainRouter::OpenAPI
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [String] :status
-    # @option opts [Integer] :page
     # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
+    # @option opts [Integer] :page Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
     # @return [ActionListRead]
     def actions_api_index(workspace, opts = {})
       data, _status_code, _headers = actions_api_index_with_http_info(workspace, opts)
@@ -209,10 +209,10 @@ module PlainRouter::OpenAPI
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
     # @option opts [String] :status
-    # @option opts [Integer] :page
     # @option opts [Integer] :account_id Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
     # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :limit Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
+    # @option opts [Integer] :page Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
     # @return [Array<(ActionListRead, Integer, Hash)>] ActionListRead data, response status code and response headers
     def actions_api_index_with_http_info(workspace, opts = {})
       if @api_client.config.debugging
@@ -226,24 +226,28 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && opts[:'status'] && !allowable_values.include?(opts[:'status'])
         fail ArgumentError, "invalid value for \"status\", must be one of #{allowable_values}"
       end
-      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] < 1
-        fail ArgumentError, 'invalid value for "opts[:"page"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
-      end
-
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && opts[:'cursor'] < 0
+      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && !opts[:'cursor'].is_a?(String) && opts[:'cursor'] < 0
         fail ArgumentError, 'invalid value for "opts[:"cursor"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 0.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 100
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] > 100
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_index, must be smaller than or equal to 100.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] < 1
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && !opts[:'page'].is_a?(String) && opts[:'page'] > 10000000000000000
+        fail ArgumentError, 'invalid value for "opts[:"page"]" when calling ActionReadApiApi.actions_api_index, must be smaller than or equal to 10000000000000000.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && !opts[:'page'].is_a?(String) && opts[:'page'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"page"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
       end
 
       # resource path
@@ -252,10 +256,10 @@ module PlainRouter::OpenAPI
       # query parameters
       query_params = opts[:query_params] || {}
       query_params[:'status'] = opts[:'status'] if !opts[:'status'].nil?
-      query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
       query_params[:'account_id'] = opts[:'account_id'] if !opts[:'account_id'].nil?
       query_params[:'cursor'] = opts[:'cursor'] if !opts[:'cursor'].nil?
       query_params[:'limit'] = opts[:'limit'] if !opts[:'limit'].nil?
+      query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}
@@ -316,7 +320,7 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && workspace.nil?
         fail ArgumentError, "Missing the required parameter 'workspace' when calling ActionReadApiApi.actions_api_policy"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_policy, must be greater than or equal to 1.'
       end
 
@@ -392,7 +396,7 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action.nil?
         fail ArgumentError, "Missing the required parameter 'action' when calling ActionReadApiApi.actions_api_show"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_show, must be greater than or equal to 1.'
       end
 

@@ -76,15 +76,15 @@ module PlainRouter::OpenAPI
         fail ArgumentError, 'invalid value for "opts[:"adset_id"]" when calling MetaInventoryExposureApi.get_account_inventory, the character length must be smaller than or equal to 128.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'after_id'].nil? && opts[:'after_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'after_id'].nil? && !opts[:'after_id'].is_a?(String) && opts[:'after_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"after_id"]" when calling MetaInventoryExposureApi.get_account_inventory, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 200
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] > 200
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling MetaInventoryExposureApi.get_account_inventory, must be smaller than or equal to 200.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] < 1
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling MetaInventoryExposureApi.get_account_inventory, must be greater than or equal to 1.'
       end
 
@@ -191,11 +191,11 @@ module PlainRouter::OpenAPI
         fail ArgumentError, 'invalid value for "opts[:"ad_id"]" when calling MetaInventoryExposureApi.get_inventory_metrics, the character length must be smaller than or equal to 128.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 100
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] > 100
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling MetaInventoryExposureApi.get_inventory_metrics, must be smaller than or equal to 100.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] < 1
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling MetaInventoryExposureApi.get_inventory_metrics, must be greater than or equal to 1.'
       end
 

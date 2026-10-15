@@ -42,10 +42,10 @@ export const integerFields = {
     "operationId": "actions.api.index",
     "body": [],
     "query": [
-      "page",
       "account_id",
       "cursor",
-      "limit"
+      "limit",
+      "page"
     ],
     "path": [
       "workspace"
@@ -135,10 +135,10 @@ export const integerFields = {
     "operationId": "actions.rules.index",
     "body": [],
     "query": [
-      "page",
       "account_id",
       "platform_ad_account_id",
-      "per_page"
+      "per_page",
+      "page"
     ],
     "path": [
       "workspace"
@@ -201,8 +201,8 @@ export const integerFields = {
     "operationId": "actions.tests.api.index",
     "body": [],
     "query": [
-      "page",
-      "per_page"
+      "per_page",
+      "page"
     ],
     "path": [
       "workspace"
@@ -259,9 +259,9 @@ export const integerFields = {
     "operationId": "launch.creatives.index",
     "body": [],
     "query": [
-      "page",
       "cursor",
-      "per_page"
+      "per_page",
+      "page"
     ],
     "path": [
       "workspace"
@@ -303,9 +303,9 @@ export const integerFields = {
     "operationId": "launch.plans.index",
     "body": [],
     "query": [
-      "page",
       "cursor",
-      "per_page"
+      "per_page",
+      "page"
     ],
     "path": [
       "workspace"
@@ -443,8 +443,8 @@ export const integerFields = {
     "operationId": "launch.policies.index",
     "body": [],
     "query": [
-      "page",
-      "per_page"
+      "per_page",
+      "page"
     ],
     "path": [
       "workspace"

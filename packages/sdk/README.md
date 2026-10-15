@@ -28,3 +28,5 @@ const result = await launchPlansCopy({
 ```
 
 `configurePlainrouter()` defaults to `Accept: application/json`. Override it with `headers: { Accept: "..." }` in configuration or per call. API redirects use manual handling and throw `ApiRedirectError`, carrying `status`, `headers`, and `response`, regardless of `throwOnError` or result style. Browsers can hide cross-origin redirect status and Location (opaque redirects); these fail without returning data. These defaults apply to the configured SDK client. Independently constructed generated clients require their own transport policy.
+
+The six paginated list operations accept `page` values from 1 through `10^16`. JavaScript cannot exactly represent every integer above Number.MAX_SAFE_INTEGER, and the validation schemas refuse values above it. The request functions send any number they are given; the server validates the page bounds.

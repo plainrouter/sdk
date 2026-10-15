@@ -2,6 +2,8 @@
 
 ## 0.4.0 (unreleased)
 
+- Tighten page validation. On the actions, action-rules, tests, creatives, plans and policies lists, page is an integer from 1 to 10^16. Unset and language-null page values are omitted from requests, preserving the server default page 1. Integer strings such as "2" are accepted. Values outside the bounds are refused by the SDK before sending; the curated SDK also refuses booleans before sending. Other invalid values are refused by the SDK before sending or by the server with 422 on page.
+
 - Refuse unknown keys, including case variants, on closed request objects before sending; errors name the key and object. Closed objects and their allowed keys are derived from the vendored contract, including model construction, mapping conversion, and raw request bodies.
 - Honor an explicit custom base URL for the newly generated file-import operation; retain its contract-defined host when using the default configuration.
 - Expose the regenerated Launch policy index, create and retire operations and draft-batch file import through the curated client, preserving its shared header, Accept and redirect policy.

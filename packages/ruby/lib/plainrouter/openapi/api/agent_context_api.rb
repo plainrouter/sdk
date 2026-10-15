@@ -40,11 +40,11 @@ module PlainRouter::OpenAPI
       if @api_client.config.debugging
         @api_client.config.logger.debug 'Calling API: AgentContextApi.agent_context ...'
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling AgentContextApi.agent_context, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'workspace_id'].nil? && opts[:'workspace_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'workspace_id'].nil? && !opts[:'workspace_id'].is_a?(String) && opts[:'workspace_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"workspace_id"]" when calling AgentContextApi.agent_context, must be greater than or equal to 1.'
       end
 

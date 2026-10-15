@@ -2160,7 +2160,6 @@ export type ActionsApiIndexData = {
     };
     query?: {
         status?: 'pending' | 'approved_without_execution' | 'rejected' | 'executing' | 'executed_pending_verification' | 'compensating' | 'measuring' | 'verified' | 'failed' | 'execution_uncertain' | 'rolled_back' | 'blocked';
-        page?: number;
         /**
          * Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
          */
@@ -2173,6 +2172,10 @@ export type ActionsApiIndexData = {
          * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
          */
         limit?: number;
+        /**
+         * Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
+         */
+        page?: number;
     };
     url: '/agent/workspaces/{workspace}/actions';
 };
@@ -2481,7 +2484,6 @@ export type ActionsRulesIndexData = {
         workspace: number;
     };
     query?: {
-        page?: number;
         /**
          * Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.
          */
@@ -2498,6 +2500,10 @@ export type ActionsRulesIndexData = {
          * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
          */
         per_page?: number;
+        /**
+         * Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
+         */
+        page?: number;
     };
     url: '/agent/workspaces/{workspace}/action-rules';
 };
@@ -2843,8 +2849,11 @@ export type ActionsTestsApiIndexData = {
         workspace: number;
     };
     query?: {
-        page?: number;
         per_page?: number;
+        /**
+         * Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
+         */
+        page?: number;
     };
     url: '/agent/workspaces/{workspace}/tests';
 };
@@ -3124,7 +3133,6 @@ export type LaunchCreativesIndexData = {
         workspace: number;
     };
     query?: {
-        page?: number;
         /**
          * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
          */
@@ -3133,6 +3141,10 @@ export type LaunchCreativesIndexData = {
          * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
          */
         per_page?: number;
+        /**
+         * Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
+         */
+        page?: number;
     };
     url: '/workspaces/{workspace}/admin/creatives';
 };
@@ -3425,7 +3437,6 @@ export type LaunchPlansIndexData = {
         workspace: number;
     };
     query?: {
-        page?: number;
         /**
          * Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
          */
@@ -3434,6 +3445,10 @@ export type LaunchPlansIndexData = {
          * Maximum complete rows; the byte budget may return fewer. Defaults to 25.
          */
         per_page?: number;
+        /**
+         * Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
+         */
+        page?: number;
     };
     url: '/workspaces/{workspace}/admin/plans';
 };
@@ -4291,8 +4306,11 @@ export type LaunchPoliciesIndexData = {
         workspace: number;
     };
     query?: {
-        page?: number;
         per_page?: number;
+        /**
+         * Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
+         */
+        page?: number;
     };
     url: '/workspaces/{workspace}/admin/policies';
 };

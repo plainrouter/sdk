@@ -16,15 +16,15 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     workspace: int,
     *,
-    page: int | Unset = UNSET,
     per_page: int | Unset = UNSET,
+    page: int | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
 
-    params["page"] = page
-
     params["per_page"] = per_page
+
+    params["page"] = page
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -83,8 +83,8 @@ def sync_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient | Client,
-    page: int | Unset = UNSET,
     per_page: int | Unset = UNSET,
+    page: int | Unset = UNSET,
 ) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPoliciesIndexResponse200 | ValidationError]:
     """List Launch policies
 
@@ -93,8 +93,8 @@ def sync_detailed(
 
     Args:
         workspace (int):
-        page (int | Unset):
         per_page (int | Unset):
+        page (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -106,8 +106,8 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         workspace=workspace,
-        page=page,
         per_page=per_page,
+        page=page,
     )
 
     response = client.get_httpx_client().request(
@@ -121,8 +121,8 @@ def sync(
     workspace: int,
     *,
     client: AuthenticatedClient | Client,
-    page: int | Unset = UNSET,
     per_page: int | Unset = UNSET,
+    page: int | Unset = UNSET,
 ) -> ApiRouteNotFound | ErrorMessage | LaunchPoliciesIndexResponse200 | ValidationError | None:
     """List Launch policies
 
@@ -131,8 +131,8 @@ def sync(
 
     Args:
         workspace (int):
-        page (int | Unset):
         per_page (int | Unset):
+        page (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -145,8 +145,8 @@ def sync(
     return sync_detailed(
         workspace=workspace,
         client=client,
-        page=page,
         per_page=per_page,
+        page=page,
     ).parsed
 
 
@@ -154,8 +154,8 @@ async def asyncio_detailed(
     workspace: int,
     *,
     client: AuthenticatedClient | Client,
-    page: int | Unset = UNSET,
     per_page: int | Unset = UNSET,
+    page: int | Unset = UNSET,
 ) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPoliciesIndexResponse200 | ValidationError]:
     """List Launch policies
 
@@ -164,8 +164,8 @@ async def asyncio_detailed(
 
     Args:
         workspace (int):
-        page (int | Unset):
         per_page (int | Unset):
+        page (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -177,8 +177,8 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         workspace=workspace,
-        page=page,
         per_page=per_page,
+        page=page,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -190,8 +190,8 @@ async def asyncio(
     workspace: int,
     *,
     client: AuthenticatedClient | Client,
-    page: int | Unset = UNSET,
     per_page: int | Unset = UNSET,
+    page: int | Unset = UNSET,
 ) -> ApiRouteNotFound | ErrorMessage | LaunchPoliciesIndexResponse200 | ValidationError | None:
     """List Launch policies
 
@@ -200,8 +200,8 @@ async def asyncio(
 
     Args:
         workspace (int):
-        page (int | Unset):
         per_page (int | Unset):
+        page (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -215,7 +215,7 @@ async def asyncio(
         await asyncio_detailed(
             workspace=workspace,
             client=client,
-            page=page,
             per_page=per_page,
+            page=page,
         )
     ).parsed

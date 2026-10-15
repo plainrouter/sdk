@@ -9,6 +9,7 @@ import pytest
 
 from plainrouter import Client, create_client, list_events
 from plainrouter.generated.api.action_proposal_api import actions_api_propose
+from plainrouter.generated.api.creative import launch_creatives_index
 from plainrouter.generated.api.draft_batch_file_import import launcher_file_import
 from plainrouter.generated.models import (
     ActionProposalInput,
@@ -104,6 +105,10 @@ async def test_async_client_injects_signal_tracker_bearer_token() -> None:
         await actions_api_propose.asyncio_detailed(1, client=client, body=proposal(True))
     with pytest.raises(TypeError, match="workspace"):
         actions_api_propose.sync_detailed(True, client=client, body=proposal(1))
+    with pytest.raises(TypeError, match="page"):
+        launch_creatives_index.sync_detailed(1, client=client, page=True)
+    with pytest.raises(TypeError, match="page"):
+        await launch_creatives_index.asyncio_detailed(1, client=client, page=True)
     with pytest.raises(TypeError, match="account_id"):
         launcher_file_import.sync_detailed(client=client, body=import_body(True))
     with pytest.raises(TypeError, match="account_id"):
