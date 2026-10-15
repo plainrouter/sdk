@@ -3,12 +3,17 @@
 require "uri"
 require "date"
 require "json"
+require "thread"
 
 module PlainRouter
   # Compact entry point for the Plainrouter API.
   class Client
     INTEGER_INPUT_FIELDS = JSON.parse(File.read(File.join(__dir__, "integer_input_fields.json")))
+    INTEGER_INPUT_GUARD_CACHE = {}
+    INTEGER_INPUT_GUARD_CACHE_LOCK = Mutex.new
     private_constant :INTEGER_INPUT_FIELDS
+    private_constant :INTEGER_INPUT_GUARD_CACHE
+    private_constant :INTEGER_INPUT_GUARD_CACHE_LOCK
 
     module EventsValidation
       # Keep this literal identical to app/Domains/Signals/Data/ConsentDecision.php::CAPTURED_AT_PATTERN.
@@ -360,17 +365,25 @@ module PlainRouter
     def install_integer_input_guards(api_group)
       return if api_group.instance_variable_defined?(:@plainrouter_integer_input_guards)
 
+      guard_module = INTEGER_INPUT_GUARD_CACHE_LOCK.synchronize do
+        INTEGER_INPUT_GUARD_CACHE[api_group.class] ||= build_integer_input_guard_module(api_group.class)
+      end
+      api_group.singleton_class.prepend(guard_module)
+      api_group.instance_variable_set(:@plainrouter_integer_input_guards, true)
+    end
+
+    def build_integer_input_guard_module(api_class)
       operation_entries = INTEGER_INPUT_FIELDS.each_with_object({}) do |(method_path, metadata), entries|
         entries[ruby_operation_name(metadata.fetch("operationId"))] = method_path
       end
       guard_module = Module.new
-      api_group.class.instance_methods(false).grep(/_with_http_info\z/).each do |http_info_method|
+      api_class.instance_methods(false).grep(/_with_http_info\z/).each do |http_info_method|
         operation_method = http_info_method.to_s.delete_suffix("_with_http_info")
         method_path = operation_entries[operation_method]
         next unless method_path
 
         [operation_method.to_sym, http_info_method].each do |method_name|
-          method = api_group.class.instance_method(method_name)
+          method = api_class.instance_method(method_name)
           signature = ruby_method_signature(method)
           argument_names = method.parameters.map { |_kind, name| name.to_s }
           argument_values = argument_names.join(", ")
@@ -386,13 +399,12 @@ module PlainRouter
           guard_module.module_eval(source, __FILE__, __LINE__)
         end
       end
-      api_group.singleton_class.prepend(guard_module)
-      api_group.instance_variable_set(:@plainrouter_integer_input_guards, true)
+      guard_module
     end
 
     def ruby_method_signature(method)
       source_path, line_number = method.source_location
-      definition = File.foreach(source_path).drop(line_number - 1).first
+      definition = File.foreach(source_path).lazy.drop(line_number - 1).first
       match = definition && /\A\s*def\s+#{Regexp.escape(method.name.to_s)}\((.*)\)\s*\z/.match(definition)
       return match[1] if match
 
