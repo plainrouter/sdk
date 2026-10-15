@@ -10,3 +10,4 @@ trap 'rm -rf "$WORK"' EXIT
 diff -ru "$ROOT/packages/ruby/lib/plainrouter/openapi.rb" "$WORK/lib/plainrouter/openapi.rb"
 diff -ru "$ROOT/packages/ruby/lib/plainrouter/openapi" "$WORK/lib/plainrouter/openapi"
 diff -u "$ROOT/packages/ruby/lib/plainrouter/integer_input_fields.json" "$WORK/lib/plainrouter/integer_input_fields.json"
+diff -u "$ROOT/packages/ruby/lib/plainrouter/closed_input_objects.json" "$WORK/lib/plainrouter/closed_input_objects.json"

@@ -106,7 +106,7 @@ jobs:
         if: matrix.python-version == '3.11.16'
         run: |
           scripts/generate-python.sh
-          git diff --exit-code -- packages/python/src/plainrouter/generated packages/python/src/plainrouter/_integer_fields.json
+          git diff --exit-code -- packages/python/src/plainrouter/generated packages/python/src/plainrouter/_integer_fields.json packages/python/src/plainrouter/_closed_objects.json packages/python/src/plainrouter/_closed_request_models.json
       - name: Lint
         if: matrix.python-version == '3.11.16'
         working-directory: packages/python

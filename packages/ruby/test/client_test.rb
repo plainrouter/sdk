@@ -79,6 +79,147 @@ class PlainRouterClientTest < Minitest::Test
     assert_equal "halted", batch.batch_status
     assert_equal "halted", action.batch_status
     assert_raises(ArgumentError) { batch.status = "unknown_status" }
+    verify_closed_proposal_objects_refuse_unknown_keys_across_ruby_input_paths
+  end
+
+  def verify_closed_proposal_objects_refuse_unknown_keys_across_ruby_input_paths
+    openapi = PlainRouter::OpenAPI
+    params_cases = [
+      [
+        openapi::ActionProposalInputActionsInnerAnyOfParams,
+        { "new_daily_budget_minor" => 12_000 },
+        "New_daily_budget_minor",
+        "increase_budget"
+      ],
+      [
+        openapi::ActionProposalInputActionsInnerAnyOf12Params,
+        { "status" => "active" },
+        "Status",
+        "set_status"
+      ],
+      [
+        openapi::ActionProposalInputActionsInnerAnyOf13Params,
+        { "asset_id" => "image:asset-123", "status" => "paused" },
+        "Asset_id",
+        "duplicate_ad_with_creative"
+      ]
+    ]
+
+    params_cases.each do |model, documented_attributes, case_variant, action_type|
+      expected_attributes = documented_attributes.transform_keys(&:to_sym)
+      assert_equal expected_attributes, model.new(documented_attributes).to_hash
+      assert_equal expected_attributes, model.build_from_hash(documented_attributes).to_hash
+
+      documented_body = proposal_body_with_action(action_type, documented_attributes)
+      typed_body = symbolize_request_body(documented_body)
+      [openapi::ActionProposalInput.new(typed_body), openapi::ActionProposalInput.build_from_hash(typed_body)].each do |proposal|
+        assert_equal documented_attributes, JSON.parse(proposal.to_hash.to_json).dig("actions", 0, "params")
+      end
+
+      sent_body = nil
+      stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+        stub.post("/api/v1/agent/workspaces/1/actions") do |environment|
+          sent_body = JSON.parse(environment.body)
+          [200, { "Content-Type" => "application/json" }, "{}"]
+        end
+      end
+      stubbed_client(stubs).actions.actions_api_propose(1, documented_body, { debug_return_type: "Object" })
+      assert_equal documented_attributes, sent_body.dig("actions", 0, "params")
+      stubs.verify_stubbed_calls
+
+      ["sdk_unknown_key", case_variant].each do |unknown_key|
+        [
+          -> { model.new(documented_attributes.merge(unknown_key => true)) },
+          -> { model.build_from_hash(documented_attributes.merge(unknown_key => true)) }
+        ].each do |build_model|
+          error = assert_raises(ArgumentError, &build_model)
+          assert_includes error.message, unknown_key
+          assert_includes error.message, model.name.split("::").last
+        end
+
+        request_body = proposal_body_with_action(action_type, documented_attributes.merge(unknown_key => true))
+        error = assert_raises(ArgumentError) do
+          openapi::ActionProposalInput.new(request_body)
+        end
+        assert_includes error.message, unknown_key
+        assert_includes error.message, "ActionProposalInput"
+
+        error = assert_raises(ArgumentError) do
+          stubbed_client(Faraday::Adapter::Test::Stubs.new).actions.actions_api_propose(
+            1,
+            request_body,
+            { debug_return_type: "Object" }
+          )
+        end
+        assert_includes error.message, unknown_key
+        assert_includes error.message, "ActionProposalInput"
+
+        error = assert_raises(ArgumentError) do
+          openapi::ActionProposalInput.build_from_hash(request_body)
+        end
+        assert_includes error.message, unknown_key
+        assert_includes error.message, "ActionProposalInput"
+
+        error = assert_raises(ArgumentError) do
+          stubbed_client(Faraday::Adapter::Test::Stubs.new).actions.api_client.call_api(
+            :POST,
+            "/api/v1/agent/workspaces/1/actions",
+            { header_params: {}, body: request_body }
+          )
+        end
+        assert_includes error.message, unknown_key
+        assert_includes error.message, "ActionProposalInput"
+      end
+    end
+
+    evidence_model = openapi::ActionProposalInputEvidenceInner
+    documented_evidence = { "source_tool" => "get_account_state", "fields_used" => ["spend"] }
+    expected_evidence = documented_evidence.transform_keys(&:to_sym)
+    assert_equal expected_evidence, evidence_model.new(documented_evidence).to_hash
+    assert_equal expected_evidence, evidence_model.build_from_hash(documented_evidence).to_hash
+
+    ["sdk_unknown_key", "Fields_used"].each do |unknown_key|
+      [
+        -> { evidence_model.new(documented_evidence.merge(unknown_key => true)) },
+        -> { evidence_model.build_from_hash(documented_evidence.merge(unknown_key => true)) }
+      ].each do |build_model|
+        error = assert_raises(ArgumentError, &build_model)
+        assert_includes error.message, unknown_key
+        assert_includes error.message, evidence_model.name.split("::").last
+      end
+
+      request_body = proposal_body_with_action("increase_budget", { "new_daily_budget_minor" => 12_000 })
+      request_body["evidence"] = [documented_evidence.merge(unknown_key => true)]
+      error = assert_raises(ArgumentError) do
+        stubbed_client(Faraday::Adapter::Test::Stubs.new).actions.api_client.call_api(
+          :POST,
+          "/api/v1/agent/workspaces/1/actions",
+          { header_params: {}, body: request_body }
+        )
+      end
+      assert_includes error.message, unknown_key
+      assert_includes error.message, "ActionProposalInput.evidence[0]"
+    end
+
+    sent_body = nil
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post("/api/v1/agent/workspaces/1/actions") do |environment|
+        sent_body = JSON.parse(environment.body)
+        [200, { "Content-Type" => "application/json" }, "{}"]
+      end
+    end
+    open_body = {
+      "actions" => [],
+      "rationale" => "Keep this additional open request field.",
+      "idempotency_key" => "open-object-control",
+      "evidence" => [{ "source_tool" => "get_account_state", "fields_used" => ["spend"] }],
+      "target_source" => "test",
+      "sdk_open_key" => true
+    }
+    stubbed_client(stubs).actions.actions_api_propose(1, open_body, { debug_return_type: "Object" })
+
+    assert_equal true, sent_body.fetch("sdk_open_key")
+    stubs.verify_stubbed_calls
   end
 
   def test_keeps_the_root_namespace_curated
@@ -485,6 +626,33 @@ class PlainRouterClientTest < Minitest::Test
   end
 
   private
+
+  def proposal_body_with_action(action_type, params)
+    {
+      "actions" => [{
+        "type" => action_type,
+        "target_entity" => { "type" => "campaign", "id" => "123" },
+        "params" => params,
+        "rationale" => "Test the closed request boundary.",
+        "idempotency_key" => "closed-action-test"
+      }],
+      "rationale" => "Test the closed request boundary.",
+      "idempotency_key" => "closed-key-test",
+      "evidence" => [{ "source_tool" => "get_account_state", "fields_used" => ["spend"] }],
+      "target_source" => "human_supplied"
+    }
+  end
+
+  def symbolize_request_body(value)
+    case value
+    when Hash
+      value.to_h { |key, child| [key.to_sym, symbolize_request_body(child)] }
+    when Array
+      value.map { |child| symbolize_request_body(child) }
+    else
+      value
+    end
+  end
 
   def operation_names(group)
     group.public_methods(false)

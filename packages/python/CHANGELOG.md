@@ -2,6 +2,7 @@
 
 ## 0.10.0 (unreleased)
 
+- Refuse unknown keys, including case variants, on closed request objects before sending; errors name the key and object. Closed objects and their allowed keys are derived from the vendored contract, including model construction, mapping conversion, and raw request bodies.
 - Tighten validation of the existing contract: integer inputs refuse JSON booleans instead of treating them as 1 or 0. The curated client rejects booleans before sending with an error naming the integer field; integer selectors are generated from the contract, and integers and numeric strings remain accepted.
 - Tighten existing Action params validation: all 14 variants accept only their documented keys; extra keys, including case variants, fail with `action_params_invalid`.
 - Document `launch_video_upload_unavailable` for Launch plans that require a new Meta video upload, at validation and execution.

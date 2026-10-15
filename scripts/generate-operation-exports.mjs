@@ -29,6 +29,65 @@ const resolve = (ref) => ref.slice(2).split('/').reduce(
   (node, key) => node[key.replaceAll('~1', '/').replaceAll('~0', '~')],
   spec,
 );
+const componentName = (ref) => typeof ref === 'string' && ref.startsWith('#/components/schemas/')
+  ? ref.slice('#/components/schemas/'.length).replaceAll('~1', '/').replaceAll('~0', '~')
+  : undefined;
+const toRequestObjectSchema = (schema, seen = new Set()) => {
+  if (!schema || typeof schema !== 'object') return {};
+  if (schema.$ref) {
+    if (seen.has(schema.$ref)) return {};
+    return toRequestObjectSchema(resolve(schema.$ref), new Set(seen).add(schema.$ref));
+  }
+
+  const result = {};
+  if (schema.additionalProperties === false) result.closed = true;
+  if (schema.enum) result.enum = schema.enum;
+  if (Object.hasOwn(schema, 'const')) result.const = schema.const;
+  if (schema.properties) {
+    result.properties = Object.fromEntries(Object.entries(schema.properties).map(([key, property]) => (
+      [key, toRequestObjectSchema(property, seen)]
+    )));
+  }
+  if (schema.items) result.items = toRequestObjectSchema(schema.items, seen);
+  if (schema.anyOf) result.anyOf = schema.anyOf.map((branch) => toRequestObjectSchema(branch, seen));
+  if (schema.oneOf) result.oneOf = schema.oneOf.map((branch) => toRequestObjectSchema(branch, seen));
+  if (schema.allOf) result.allOf = schema.allOf.map((branch) => toRequestObjectSchema(branch, seen));
+  if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+    result.additionalProperties = toRequestObjectSchema(schema.additionalProperties, seen);
+  }
+
+  return result;
+};
+const containsClosedObject = (schema) => (
+  schema.closed === true
+  || Object.values(schema.properties ?? {}).some(containsClosedObject)
+  || (typeof schema.additionalProperties === 'object' && containsClosedObject(schema.additionalProperties))
+  || Boolean(schema.items && containsClosedObject(schema.items))
+  || (schema.anyOf ?? []).some(containsClosedObject)
+  || (schema.oneOf ?? []).some(containsClosedObject)
+  || (schema.allOf ?? []).some(containsClosedObject)
+);
+const referencedSchemas = (value, references = new Set(), visited = new Set()) => {
+  if (!value || typeof value !== 'object') return references;
+  if (value.$ref) {
+    const name = componentName(value.$ref);
+    if (name) references.add(name);
+    if (visited.has(value.$ref)) return references;
+    visited.add(value.$ref);
+    return referencedSchemas(resolve(value.$ref), references, visited);
+  }
+  for (const child of Object.values(value)) referencedSchemas(child, references, visited);
+  return references;
+};
+const dereference = (value) => {
+  const seen = new Set();
+  while (value?.$ref && !seen.has(value.$ref)) {
+    seen.add(value.$ref);
+    value = resolve(value.$ref);
+  }
+  return value;
+};
+const rootSchemaName = (schema, fallback) => componentName(schema?.$ref) ?? fallback;
 const referencesActionProposal = (value, seen = new Set()) => {
   if (!value || typeof value !== 'object') return false;
   if (value.$ref) {
@@ -93,6 +152,84 @@ try {
   if (error.code !== 'ENOENT') throw error;
 }
 if (output !== previous) writeFileSync(outputPath, output);
+
+const zodPath = new URL('../packages/sdk/src/generated/zod.gen.ts', import.meta.url);
+const zodSource = ts.createSourceFile(zodPath.pathname, readFileSync(zodPath, 'utf8'), ts.ScriptTarget.Latest, true);
+const zodNames = new Set();
+for (const statement of zodSource.statements) {
+  if (!statement.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)) continue;
+  if (!ts.isVariableStatement(statement)) continue;
+  for (const declaration of statement.declarationList.declarations) {
+    if (ts.isIdentifier(declaration.name)) zodNames.add(declaration.name.text);
+  }
+}
+
+const closedRequestSchemas = new Map();
+const requestBodyRoots = [];
+for (const item of Object.values(spec.paths)) {
+  for (const [method, operation] of Object.entries(item)) {
+    if (!['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace'].includes(method)) continue;
+    const requestBody = dereference(operation.requestBody);
+    if (!requestBody?.content) continue;
+    for (const [mediaType, media] of Object.entries(requestBody.content)) {
+      if (!mediaType.toLowerCase().includes('json') || !media?.schema) continue;
+      const schema = media.schema;
+      const operationZodName = `z${operationName(operation.operationId)[0]?.toUpperCase() ?? ''}${operationName(operation.operationId).slice(1)}Body`;
+      if (zodNames.has(operationZodName)) {
+        requestBodyRoots.push({ name: operationZodName, schema });
+      }
+      for (const reference of referencedSchemas(schema)) {
+        const name = `z${reference}`;
+        if (zodNames.has(name)) {
+          closedRequestSchemas.set(name, {
+            rootName: reference,
+            schema: spec.components.schemas[reference],
+          });
+        }
+      }
+    }
+  }
+}
+for (const { name, schema } of requestBodyRoots) {
+  closedRequestSchemas.set(name, {
+    rootName: rootSchemaName(schema, name.slice(1)),
+    schema,
+  });
+}
+
+const requestZodPath = new URL('../packages/sdk/src/generated/request-zod.gen.ts', import.meta.url);
+const wrappedRequestSchemas = [...closedRequestSchemas.entries()].flatMap(([name, entry]) => {
+  const schema = toRequestObjectSchema(entry.schema);
+  return containsClosedObject(schema) ? [[name, { ...entry, schema }]] : [];
+});
+const requestZodOutput = '// Automatically derived from spec/openapi.json and zod.gen.ts; do not edit.\n'
+  + "import * as generated from './zod.gen.js';\n"
+  + "import { withClosedRequestObjects, type RequestObjectSchema } from '../request-object-validation.js';\n\n"
+  + wrappedRequestSchemas.map(([name, entry]) => (
+    `export const ${name} = withClosedRequestObjects(${JSON.stringify(entry.rootName)}, ${JSON.stringify(entry.schema)} as const satisfies RequestObjectSchema, generated.${name});\n`
+  )).join('');
+let previousRequestZod;
+try {
+  previousRequestZod = readFileSync(requestZodPath, 'utf8');
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
+if (requestZodOutput !== previousRequestZod) writeFileSync(requestZodPath, requestZodOutput);
+
+const zodExportsPath = new URL('../packages/sdk/src/generated/zod-exports.gen.ts', import.meta.url);
+const zodExportNames = wrappedRequestSchemas.map(([name]) => name);
+const zodExportsOutput = '// Automatically derived from spec/openapi.json and zod.gen.ts; do not edit.\n'
+  + "export * from './zod.gen.js';\n"
+  + (zodExportNames.length > 0
+    ? `export { ${zodExportNames.join(', ')} } from './request-zod.gen.js';\n`
+    : '');
+let previousZodExports;
+try {
+  previousZodExports = readFileSync(zodExportsPath, 'utf8');
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
+if (zodExportsOutput !== previousZodExports) writeFileSync(zodExportsPath, zodExportsOutput);
 
 execFileSync(process.execPath, [
   new URL('./generate-integer-fields.mjs', import.meta.url).pathname,

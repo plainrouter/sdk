@@ -10,6 +10,8 @@ Generator version: 7.25.0
 
 =end
 
+require 'plainrouter/closed_input_validator'
+
 module PlainRouter::OpenAPI
   class ApiModelBase
     # Deserializes the data based on type

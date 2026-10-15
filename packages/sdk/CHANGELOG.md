@@ -2,6 +2,7 @@
 
 ## 0.10.0 (unreleased)
 
+- Exported request Zod parsers refuse unknown keys, including case variants, on closed contract objects instead of silently stripping them. Runtime request calls continue to send extra keys unchanged for server validation.
 - Tighten validation of the existing contract: integer inputs refuse JSON booleans instead of treating them as 1 or 0. The curated client rejects booleans before sending with an error naming the integer field; integer selectors are generated from the contract, and integers and numeric strings remain accepted.
 - Tighten existing Action params validation: all 14 variants accept only their documented keys; extra keys, including case variants, fail with `action_params_invalid`.
 - Document `launch_video_upload_unavailable` for Launch plans that require a new Meta video upload, at validation and execution.

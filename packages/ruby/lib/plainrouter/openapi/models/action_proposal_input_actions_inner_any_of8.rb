@@ -88,6 +88,7 @@ module PlainRouter::OpenAPI
     # Initializes the object
     # @param [Hash] attributes Model attributes in the form of hash
     def initialize(attributes = {})
+      ClosedInputValidator.validate_model!(self, attributes)
       if (!attributes.is_a?(Hash))
         fail ArgumentError, "The input argument (attributes) must be a hash in `PlainRouter::OpenAPI::ActionProposalInputActionsInnerAnyOf8` initialize method"
       end
@@ -263,6 +264,7 @@ module PlainRouter::OpenAPI
     # @param [Hash] attributes Model attributes in the form of hash
     # @return [Object] Returns the model itself
     def self.build_from_hash(attributes)
+      ClosedInputValidator.validate_model!(self, attributes)
       return nil unless attributes.is_a?(Hash)
       attributes = attributes.transform_keys(&:to_sym)
       transformed_hash = {}

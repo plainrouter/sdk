@@ -10,6 +10,8 @@ Generator version: 7.25.0
 
 =end
 
+require 'plainrouter/closed_input_validator'
+
 require 'date'
 require 'json'
 require 'logger'
@@ -99,6 +101,7 @@ module PlainRouter::OpenAPI
     # @option opts [Object] :body HTTP body (JSON/XML)
     # @return [Faraday::Request] A Faraday Request
     def build_request(http_method, path, request, opts = {})
+      ClosedInputValidator.validate_request!(http_method, path, opts)
       url = build_request_url(path, opts)
       http_method = http_method.to_sym.downcase
 

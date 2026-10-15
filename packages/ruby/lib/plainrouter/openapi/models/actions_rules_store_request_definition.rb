@@ -29,6 +29,7 @@ module PlainRouter::OpenAPI
       # @param [Mixed] Data to be matched against the list of anyOf items
       # @return [Object] Returns the model or the data itself
       def build(data)
+        ClosedInputValidator.validate_model!(self, data)
         # Go through the list of anyOf items and attempt to identify the appropriate one.
         # Note:
         # - No advanced validation of types in some cases (e.g. "x: { type: string }" will happily match { x: 123 })
