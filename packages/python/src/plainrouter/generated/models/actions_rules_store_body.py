@@ -31,9 +31,10 @@ class ActionsRulesStoreBody:
             definition (ActionsRulesStoreBodyDefinitionType0 | ActionsRulesStoreBodyDefinitionType1 |
                 ActionsRulesStoreBodyDefinitionType2):
             platform_ad_account_id (int):
-            account_id (int | Unset): Optional account ID, ignored by an account-bound key. An unbound key requires exactly
-                one active available advertising account with an active connection; omission uses that account and a supplied ID
-                must match it. Multiple active accounts return 422 even when account_id is supplied.
+            account_id (int | Unset): Optional integer account ID. JSON booleans return 422 with message plus field errors.
+                A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available
+                advertising account with an active connection; omission uses that account and a supplied ID must match it.
+                Multiple active accounts return 422 even when account_id is supplied.
             window (ActionsRulesStoreBodyWindowType3 | list[Any] | Literal[''] | None | Unset):
             window_days (ActionsRulesStoreBodyWindowDaysType3 | list[Any] | Literal[''] | None | Unset):
             author_type (ActionsRulesStoreBodyAuthorTypeType3 | list[Any] | Literal[''] | None | Unset):

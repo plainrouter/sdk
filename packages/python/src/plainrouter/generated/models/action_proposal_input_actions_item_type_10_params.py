@@ -4,7 +4,6 @@ from collections.abc import Mapping
 from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 
 from ..models.action_proposal_input_actions_item_type_10_params_asset_type import (
     ActionProposalInputActionsItemType10ParamsAssetType,
@@ -32,7 +31,6 @@ class ActionProposalInputActionsItemType10Params:
     content_sha256: str
     mime_type: None | str | Unset = UNSET
     size_bytes: int | None | Unset = UNSET
-    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         staged_asset_id = self.staged_asset_id
@@ -56,7 +54,7 @@ class ActionProposalInputActionsItemType10Params:
             size_bytes = self.size_bytes
 
         field_dict: dict[str, Any] = {}
-        field_dict.update(self.additional_properties)
+
         field_dict.update(
             {
                 "staged_asset_id": staged_asset_id,
@@ -110,21 +108,4 @@ class ActionProposalInputActionsItemType10Params:
             size_bytes=size_bytes,
         )
 
-        action_proposal_input_actions_item_type_10_params.additional_properties = d
         return action_proposal_input_actions_item_type_10_params
-
-    @property
-    def additional_keys(self) -> list[str]:
-        return list(self.additional_properties.keys())
-
-    def __getitem__(self, key: str) -> Any:
-        return self.additional_properties[key]
-
-    def __setitem__(self, key: str, value: Any) -> None:
-        self.additional_properties[key] = value
-
-    def __delitem__(self, key: str) -> None:
-        del self.additional_properties[key]
-
-    def __contains__(self, key: str) -> bool:
-        return key in self.additional_properties

@@ -79,7 +79,7 @@ module PlainRouter::OpenAPI
         :'from' => :'Integer',
         :'last_page' => :'Integer',
         :'last_page_url' => :'String',
-        :'links' => :'Array<ListEvents200ResponseEventsLinksInner>',
+        :'links' => :'Array<LaunchPoliciesIndex200ResponsePoliciesLinksInner>',
         :'next_page_url' => :'String',
         :'path' => :'String',
         :'per_page' => :'Integer',

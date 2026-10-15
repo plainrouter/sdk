@@ -35,12 +35,16 @@ Repository = "https://github.com/plainrouter/sdk"
 [tool.hatch.build.targets.wheel]
 packages = ["src/plainrouter"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"src/plainrouter/_integer_fields.json" = "plainrouter/_integer_fields.json"
+
 [tool.hatch.build.targets.sdist]
 include = [
     "/LICENSE",
     "/README.md",
     "/pyproject.toml",
     "/src/plainrouter",
+    "/src/plainrouter/_integer_fields.json",
 ]
 
 [tool.ruff]

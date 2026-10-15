@@ -1,9 +1,22 @@
 from __future__ import annotations
 
+import json
+from io import BytesIO
+from typing import cast
+
 import httpx
 import pytest
 
 from plainrouter import Client, create_client, list_events
+from plainrouter.generated.api.action_proposal_api import actions_api_propose
+from plainrouter.generated.api.draft_batch_file_import import launcher_file_import
+from plainrouter.generated.models import (
+    ActionProposalInput,
+    ActionProposalInputTargetSource,
+    DraftBatchFileImportRequest,
+    DraftBatchMode,
+)
+from plainrouter.generated.types import File
 
 
 def test_sync_client_injects_signal_tracker_bearer_token() -> None:
@@ -49,15 +62,76 @@ def test_client_accepts_an_explicit_no_timeout_configuration() -> None:
 
 async def test_async_client_injects_signal_tracker_bearer_token() -> None:
     observed: list[httpx.Request] = []
+    bodies: list[bytes] = []
 
     def handle(request: httpx.Request) -> httpx.Response:
         observed.append(request)
+        bodies.append(request.read())
         return httpx.Response(401, json={"message": "Unauthenticated."})
 
-    client = create_client("async-secret", httpx_args={"transport": httpx.MockTransport(handle)})
+    client = create_client(
+        "async-secret",
+        base_url="https://example.test/api/v1",
+        httpx_args={"transport": httpx.MockTransport(handle)},
+    )
     await list_events.asyncio_detailed(client=client)
 
     assert observed[0].headers["Authorization"] == "Bearer async-secret"
+    assert len(observed) == 1
+
+    def proposal(limit: int) -> ActionProposalInput:
+        return ActionProposalInput(
+            actions=[],
+            rationale="Read the proposal page.",
+            idempotency_key="integer-test",
+            evidence=[],
+            target_source=ActionProposalInputTargetSource.HUMAN_SUPPLIED,
+            limit=limit,
+        )
+
+    def import_body(account_id: int) -> DraftBatchFileImportRequest:
+        return DraftBatchFileImportRequest(
+            file=File(payload=BytesIO(b"image")),
+            source_adset_id="source-adset",
+            source_ad_id="source-ad",
+            mode=DraftBatchMode.ADD_TO_ADSET,
+            account_id=account_id,
+        )
+
+    with pytest.raises(TypeError, match="limit"):
+        actions_api_propose.sync_detailed(1, client=client, body=proposal(True))
+    with pytest.raises(TypeError, match="limit"):
+        await actions_api_propose.asyncio_detailed(1, client=client, body=proposal(True))
+    with pytest.raises(TypeError, match="workspace"):
+        actions_api_propose.sync_detailed(True, client=client, body=proposal(1))
+    with pytest.raises(TypeError, match="account_id"):
+        launcher_file_import.sync_detailed(client=client, body=import_body(True))
+    with pytest.raises(TypeError, match="account_id"):
+        await launcher_file_import.asyncio_detailed(client=client, body=import_body(True))
+    with pytest.raises(TypeError, match="limit"):
+        client.get_httpx_client().post(
+            "/agent/workspaces/1/actions", json={"limit": True}, headers={"Content-Type": "text/plain"}
+        )
+    with pytest.raises(TypeError, match="limit"):
+        client.get_httpx_client().post(
+            "/agent/workspaces/1/actions", json={"limit": True}, headers={"Content-Type": "multipart/form-data"}
+        )
+    assert len(observed) == 1
+
+    for value in (1, cast(int, "12")):
+        actions_api_propose.sync_detailed(1, client=client, body=proposal(value))
+        await actions_api_propose.asyncio_detailed(1, client=client, body=proposal(value))
+    for value in (1, cast(int, "12")):
+        launcher_file_import.sync_detailed(client=client, body=import_body(value))
+        await launcher_file_import.asyncio_detailed(client=client, body=import_body(value))
+
+    assert len(observed) == 9
+    assert [json.loads(body)["limit"] for body in bodies[1:3]] == [1, 1]
+    assert [json.loads(body)["limit"] for body in bodies[3:5]] == ["12", "12"]
+    assert all(b'name="account_id"\r\nContent-Type: text/plain\r\n\r\n1\r\n' in body for body in bodies[5:7])
+    assert all(b'name="account_id"\r\nContent-Type: text/plain\r\n\r\n12\r\n' in body for body in bodies[7:9])
+    client.get_httpx_client().close()
+    await client.get_async_httpx_client().aclose()
 
 
 @pytest.mark.parametrize("name", ["Accept", "ACCEPT", "accept"])
@@ -160,7 +234,9 @@ async def test_repeated_header_overrides_and_derivation_do_not_duplicate_headers
         assert [value for key, value in request.headers.raw if key.lower() == b"accept"] == [b"application/json"]
     for request in requests[2:]:
         assert [value for key, value in request.headers.raw if key.lower() == b"accept"] == [accept.encode()]
-        assert [value for key, value in request.headers.raw if key.lower() == b"authorization"] == [b"Bearer derived-test"]
+        assert [value for key, value in request.headers.raw if key.lower() == b"authorization"] == [
+            b"Bearer derived-test"
+        ]
     for variant in [client, *variants]:
         variant.get_httpx_client().close()
         await variant.get_async_httpx_client().aclose()
@@ -176,8 +252,12 @@ async def test_injected_clients_apply_json_default_and_preserve_custom_accept(ac
 
     headers = {} if accept is None else {"Accept": accept}
     client = create_client("injected-test")
-    client.set_httpx_client(httpx.Client(base_url="https://example.test", headers=headers, transport=httpx.MockTransport(handle)))
-    client.set_async_httpx_client(httpx.AsyncClient(base_url="https://example.test", headers=headers, transport=httpx.MockTransport(handle)))
+    client.set_httpx_client(
+        httpx.Client(base_url="https://example.test", headers=headers, transport=httpx.MockTransport(handle))
+    )
+    client.set_async_httpx_client(
+        httpx.AsyncClient(base_url="https://example.test", headers=headers, transport=httpx.MockTransport(handle))
+    )
     with client:
         list_events.sync_detailed(client=client)
     async with client:

@@ -32,9 +32,10 @@ class ActionsRulesUpdateBody:
             name (str | Unset):
             definition (ActionsRulesUpdateBodyDefinitionType0 | ActionsRulesUpdateBodyDefinitionType1 |
                 ActionsRulesUpdateBodyDefinitionType2 | Unset):
-            account_id (int | Unset): Optional account ID, ignored by an account-bound key. An unbound key requires exactly
-                one active available advertising account with an active connection; omission uses that account and a supplied ID
-                must match it. Multiple active accounts return 422 even when account_id is supplied.
+            account_id (int | Unset): Optional integer account ID. JSON booleans return 422 with message plus field errors.
+                A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available
+                advertising account with an active connection; omission uses that account and a supplied ID must match it.
+                Multiple active accounts return 422 even when account_id is supplied.
             enabled (bool | Unset):
             window (ActionsRulesUpdateBodyWindowType3 | list[Any] | Literal[''] | None | Unset):
             window_days (ActionsRulesUpdateBodyWindowDaysType3 | list[Any] | Literal[''] | None | Unset):

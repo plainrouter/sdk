@@ -14,19 +14,19 @@ require 'date'
 require 'time'
 
 module PlainRouter::OpenAPI
-  class ListEvents200ResponseEventsLinksInner < ApiModelBase
-    attr_accessor :url
+  class StoreDeploymentPlanRequestCreativeOverridesInner < ApiModelBase
+    attr_accessor :creative_id
 
-    attr_accessor :label
+    attr_accessor :copy
 
-    attr_accessor :active
+    attr_accessor :landing_page
 
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
-        :'url' => :'url',
-        :'label' => :'label',
-        :'active' => :'active'
+        :'creative_id' => :'creative_id',
+        :'copy' => :'copy',
+        :'landing_page' => :'landing_page'
       }
     end
 
@@ -43,16 +43,16 @@ module PlainRouter::OpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
-        :'url' => :'String',
-        :'label' => :'String',
-        :'active' => :'Boolean'
+        :'creative_id' => :'String',
+        :'copy' => :'StoreDeploymentPlanRequestCopy',
+        :'landing_page' => :'String'
       }
     end
 
     # List of attributes with nullable: true
     def self.openapi_nullable
       Set.new([
-        :'url',
+        :'landing_page'
       ])
     end
 
@@ -60,34 +60,34 @@ module PlainRouter::OpenAPI
     # @param [Hash] attributes Model attributes in the form of hash
     def initialize(attributes = {})
       if (!attributes.is_a?(Hash))
-        fail ArgumentError, "The input argument (attributes) must be a hash in `PlainRouter::OpenAPI::ListEvents200ResponseEventsLinksInner` initialize method"
+        fail ArgumentError, "The input argument (attributes) must be a hash in `PlainRouter::OpenAPI::StoreDeploymentPlanRequestCreativeOverridesInner` initialize method"
       end
 
       # check to see if the attribute exists and convert string to symbol for hash key
       acceptable_attribute_map = self.class.acceptable_attribute_map
       attributes = attributes.each_with_object({}) { |(k, v), h|
         if (!acceptable_attribute_map.key?(k.to_sym))
-          fail ArgumentError, "`#{k}` is not a valid attribute in `PlainRouter::OpenAPI::ListEvents200ResponseEventsLinksInner`. Please check the name to make sure it's valid. List of attributes: " + acceptable_attribute_map.keys.inspect
+          fail ArgumentError, "`#{k}` is not a valid attribute in `PlainRouter::OpenAPI::StoreDeploymentPlanRequestCreativeOverridesInner`. Please check the name to make sure it's valid. List of attributes: " + acceptable_attribute_map.keys.inspect
         end
         h[k.to_sym] = v
       }
 
-      if attributes.key?(:'url')
-        self.url = attributes[:'url']
+      if attributes.key?(:'creative_id')
+        self.creative_id = attributes[:'creative_id']
       else
-        self.url = nil
+        self.creative_id = nil
       end
 
-      if attributes.key?(:'label')
-        self.label = attributes[:'label']
+      if attributes.key?(:'copy')
+        self.copy = attributes[:'copy']
       else
-        self.label = nil
+        self.copy = nil
       end
 
-      if attributes.key?(:'active')
-        self.active = attributes[:'active']
+      if attributes.key?(:'landing_page')
+        self.landing_page = attributes[:'landing_page']
       else
-        self.active = nil
+        self.landing_page = nil
       end
     end
 
@@ -96,12 +96,16 @@ module PlainRouter::OpenAPI
     def list_invalid_properties
       warn '[DEPRECATED] the `list_invalid_properties` method is obsolete'
       invalid_properties = Array.new
-      if @label.nil?
-        invalid_properties.push('invalid value for "label", label cannot be nil.')
+      if @creative_id.nil?
+        invalid_properties.push('invalid value for "creative_id", creative_id cannot be nil.')
       end
 
-      if @active.nil?
-        invalid_properties.push('invalid value for "active", active cannot be nil.')
+      if @copy.nil?
+        invalid_properties.push('invalid value for "copy", copy cannot be nil.')
+      end
+
+      if @landing_page.to_s.length > 2048
+        invalid_properties.push('invalid value for "landing_page", the character length must be smaller than or equal to 2048.')
       end
 
       invalid_properties
@@ -111,29 +115,40 @@ module PlainRouter::OpenAPI
     # @return true if the model is valid
     def valid?
       warn '[DEPRECATED] the `valid?` method is obsolete'
-      return false if @label.nil?
-      return false if @active.nil?
+      return false if @creative_id.nil?
+      return false if @copy.nil?
+      return false if @landing_page.to_s.length > 2048
       true
     end
 
     # Custom attribute writer method with validation
-    # @param [Object] label Value to be assigned
-    def label=(label)
-      if label.nil?
-        fail ArgumentError, 'label cannot be nil'
+    # @param [Object] creative_id Value to be assigned
+    def creative_id=(creative_id)
+      if creative_id.nil?
+        fail ArgumentError, 'creative_id cannot be nil'
       end
 
-      @label = label
+      @creative_id = creative_id
     end
 
     # Custom attribute writer method with validation
-    # @param [Object] active Value to be assigned
-    def active=(active)
-      if active.nil?
-        fail ArgumentError, 'active cannot be nil'
+    # @param [Object] copy Value to be assigned
+    def copy=(copy)
+      if copy.nil?
+        fail ArgumentError, 'copy cannot be nil'
       end
 
-      @active = active
+      @copy = copy
+    end
+
+    # Custom attribute writer method with validation
+    # @param [Object] landing_page Value to be assigned
+    def landing_page=(landing_page)
+      if !landing_page.nil? && landing_page.to_s.length > 2048
+        fail ArgumentError, 'invalid value for "landing_page", the character length must be smaller than or equal to 2048.'
+      end
+
+      @landing_page = landing_page
     end
 
     # Checks equality by comparing each attribute.
@@ -141,9 +156,9 @@ module PlainRouter::OpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
-          url == o.url &&
-          label == o.label &&
-          active == o.active
+          creative_id == o.creative_id &&
+          copy == o.copy &&
+          landing_page == o.landing_page
     end
 
     # @see the `==` method
@@ -155,7 +170,7 @@ module PlainRouter::OpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [url, label, active].hash
+      [creative_id, copy, landing_page].hash
     end
 
     # Builds the object from hash

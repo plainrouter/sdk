@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client/index.js';
-import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, ActionsRulesIndexData, ActionsRulesIndexErrors, ActionsRulesIndexResponses, ActionsRulesShowData, ActionsRulesShowErrors, ActionsRulesShowResponses, ActionsRulesStoreData, ActionsRulesStoreErrors, ActionsRulesStoreResponses, ActionsRulesUpdateData, ActionsRulesUpdateErrors, ActionsRulesUpdateResponses, ActionsTestsApiIndexData, ActionsTestsApiIndexErrors, ActionsTestsApiIndexResponses, ActionsTestsApiShowData, ActionsTestsApiShowErrors, ActionsTestsApiShowResponses, ActionsTestsApiStoreData, ActionsTestsApiStoreErrors, ActionsTestsApiStoreResponses, AgentContextData, AgentContextErrors, AgentContextResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetAccountInventoryData, GetAccountInventoryErrors, GetAccountInventoryResponses, GetCookieDeclarationData, GetCookieDeclarationErrors, GetCookieDeclarationResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetInventoryMetricsData, GetInventoryMetricsErrors, GetInventoryMetricsResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, LaunchCreativesIndexData, LaunchCreativesIndexErrors, LaunchCreativesIndexResponses, LaunchPlansCopyData, LaunchPlansCopyErrors, LaunchPlansCopyResponses, LaunchPlansExecuteData, LaunchPlansExecuteErrors, LaunchPlansExecuteResponses, LaunchPlansIndexData, LaunchPlansIndexErrors, LaunchPlansIndexResponses, LaunchPlansShowData, LaunchPlansShowErrors, LaunchPlansShowResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, StoreCreativeData, StoreCreativeErrors, StoreCreativeFromUrlData, StoreCreativeFromUrlErrors, StoreCreativeFromUrlResponses, StoreCreativeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
+import type { ActionsApiBatchData, ActionsApiBatchErrors, ActionsApiBatchResponses, ActionsApiDecisionReceiptData, ActionsApiDecisionReceiptErrors, ActionsApiDecisionReceiptResponses, ActionsApiDryRunData, ActionsApiDryRunErrors, ActionsApiDryRunResponses, ActionsApiIndexData, ActionsApiIndexErrors, ActionsApiIndexResponses, ActionsApiPolicyData, ActionsApiPolicyErrors, ActionsApiPolicyResponses, ActionsApiProposeData, ActionsApiProposeErrors, ActionsApiProposeResponses, ActionsApiShowData, ActionsApiShowErrors, ActionsApiShowResponses, ActionsRulesIndexData, ActionsRulesIndexErrors, ActionsRulesIndexResponses, ActionsRulesShowData, ActionsRulesShowErrors, ActionsRulesShowResponses, ActionsRulesStoreData, ActionsRulesStoreErrors, ActionsRulesStoreResponses, ActionsRulesUpdateData, ActionsRulesUpdateErrors, ActionsRulesUpdateResponses, ActionsTestsApiIndexData, ActionsTestsApiIndexErrors, ActionsTestsApiIndexResponses, ActionsTestsApiShowData, ActionsTestsApiShowErrors, ActionsTestsApiShowResponses, ActionsTestsApiStoreData, ActionsTestsApiStoreErrors, ActionsTestsApiStoreResponses, AgentContextData, AgentContextErrors, AgentContextResponses, CreateEventData, CreateEventErrors, CreateEventResponses, CreateSandboxKeyData, CreateSandboxKeyResponses, DeleteUserDataData, DeleteUserDataErrors, DeleteUserDataResponses, GetAccountInventoryData, GetAccountInventoryErrors, GetAccountInventoryResponses, GetCookieDeclarationData, GetCookieDeclarationErrors, GetCookieDeclarationResponses, GetEmqReportData, GetEmqReportErrors, GetEmqReportResponses, GetEventData, GetEventErrors, GetEventResponses, GetInventoryMetricsData, GetInventoryMetricsErrors, GetInventoryMetricsResponses, GetReconciliationReportData, GetReconciliationReportErrors, GetReconciliationReportResponses, GetSandboxData, GetSandboxKeyData, GetSandboxKeyResponses, GetSandboxResponses, LaunchCreativesIndexData, LaunchCreativesIndexErrors, LaunchCreativesIndexResponses, LaunchCreativesShowData, LaunchCreativesShowErrors, LaunchCreativesShowResponses, LaunchCreativesStatusData, LaunchCreativesStatusErrors, LaunchCreativesStatusResponses, LauncherFileImportData, LauncherFileImportErrors, LauncherFileImportResponses, LaunchPlansCopyData, LaunchPlansCopyErrors, LaunchPlansCopyResponses, LaunchPlansExecuteData, LaunchPlansExecuteErrors, LaunchPlansExecuteResponses, LaunchPlansIndexData, LaunchPlansIndexErrors, LaunchPlansIndexResponses, LaunchPlansShowData, LaunchPlansShowErrors, LaunchPlansShowResponses, LaunchPlansStoreData, LaunchPlansStoreErrors, LaunchPlansStoreResponses, LaunchPlansUpdateData, LaunchPlansUpdateErrors, LaunchPlansUpdateResponses, LaunchPlansValidateData, LaunchPlansValidateErrors, LaunchPlansValidateResponses, LaunchPoliciesIndexData, LaunchPoliciesIndexErrors, LaunchPoliciesIndexResponses, LaunchPoliciesRetireData, LaunchPoliciesRetireErrors, LaunchPoliciesRetireResponses, LaunchPoliciesStoreData, LaunchPoliciesStoreErrors, LaunchPoliciesStoreResponses, ListEventsByCursorData, ListEventsByCursorErrors, ListEventsByCursorResponses, ListEventsData, ListEventsErrors, ListEventsResponses, ReplayDeliveriesData, ReplayDeliveriesErrors, ReplayDeliveriesResponses, SendTestPurchaseData, SendTestPurchaseErrors, SendTestPurchaseResponses, SetDestinationTestModeData, SetDestinationTestModeErrors, SetDestinationTestModeResponses, StoreCreativeData, StoreCreativeErrors, StoreCreativeFromUrlData, StoreCreativeFromUrlErrors, StoreCreativeFromUrlResponses, StoreCreativeResponses, ValidateSandboxEventData, ValidateSandboxEventErrors, ValidateSandboxEventResponses, ValidateSandboxEventWithKeyData, ValidateSandboxEventWithKeyErrors, ValidateSandboxEventWithKeyResponses, VerifySignalIngestionData, VerifySignalIngestionErrors, VerifySignalIngestionResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -329,6 +329,108 @@ export const storeCreativeFromUrl = <ThrowOnError extends boolean = false>(optio
 });
 
 /**
+ * Update a workspace creative status
+ *
+ * Read a creative or change its approval status within the authorized workspace. Creative content and provider submission remain separate operations.
+ */
+export const launchCreativesStatus = <ThrowOnError extends boolean = false>(options: Options<LaunchCreativesStatusData, ThrowOnError>): RequestResult<LaunchCreativesStatusResponses, LaunchCreativesStatusErrors, ThrowOnError> => (options.client ?? client).patch<LaunchCreativesStatusResponses, LaunchCreativesStatusErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/creatives/{creative}/status',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Read a workspace creative
+ *
+ * Read a creative or change its approval status within the authorized workspace. Creative content and provider submission remain separate operations.
+ */
+export const launchCreativesShow = <ThrowOnError extends boolean = false>(options: Options<LaunchCreativesShowData, ThrowOnError>): RequestResult<LaunchCreativesShowResponses, LaunchCreativesShowErrors, ThrowOnError> => (options.client ?? client).get<LaunchCreativesShowResponses, LaunchCreativesShowErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/creatives/{creative}',
+    ...options
+});
+
+/**
+ * List deployment plans
+ *
+ * Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.
+ */
+export const launchPlansIndex = <ThrowOnError extends boolean = false>(options: Options<LaunchPlansIndexData, ThrowOnError>): RequestResult<LaunchPlansIndexResponses, LaunchPlansIndexErrors, ThrowOnError> => (options.client ?? client).get<LaunchPlansIndexResponses, LaunchPlansIndexErrors, ThrowOnError>({
+    security: [{
+            key: 'planReader',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/plans',
+    ...options
+});
+
+/**
+ * Create a deployment plan
+ *
+ * Create or edit a draft deployment plan for the authorized advertising account. Review and validate the plan before submitting any provider writes.
+ */
+export const launchPlansStore = <ThrowOnError extends boolean = false>(options: Options<LaunchPlansStoreData, ThrowOnError>): RequestResult<LaunchPlansStoreResponses, LaunchPlansStoreErrors, ThrowOnError> => (options.client ?? client).post<LaunchPlansStoreResponses, LaunchPlansStoreErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/plans',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Read a deployment plan
+ *
+ * Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.
+ */
+export const launchPlansShow = <ThrowOnError extends boolean = false>(options: Options<LaunchPlansShowData, ThrowOnError>): RequestResult<LaunchPlansShowResponses, LaunchPlansShowErrors, ThrowOnError> => (options.client ?? client).get<LaunchPlansShowResponses, LaunchPlansShowErrors, ThrowOnError>({
+    security: [{
+            key: 'planReader',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/plans/{deployment_plan}',
+    ...options
+});
+
+/**
+ * Update a deployment plan
+ *
+ * Create or edit a draft deployment plan for the authorized advertising account. Review and validate the plan before submitting any provider writes.
+ */
+export const launchPlansUpdate = <ThrowOnError extends boolean = false>(options: Options<LaunchPlansUpdateData, ThrowOnError>): RequestResult<LaunchPlansUpdateResponses, LaunchPlansUpdateErrors, ThrowOnError> => (options.client ?? client).patch<LaunchPlansUpdateResponses, LaunchPlansUpdateErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/plans/{deployment_plan}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * Copy a failed plan to a new draft
  *
  * Copy failed plan content and stored integer budgets into a fresh draft. History stays unchanged; validate budgets and submit again with a new intent.
@@ -340,6 +442,21 @@ export const launchPlansCopy = <ThrowOnError extends boolean = false>(options: O
             type: 'http'
         }],
     url: '/workspaces/{workspace}/admin/plans/{deployment_plan}/copy',
+    ...options
+});
+
+/**
+ * Validate a deployment plan
+ *
+ * Validate a plan without provider writes. Reuse a ready Meta video in the same ad account; plans needing a new video upload are refused.
+ */
+export const launchPlansValidate = <ThrowOnError extends boolean = false>(options: Options<LaunchPlansValidateData, ThrowOnError>): RequestResult<LaunchPlansValidateResponses, LaunchPlansValidateErrors, ThrowOnError> => (options.client ?? client).post<LaunchPlansValidateResponses, LaunchPlansValidateErrors, ThrowOnError>({
+    security: [{
+            key: 'planWriter',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/plans/{deployment_plan}/validate',
     ...options
 });
 
@@ -363,33 +480,23 @@ export const launchPlansExecute = <ThrowOnError extends boolean = false>(options
 });
 
 /**
- * List deployment plans
+ * Import a Launcher draft batch
  *
- * Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.
+ * Import a CSV or spreadsheet into a governed Launcher draft batch for the workspace and account authorized by the execution key.
  */
-export const launchPlansIndex = <ThrowOnError extends boolean = false>(options: Options<LaunchPlansIndexData, ThrowOnError>): RequestResult<LaunchPlansIndexResponses, LaunchPlansIndexErrors, ThrowOnError> => (options.client ?? client).get<LaunchPlansIndexResponses, LaunchPlansIndexErrors, ThrowOnError>({
+export const launcherFileImport = <ThrowOnError extends boolean = false>(options: Options<LauncherFileImportData, ThrowOnError>): RequestResult<LauncherFileImportResponses, LauncherFileImportErrors, ThrowOnError> => (options.client ?? client).post<LauncherFileImportResponses, LauncherFileImportErrors, ThrowOnError>({
+    ...formDataBodySerializer,
     security: [{
-            key: 'planReader',
+            key: 'workspaceSecret',
             scheme: 'bearer',
             type: 'http'
         }],
-    url: '/workspaces/{workspace}/admin/plans',
-    ...options
-});
-
-/**
- * Read a deployment plan
- *
- * Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.
- */
-export const launchPlansShow = <ThrowOnError extends boolean = false>(options: Options<LaunchPlansShowData, ThrowOnError>): RequestResult<LaunchPlansShowResponses, LaunchPlansShowErrors, ThrowOnError> => (options.client ?? client).get<LaunchPlansShowResponses, LaunchPlansShowErrors, ThrowOnError>({
-    security: [{
-            key: 'planReader',
-            scheme: 'bearer',
-            type: 'http'
-        }],
-    url: '/workspaces/{workspace}/admin/plans/{deployment_plan}',
-    ...options
+    url: '/mcp/launcher/import',
+    ...options,
+    headers: {
+        'Content-Type': null,
+        ...options.headers
+    }
 });
 
 /**
@@ -438,6 +545,55 @@ export const getEvent = <ThrowOnError extends boolean = false>(options: Options<
             type: 'http'
         }],
     url: '/events/{event}',
+    ...options
+});
+
+/**
+ * List Launch policies
+ *
+ * Read or maintain versioned naming and UTM policies in the authorized workspace. Policies apply to plans without submitting provider writes.
+ */
+export const launchPoliciesIndex = <ThrowOnError extends boolean = false>(options: Options<LaunchPoliciesIndexData, ThrowOnError>): RequestResult<LaunchPoliciesIndexResponses, LaunchPoliciesIndexErrors, ThrowOnError> => (options.client ?? client).get<LaunchPoliciesIndexResponses, LaunchPoliciesIndexErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/policies',
+    ...options
+});
+
+/**
+ * Create a Launch policy
+ *
+ * Read or maintain versioned naming and UTM policies in the authorized workspace. Policies apply to plans without submitting provider writes.
+ */
+export const launchPoliciesStore = <ThrowOnError extends boolean = false>(options: Options<LaunchPoliciesStoreData, ThrowOnError>): RequestResult<LaunchPoliciesStoreResponses, LaunchPoliciesStoreErrors, ThrowOnError> => (options.client ?? client).post<LaunchPoliciesStoreResponses, LaunchPoliciesStoreErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/policies',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Retire a Launch policy
+ *
+ * Read or maintain versioned naming and UTM policies in the authorized workspace. Policies apply to plans without submitting provider writes.
+ */
+export const launchPoliciesRetire = <ThrowOnError extends boolean = false>(options: Options<LaunchPoliciesRetireData, ThrowOnError>): RequestResult<LaunchPoliciesRetireResponses, LaunchPoliciesRetireErrors, ThrowOnError> => (options.client ?? client).post<LaunchPoliciesRetireResponses, LaunchPoliciesRetireErrors, ThrowOnError>({
+    security: [{
+            key: 'workspaceSecret',
+            scheme: 'bearer',
+            type: 'http'
+        }],
+    url: '/workspaces/{workspace}/admin/policies/{launch_policy}/retire',
     ...options
 });
 

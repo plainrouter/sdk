@@ -949,7 +949,7 @@
                     {
                         "name": "account_id",
                         "in": "query",
-                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
+                        "description": "Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                         "schema": {
                             "type": "integer",
                             "minimum": 1
@@ -958,7 +958,7 @@
                     {
                         "name": "platform_ad_account_id",
                         "in": "query",
-                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.",
+                        "description": "Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied. Alias of account_id; account_id takes precedence when both are supplied.",
                         "schema": {
                             "type": "integer",
                             "minimum": 1
@@ -1395,7 +1395,7 @@
                                     },
                                     "account_id": {
                                         "type": "integer",
-                                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
+                                        "description": "Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                                         "minimum": 1
                                     },
                                     "platform_ad_account_id": {
@@ -1643,7 +1643,7 @@
                     {
                         "name": "account_id",
                         "in": "query",
-                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
+                        "description": "Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                         "schema": {
                             "type": "integer",
                             "minimum": 1
@@ -1966,7 +1966,7 @@
                                     },
                                     "account_id": {
                                         "type": "integer",
-                                        "description": "Optional account ID, ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
+                                        "description": "Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
                                         "minimum": 1
                                     },
                                     "enabled": {
@@ -2611,6 +2611,16 @@
                                             "$ref": "#/components/schemas/ErrorMessage"
                                         }
                                     ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation failed, the event is not in the observed list, or selected ads are not members of the ad set.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
                                 }
                             }
                         }
@@ -3366,6 +3376,36 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "A disabled Creative surface or missing workspace returns the api_route_not_found envelope with error, request and resources.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The workspace grant does not authorize this operation, or the token cannot access this workspace. Returns message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -3534,13 +3574,13 @@
                 ]
             }
         },
-        "/workspaces/{workspace}/admin/plans/{deployment_plan}/copy": {
-            "post": {
-                "operationId": "launch.plans.copy",
-                "description": "Copy failed plan content and stored integer budgets into a fresh draft. History stays unchanged; validate budgets and submit again with a new intent.",
-                "summary": "Copy a failed plan to a new draft",
+        "/workspaces/{workspace}/admin/creatives/{creative}/status": {
+            "patch": {
+                "operationId": "launch.creatives.status",
+                "description": "Read a creative or change its approval status within the authorized workspace. Creative content and provider submission remain separate operations.",
+                "summary": "Update a workspace creative status",
                 "tags": [
-                    "DeploymentPlan"
+                    "Creative"
                 ],
                 "parameters": [
                     {
@@ -3553,165 +3593,7 @@
                         }
                     },
                     {
-                        "name": "deployment_plan",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "A new draft was created.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PlanCopyRead"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Missing, invalid, revoked or expired credentials, a missing active principal, missing read scope or lost issuer authority return message. No error code is returned.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Missing workspace, account or write access returns error.code insufficient_scope and error.message. A revoked grant returns message without a code.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "anyOf": [
-                                        {
-                                            "$ref": "#/components/schemas/PlanCopyForbidden"
-                                        },
-                                        {
-                                            "$ref": "#/components/schemas/ErrorMessage"
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "An inaccessible or missing plan returns error.code plan_not_found and error.message. A missing workspace or disabled Plan surface returns the api_route_not_found envelope with error, request and resources.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "anyOf": [
-                                        {
-                                            "$ref": "#/components/schemas/PlanCopyNotFound"
-                                        },
-                                        {
-                                            "$ref": "#/components/schemas/ApiRouteNotFound"
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "error.code plan_not_failed when the source is not failed; platform_ad_account_unavailable when its account becomes unavailable after authorization; plan_not_found if the source disappears after lookup. Each includes error.message.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PlanCopyRejected"
-                                }
-                            }
-                        }
-                    },
-                    "413": {
-                        "description": "Oversized POST data returns message \"The POST data is too large.\" before route authorization.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
-                                }
-                            }
-                        }
-                    },
-                    "429": {
-                        "description": "The shared API rate limit is exceeded; message is \"Too Many Attempts.\" Retry-After gives seconds until a retry is allowed.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
-                                }
-                            }
-                        },
-                        "headers": {
-                            "Retry-After": {
-                                "description": "Seconds until the shared API rate limit allows another request.",
-                                "required": true,
-                                "schema": {
-                                    "type": "integer"
-                                }
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/WorkspaceLockTimeout"
-                                }
-                            }
-                        },
-                        "headers": {
-                            "Retry-After": {
-                                "description": "Seconds until the operation may be retried.",
-                                "required": true,
-                                "schema": {
-                                    "type": "integer"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "An unexpected server or provider-read fault returns message \"Server Error\" when debug is disabled.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "planWriter": []
-                    }
-                ]
-            }
-        },
-        "/workspaces/{workspace}/admin/plans/{deployment_plan}/execute": {
-            "post": {
-                "operationId": "launch.plans.execute",
-                "description": "Create or replay a governed Launch intent using the reviewed plan's review_version. Changed versions are refused before intent creation or staging.",
-                "summary": "Execute a deployment plan",
-                "tags": [
-                    "DeploymentPlan"
-                ],
-                "parameters": [
-                    {
-                        "name": "workspace",
-                        "in": "path",
-                        "required": true,
-                        "description": "The workspace ID",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "deployment_plan",
+                        "name": "creative",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -3724,34 +3606,33 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ExecuteDeploymentPlanRequest"
+                                "$ref": "#/components/schemas/UpdateCreativeStatusRequest"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Created or replayed Launch intent, including a blocked intent under the kill switch.",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/LaunchIntentRead"
+                                    "type": "object",
+                                    "properties": {
+                                        "creative": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "creative"
+                                    ]
                                 }
                             }
                         }
                     },
                     "401": {
-                        "description": "Missing, invalid, revoked or expired credentials, a missing active principal, missing read scope or lost issuer authority return message. No error code is returned.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Missing workspace, account, write access, execution scope or workspace grant returns message without a code.",
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3761,7 +3642,7 @@
                         }
                     },
                     "404": {
-                        "description": "A missing or inaccessible workspace or plan, or a disabled Plan surface, returns error.code api_route_not_found with error.message, error.resolution, request and resources.",
+                        "description": "A missing workspace returns the api_route_not_found envelope.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3771,34 +3652,67 @@
                         }
                     },
                     "422": {
-                        "description": "Request validation returns message plus errors (including intent_key and review_version). Domain refusals return error.code and error.message: plan_changed_since_review (\"This plan changed since you reviewed it. Reload and review the latest plan before submitting.\"), deployment_plan_not_executable, creative_not_ready, creative_bytes_unavailable, ad_set_daily_budget_invalid, ad_set_bid_amount_invalid, currency_mismatch, currency_unsupported, budget_invalid, deployment_plan_has_no_actions. Proposal input or evidence validation returns message plus field errors.",
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "anyOf": [
-                                        {
-                                            "$ref": "#/components/schemas/ValidationError"
-                                        },
-                                        {
-                                            "$ref": "#/components/schemas/PlanExecuteRejected"
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/workspaces/{workspace}/admin/creatives/{creative}": {
+            "get": {
+                "operationId": "launch.creatives.show",
+                "description": "Read a creative or change its approval status within the authorized workspace. Creative content and provider submission remain separate operations.",
+                "summary": "Read a workspace creative",
+                "tags": [
+                    "Creative"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "creative",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "creative": {
+                                            "type": "array",
+                                            "items": {}
                                         }
+                                    },
+                                    "required": [
+                                        "creative"
                                     ]
                                 }
                             }
                         }
                     },
-                    "409": {
-                        "description": "An intent key bound to another plan returns error.code launch_submission_key_plan_mismatch and error.message.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PlanExecuteConflict"
-                                }
-                            }
-                        }
-                    },
-                    "413": {
-                        "description": "Oversized POST data returns message \"The POST data is too large.\" before route authorization.",
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3807,63 +3721,110 @@
                             }
                         }
                     },
-                    "429": {
-                        "description": "The shared API rate limit is exceeded; message is \"Too Many Attempts.\" Retry-After gives seconds until a retry is allowed.",
+                    "404": {
+                        "description": "A missing workspace returns the api_route_not_found envelope.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
-                                }
-                            }
-                        },
-                        "headers": {
-                            "Retry-After": {
-                                "description": "Seconds until the shared API rate limit allows another request.",
-                                "required": true,
-                                "schema": {
-                                    "type": "integer"
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
                                 }
                             }
                         }
                     },
-                    "503": {
-                        "description": "The proposal could not be recorded: error.code proposal_not_recorded and error.message \"The proposal could not be recorded. Retry.\" No proposal is committed. The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
+                    "422": {
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ProposalUnavailable"
-                                }
-                            }
-                        },
-                        "headers": {
-                            "Retry-After": {
-                                "description": "Seconds until the operation may be retried.",
-                                "required": true,
-                                "schema": {
-                                    "type": "integer"
+                                    "$ref": "#/components/schemas/ValidationError"
                                 }
                             }
                         }
-                    },
-                    "500": {
-                        "description": "An unexpected server or provider-read fault returns message \"Server Error\" when debug is disabled.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
-                                }
+                    }
+                }
+            }
+        },
+        "/workspaces/{workspace}/admin/plans": {
+            "post": {
+                "operationId": "launch.plans.store",
+                "description": "Create or edit a draft deployment plan for the authorized advertising account. Review and validate the plan before submitting any provider writes.",
+                "summary": "Create a deployment plan",
+                "tags": [
+                    "DeploymentPlan"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreDeploymentPlanRequest"
                             }
                         }
                     }
                 },
-                "security": [
-                    {
-                        "planWriter": []
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "plan": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "plan"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "A missing workspace returns the api_route_not_found envelope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
                     }
-                ]
-            }
-        },
-        "/workspaces/{workspace}/admin/plans": {
+                }
+            },
             "get": {
                 "operationId": "launch.plans.index",
                 "description": "Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.",
@@ -4038,6 +3999,16 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -4048,6 +4019,93 @@
             }
         },
         "/workspaces/{workspace}/admin/plans/{deployment_plan}": {
+            "patch": {
+                "operationId": "launch.plans.update",
+                "description": "Create or edit a draft deployment plan for the authorized advertising account. Review and validate the plan before submitting any provider writes.",
+                "summary": "Update a deployment plan",
+                "tags": [
+                    "DeploymentPlan"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "deployment_plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateDeploymentPlanRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "plan": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "plan"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "A missing workspace returns the api_route_not_found envelope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "get": {
                 "operationId": "launch.plans.show",
                 "description": "Read plans for the approved ad account with their current review_version. Pass the version from the plan you reviewed when executing.",
@@ -4142,11 +4200,571 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
                     {
                         "planReader": []
+                    }
+                ]
+            }
+        },
+        "/workspaces/{workspace}/admin/plans/{deployment_plan}/copy": {
+            "post": {
+                "operationId": "launch.plans.copy",
+                "description": "Copy failed plan content and stored integer budgets into a fresh draft. History stays unchanged; validate budgets and submit again with a new intent.",
+                "summary": "Copy a failed plan to a new draft",
+                "tags": [
+                    "DeploymentPlan"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "deployment_plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "A new draft was created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanCopyRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, revoked or expired credentials, a missing active principal, missing read scope or lost issuer authority return message. No error code is returned.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Missing workspace, account or write access returns error.code insufficient_scope and error.message. A revoked grant returns message without a code.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/PlanCopyForbidden"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "An inaccessible or missing plan returns error.code plan_not_found and error.message. A missing workspace or disabled Plan surface returns the api_route_not_found envelope with error, request and resources.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/PlanCopyNotFound"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ApiRouteNotFound"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "Oversized POST data returns message \"The POST data is too large.\" before route authorization.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "The shared API rate limit is exceeded; message is \"Too Many Attempts.\" Retry-After gives seconds until a retry is allowed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the shared API rate limit allows another request.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceLockTimeout"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the operation may be retried.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected server or provider-read fault returns message \"Server Error\" when debug is disabled.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "error.code plan_not_failed when the source is not failed; platform_ad_account_unavailable when its account becomes unavailable after authorization; plan_not_found if the source disappears after lookup. Each includes error.message. JSON booleans in integer workspace or account selectors return message plus field errors.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/PlanCopyRejected"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ValidationError"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "planWriter": []
+                    }
+                ]
+            }
+        },
+        "/workspaces/{workspace}/admin/plans/{deployment_plan}/validate": {
+            "post": {
+                "operationId": "launch.plans.validate",
+                "description": "Validate a plan without provider writes. Reuse a ready Meta video in the same ad account; plans needing a new video upload are refused.",
+                "summary": "Validate a deployment plan",
+                "tags": [
+                    "DeploymentPlan"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "deployment_plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "A missing workspace returns the api_route_not_found envelope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "The plan and its validation result.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "plan": {
+                                            "$ref": "#/components/schemas/DeploymentPlanRead"
+                                        }
+                                    },
+                                    "required": [
+                                        "plan"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request and integer selector validation returns message plus field errors. Domain refusals return error.code and error.message, including launch_video_upload_unavailable: New video uploads to Meta are unavailable. Use a video already uploaded to this Meta ad account or choose an image.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ValidationError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/PlanValidateRejected"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "planWriter": []
+                    }
+                ]
+            }
+        },
+        "/workspaces/{workspace}/admin/plans/{deployment_plan}/execute": {
+            "post": {
+                "operationId": "launch.plans.execute",
+                "description": "Create or replay a governed Launch intent using the reviewed plan's review_version. Changed versions are refused before intent creation or staging.",
+                "summary": "Execute a deployment plan",
+                "tags": [
+                    "DeploymentPlan"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "deployment_plan",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExecuteDeploymentPlanRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Created or replayed Launch intent, including a blocked intent under the kill switch.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LaunchIntentRead"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing, invalid, revoked or expired credentials, a missing active principal, missing read scope or lost issuer authority return message. No error code is returned.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Missing workspace, account, write access, execution scope or workspace grant returns message without a code.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "A missing or inaccessible workspace or plan, or a disabled Plan surface, returns error.code api_route_not_found with error.message, error.resolution, request and resources.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Request validation returns message plus errors (including intent_key and review_version). Domain refusals return error.code and error.message: plan_changed_since_review (\"This plan changed since you reviewed it. Reload and review the latest plan before submitting.\"), deployment_plan_not_executable, creative_not_ready, creative_bytes_unavailable, launch_video_upload_unavailable, ad_set_daily_budget_invalid, ad_set_bid_amount_invalid, currency_mismatch, currency_unsupported, budget_invalid, deployment_plan_has_no_actions. Proposal input or evidence validation returns message plus field errors.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ValidationError"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/PlanExecuteRejected"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "An intent key bound to another plan returns error.code launch_submission_key_plan_mismatch and error.message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanExecuteConflict"
+                                }
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "Oversized POST data returns message \"The POST data is too large.\" before route authorization.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "The shared API rate limit is exceeded; message is \"Too Many Attempts.\" Retry-After gives seconds until a retry is allowed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the shared API rate limit allows another request.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "The proposal could not be recorded: error.code proposal_not_recorded and error.message \"The proposal could not be recorded. Retry.\" No proposal is committed. The bounded workspace transaction timed out: error.code workspace_lock_timeout and error.message \"The workspace is busy. Retry the operation shortly.\" Retry-After is 1 second.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProposalUnavailable"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Retry-After": {
+                                "description": "Seconds until the operation may be retried.",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected server or provider-read fault returns message \"Server Error\" when debug is disabled.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "planWriter": []
+                    }
+                ]
+            }
+        },
+        "/mcp/launcher/import": {
+            "post": {
+                "operationId": "launcher.file-import",
+                "description": "Import a CSV or spreadsheet into a governed Launcher draft batch for the workspace and account authorized by the execution key.",
+                "summary": "Import a Launcher draft batch",
+                "tags": [
+                    "DraftBatchFileImport"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DraftBatchFileImportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "403": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "const": "insufficient_scope"
+                                        },
+                                        "error_description": {
+                                            "type": "string",
+                                            "const": "File import requires at least the workspace write execution tier."
+                                        }
+                                    },
+                                    "required": [
+                                        "error",
+                                        "error_description"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Draft batch result and syntactic row failures.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Integer selector or file validation returns message plus field errors. Rejected import files return error, reason_code and syntactic_row_failures.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ValidationError"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "file_import_rejected"
+                                                    ]
+                                                },
+                                                "reason_code": {
+                                                    "type": "string"
+                                                },
+                                                "syntactic_row_failures": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "import_row_number": {
+                                                                "type": "integer"
+                                                            },
+                                                            "reason_code": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "import_row_number",
+                                                            "reason_code"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "error",
+                                                "reason_code",
+                                                "syntactic_row_failures"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "https://plainrouter.com"
                     }
                 ]
             }
@@ -5450,6 +6068,364 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/workspaces/{workspace}/admin/policies": {
+            "post": {
+                "operationId": "launch.policies.store",
+                "description": "Read or maintain versioned naming and UTM policies in the authorized workspace. Policies apply to plans without submitting provider writes.",
+                "summary": "Create a Launch policy",
+                "tags": [
+                    "LaunchPolicy"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreLaunchPolicyRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "policy": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "policy"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "A missing workspace returns the api_route_not_found envelope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "operationId": "launch.policies.index",
+                "description": "Read or maintain versioned naming and UTM policies in the authorized workspace. Policies apply to plans without submitting provider writes.",
+                "summary": "List Launch policies",
+                "tags": [
+                    "LaunchPolicy"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "policies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/LaunchPolicy"
+                                                    }
+                                                },
+                                                "first_page_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "next_page_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "prev_page_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "data",
+                                                "first_page_url",
+                                                "from",
+                                                "last_page_url",
+                                                "last_page",
+                                                "links",
+                                                "next_page_url",
+                                                "path",
+                                                "per_page",
+                                                "prev_page_url",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "policies"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "A missing workspace returns the api_route_not_found envelope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/workspaces/{workspace}/admin/policies/{launch_policy}/retire": {
+            "post": {
+                "operationId": "launch.policies.retire",
+                "description": "Read or maintain versioned naming and UTM policies in the authorized workspace. Policies apply to plans without submitting provider writes.",
+                "summary": "Retire a Launch policy",
+                "tags": [
+                    "LaunchPolicy"
+                ],
+                "parameters": [
+                    {
+                        "name": "workspace",
+                        "in": "path",
+                        "required": true,
+                        "description": "The workspace ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "launch_policy",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "policy": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "policy"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or missing Server secret.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "A missing workspace returns the api_route_not_found envelope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "JSON booleans in integer inputs, including workspace selectors, return message plus errors mapping field names to arrays of messages. Numeric strings retain their existing validation and coercion.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
                                 }
                             }
                         }
@@ -10001,6 +10977,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "type": "object"
                                         },
                                         "rationale": {
@@ -10060,6 +11037,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "type": "object"
                                         },
                                         "rationale": {
@@ -10119,6 +11097,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "type": "object"
                                         },
                                         "rationale": {
@@ -10178,6 +11157,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "type": "object"
                                         },
                                         "rationale": {
@@ -10237,6 +11217,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "type": "object"
                                         },
                                         "rationale": {
@@ -10296,6 +11277,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "type": "object"
                                         },
                                         "rationale": {
@@ -10355,6 +11337,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "properties": {
                                                 "staged_asset_id": {
                                                     "maxLength": 255,
@@ -10455,6 +11438,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "properties": {
                                                 "new_daily_budget_minor": {
                                                     "minimum": 1,
@@ -10523,6 +11507,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "properties": {
                                                 "status": {
                                                     "enum": [
@@ -10594,6 +11579,7 @@
                                             ]
                                         },
                                         "params": {
+                                            "additionalProperties": false,
                                             "properties": {
                                                 "asset_id": {
                                                     "maxLength": 255,
@@ -15656,6 +16642,57 @@
                 ],
                 "title": "DestinationType"
             },
+            "DraftBatchFileImportRequest": {
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream"
+                    },
+                    "source_adset_id": {
+                        "type": "string",
+                        "pattern": "^[0-9]+$"
+                    },
+                    "source_ad_id": {
+                        "type": "string",
+                        "pattern": "^[0-9]+$"
+                    },
+                    "mode": {
+                        "$ref": "#/components/schemas/DraftBatchMode"
+                    },
+                    "folder_to_adset": {
+                        "type": "boolean"
+                    },
+                    "grouping_enabled": {
+                        "type": "boolean"
+                    },
+                    "account_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "workspace_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                },
+                "required": [
+                    "file",
+                    "source_adset_id",
+                    "source_ad_id",
+                    "mode"
+                ],
+                "title": "DraftBatchFileImportRequest"
+            },
+            "DraftBatchMode": {
+                "type": "string",
+                "enum": [
+                    "duplicate_adset",
+                    "duplicate_adset_per_media",
+                    "add_to_adset"
+                ],
+                "title": "DraftBatchMode"
+            },
             "EmqSnapshot": {
                 "type": "object",
                 "properties": {
@@ -16066,6 +17103,59 @@
                 ],
                 "title": "LaunchIntentStatus"
             },
+            "LaunchPolicy": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "workspace_id": {
+                        "type": "integer"
+                    },
+                    "kind": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "integer"
+                    },
+                    "body": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "workspace_id",
+                    "kind",
+                    "name",
+                    "version",
+                    "body",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "LaunchPolicy"
+            },
             "PlanCopyForbidden": {
                 "type": "object",
                 "properties": {
@@ -16236,6 +17326,7 @@
                                     "deployment_plan_not_executable",
                                     "creative_not_ready",
                                     "creative_bytes_unavailable",
+                                    "launch_video_upload_unavailable",
                                     "ad_set_daily_budget_invalid",
                                     "ad_set_bid_amount_invalid",
                                     "currency_mismatch",
@@ -16258,6 +17349,31 @@
                     "error"
                 ],
                 "title": "PlanExecuteRejected"
+            },
+            "PlanValidateRejected": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "description": "Launch plan refusal code, including launch_video_upload_unavailable when a new Meta video upload would be required."
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "message"
+                        ]
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "title": "PlanValidateRejected"
             },
             "ProposalReplayConflict": {
                 "type": "object",
@@ -16461,6 +17577,239 @@
                 ],
                 "title": "StoreCreativeRequest"
             },
+            "StoreDeploymentPlanRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "platform_ad_account_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "platform": {
+                        "type": "string",
+                        "enum": [
+                            "google",
+                            "meta",
+                            "microsoft"
+                        ]
+                    },
+                    "campaign_ref": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "campaign_spec": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "ad_set_ref": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "ad_set_spec": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "Budget fields use positive whole Meta minor units. JSON booleans return 422 with field errors; digit-only strings retain their existing normalization.",
+                        "properties": {
+                            "daily_budget": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "bid_amount": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "lifetime_budget": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ],
+                                "minimum": 1
+                            }
+                        },
+                        "additionalProperties": {}
+                    },
+                    "budget_type": {
+                        "type": "string",
+                        "enum": [
+                            "daily",
+                            "lifetime"
+                        ]
+                    },
+                    "budget_amount_minor": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "currency": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 3
+                    },
+                    "copy": {
+                        "type": "object",
+                        "properties": {
+                            "primary_text": {
+                                "type": "string"
+                            },
+                            "headline": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "cta": {
+                                "type": "string",
+                                "enum": [
+                                    "learn_more",
+                                    "shop_now",
+                                    "sign_up"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "primary_text",
+                            "headline",
+                            "description",
+                            "cta"
+                        ]
+                    },
+                    "landing_page": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2048
+                    },
+                    "utm_policy_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "naming_policy_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "creative_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "creative_overrides": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "creative_id": {
+                                    "type": "string"
+                                },
+                                "copy": {
+                                    "type": "object",
+                                    "properties": {
+                                        "primary_text": {
+                                            "type": "string"
+                                        },
+                                        "headline": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "cta": {
+                                            "type": "string",
+                                            "enum": [
+                                                "learn_more",
+                                                "shop_now",
+                                                "sign_up"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "primary_text",
+                                        "headline",
+                                        "description",
+                                        "cta"
+                                    ]
+                                },
+                                "landing_page": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uri",
+                                    "maxLength": 2048
+                                }
+                            },
+                            "required": [
+                                "creative_id",
+                                "copy",
+                                "landing_page"
+                            ]
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "platform_ad_account_id",
+                    "platform",
+                    "budget_type",
+                    "budget_amount_minor",
+                    "currency",
+                    "copy",
+                    "landing_page"
+                ],
+                "title": "StoreDeploymentPlanRequest"
+            },
+            "StoreLaunchPolicyRequest": {
+                "type": "object",
+                "properties": {
+                    "kind": {
+                        "type": "string",
+                        "enum": [
+                            "utm",
+                            "naming"
+                        ]
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "body": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    }
+                },
+                "required": [
+                    "kind",
+                    "name",
+                    "body"
+                ],
+                "title": "StoreLaunchPolicyRequest"
+            },
             "TrafficClass": {
                 "type": "string",
                 "description": "The only persisted traffic verdicts for passive document arrivals. Request facts and classifier reasons never cross the stripping boundary.\n",
@@ -16469,6 +17818,218 @@
                     "invalid"
                 ],
                 "title": "TrafficClass"
+            },
+            "UpdateCreativeStatusRequest": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "draft",
+                            "approved",
+                            "retired"
+                        ]
+                    }
+                },
+                "required": [
+                    "status"
+                ],
+                "title": "UpdateCreativeStatusRequest"
+            },
+            "UpdateDeploymentPlanRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "platform_ad_account_id": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "platform": {
+                        "type": "string",
+                        "enum": [
+                            "google",
+                            "meta",
+                            "microsoft"
+                        ]
+                    },
+                    "campaign_ref": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "campaign_spec": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "ad_set_ref": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "ad_set_spec": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "Budget fields use positive whole Meta minor units. JSON booleans return 422 with field errors; digit-only strings retain their existing normalization.",
+                        "properties": {
+                            "daily_budget": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "bid_amount": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "lifetime_budget": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ],
+                                "minimum": 1
+                            }
+                        },
+                        "additionalProperties": {}
+                    },
+                    "budget_type": {
+                        "type": "string",
+                        "enum": [
+                            "daily",
+                            "lifetime"
+                        ]
+                    },
+                    "budget_amount_minor": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "currency": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 3
+                    },
+                    "copy": {
+                        "type": "object",
+                        "properties": {
+                            "primary_text": {
+                                "type": "string"
+                            },
+                            "headline": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "cta": {
+                                "type": "string",
+                                "enum": [
+                                    "learn_more",
+                                    "shop_now",
+                                    "sign_up"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "primary_text",
+                            "headline",
+                            "description",
+                            "cta"
+                        ]
+                    },
+                    "landing_page": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2048
+                    },
+                    "utm_policy_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "naming_policy_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "creative_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "creative_overrides": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "creative_id": {
+                                    "type": "string"
+                                },
+                                "copy": {
+                                    "type": "object",
+                                    "properties": {
+                                        "primary_text": {
+                                            "type": "string"
+                                        },
+                                        "headline": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "cta": {
+                                            "type": "string",
+                                            "enum": [
+                                                "learn_more",
+                                                "shop_now",
+                                                "sign_up"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "primary_text",
+                                        "headline",
+                                        "description",
+                                        "cta"
+                                    ]
+                                },
+                                "landing_page": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uri",
+                                    "maxLength": 2048
+                                }
+                            },
+                            "required": [
+                                "creative_id",
+                                "copy",
+                                "landing_page"
+                            ]
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "title": "UpdateDeploymentPlanRequest"
             },
             "ValidationError": {
                 "type": "object",

@@ -11,6 +11,7 @@ class PlanExecuteRejectedErrorCode(str, Enum):
     CURRENCY_UNSUPPORTED = "currency_unsupported"
     DEPLOYMENT_PLAN_HAS_NO_ACTIONS = "deployment_plan_has_no_actions"
     DEPLOYMENT_PLAN_NOT_EXECUTABLE = "deployment_plan_not_executable"
+    LAUNCH_VIDEO_UPLOAD_UNAVAILABLE = "launch_video_upload_unavailable"
     PLAN_CHANGED_SINCE_REVIEW = "plan_changed_since_review"
 
     def __str__(self) -> str:

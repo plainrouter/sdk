@@ -9,6 +9,7 @@ from ...client import AuthenticatedClient, Client
 from ...models.api_route_not_found import ApiRouteNotFound
 from ...models.error_message import ErrorMessage
 from ...models.launch_plans_index_response_200 import LaunchPlansIndexResponse200
+from ...models.validation_error import ValidationError
 from ...types import UNSET, Response, Unset
 
 
@@ -43,7 +44,7 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | None:
+) -> ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError | None:
     if response.status_code == 200:
         response_200 = LaunchPlansIndexResponse200.from_dict(response.json())
 
@@ -64,6 +65,11 @@ def _parse_response(
 
         return response_404
 
+    if response.status_code == 422:
+        response_422 = ValidationError.from_dict(response.json())
+
+        return response_422
+
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -72,7 +78,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200]:
+) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -88,7 +94,7 @@ def sync_detailed(
     page: int | Unset = 1,
     cursor: int | Unset = UNSET,
     per_page: int | Unset = 25,
-) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200]:
+) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError]:
     """List deployment plans
 
      Read plans for the approved ad account with their current review_version. Pass the version from the
@@ -105,7 +111,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200]
+        Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -129,7 +135,7 @@ def sync(
     page: int | Unset = 1,
     cursor: int | Unset = UNSET,
     per_page: int | Unset = 25,
-) -> ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | None:
+) -> ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError | None:
     """List deployment plans
 
      Read plans for the approved ad account with their current review_version. Pass the version from the
@@ -146,7 +152,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200
+        ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError
     """
 
     return sync_detailed(
@@ -165,7 +171,7 @@ async def asyncio_detailed(
     page: int | Unset = 1,
     cursor: int | Unset = UNSET,
     per_page: int | Unset = 25,
-) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200]:
+) -> Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError]:
     """List deployment plans
 
      Read plans for the approved ad account with their current review_version. Pass the version from the
@@ -182,7 +188,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200]
+        Response[ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -204,7 +210,7 @@ async def asyncio(
     page: int | Unset = 1,
     cursor: int | Unset = UNSET,
     per_page: int | Unset = 25,
-) -> ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | None:
+) -> ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError | None:
     """List deployment plans
 
      Read plans for the approved ad account with their current review_version. Pass the version from the
@@ -221,7 +227,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200
+        ApiRouteNotFound | ErrorMessage | LaunchPlansIndexResponse200 | ValidationError
     """
 
     return (

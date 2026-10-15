@@ -21,7 +21,7 @@ Gem::Specification.new do |specification|
   }
 
   specification.files = Dir.chdir(__dir__) do
-    Dir["LICENSE", "README.md", "lib/**/*.rb"].sort
+    Dir["LICENSE", "README.md", "lib/**/*.rb", "lib/**/*.json"].sort
   end
   specification.require_paths = ["lib"]
 

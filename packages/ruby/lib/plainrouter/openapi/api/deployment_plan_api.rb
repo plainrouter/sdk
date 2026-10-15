@@ -330,5 +330,224 @@ module PlainRouter::OpenAPI
       end
       return data, status_code, headers
     end
+
+    # Create a deployment plan
+    # Create or edit a draft deployment plan for the authorized advertising account. Review and validate the plan before submitting any provider writes.
+    # @param workspace [Integer] The workspace ID
+    # @param store_deployment_plan_request [StoreDeploymentPlanRequest]
+    # @param [Hash] opts the optional parameters
+    # @return [LaunchPlansStore201Response]
+    def launch_plans_store(workspace, store_deployment_plan_request, opts = {})
+      data, _status_code, _headers = launch_plans_store_with_http_info(workspace, store_deployment_plan_request, opts)
+      data
+    end
+
+    # Create a deployment plan
+    # Create or edit a draft deployment plan for the authorized advertising account. Review and validate the plan before submitting any provider writes.
+    # @param workspace [Integer] The workspace ID
+    # @param store_deployment_plan_request [StoreDeploymentPlanRequest]
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(LaunchPlansStore201Response, Integer, Hash)>] LaunchPlansStore201Response data, response status code and response headers
+    def launch_plans_store_with_http_info(workspace, store_deployment_plan_request, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: DeploymentPlanApi.launch_plans_store ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling DeploymentPlanApi.launch_plans_store"
+      end
+      # verify the required parameter 'store_deployment_plan_request' is set
+      if @api_client.config.client_side_validation && store_deployment_plan_request.nil?
+        fail ArgumentError, "Missing the required parameter 'store_deployment_plan_request' when calling DeploymentPlanApi.launch_plans_store"
+      end
+      # resource path
+      local_var_path = '/workspaces/{workspace}/admin/plans'.sub('{workspace}', CGI.escape(workspace.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+      # HTTP header 'Content-Type'
+      content_type = @api_client.select_header_content_type(['application/json'])
+      if !content_type.nil?
+          header_params['Content-Type'] = content_type
+      end
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body] || @api_client.object_to_http_body(store_deployment_plan_request)
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'LaunchPlansStore201Response'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
+
+      new_options = opts.merge(
+        :operation => :"DeploymentPlanApi.launch_plans_store",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:POST, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: DeploymentPlanApi#launch_plans_store\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Update a deployment plan
+    # Create or edit a draft deployment plan for the authorized advertising account. Review and validate the plan before submitting any provider writes.
+    # @param workspace [Integer] The workspace ID
+    # @param deployment_plan [String]
+    # @param [Hash] opts the optional parameters
+    # @option opts [UpdateDeploymentPlanRequest] :update_deployment_plan_request
+    # @return [LaunchPlansStore201Response]
+    def launch_plans_update(workspace, deployment_plan, opts = {})
+      data, _status_code, _headers = launch_plans_update_with_http_info(workspace, deployment_plan, opts)
+      data
+    end
+
+    # Update a deployment plan
+    # Create or edit a draft deployment plan for the authorized advertising account. Review and validate the plan before submitting any provider writes.
+    # @param workspace [Integer] The workspace ID
+    # @param deployment_plan [String]
+    # @param [Hash] opts the optional parameters
+    # @option opts [UpdateDeploymentPlanRequest] :update_deployment_plan_request
+    # @return [Array<(LaunchPlansStore201Response, Integer, Hash)>] LaunchPlansStore201Response data, response status code and response headers
+    def launch_plans_update_with_http_info(workspace, deployment_plan, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: DeploymentPlanApi.launch_plans_update ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling DeploymentPlanApi.launch_plans_update"
+      end
+      # verify the required parameter 'deployment_plan' is set
+      if @api_client.config.client_side_validation && deployment_plan.nil?
+        fail ArgumentError, "Missing the required parameter 'deployment_plan' when calling DeploymentPlanApi.launch_plans_update"
+      end
+      # resource path
+      local_var_path = '/workspaces/{workspace}/admin/plans/{deployment_plan}'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{deployment_plan}', CGI.escape(deployment_plan.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+      # HTTP header 'Content-Type'
+      content_type = @api_client.select_header_content_type(['application/json'])
+      if !content_type.nil?
+          header_params['Content-Type'] = content_type
+      end
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body] || @api_client.object_to_http_body(opts[:'update_deployment_plan_request'])
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'LaunchPlansStore201Response'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['workspaceSecret']
+
+      new_options = opts.merge(
+        :operation => :"DeploymentPlanApi.launch_plans_update",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:PATCH, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: DeploymentPlanApi#launch_plans_update\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
+
+    # Validate a deployment plan
+    # Validate a plan without provider writes. Reuse a ready Meta video in the same ad account; plans needing a new video upload are refused.
+    # @param workspace [Integer] The workspace ID
+    # @param deployment_plan [String]
+    # @param [Hash] opts the optional parameters
+    # @return [LaunchPlansShow200Response]
+    def launch_plans_validate(workspace, deployment_plan, opts = {})
+      data, _status_code, _headers = launch_plans_validate_with_http_info(workspace, deployment_plan, opts)
+      data
+    end
+
+    # Validate a deployment plan
+    # Validate a plan without provider writes. Reuse a ready Meta video in the same ad account; plans needing a new video upload are refused.
+    # @param workspace [Integer] The workspace ID
+    # @param deployment_plan [String]
+    # @param [Hash] opts the optional parameters
+    # @return [Array<(LaunchPlansShow200Response, Integer, Hash)>] LaunchPlansShow200Response data, response status code and response headers
+    def launch_plans_validate_with_http_info(workspace, deployment_plan, opts = {})
+      if @api_client.config.debugging
+        @api_client.config.logger.debug 'Calling API: DeploymentPlanApi.launch_plans_validate ...'
+      end
+      # verify the required parameter 'workspace' is set
+      if @api_client.config.client_side_validation && workspace.nil?
+        fail ArgumentError, "Missing the required parameter 'workspace' when calling DeploymentPlanApi.launch_plans_validate"
+      end
+      # verify the required parameter 'deployment_plan' is set
+      if @api_client.config.client_side_validation && deployment_plan.nil?
+        fail ArgumentError, "Missing the required parameter 'deployment_plan' when calling DeploymentPlanApi.launch_plans_validate"
+      end
+      # resource path
+      local_var_path = '/workspaces/{workspace}/admin/plans/{deployment_plan}/validate'.sub('{workspace}', CGI.escape(workspace.to_s)).sub('{deployment_plan}', CGI.escape(deployment_plan.to_s))
+
+      # query parameters
+      query_params = opts[:query_params] || {}
+
+      # header parameters
+      header_params = opts[:header_params] || {}
+      # HTTP header 'Accept' (if needed)
+      header_params['Accept'] = @api_client.select_header_accept(['application/json']) unless header_params['Accept']
+
+      # form parameters
+      form_params = opts[:form_params] || {}
+
+      # http body (model)
+      post_body = opts[:debug_body]
+
+      # return_type
+      return_type = opts[:debug_return_type] || 'LaunchPlansShow200Response'
+
+      # auth_names
+      auth_names = opts[:debug_auth_names] || ['planWriter']
+
+      new_options = opts.merge(
+        :operation => :"DeploymentPlanApi.launch_plans_validate",
+        :header_params => header_params,
+        :query_params => query_params,
+        :form_params => form_params,
+        :body => post_body,
+        :auth_names => auth_names,
+        :return_type => return_type
+      )
+
+      data, status_code, headers = @api_client.call_api(:POST, local_var_path, new_options)
+      if @api_client.config.debugging
+        @api_client.config.logger.debug "API called: DeploymentPlanApi#launch_plans_validate\nData: #{data.inspect}\nStatus code: #{status_code}\nHeaders: #{headers}"
+      end
+      return data, status_code, headers
+    end
   end
 end

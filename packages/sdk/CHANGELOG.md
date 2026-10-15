@@ -2,6 +2,11 @@
 
 ## 0.10.0 (unreleased)
 
+- Tighten validation of the existing contract: integer inputs refuse JSON booleans instead of treating them as 1 or 0. The curated client rejects booleans before sending with an error naming the integer field; integer selectors are generated from the contract, and integers and numeric strings remain accepted.
+- Tighten existing Action params validation: all 14 variants accept only their documented keys; extra keys, including case variants, fail with `action_params_invalid`.
+- Document `launch_video_upload_unavailable` for Launch plans that require a new Meta video upload, at validation and execution.
+- Include newly documented integer-boolean 422 responses, the plan validate 422 code, creative-list 404 and 403 responses, and corrected descriptions.
+
 - Correct `actions.api.index`, `actions.api.policy`, `actions.api.show`, `actions.api.batch`, and `actions.api.decision-receipt` errors: 401 is `AgentCredentialError` or `ErrorMessage`, and 403 is `AgentCredentialError`; list, policy, show, and batch 404 is `ApiRouteNotFound`, while decision-receipt 404 is `ActionReceiptUnavailable` or `ApiRouteNotFound`. Remove `enabled` from action-rule create requests and `platform_ad_account_id` from update requests; both fields are prohibited by the contract.
 - Normalize header names case-insensitively for plain objects, `Headers` instances, tuple arrays and array-value request options before generated merging, on every operation including those that send a body. Caller headers replace defaults, except that on a client configured with a token the SDK's token is sent as Authorization on operations that authenticate unless a per-call `auth` option overrides it. Accept and Authorization each send at most one header line, and tuple indexes never become header names.
 

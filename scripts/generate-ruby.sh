@@ -43,3 +43,5 @@ node "$ROOT/scripts/prepare-generator-input.mjs" "$ROOT/spec/openapi.json" "$GEN
 
 find "$OUTPUT/lib/plainrouter" -type f -name '*.rb' -print0 \
   | xargs -0 perl -pi -e 's/[ \t]+$//'
+
+node "$ROOT/scripts/generate-integer-fields.mjs" "$OUTPUT/lib/plainrouter/integer_input_fields.json"
