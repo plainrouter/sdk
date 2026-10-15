@@ -2432,10 +2432,10 @@ export const zActionsApiIndexQuery = z.object({
         'rolled_back',
         'blocked'
     ]).optional(),
-    page: z.int().gte(1).optional(),
     account_id: z.int().gte(1).optional(),
     cursor: z.int().gte(0).optional(),
-    limit: z.int().gte(1).lte(100).optional().default(25)
+    limit: z.int().gte(1).lte(100).optional().default(25),
+    page: z.int().gte(1).lte(10000000000000000).optional()
 });
 
 /**
@@ -2516,11 +2516,11 @@ export const zActionsRulesIndexPath = z.object({
 });
 
 export const zActionsRulesIndexQuery = z.object({
-    page: z.int().gte(1).optional(),
     account_id: z.int().gte(1).optional(),
     platform_ad_account_id: z.int().gte(1).optional(),
     cursor: z.string().optional(),
-    per_page: z.int().gte(1).lte(100).optional().default(25)
+    per_page: z.int().gte(1).lte(100).optional().default(25),
+    page: z.int().gte(1).lte(10000000000000000).optional()
 });
 
 /**
@@ -2720,8 +2720,8 @@ export const zActionsTestsApiIndexPath = z.object({
 });
 
 export const zActionsTestsApiIndexQuery = z.object({
-    page: z.int().gte(1).optional(),
-    per_page: z.int().gte(1).lte(100).optional()
+    per_page: z.int().gte(1).lte(100).optional(),
+    page: z.int().gte(1).lte(10000000000000000).optional()
 });
 
 /**
@@ -2818,9 +2818,9 @@ export const zLaunchCreativesIndexPath = z.object({
 });
 
 export const zLaunchCreativesIndexQuery = z.object({
-    page: z.int().optional().default(1),
     cursor: z.int().gte(0).optional(),
-    per_page: z.int().gte(1).lte(100).optional().default(25)
+    per_page: z.int().gte(1).lte(100).optional().default(25),
+    page: z.int().gte(1).lte(10000000000000000).optional().default(1)
 });
 
 /**
@@ -2923,9 +2923,9 @@ export const zLaunchPlansIndexPath = z.object({
 });
 
 export const zLaunchPlansIndexQuery = z.object({
-    page: z.int().optional().default(1),
     cursor: z.int().gte(0).optional(),
-    per_page: z.int().optional().default(25)
+    per_page: z.int().optional().default(25),
+    page: z.int().gte(1).lte(10000000000000000).optional().default(1)
 });
 
 /**
@@ -3310,8 +3310,8 @@ export const zLaunchPoliciesIndexPath = z.object({
 });
 
 export const zLaunchPoliciesIndexQuery = z.object({
-    page: z.int().optional(),
-    per_page: z.int().optional()
+    per_page: z.int().optional(),
+    page: z.int().gte(1).lte(10000000000000000).optional()
 });
 
 export const zLaunchPoliciesIndexResponse = z.object({

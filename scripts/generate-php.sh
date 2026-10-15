@@ -35,7 +35,7 @@ fi
 
 node "$ROOT/scripts/verify-spec.mjs"
 
-node "$ROOT/scripts/prepare-generator-input.mjs" "$ROOT/spec/openapi.json" "$GENERATOR_INPUT"
+node "$ROOT/scripts/prepare-generator-input.mjs" "$ROOT/spec/openapi.json" "$GENERATOR_INPUT" --omit-page-defaults
 
 "$JAVA_BIN" -jar "$GENERATOR_JAR" generate \
   -g php \

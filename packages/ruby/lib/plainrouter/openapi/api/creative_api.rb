@@ -23,9 +23,9 @@ module PlainRouter::OpenAPI
     # Read complete workspace creative rows within the shared MCP byte budget. Continue with next_cursor as cursor in the same workspace.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :page  (default to 1)
     # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :per_page Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
+    # @option opts [Integer] :page Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error. (default to 1)
     # @return [LaunchCreativesIndex200Response]
     def launch_creatives_index(workspace, opts = {})
       data, _status_code, _headers = launch_creatives_index_with_http_info(workspace, opts)
@@ -36,9 +36,9 @@ module PlainRouter::OpenAPI
     # Read complete workspace creative rows within the shared MCP byte budget. Continue with next_cursor as cursor in the same workspace.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :page  (default to 1)
     # @option opts [Integer] :cursor Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.
     # @option opts [Integer] :per_page Maximum complete rows; the byte budget may return fewer. Defaults to 25. (default to 25)
+    # @option opts [Integer] :page Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error. (default to 1)
     # @return [Array<(LaunchCreativesIndex200Response, Integer, Hash)>] LaunchCreativesIndex200Response data, response status code and response headers
     def launch_creatives_index_with_http_info(workspace, opts = {})
       if @api_client.config.debugging
@@ -60,14 +60,22 @@ module PlainRouter::OpenAPI
         fail ArgumentError, 'invalid value for "opts[:"per_page"]" when calling CreativeApi.launch_creatives_index, must be greater than or equal to 1.'
       end
 
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] > 10000000000000000
+        fail ArgumentError, 'invalid value for "opts[:"page"]" when calling CreativeApi.launch_creatives_index, must be smaller than or equal to 10000000000000000.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"page"]" when calling CreativeApi.launch_creatives_index, must be greater than or equal to 1.'
+      end
+
       # resource path
       local_var_path = '/workspaces/{workspace}/admin/creatives'.sub('{workspace}', CGI.escape(workspace.to_s))
 
       # query parameters
       query_params = opts[:query_params] || {}
-      query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
       query_params[:'cursor'] = opts[:'cursor'] if !opts[:'cursor'].nil?
       query_params[:'per_page'] = opts[:'per_page'] if !opts[:'per_page'].nil?
+      query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}

@@ -19,10 +19,10 @@ def _get_kwargs(
     workspace: int,
     *,
     status: ActionsApiIndexStatus | Unset = UNSET,
-    page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
     cursor: int | Unset = UNSET,
     limit: int | Unset = 25,
+    page: int | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -33,13 +33,13 @@ def _get_kwargs(
 
     params["status"] = json_status
 
-    params["page"] = page
-
     params["account_id"] = account_id
 
     params["cursor"] = cursor
 
     params["limit"] = limit
+
+    params["page"] = page
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -130,10 +130,10 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     status: ActionsApiIndexStatus | Unset = UNSET,
-    page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
     cursor: int | Unset = UNSET,
     limit: int | Unset = 25,
+    page: int | Unset = UNSET,
 ) -> Response[
     ActionListRead | AgentCredentialError | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ValidationError
 ]:
@@ -145,10 +145,10 @@ def sync_detailed(
     Args:
         workspace (int):
         status (ActionsApiIndexStatus | Unset):
-        page (int | Unset):
         account_id (int | Unset):
         cursor (int | Unset):
         limit (int | Unset):  Default: 25.
+        page (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -161,10 +161,10 @@ def sync_detailed(
     kwargs = _get_kwargs(
         workspace=workspace,
         status=status,
-        page=page,
         account_id=account_id,
         cursor=cursor,
         limit=limit,
+        page=page,
     )
 
     response = client.get_httpx_client().request(
@@ -179,10 +179,10 @@ def sync(
     *,
     client: AuthenticatedClient,
     status: ActionsApiIndexStatus | Unset = UNSET,
-    page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
     cursor: int | Unset = UNSET,
     limit: int | Unset = 25,
+    page: int | Unset = UNSET,
 ) -> (
     ActionListRead
     | AgentCredentialError
@@ -200,10 +200,10 @@ def sync(
     Args:
         workspace (int):
         status (ActionsApiIndexStatus | Unset):
-        page (int | Unset):
         account_id (int | Unset):
         cursor (int | Unset):
         limit (int | Unset):  Default: 25.
+        page (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -217,10 +217,10 @@ def sync(
         workspace=workspace,
         client=client,
         status=status,
-        page=page,
         account_id=account_id,
         cursor=cursor,
         limit=limit,
+        page=page,
     ).parsed
 
 
@@ -229,10 +229,10 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     status: ActionsApiIndexStatus | Unset = UNSET,
-    page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
     cursor: int | Unset = UNSET,
     limit: int | Unset = 25,
+    page: int | Unset = UNSET,
 ) -> Response[
     ActionListRead | AgentCredentialError | AgentCredentialError | ErrorMessage | ApiRouteNotFound | ValidationError
 ]:
@@ -244,10 +244,10 @@ async def asyncio_detailed(
     Args:
         workspace (int):
         status (ActionsApiIndexStatus | Unset):
-        page (int | Unset):
         account_id (int | Unset):
         cursor (int | Unset):
         limit (int | Unset):  Default: 25.
+        page (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -260,10 +260,10 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         workspace=workspace,
         status=status,
-        page=page,
         account_id=account_id,
         cursor=cursor,
         limit=limit,
+        page=page,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -276,10 +276,10 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     status: ActionsApiIndexStatus | Unset = UNSET,
-    page: int | Unset = UNSET,
     account_id: int | Unset = UNSET,
     cursor: int | Unset = UNSET,
     limit: int | Unset = 25,
+    page: int | Unset = UNSET,
 ) -> (
     ActionListRead
     | AgentCredentialError
@@ -297,10 +297,10 @@ async def asyncio(
     Args:
         workspace (int):
         status (ActionsApiIndexStatus | Unset):
-        page (int | Unset):
         account_id (int | Unset):
         cursor (int | Unset):
         limit (int | Unset):  Default: 25.
+        page (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -315,9 +315,9 @@ async def asyncio(
             workspace=workspace,
             client=client,
             status=status,
-            page=page,
             account_id=account_id,
             cursor=cursor,
             limit=limit,
+            page=page,
         )
     ).parsed

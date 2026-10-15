@@ -390,14 +390,6 @@
                         }
                     },
                     {
-                        "name": "page",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1
-                        }
-                    },
-                    {
                         "name": "account_id",
                         "in": "query",
                         "description": "Optional positive account ID. A bound key may name only its own account; a different ID returns 422. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
@@ -424,6 +416,16 @@
                             "default": 25,
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 10000000000000000
                         }
                     }
                 ],
@@ -939,14 +941,6 @@
                         }
                     },
                     {
-                        "name": "page",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1
-                        }
-                    },
-                    {
                         "name": "account_id",
                         "in": "query",
                         "description": "Optional integer account ID. JSON booleans return 422 with message plus field errors. A valid supplied ID is ignored by an account-bound key. An unbound key requires exactly one active available advertising account with an active connection; omission uses that account and a supplied ID must match it. Multiple active accounts return 422 even when account_id is supplied.",
@@ -981,6 +975,16 @@
                             "default": 25,
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 10000000000000000
                         }
                     }
                 ],
@@ -2198,20 +2202,22 @@
                         }
                     },
                     {
-                        "name": "page",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1
-                        }
-                    },
-                    {
                         "name": "per_page",
                         "in": "query",
                         "schema": {
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 10000000000000000
                         }
                     }
                 ],
@@ -3181,14 +3187,6 @@
                         }
                     },
                     {
-                        "name": "page",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "default": 1
-                        }
-                    },
-                    {
                         "name": "cursor",
                         "in": "query",
                         "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
@@ -3206,6 +3204,17 @@
                             "default": 25,
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1,
+                            "maximum": 10000000000000000
                         }
                     }
                 ],
@@ -3843,14 +3852,6 @@
                         }
                     },
                     {
-                        "name": "page",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer",
-                            "default": 1
-                        }
-                    },
-                    {
                         "name": "cursor",
                         "in": "query",
                         "description": "Continue using next_cursor with the same filters; rule lists use an immutable rule ID, other lists an offset or object ID.",
@@ -3866,6 +3867,17 @@
                         "schema": {
                             "type": "integer",
                             "default": 25
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1,
+                            "maximum": 10000000000000000
                         }
                     }
                 ],
@@ -6174,17 +6186,20 @@
                         }
                     },
                     {
-                        "name": "page",
+                        "name": "per_page",
                         "in": "query",
                         "schema": {
                             "type": "integer"
                         }
                     },
                     {
-                        "name": "per_page",
+                        "name": "page",
                         "in": "query",
+                        "description": "Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.",
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 10000000000000000
                         }
                     }
                 ],

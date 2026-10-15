@@ -23,8 +23,8 @@ module PlainRouter::OpenAPI
     # Lists scoped Tests, their loser pause candidate status and reasons, and observed conversion event choices with last-30-day recorded counts.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :page
     # @option opts [Integer] :per_page
+    # @option opts [Integer] :page Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
     # @return [AdTestListRead]
     def actions_tests_api_index(workspace, opts = {})
       data, _status_code, _headers = actions_tests_api_index_with_http_info(workspace, opts)
@@ -35,8 +35,8 @@ module PlainRouter::OpenAPI
     # Lists scoped Tests, their loser pause candidate status and reasons, and observed conversion event choices with last-30-day recorded counts.
     # @param workspace [Integer] The workspace ID
     # @param [Hash] opts the optional parameters
-    # @option opts [Integer] :page
     # @option opts [Integer] :per_page
+    # @option opts [Integer] :page Integer page from 1 through 10000000000000000; integer strings are accepted. Zero, negatives, fractions, non-numeric strings and booleans return 422 with a page field validation error.
     # @return [Array<(AdTestListRead, Integer, Hash)>] AdTestListRead data, response status code and response headers
     def actions_tests_api_index_with_http_info(workspace, opts = {})
       if @api_client.config.debugging
@@ -46,10 +46,6 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && workspace.nil?
         fail ArgumentError, "Missing the required parameter 'workspace' when calling AdTestApiApi.actions_tests_api_index"
       end
-      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] < 1
-        fail ArgumentError, 'invalid value for "opts[:"page"]" when calling AdTestApiApi.actions_tests_api_index, must be greater than or equal to 1.'
-      end
-
       if @api_client.config.client_side_validation && !opts[:'per_page'].nil? && opts[:'per_page'] > 100
         fail ArgumentError, 'invalid value for "opts[:"per_page"]" when calling AdTestApiApi.actions_tests_api_index, must be smaller than or equal to 100.'
       end
@@ -58,13 +54,21 @@ module PlainRouter::OpenAPI
         fail ArgumentError, 'invalid value for "opts[:"per_page"]" when calling AdTestApiApi.actions_tests_api_index, must be greater than or equal to 1.'
       end
 
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] > 10000000000000000
+        fail ArgumentError, 'invalid value for "opts[:"page"]" when calling AdTestApiApi.actions_tests_api_index, must be smaller than or equal to 10000000000000000.'
+      end
+
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] < 1
+        fail ArgumentError, 'invalid value for "opts[:"page"]" when calling AdTestApiApi.actions_tests_api_index, must be greater than or equal to 1.'
+      end
+
       # resource path
       local_var_path = '/agent/workspaces/{workspace}/tests'.sub('{workspace}', CGI.escape(workspace.to_s))
 
       # query parameters
       query_params = opts[:query_params] || {}
-      query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
       query_params[:'per_page'] = opts[:'per_page'] if !opts[:'per_page'].nil?
+      query_params[:'page'] = opts[:'page'] if !opts[:'page'].nil?
 
       # header parameters
       header_params = opts[:header_params] || {}
