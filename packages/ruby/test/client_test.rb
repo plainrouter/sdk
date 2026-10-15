@@ -604,9 +604,11 @@ class PlainRouterClientTest < Minitest::Test
   end
 
   def test_per_call_accept_overrides_are_case_insensitive_and_take_precedence
-    ["Accept", "ACCEPT", "accept"].each do |name|
+    [["Accept", nil], ["ACCEPT", nil], ["accept", nil], ["Accept", "2"]].each do |name, generated_page|
+      path = generated_page ? "/api/v1/workspaces/1/admin/creatives?page=2" : "/api/v1/dashboard/events"
       stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-        stub.get("/api/v1/dashboard/events") do |env|
+        stub.get(path) do |env|
+          assert_equal "page=2", env.url.query if generated_page
           assert_equal "text/html", env.request_headers["Accept"]
           assert_equal "Bearer ruby-test", env.request_headers["Authorization"]
           assert_equal 1, env.request_headers.keys.count { |key| key.casecmp?("Accept") }
@@ -617,7 +619,15 @@ class PlainRouterClientTest < Minitest::Test
       client = PlainRouter::Client.new(token: "ruby-test", accept: "text/csv") do |config|
         config.configure_faraday_connection { |connection| connection.adapter :test, stubs }
       end
-      assert_raises(PlainRouter::OpenAPI::ApiError) { client.operations.list_events(header_params: { name => "text/html", "authorization" => "caller-token" }) }
+      assert_raises(PlainRouter::OpenAPI::ApiError) do
+        headers = { name => "text/html", "authorization" => "caller-token" }
+        if generated_page
+          generated = PlainRouter::OpenAPI::CreativeApi.new(client.creatives.api_client)
+          generated.launch_creatives_index(1, page: generated_page, header_params: headers)
+        else
+          client.operations.list_events(header_params: headers)
+        end
+      end
       stubs.verify_stubbed_calls
     end
   end

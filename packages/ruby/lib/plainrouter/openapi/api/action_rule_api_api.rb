@@ -52,27 +52,27 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && workspace.nil?
         fail ArgumentError, "Missing the required parameter 'workspace' when calling ActionRuleApiApi.actions_rules_index"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionRuleApiApi.actions_rules_index, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'platform_ad_account_id'].nil? && opts[:'platform_ad_account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'platform_ad_account_id'].nil? && !opts[:'platform_ad_account_id'].is_a?(String) && opts[:'platform_ad_account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"platform_ad_account_id"]" when calling ActionRuleApiApi.actions_rules_index, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'per_page'].nil? && opts[:'per_page'] > 100
+      if @api_client.config.client_side_validation && !opts[:'per_page'].nil? && !opts[:'per_page'].is_a?(String) && opts[:'per_page'] > 100
         fail ArgumentError, 'invalid value for "opts[:"per_page"]" when calling ActionRuleApiApi.actions_rules_index, must be smaller than or equal to 100.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'per_page'].nil? && opts[:'per_page'] < 1
+      if @api_client.config.client_side_validation && !opts[:'per_page'].nil? && !opts[:'per_page'].is_a?(String) && opts[:'per_page'] < 1
         fail ArgumentError, 'invalid value for "opts[:"per_page"]" when calling ActionRuleApiApi.actions_rules_index, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] > 10000000000000000
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && !opts[:'page'].is_a?(String) && opts[:'page'] > 10000000000000000
         fail ArgumentError, 'invalid value for "opts[:"page"]" when calling ActionRuleApiApi.actions_rules_index, must be smaller than or equal to 10000000000000000.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] < 1
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && !opts[:'page'].is_a?(String) && opts[:'page'] < 1
         fail ArgumentError, 'invalid value for "opts[:"page"]" when calling ActionRuleApiApi.actions_rules_index, must be greater than or equal to 1.'
       end
 
@@ -152,7 +152,7 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action_rule.nil?
         fail ArgumentError, "Missing the required parameter 'action_rule' when calling ActionRuleApiApi.actions_rules_show"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionRuleApiApi.actions_rules_show, must be greater than or equal to 1.'
       end
 

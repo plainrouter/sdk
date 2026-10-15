@@ -78,11 +78,11 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && mode.nil?
         fail ArgumentError, "Missing the required parameter 'mode' when calling DraftBatchFileImportApi.launcher_file_import"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling DraftBatchFileImportApi.launcher_file_import, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'workspace_id'].nil? && opts[:'workspace_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'workspace_id'].nil? && !opts[:'workspace_id'].is_a?(String) && opts[:'workspace_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"workspace_id"]" when calling DraftBatchFileImportApi.launcher_file_import, must be greater than or equal to 1.'
       end
 

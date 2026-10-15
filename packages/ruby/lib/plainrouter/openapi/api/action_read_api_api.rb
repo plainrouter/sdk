@@ -54,19 +54,19 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action_batch.nil?
         fail ArgumentError, "Missing the required parameter 'action_batch' when calling ActionReadApiApi.actions_api_batch"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && opts[:'cursor'] < 0
+      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && !opts[:'cursor'].is_a?(String) && opts[:'cursor'] < 0
         fail ArgumentError, 'invalid value for "opts[:"cursor"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 0.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 100
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] > 100
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_batch, must be smaller than or equal to 100.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] < 1
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_batch, must be greater than or equal to 1.'
       end
 
@@ -144,7 +144,7 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action.nil?
         fail ArgumentError, "Missing the required parameter 'action' when calling ActionReadApiApi.actions_api_decision_receipt"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_decision_receipt, must be greater than or equal to 1.'
       end
 
@@ -226,27 +226,27 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && opts[:'status'] && !allowable_values.include?(opts[:'status'])
         fail ArgumentError, "invalid value for \"status\", must be one of #{allowable_values}"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && opts[:'cursor'] < 0
+      if @api_client.config.client_side_validation && !opts[:'cursor'].nil? && !opts[:'cursor'].is_a?(String) && opts[:'cursor'] < 0
         fail ArgumentError, 'invalid value for "opts[:"cursor"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 0.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] > 100
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] > 100
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_index, must be smaller than or equal to 100.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && opts[:'limit'] < 1
+      if @api_client.config.client_side_validation && !opts[:'limit'].nil? && !opts[:'limit'].is_a?(String) && opts[:'limit'] < 1
         fail ArgumentError, 'invalid value for "opts[:"limit"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] > 10000000000000000
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && !opts[:'page'].is_a?(String) && opts[:'page'] > 10000000000000000
         fail ArgumentError, 'invalid value for "opts[:"page"]" when calling ActionReadApiApi.actions_api_index, must be smaller than or equal to 10000000000000000.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] < 1
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && !opts[:'page'].is_a?(String) && opts[:'page'] < 1
         fail ArgumentError, 'invalid value for "opts[:"page"]" when calling ActionReadApiApi.actions_api_index, must be greater than or equal to 1.'
       end
 
@@ -320,7 +320,7 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && workspace.nil?
         fail ArgumentError, "Missing the required parameter 'workspace' when calling ActionReadApiApi.actions_api_policy"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_policy, must be greater than or equal to 1.'
       end
 
@@ -396,7 +396,7 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && action.nil?
         fail ArgumentError, "Missing the required parameter 'action' when calling ActionReadApiApi.actions_api_show"
       end
-      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && opts[:'account_id'] < 1
+      if @api_client.config.client_side_validation && !opts[:'account_id'].nil? && !opts[:'account_id'].is_a?(String) && opts[:'account_id'] < 1
         fail ArgumentError, 'invalid value for "opts[:"account_id"]" when calling ActionReadApiApi.actions_api_show, must be greater than or equal to 1.'
       end
 

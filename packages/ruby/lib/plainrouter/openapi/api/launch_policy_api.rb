@@ -46,11 +46,11 @@ module PlainRouter::OpenAPI
       if @api_client.config.client_side_validation && workspace.nil?
         fail ArgumentError, "Missing the required parameter 'workspace' when calling LaunchPolicyApi.launch_policies_index"
       end
-      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] > 10000000000000000
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && !opts[:'page'].is_a?(String) && opts[:'page'] > 10000000000000000
         fail ArgumentError, 'invalid value for "opts[:"page"]" when calling LaunchPolicyApi.launch_policies_index, must be smaller than or equal to 10000000000000000.'
       end
 
-      if @api_client.config.client_side_validation && !opts[:'page'].nil? && opts[:'page'] < 1
+      if @api_client.config.client_side_validation && !opts[:'page'].nil? && !opts[:'page'].is_a?(String) && opts[:'page'] < 1
         fail ArgumentError, 'invalid value for "opts[:"page"]" when calling LaunchPolicyApi.launch_policies_index, must be greater than or equal to 1.'
       end
 
