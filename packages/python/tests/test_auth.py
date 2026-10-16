@@ -9,11 +9,13 @@ import pytest
 
 from plainrouter import Client, create_client, list_events
 from plainrouter.generated.api.action_proposal_api import actions_api_propose
+from plainrouter.generated.api.agent_context import agent_context as agent_context_api
 from plainrouter.generated.api.creative import launch_creatives_index
 from plainrouter.generated.api.draft_batch_file_import import launcher_file_import
 from plainrouter.generated.models import (
     ActionProposalInput,
     ActionProposalInputTargetSource,
+    ApiRouteNotFound,
     DraftBatchFileImportRequest,
     DraftBatchMode,
 )
@@ -271,3 +273,70 @@ async def test_injected_clients_apply_json_default_and_preserve_custom_accept(ac
     assert len(requests) == 2
     for request in requests:
         assert [value.decode() for key, value in request.headers.raw if key.lower() == b"accept"] == [expected]
+
+
+async def test_new_workspace_404_operations_parse_api_route_not_found_in_all_call_modes() -> None:
+    observed: list[tuple[str, str]] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        assert request.url.host == "127.0.0.1"
+        path = request.url.path.removeprefix("/api/v1")
+        observed.append((request.method, path))
+        return httpx.Response(
+            404,
+            json={
+                "error": {
+                    "code": "api_route_not_found",
+                    "message": "Workspace is nonexistent, inaccessible or noncanonical.",
+                    "resolution": "Check the workspace selector and retry.",
+                },
+                "request": {"method": request.method, "path": path},
+                "resources": {"documentation": "https://plainrouter.com/docs", "openapi": "https://plainrouter.com/openapi.json"},
+            },
+        )
+
+    transport = httpx.MockTransport(handle)
+    client = create_client(
+        "workspace-404-test",
+        base_url="http://127.0.0.1:4567/api/v1",
+        httpx_args={"transport": transport},
+    )
+
+    def import_body() -> DraftBatchFileImportRequest:
+        return DraftBatchFileImportRequest(
+            file=File(payload=BytesIO(b"image")),
+            source_adset_id="123",
+            source_ad_id="456",
+            mode=DraftBatchMode.DUPLICATE_ADSET,
+        )
+
+    for result in [
+        agent_context_api.sync(client=client),
+        agent_context_api.sync_detailed(client=client).parsed,
+        launcher_file_import.sync(client=client, body=import_body()),
+        launcher_file_import.sync_detailed(client=client, body=import_body()).parsed,
+    ]:
+        assert isinstance(result, ApiRouteNotFound)
+        assert result.error.code.value == "api_route_not_found"
+
+    async with client:
+        context = await agent_context_api.asyncio(client=client)
+        context_response = await agent_context_api.asyncio_detailed(client=client)
+        file_import = await launcher_file_import.asyncio(client=client, body=import_body())
+        file_import_response = await launcher_file_import.asyncio_detailed(client=client, body=import_body())
+
+    for result in [context, context_response.parsed, file_import, file_import_response.parsed]:
+        assert isinstance(result, ApiRouteNotFound)
+        assert result.error.code.value == "api_route_not_found"
+    assert context_response.status_code == 404
+    assert file_import_response.status_code == 404
+    assert observed == [
+        ("GET", "/agent/context"),
+        ("GET", "/agent/context"),
+        ("POST", "/mcp/launcher/import"),
+        ("POST", "/mcp/launcher/import"),
+        ("GET", "/agent/context"),
+        ("GET", "/agent/context"),
+        ("POST", "/mcp/launcher/import"),
+        ("POST", "/mcp/launcher/import"),
+    ]

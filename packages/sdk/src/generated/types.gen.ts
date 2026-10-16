@@ -3042,11 +3042,15 @@ export type AgentContextErrors = {
      */
     401: AgentContextAuthError | ErrorMessage;
     /**
-     * Workspace selector, grant or operation is unauthorized; malformed or missing workspace selection can fail authorization before validation.
+     * The accessible workspace scope or operation is unauthorized, or an ambiguous workspace selection was omitted.
      */
     403: AgentContextAuthError | ErrorMessage;
     /**
-     * Empty workspace_id, invalid account ID, mismatched account binding, or ambiguous active accounts.
+     * Workspace is nonexistent, inaccessible or noncanonical.
+     */
+    404: ApiRouteNotFound;
+    /**
+     * Invalid account ID, mismatched account binding, or ambiguous active accounts.
      */
     422: ValidationError;
     /**
@@ -3815,6 +3819,10 @@ export type LauncherFileImportErrors = {
         error: 'insufficient_scope';
         error_description: 'File import requires at least the workspace write execution tier.';
     };
+    /**
+     * A missing, inaccessible or non-canonical workspace selector returns the api_route_not_found envelope.
+     */
+    404: ApiRouteNotFound;
     /**
      * Integer selector or file validation returns message plus field errors. Rejected import files return error, reason_code and syntactic_row_failures.
      */

@@ -5,6 +5,7 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.api_route_not_found import ApiRouteNotFound
 from ...models.draft_batch_file_import_request import DraftBatchFileImportRequest
 from ...models.error_message import ErrorMessage
 from ...models.launcher_file_import_response_200 import LauncherFileImportResponse200
@@ -36,7 +37,8 @@ def _get_kwargs(
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
 ) -> (
-    ErrorMessage
+    ApiRouteNotFound
+    | ErrorMessage
     | LauncherFileImportResponse200
     | LauncherFileImportResponse403
     | LauncherFileImportResponse422Type1
@@ -57,6 +59,11 @@ def _parse_response(
         response_403 = LauncherFileImportResponse403.from_dict(response.json())
 
         return response_403
+
+    if response.status_code == 404:
+        response_404 = ApiRouteNotFound.from_dict(response.json())
+
+        return response_404
 
     if response.status_code == 422:
 
@@ -88,7 +95,8 @@ def _parse_response(
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
 ) -> Response[
-    ErrorMessage
+    ApiRouteNotFound
+    | ErrorMessage
     | LauncherFileImportResponse200
     | LauncherFileImportResponse403
     | LauncherFileImportResponse422Type1
@@ -107,7 +115,8 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     body: DraftBatchFileImportRequest,
 ) -> Response[
-    ErrorMessage
+    ApiRouteNotFound
+    | ErrorMessage
     | LauncherFileImportResponse200
     | LauncherFileImportResponse403
     | LauncherFileImportResponse422Type1
@@ -126,7 +135,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ErrorMessage | LauncherFileImportResponse200 | LauncherFileImportResponse403 | LauncherFileImportResponse422Type1 | ValidationError]
+        Response[ApiRouteNotFound | ErrorMessage | LauncherFileImportResponse200 | LauncherFileImportResponse403 | LauncherFileImportResponse422Type1 | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -145,7 +154,8 @@ def sync(
     client: AuthenticatedClient | Client,
     body: DraftBatchFileImportRequest,
 ) -> (
-    ErrorMessage
+    ApiRouteNotFound
+    | ErrorMessage
     | LauncherFileImportResponse200
     | LauncherFileImportResponse403
     | LauncherFileImportResponse422Type1
@@ -165,7 +175,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ErrorMessage | LauncherFileImportResponse200 | LauncherFileImportResponse403 | LauncherFileImportResponse422Type1 | ValidationError
+        ApiRouteNotFound | ErrorMessage | LauncherFileImportResponse200 | LauncherFileImportResponse403 | LauncherFileImportResponse422Type1 | ValidationError
     """
 
     return sync_detailed(
@@ -179,7 +189,8 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     body: DraftBatchFileImportRequest,
 ) -> Response[
-    ErrorMessage
+    ApiRouteNotFound
+    | ErrorMessage
     | LauncherFileImportResponse200
     | LauncherFileImportResponse403
     | LauncherFileImportResponse422Type1
@@ -198,7 +209,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ErrorMessage | LauncherFileImportResponse200 | LauncherFileImportResponse403 | LauncherFileImportResponse422Type1 | ValidationError]
+        Response[ApiRouteNotFound | ErrorMessage | LauncherFileImportResponse200 | LauncherFileImportResponse403 | LauncherFileImportResponse422Type1 | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -215,7 +226,8 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     body: DraftBatchFileImportRequest,
 ) -> (
-    ErrorMessage
+    ApiRouteNotFound
+    | ErrorMessage
     | LauncherFileImportResponse200
     | LauncherFileImportResponse403
     | LauncherFileImportResponse422Type1
@@ -235,7 +247,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ErrorMessage | LauncherFileImportResponse200 | LauncherFileImportResponse403 | LauncherFileImportResponse422Type1 | ValidationError
+        ApiRouteNotFound | ErrorMessage | LauncherFileImportResponse200 | LauncherFileImportResponse403 | LauncherFileImportResponse422Type1 | ValidationError
     """
 
     return (
