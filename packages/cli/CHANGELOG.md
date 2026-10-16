@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.0 (unreleased)
+## 0.10.0 (2026-10-15)
 
 - Through the SDK dependency, tighten page validation. On the actions, action-rules, tests, creatives, plans and policies lists, page is an integer from 1 to 10^16. Unset and language-null page values are omitted from requests, preserving the server default page 1. Integer strings such as "2" are accepted at runtime. Values outside the bounds and other invalid values are refused by the server with 422 on page; the SDK dependency refuses booleans before sending. These changes come through the SDK dependency and add no CLI commands.
 
