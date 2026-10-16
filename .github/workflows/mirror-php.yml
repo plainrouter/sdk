@@ -8,6 +8,11 @@ on:
     tags:
       - 'php-v*.*.*'
   workflow_dispatch:
+    inputs:
+      refresh_only:
+        description: Refresh Packagist only (skip the PHP mirror)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -19,6 +24,7 @@ concurrency:
 jobs:
   mirror:
     name: Split packages/php into plainrouter/sdk-php
+    if: github.event_name != 'workflow_dispatch' || !inputs.refresh_only
     runs-on: ubuntu-24.04
     steps:
       - name: Check out full history
@@ -55,6 +61,27 @@ jobs:
           else
             git push "$MIRROR" "$SPLIT:refs/heads/main"
           fi
+      - name: Tell Packagist to refresh
+        env:
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+          PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
+        run: |
+          if [ -z "$PACKAGIST_USERNAME" ] || [ -z "$PACKAGIST_API_TOKEN" ]; then
+            echo "::notice title=Packagist refresh skipped::PACKAGIST_USERNAME and PACKAGIST_API_TOKEN are not set; update the package on packagist.org by hand."
+            exit 0
+          fi
+
+          curl --fail --silent --show-error --request POST \
+            --header "Content-Type: application/json" \
+            --header "Authorization: Bearer $PACKAGIST_USERNAME:$PACKAGIST_API_TOKEN" \
+            --data '{"repository":{"url":"https://github.com/plainrouter/sdk-php"}}' \
+            https://packagist.org/api/update-package
+
+  refresh-packagist:
+    name: Refresh Packagist only
+    if: github.event_name == 'workflow_dispatch' && inputs.refresh_only
+    runs-on: ubuntu-24.04
+    steps:
       - name: Tell Packagist to refresh
         env:
           PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
