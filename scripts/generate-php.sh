@@ -42,7 +42,7 @@ node "$ROOT/scripts/prepare-generator-input.mjs" "$ROOT/spec/openapi.json" "$GEN
   -i "$GENERATOR_INPUT" \
   -o "$GENERATOR_OUTPUT" \
   --global-property=models,apis,supportingFiles,modelDocs=false,apiDocs=false,modelTests=false,apiTests=false \
-  --additional-properties='invokerPackage=Plainrouter\OpenAPI,srcBasePath=src/OpenAPI,artifactVersion=0.4.0,hideGenerationTimestamp=true,disallowAdditionalPropertiesIfNotPresent=false'
+  --additional-properties='invokerPackage=Plainrouter\OpenAPI,srcBasePath=src/OpenAPI,artifactVersion=0.4.1,hideGenerationTimestamp=true,disallowAdditionalPropertiesIfNotPresent=false'
 
 find "$GENERATOR_OUTPUT/src/OpenAPI" -type f -name '*.php' -print0 \
   | xargs -0 perl -pi -e 's/[ \t]+$//'

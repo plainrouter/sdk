@@ -1,6 +1,6 @@
 {
   "name": "@plainrouter/cli",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Command-line interface for the Plainrouter API, supporting Meta conversion tracking and governed ad changes.",
   "homepage": "https://plainrouter.com",
   "keywords": ["plainrouter", "meta-ads", "facebook-ads", "conversions-api", "mcp", "cli"],
@@ -44,7 +44,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
-    "@plainrouter/sdk": "0.10.0",
+    "@plainrouter/sdk": "0.10.1",
     "commander": "15.0.0"
   }
 }
