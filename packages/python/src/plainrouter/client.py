@@ -41,7 +41,22 @@ def _injected_headers(client: httpx.Client | httpx.AsyncClient) -> None:
         client.headers["Accept"] = "application/json"
 
 
+def _route_launcher_import(request: httpx.Request) -> None:
+    path, separator, query = request.url.raw_path.partition(b"?")
+    route = b"/mcp/launcher/import"
+    if request.method == "POST" and path.endswith(route):
+        base = path.removesuffix(route).rstrip(b"/")
+        path = base.removesuffix(b"/api/v1") + route
+        request.url = request.url.copy_with(raw_path=path + separator + query)
+
+
+async def _route_launcher_import_async(request: httpx.Request) -> None:
+    _route_launcher_import(request)
+
+
 def _sync_client(client: httpx.Client) -> httpx.Client:
+    if _route_launcher_import not in client.event_hooks["request"]:
+        client.event_hooks["request"].insert(0, _route_launcher_import)
     if check_integer_fields not in client.event_hooks["request"]:
         client.event_hooks["request"].append(check_integer_fields)
     if check_closed_request_objects not in client.event_hooks["request"]:
@@ -52,6 +67,8 @@ def _sync_client(client: httpx.Client) -> httpx.Client:
 
 
 def _async_client(client: httpx.AsyncClient) -> httpx.AsyncClient:
+    if _route_launcher_import_async not in client.event_hooks["request"]:
+        client.event_hooks["request"].insert(0, _route_launcher_import_async)
     if check_integer_fields_async not in client.event_hooks["request"]:
         client.event_hooks["request"].append(check_integer_fields_async)
     if check_closed_request_objects_async not in client.event_hooks["request"]:

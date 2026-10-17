@@ -126,6 +126,12 @@ module PlainRouter
         super(http_method, path, request, opts.merge(header_params: headers))
       end
 
+      def build_request_url(path, opts = {})
+        return super unless path == "/mcp/launcher/import"
+
+        @config.base_url(opts[:operation]).sub(%r{/+\z}, "").delete_suffix("/api/v1") + path
+      end
+
       private
 
       def validate_integer_inputs(http_method, path, opts)

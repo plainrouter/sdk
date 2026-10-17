@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO
+from threading import Thread
 from typing import cast
 
 import httpx
@@ -340,3 +342,64 @@ async def test_new_workspace_404_operations_parse_api_route_not_found_in_all_cal
         ("POST", "/mcp/launcher/import"),
         ("POST", "/mcp/launcher/import"),
     ]
+
+
+@pytest.mark.parametrize("base,expected", [
+    (None, "/mcp/launcher/import"),
+    ("https://proxy.example/api/v1", "/mcp/launcher/import"),
+    ("https://proxy.example/api/v1/", "/mcp/launcher/import"),
+    ("https://proxy.example/prefix/api/v1", "/prefix/mcp/launcher/import"),
+    ("https://proxy.example/api/v1beta", "/api/v1beta/mcp/launcher/import"),
+    ("https://proxy.example/api/v1/inner", "/api/v1/inner/mcp/launcher/import"),
+    ("http://127.0.0.1:8080", "/mcp/launcher/import"),
+])
+async def test_launcher_import_route_on_loopback(base: str | None, expected: str) -> None:
+    paths: list[str] = []
+
+    class Capture(BaseHTTPRequestHandler):
+        def do_POST(self) -> None:
+            paths.append(self.path)
+            self.rfile.read(int(self.headers["Content-Length"]))
+            body = b'{"message":"Unauthenticated."}'
+            self.send_response(401)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, format: str, *args: object) -> None:
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Capture)
+    thread = Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    transport = httpx.HTTPTransport(trust_env=False)
+
+    def redirect(request: httpx.Request) -> httpx.Response:
+        request.read()
+        request.url = request.url.copy_with(scheme="http", host="127.0.0.1", port=server.server_port)
+        response = transport.handle_request(request)
+        response.read()
+        return httpx.Response(response.status_code, headers=response.headers, content=response.content)
+
+    client = create_client("loopback") if base is None else create_client("loopback", base_url=base)
+    logical_base = client._base_url
+    client.set_httpx_client(httpx.Client(base_url=logical_base, transport=httpx.MockTransport(redirect)))
+    client.set_async_httpx_client(httpx.AsyncClient(base_url=logical_base, transport=httpx.MockTransport(redirect)))
+
+    def body() -> DraftBatchFileImportRequest:
+        return DraftBatchFileImportRequest(file=File(payload=BytesIO(b"image")), source_adset_id="123", source_ad_id="456", mode=DraftBatchMode.DUPLICATE_ADSET)
+
+    try:
+        launcher_file_import.sync(client=client, body=body())
+        launcher_file_import.sync_detailed(client=client, body=body())
+        await launcher_file_import.asyncio(client=client, body=body())
+        await launcher_file_import.asyncio_detailed(client=client, body=body())
+        assert paths == [expected] * 4
+    finally:
+        client.get_httpx_client().close()
+        await client.get_async_httpx_client().aclose()
+        transport.close()
+        server.shutdown()
+        server.server_close()
+        thread.join()
