@@ -20,6 +20,7 @@ require 'time'
 require 'faraday'
 require 'faraday/multipart' if Gem::Version.new(Faraday::VERSION) >= Gem::Version.new('2.0')
 require 'marcel'
+require 'pathname'
 
 
 module PlainRouter::OpenAPI

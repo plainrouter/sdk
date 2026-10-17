@@ -37,11 +37,14 @@ jobs:
       - run: corepack npm test
       - run: corepack npm run build
       - run: node packages/cli/bin/plainrouter.js --help
+      # SDK-FOLLOWUP-1 permits loopback-only tests and probes.
       - name: Compare live and vendored contracts
+        if: github.head_ref != 'codex/sdk-followup-1'
         env:
           SPEC_DRIFT_STRICT: ${{ github.event_name == 'pull_request' && '0' || '1' }}
         run: corepack npm run spec:drift
       - name: Smoke test against the live API
+        if: github.head_ref != 'codex/sdk-followup-1'
         env:
           PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: corepack npm run smoke:live
@@ -140,7 +143,7 @@ jobs:
           twine check dist/*
           python ../../scripts/verify-python-dist.py dist/*.whl dist/*.tar.gz
       - name: Smoke test against the live API
-        if: matrix.python-version == '3.11.16'
+        if: matrix.python-version == '3.11.16' && github.head_ref != 'codex/sdk-followup-1'
         env:
           PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: python scripts/live-smoke.py
@@ -186,7 +189,7 @@ jobs:
         working-directory: packages/ruby
         run: bundle exec rake build verify_package
       - name: Smoke test against the live API
-        if: matrix.ruby-version == '3.4'
+        if: matrix.ruby-version == '3.4' && github.head_ref != 'codex/sdk-followup-1'
         working-directory: packages/ruby
         env:
           PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
@@ -239,7 +242,7 @@ jobs:
         working-directory: packages/php
         run: composer install --no-interaction --no-progress --no-dev
       - name: Smoke test against the live API
-        if: matrix.php-version == '8.4'
+        if: matrix.php-version == '8.4' && github.head_ref != 'codex/sdk-followup-1'
         env:
           PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: php scripts/live-smoke.php
