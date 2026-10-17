@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.1 (Unreleased)
+## 0.6.1 (2026-10-17)
 
 - Fix launcher import so it reaches the route core serves; it previously returned 404 for every caller using the default base.
 - `GET /workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory` and `GET /workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory/metrics` now document the workspace 404, which decodes as `ApiRouteNotFound`; account-not-found 404s retain their message. Compatibility: generated `GetAccountInventory404Response` changes from a model class to an anyOf module (`.build`) that resolves to `ApiRouteNotFound` or `GetAccountInventory404ResponseAnyOf`, the former `message` model; `.new` and `.build_from_hash` are removed.
