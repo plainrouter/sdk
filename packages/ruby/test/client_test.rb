@@ -423,9 +423,18 @@ class PlainRouterClientTest < Minitest::Test
       [:post, "/api/v1/mcp/launcher/import", ->(client, file) { client.file_imports.launcher_file_import_with_http_info(file, "123", "456", PlainRouter::OpenAPI::DraftBatchMode::DUPLICATE_ADSET) }]
     ]
 
-    cases.each do |method, path, call|
-      request_method, request_path = method == :get ? ["GET", "/agent/context"] : ["POST", "/mcp/launcher/import"]
-      response_body = {
+    %i[get_account_inventory get_inventory_metrics].each do |operation|
+      path = "/api/v1/workspaces/1/admin/ad-accounts/123/inventory#{operation == :get_inventory_metrics ? '/metrics' : ''}"
+      [operation, :"#{operation}_with_http_info"].each do |mode|
+        [false, true].each do |account_missing|
+          cases << [:get, path, ->(client, _file) { client.inventory.public_send(mode, 1, "123") }, account_missing]
+        end
+      end
+    end
+
+    cases.each do |method, path, call, account_missing|
+      request_method, request_path = method.to_s.upcase, path.delete_prefix("/api/v1")
+      response_body = (account_missing ? { "message" => "Account not found." } : {
         "error" => {
           "code" => "api_route_not_found",
           "message" => "Workspace is nonexistent, inaccessible or noncanonical.",
@@ -433,7 +442,7 @@ class PlainRouterClientTest < Minitest::Test
         },
         "request" => { "method" => request_method, "path" => request_path },
         "resources" => { "documentation" => "https://plainrouter.com/docs", "openapi" => "https://plainrouter.com/openapi.json" }
-      }.to_json
+      }).to_json
       stubs = Faraday::Adapter::Test::Stubs.new do |stub|
         response = [404, { "Content-Type" => "application/json" }, response_body]
         if method == :get

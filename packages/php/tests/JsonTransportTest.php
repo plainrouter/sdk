@@ -27,65 +27,57 @@ final class JsonTransportTest extends TestCase
             'request' => ['method' => $method, 'path' => $path],
             'resources' => ['documentation' => 'https://plainrouter.com/docs', 'openapi' => 'https://plainrouter.com/openapi.json'],
         ], JSON_THROW_ON_ERROR);
-        $contextBody = $bodyFor('GET', '/agent/context');
-        $fileImportBody = $bodyFor('POST', '/mcp/launcher/import');
-        $responses = [];
-        foreach ([$contextBody, $contextBody, $contextBody, $contextBody, $fileImportBody, $fileImportBody, $fileImportBody, $fileImportBody] as $responseBody) {
-            $responses[] = new Response(404, ['Content-Type' => 'application/json'], $responseBody);
-        }
-        $history = [];
-        $stack = HandlerStack::create(new MockHandler($responses));
-        $stack->push(Middleware::history($history));
-        $client = new Client(
-            baseUrl: 'http://127.0.0.1:4567/api/v1',
-            httpClient: new HttpClient(['handler' => $stack]),
-        );
-        $fileImport = static fn (Client $client, bool $async, bool $withHttpInfo): mixed => match ([$async, $withHttpInfo]) {
-            [false, false] => $client->fileImports->launcherFileImport(new \SplFileObject(__FILE__), '123', '456', \Plainrouter\OpenAPI\Model\DraftBatchMode::DUPLICATE_ADSET),
-            [false, true] => $client->fileImports->launcherFileImportWithHttpInfo(new \SplFileObject(__FILE__), '123', '456', \Plainrouter\OpenAPI\Model\DraftBatchMode::DUPLICATE_ADSET),
-            [true, false] => $client->fileImports->launcherFileImportAsync(new \SplFileObject(__FILE__), '123', '456', \Plainrouter\OpenAPI\Model\DraftBatchMode::DUPLICATE_ADSET)->wait(),
-            [true, true] => $client->fileImports->launcherFileImportAsyncWithHttpInfo(new \SplFileObject(__FILE__), '123', '456', \Plainrouter\OpenAPI\Model\DraftBatchMode::DUPLICATE_ADSET)->wait(),
-        };
-        $calls = [
-            fn () => $client->agentContext->agentContext(),
-            fn () => $client->agentContext->agentContextWithHttpInfo(),
-            fn () => $client->agentContext->agentContextAsync()->wait(),
-            fn () => $client->agentContext->agentContextAsyncWithHttpInfo()->wait(),
-            fn () => $fileImport($client, false, false),
-            fn () => $fileImport($client, false, true),
-            fn () => $fileImport($client, true, false),
-            fn () => $fileImport($client, true, true),
+        $cases = [
+            ['agentContext', 'agentContext', [], '/agent/context', false],
+            ['fileImports', 'launcherFileImport', [new \SplFileObject(__FILE__), '123', '456', \Plainrouter\OpenAPI\Model\DraftBatchMode::DUPLICATE_ADSET], '/mcp/launcher/import', false],
         ];
-
-        foreach ($calls as $index => $call) {
-            $body = $index < 4 ? $contextBody : $fileImportBody;
-            try {
-                $call();
-                $this->fail('A 404 workspace response must remain an ApiException.');
-            } catch (ApiException $error) {
-                $this->assertSame(404, $error->getCode());
-                $this->assertSame($body, $error->getResponseBody());
-                $model = $error->getResponseObject();
-                $this->assertInstanceOf(\Plainrouter\OpenAPI\Model\ApiRouteNotFound::class, $model);
-                $this->assertSame('api_route_not_found', $model->getError()->getCode());
-                $this->assertSame($index < 4 ? '/agent/context' : '/mcp/launcher/import', $model->getRequest()->getPath());
+        foreach (['getAccountInventory', 'getInventoryMetrics'] as $operation) {
+            foreach ([false, true] as $accountMissing) {
+                $cases[] = ['inventory', $operation, [1, '123'], '/workspaces/1/admin/ad-accounts/123/inventory'.($operation === 'getInventoryMetrics' ? '/metrics' : ''), $accountMissing];
             }
         }
-
-        $this->assertCount(8, $history);
-        foreach ($history as $entry) {
-            $this->assertSame('127.0.0.1', $entry['request']->getUri()->getHost());
+        foreach ($cases as [$group, $operation, $arguments, $path, $accountMissing]) {
+            $method = $group === 'fileImports' ? 'POST' : 'GET';
+            $body = $accountMissing ? '{"message":"Account not found."}' : $bodyFor($method, $path);
+            foreach ([true, false] as $httpErrors) {
+                $history = [];
+                $stack = HandlerStack::create(new MockHandler(array_fill(0, 4, new Response(404, ['Content-Type' => 'application/json'], $body))));
+                $stack->push(Middleware::history($history));
+                $client = new Client(
+                    baseUrl: 'http://127.0.0.1:4567/api/v1',
+                    httpClient: new HttpClient(['handler' => $stack, 'http_errors' => $httpErrors]),
+                );
+                foreach (['', 'WithHttpInfo', 'Async', 'AsyncWithHttpInfo'] as $mode) {
+                    try {
+                        $result = $client->{$group}->{$operation.$mode}(...$arguments);
+                        if (str_starts_with($mode, 'Async')) {
+                            $result = $result->wait();
+                        }
+                        $this->assertFalse($httpErrors, 'A 404 must remain an ApiException with http_errors enabled.');
+                        $model = str_ends_with($mode, 'WithHttpInfo') ? $result[0] : $result;
+                    } catch (ApiException $error) {
+                        $this->assertTrue($httpErrors);
+                        $this->assertSame(404, $error->getCode());
+                        $this->assertSame($body, $error->getResponseBody());
+                        $model = $error->getResponseObject();
+                    }
+                    if ($accountMissing) {
+                        $this->assertInstanceOf($operation === 'getInventoryMetrics' ? \Plainrouter\OpenAPI\Model\ErrorMessage::class : \Plainrouter\OpenAPI\Model\GetAccountInventory404Response::class, $model);
+                        $this->assertSame('Account not found.', $model->getMessage());
+                    } else {
+                        $this->assertInstanceOf(\Plainrouter\OpenAPI\Model\ApiRouteNotFound::class, $model);
+                        $this->assertSame('api_route_not_found', $model->getError()->getCode());
+                        $this->assertSame($path, $model->getRequest()->getPath());
+                    }
+                }
+                $this->assertCount(4, $history);
+                foreach ($history as $entry) {
+                    $this->assertSame('127.0.0.1', $entry['request']->getUri()->getHost());
+                    $this->assertSame('/api/v1'.$path, $entry['request']->getUri()->getPath());
+                    $this->assertSame($method, $entry['request']->getMethod());
+                }
+            }
         }
-        $this->assertSame([
-            '/api/v1/agent/context',
-            '/api/v1/agent/context',
-            '/api/v1/agent/context',
-            '/api/v1/agent/context',
-            '/api/v1/mcp/launcher/import',
-            '/api/v1/mcp/launcher/import',
-            '/api/v1/mcp/launcher/import',
-            '/api/v1/mcp/launcher/import',
-        ], array_map(static fn (array $entry): string => $entry['request']->getUri()->getPath(), $history));
     }
 
     public static function generatedAsyncErrorModes(): iterable

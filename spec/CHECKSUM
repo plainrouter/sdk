@@ -1,6 +1,6 @@
-sha256: 11a1c90bcc108b9d4524d705af1c4842f46c15838b0f577eb87e5b5b0694d861
+sha256: f2dbc5c55743651c5b466f7b4ff9adc546230169c6e1d27f92d4341166525ca9
 info.version: 0.5.0
 date: 2026-10-17
 source: https://plainrouter.com/openapi.json
-source.commit: 4e2af005e84e21e599189b7965556cbdde08f09f
+source.commit: 6d7e7477fc5cd3a603da0c4e9103c87323245887
 source.repository: https://github.com/bursteri/plainrouter.git
