@@ -345,6 +345,45 @@ class PlainRouterClientTest < Minitest::Test
     refute configuration.client_side_validation
   end
 
+  def test_new_workspace_404_operations_keep_the_existing_api_error_in_all_call_modes
+    cases = [
+      [:get, "/api/v1/agent/context", ->(client, _file) { client.agent_context.agent_context }],
+      [:get, "/api/v1/agent/context", ->(client, _file) { client.agent_context.agent_context_with_http_info }],
+      [:post, "/api/v1/mcp/launcher/import", ->(client, file) { client.file_imports.launcher_file_import(file, "123", "456", PlainRouter::OpenAPI::DraftBatchMode::DUPLICATE_ADSET) }],
+      [:post, "/api/v1/mcp/launcher/import", ->(client, file) { client.file_imports.launcher_file_import_with_http_info(file, "123", "456", PlainRouter::OpenAPI::DraftBatchMode::DUPLICATE_ADSET) }]
+    ]
+
+    cases.each do |method, path, call|
+      request_method, request_path = method == :get ? ["GET", "/agent/context"] : ["POST", "/mcp/launcher/import"]
+      response_body = {
+        "error" => {
+          "code" => "api_route_not_found",
+          "message" => "Workspace is nonexistent, inaccessible or noncanonical.",
+          "resolution" => "Check the workspace selector and retry."
+        },
+        "request" => { "method" => request_method, "path" => request_path },
+        "resources" => { "documentation" => "https://plainrouter.com/docs", "openapi" => "https://plainrouter.com/openapi.json" }
+      }.to_json
+      stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+        response = [404, { "Content-Type" => "application/json" }, response_body]
+        if method == :get
+          stub.get(path) { response }
+        else
+          stub.post(path) { response }
+        end
+      end
+      client = PlainRouter::Client.new(base_url: "http://127.0.0.1:4567/api/v1") do |configuration|
+        configuration.configure_faraday_connection { |connection| connection.adapter :test, stubs }
+      end
+      File.open(__FILE__, "rb") do |file|
+        error = assert_raises(PlainRouter::OpenAPI::ApiError) { call.call(client, file) }
+        assert_equal 404, error.code
+        assert_equal response_body, error.response_body
+      end
+      stubs.verify_stubbed_calls
+    end
+  end
+
   def test_rejects_ambiguous_base_urls
     ["plainrouter.com/api/v1", "https://example.com/api?token=secret", "ftp://example.com/api"].each do |url|
       assert_raises(ArgumentError) { PlainRouter::Client.new(base_url: url) }

@@ -7,6 +7,7 @@ from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.agent_context_auth_error import AgentContextAuthError
 from ...models.agent_context_response_200 import AgentContextResponse200
+from ...models.api_route_not_found import ApiRouteNotFound
 from ...models.error_message import ErrorMessage
 from ...models.validation_error import ValidationError
 from ...types import UNSET, Response, Unset
@@ -37,7 +38,15 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError | None:
+) -> (
+    AgentContextAuthError
+    | ErrorMessage
+    | AgentContextResponse200
+    | ApiRouteNotFound
+    | ErrorMessage
+    | ValidationError
+    | None
+):
     if response.status_code == 200:
         response_200 = AgentContextResponse200.from_dict(response.json())
 
@@ -90,6 +99,11 @@ def _parse_response(
 
         return response_403
 
+    if response.status_code == 404:
+        response_404 = ApiRouteNotFound.from_dict(response.json())
+
+        return response_404
+
     if response.status_code == 422:
         response_422 = ValidationError.from_dict(response.json())
 
@@ -108,7 +122,9 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError]:
+) -> Response[
+    AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ApiRouteNotFound | ErrorMessage | ValidationError
+]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -122,7 +138,9 @@ def sync_detailed(
     client: AuthenticatedClient,
     account_id: int | Unset = UNSET,
     workspace_id: int | Unset = UNSET,
-) -> Response[AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError]:
+) -> Response[
+    AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ApiRouteNotFound | ErrorMessage | ValidationError
+]:
     """Get agent context
 
      Read the authenticated agent and authorized account. With no active account, returns null and
@@ -137,7 +155,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError]
+        Response[AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ApiRouteNotFound | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -157,7 +175,15 @@ def sync(
     client: AuthenticatedClient,
     account_id: int | Unset = UNSET,
     workspace_id: int | Unset = UNSET,
-) -> AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError | None:
+) -> (
+    AgentContextAuthError
+    | ErrorMessage
+    | AgentContextResponse200
+    | ApiRouteNotFound
+    | ErrorMessage
+    | ValidationError
+    | None
+):
     """Get agent context
 
      Read the authenticated agent and authorized account. With no active account, returns null and
@@ -172,7 +198,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError
+        AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ApiRouteNotFound | ErrorMessage | ValidationError
     """
 
     return sync_detailed(
@@ -187,7 +213,9 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     account_id: int | Unset = UNSET,
     workspace_id: int | Unset = UNSET,
-) -> Response[AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError]:
+) -> Response[
+    AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ApiRouteNotFound | ErrorMessage | ValidationError
+]:
     """Get agent context
 
      Read the authenticated agent and authorized account. With no active account, returns null and
@@ -202,7 +230,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError]
+        Response[AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ApiRouteNotFound | ErrorMessage | ValidationError]
     """
 
     kwargs = _get_kwargs(
@@ -220,7 +248,15 @@ async def asyncio(
     client: AuthenticatedClient,
     account_id: int | Unset = UNSET,
     workspace_id: int | Unset = UNSET,
-) -> AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError | None:
+) -> (
+    AgentContextAuthError
+    | ErrorMessage
+    | AgentContextResponse200
+    | ApiRouteNotFound
+    | ErrorMessage
+    | ValidationError
+    | None
+):
     """Get agent context
 
      Read the authenticated agent and authorized account. With no active account, returns null and
@@ -235,7 +271,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ErrorMessage | ValidationError
+        AgentContextAuthError | ErrorMessage | AgentContextResponse200 | ApiRouteNotFound | ErrorMessage | ValidationError
     """
 
     return (

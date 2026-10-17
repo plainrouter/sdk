@@ -2836,7 +2836,7 @@
                         }
                     },
                     "403": {
-                        "description": "Workspace selector, grant or operation is unauthorized; malformed or missing workspace selection can fail authorization before validation.",
+                        "description": "The accessible workspace scope or operation is unauthorized, or an ambiguous workspace selection was omitted.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2852,8 +2852,18 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Workspace is nonexistent, inaccessible or noncanonical.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
+                                }
+                            }
+                        }
+                    },
                     "422": {
-                        "description": "Empty workspace_id, invalid account ID, mismatched account binding, or ambiguous active accounts.",
+                        "description": "Invalid account ID, mismatched account binding, or ambiguous active accounts.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4707,6 +4717,16 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "A missing, inaccessible or non-canonical workspace selector returns the api_route_not_found envelope.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiRouteNotFound"
                                 }
                             }
                         }
