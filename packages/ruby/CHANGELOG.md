@@ -2,6 +2,7 @@
 
 ## 0.6.1 (Unreleased)
 
+- Fix launcher import so it reaches the route core serves; it previously returned 404 for every caller using the default base.
 - Load Pathname for multipart uploads when Ruby runs outside Bundler.
 - Reflect core #1196's stricter server behavior for the existing workspace contract: live credentials targeting foreign, inaccessible same-team, or missing workspaces, and resources inside them, now receive 404 `api_route_not_found`.
 - Non-canonical workspace path IDs (including leading zeros, signs, spaces, decimals, and `true`/`false` in any case) receive the same 404, even for the caller's own workspace. Unauthenticated requests receive the same response for existing and missing workspaces.

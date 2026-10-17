@@ -78,7 +78,12 @@ for (const [apiClass, methods] of guardedByApi) {
         return parent::${methodName}(...func_get_args());
     }`).join('\n\n');
   const hostOverrides = [...new Set(methods.map(({ hostSettingsMethod }) => hostSettingsMethod).filter(Boolean))]
-    .map((method) => `    protected function ${method}(): array
+    .map((method) => method === 'getHostSettingsForlauncherFileImport' ? `    protected function ${method}(): array
+    {
+        $base = rtrim($this->config->getHost(), '/');
+        $base = preg_replace('~/api/v1$~', '', $base);
+        return [['url' => $base, 'description' => 'Configured launcher base URL']];
+    }` : `    protected function ${method}(): array
     {
         if ($this->config->getHost() !== \\Plainrouter\\Client::DEFAULT_BASE_URL) {
             return [['url' => $this->config->getHost(), 'description' => 'Configured base URL']];

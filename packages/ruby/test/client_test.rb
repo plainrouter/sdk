@@ -406,7 +406,7 @@ class PlainRouterClientTest < Minitest::Test
     assert_equal({ "status" => 404, "body" => response_body }, JSON.parse(stdout))
     refute_nil captured, "loopback server did not receive the multipart request"
     request_headers, request_body = captured
-    assert_match(/\APOST \/api\/v1\/mcp\/launcher\/import HTTP\/1\.1\z/, request_headers.lines.first.chomp)
+    assert_match(/\APOST \/mcp\/launcher\/import HTTP\/1\.1\z/, request_headers.lines.first.chomp)
     assert_match(/Content-Type: multipart\/form-data; boundary=/i, request_headers)
     assert_includes request_body, 'name="file"; filename="plainrouter-multipart'
     assert_includes request_body, "loopback"
@@ -419,8 +419,8 @@ class PlainRouterClientTest < Minitest::Test
     cases = [
       [:get, "/api/v1/agent/context", ->(client, _file) { client.agent_context.agent_context }],
       [:get, "/api/v1/agent/context", ->(client, _file) { client.agent_context.agent_context_with_http_info }],
-      [:post, "/api/v1/mcp/launcher/import", ->(client, file) { client.file_imports.launcher_file_import(file, "123", "456", PlainRouter::OpenAPI::DraftBatchMode::DUPLICATE_ADSET) }],
-      [:post, "/api/v1/mcp/launcher/import", ->(client, file) { client.file_imports.launcher_file_import_with_http_info(file, "123", "456", PlainRouter::OpenAPI::DraftBatchMode::DUPLICATE_ADSET) }]
+      [:post, "/mcp/launcher/import", ->(client, file) { client.file_imports.launcher_file_import(file, "123", "456", PlainRouter::OpenAPI::DraftBatchMode::DUPLICATE_ADSET) }],
+      [:post, "/mcp/launcher/import", ->(client, file) { client.file_imports.launcher_file_import_with_http_info(file, "123", "456", PlainRouter::OpenAPI::DraftBatchMode::DUPLICATE_ADSET) }]
     ]
 
     cases.each do |method, path, call|
@@ -771,6 +771,60 @@ class PlainRouterClientTest < Minitest::Test
     client.operations.api_client.default_headers["accept"] = "text/html"
     assert_raises(PlainRouter::OpenAPI::ApiError) { client.operations.list_events }
     stubs.verify_stubbed_calls
+  end
+
+  def test_launcher_import_routes_every_base_and_call_mode_on_loopback
+    rows = [
+      [nil, "/mcp/launcher/import"],
+      ["https://proxy.example/api/v1", "/mcp/launcher/import"],
+      ["https://proxy.example/api/v1/", "/mcp/launcher/import"],
+      ["https://proxy.example/prefix/api/v1", "/prefix/mcp/launcher/import"],
+      ["https://proxy.example/api/v1beta", "/api/v1beta/mcp/launcher/import"],
+      ["https://proxy.example/api/v1/inner", "/api/v1/inner/mcp/launcher/import"],
+      ["http://127.0.0.1:8080", "/mcp/launcher/import"]
+    ]
+    rows.each do |base, expected|
+      server = TCPServer.new("127.0.0.1", 0)
+      port = server.addr[1]
+      capture = Thread.new do
+        2.times.map do
+          socket = server.accept
+          raw = +""
+          raw << socket.readpartial(4096) until raw.include?("\r\n\r\n")
+          headers, body = raw.split("\r\n\r\n", 2)
+          length = headers[/Content-Length:\s*(\d+)/i, 1].to_i
+          body << socket.readpartial(length - body.bytesize) while body.bytesize < length
+          response = '{"message":"Unauthenticated."}'
+          socket.write("HTTP/1.1 401 Unauthorized\r\nContent-Type: application/json\r\nContent-Length: #{response.bytesize}\r\nConnection: close\r\n\r\n#{response}")
+          socket.close
+          headers.lines.first.split[1]
+        end
+      end
+      redirect = Class.new(Faraday::Middleware) do
+        define_method(:call) do |env|
+          env.url.scheme = "http"
+          env.url.host = "127.0.0.1"
+          env.url.port = port
+          @app.call(env)
+        end
+      end
+      client = PlainRouter::Client.new(**(base ? { base_url: base } : {})) do |config|
+        config.configure_faraday_connection { |connection| connection.use redirect }
+      end
+      Tempfile.create("launcher-route") do |file|
+        file.write("image")
+        file.flush
+        %i[launcher_file_import launcher_file_import_with_http_info].each do |method|
+          assert_raises(PlainRouter::OpenAPI::ApiError) do
+            client.file_imports.public_send(method, file, "123", "456", PlainRouter::OpenAPI::DraftBatchMode::DUPLICATE_ADSET)
+          end
+        end
+      end
+      assert_equal [expected] * 2, capture.value, base.inspect
+    ensure
+      server&.close
+      capture&.kill if capture&.alive?
+    end
   end
 
   private

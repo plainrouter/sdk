@@ -1,5 +1,6 @@
+import { client } from './generated/client.gen.js';
 import * as generated from './generated/sdk.gen.js';
-import type { Config } from './generated/client/types.gen.js';
+import type { Client, Config } from './generated/client/types.gen.js';
 import { normalizeHeaders } from './headers.js';
 import { assertNoBooleanIntegerFields } from './integer-fields.js';
 
@@ -7,7 +8,7 @@ type Operation = (options: never) => unknown;
 
 // Preserve each generated signature, including its generics and optional options.
 const normalizeOperation = <T extends Operation>(name: string, operation: T): T => (
-  (options: { headers?: Config['headers'] } | undefined) => {
+  (options: { headers?: Config['headers']; baseUrl?: string; client?: Client } | undefined) => {
     try {
       assertNoBooleanIntegerFields(name, options);
     } catch (error) {
@@ -17,6 +18,10 @@ const normalizeOperation = <T extends Operation>(name: string, operation: T): T 
     const headers = normalizeHeaders(options.headers);
     return operation({
       ...options,
+      ...(name === 'launcherFileImport' ? {
+        baseUrl: (options.baseUrl ?? (options.client ?? client).getConfig().baseUrl ?? '')
+          .replace(/\/+$/, '').replace(/\/api\/v1$/, ''),
+      } : {}),
       headers,
     } as never);
   }
