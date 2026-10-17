@@ -47,6 +47,8 @@ node "$ROOT/scripts/prepare-generator-input.mjs" "$ROOT/spec/openapi.json" "$GEN
 find "$GENERATOR_OUTPUT/src/OpenAPI" -type f -name '*.php' -print0 \
   | xargs -0 perl -pi -e 's/[ \t]+$//'
 
+node "$ROOT/scripts/patch-php-async-errors.mjs" "$GENERATOR_OUTPUT/src/OpenAPI/Api"
+
 rm -rf "$OUTPUT/src/OpenAPI"
 cp -R "$GENERATOR_OUTPUT/src/OpenAPI" "$OUTPUT/src/OpenAPI"
 

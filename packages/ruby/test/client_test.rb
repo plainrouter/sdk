@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 require "minitest/autorun"
+require "open3"
 require "plainrouter"
+require "rbconfig"
 require "faraday/adapter/test"
+require "socket"
 
 class PlainRouterClientTest < Minitest::Test
   VALID_CAPTURED_AT = "2026-08-19T12:34:56.123456+02:00"
@@ -343,6 +346,73 @@ class PlainRouterClientTest < Minitest::Test
     assert_equal 30, configuration.timeout
     assert_nil configuration.access_token
     refute configuration.client_side_validation
+  end
+
+  def test_standalone_ruby_multipart_upload_sends_request_and_surfaces_error_without_bundler
+    response_body = { "error" => { "code" => "api_route_not_found", "message" => "loopback" } }.to_json
+    server = TCPServer.new("127.0.0.1", 0)
+    port = server.addr[1]
+    capture = Thread.new do
+      socket = server.accept
+      raw_headers = +""
+      raw_headers << socket.readpartial(4096) until raw_headers.include?("\r\n\r\n")
+      request_headers, body = raw_headers.split("\r\n\r\n", 2)
+      body ||= +""
+      content_length = request_headers[/\r\nContent-Length:\s*(\d+)/i, 1].to_i
+      body << socket.readpartial(content_length - body.bytesize) while body.bytesize < content_length
+      socket.write("HTTP/1.1 404 Not Found\r\nContent-Type: application/json\r\nContent-Length: #{response_body.bytesize}\r\nConnection: close\r\n\r\n#{response_body}")
+      [request_headers, body]
+    rescue IOError, Errno::EBADF
+      nil
+    ensure
+      socket&.close
+    end
+
+    script = <<~'RUBY'
+      require "json"
+      require "tempfile"
+      raise "Bundler was loaded" if defined?(Bundler) || $LOADED_FEATURES.any? { |path| path.include?("bundler") }
+      require "plainrouter"
+      client = PlainRouter::Client.new(base_url: "http://127.0.0.1:#{ARGV.fetch(0)}/api/v1")
+      Tempfile.create("plainrouter-multipart") do |file|
+        file.write("id,name\\n1,loopback\\n")
+        file.flush
+        begin
+          client.file_imports.launcher_file_import(
+            file, "123", "456", PlainRouter::OpenAPI::DraftBatchMode::DUPLICATE_ADSET
+          )
+          raise "expected the loopback 404 to surface as ApiError"
+        rescue PlainRouter::OpenAPI::ApiError => error
+          puts JSON.generate(status: error.code, body: error.response_body)
+        end
+      end
+    RUBY
+    package_dir = File.expand_path("..", __dir__)
+    env = {
+      "PATH" => ENV.fetch("PATH"),
+      "HOME" => ENV.fetch("HOME"),
+      "TMPDIR" => ENV["TMPDIR"],
+      "GEM_HOME" => ENV["GEM_HOME"] || Gem.dir,
+      "GEM_PATH" => Gem.path.join(File::PATH_SEPARATOR)
+    }.compact
+    stdout, stderr, status = Open3.capture3(
+      env, RbConfig.ruby, "-Ilib", "-e", script, port.to_s,
+      chdir: package_dir, unsetenv_others: true
+    )
+    server.close
+    captured = capture.value
+
+    assert status.success?, "standalone ruby failed: #{stderr}#{stdout}"
+    assert_equal({ "status" => 404, "body" => response_body }, JSON.parse(stdout))
+    refute_nil captured, "loopback server did not receive the multipart request"
+    request_headers, request_body = captured
+    assert_match(/\APOST \/api\/v1\/mcp\/launcher\/import HTTP\/1\.1\z/, request_headers.lines.first.chomp)
+    assert_match(/Content-Type: multipart\/form-data; boundary=/i, request_headers)
+    assert_includes request_body, 'name="file"; filename="plainrouter-multipart'
+    assert_includes request_body, "loopback"
+  ensure
+    server&.close unless server&.closed?
+    capture&.kill if capture&.alive?
   end
 
   def test_new_workspace_404_operations_keep_the_existing_api_error_in_all_call_modes

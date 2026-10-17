@@ -88,6 +88,70 @@ final class JsonTransportTest extends TestCase
         ], array_map(static fn (array $entry): string => $entry['request']->getUri()->getPath(), $history));
     }
 
+    public static function generatedAsyncErrorModes(): iterable
+    {
+        yield 'async model result' => [false];
+        yield 'async with http info' => [true];
+    }
+
+    #[DataProvider('generatedAsyncErrorModes')]
+    public function test_generated_and_facade_async_errors_decode_the_sync_response_model(bool $withHttpInfo): void
+    {
+        $body = json_encode([
+            'message' => 'The workspace selector is invalid.',
+            'errors' => ['workspace' => ['must identify an accessible workspace']],
+        ], JSON_THROW_ON_ERROR);
+        $cases = [
+            [null, 'launchPlansIndex', [1], \Plainrouter\OpenAPI\Model\ValidationError::class],
+            ['agentContext', 'agentContext', [], \Plainrouter\OpenAPI\Model\ValidationError::class],
+            ['actionReads', 'actionsApiDecisionReceipt', [1, 'action-test'], \Plainrouter\OpenAPI\Model\ValidationError::class],
+            ['fileImports', 'launcherFileImport', [new \SplFileObject(__FILE__), '123', '456', \Plainrouter\OpenAPI\Model\DraftBatchMode::DUPLICATE_ADSET], \Plainrouter\OpenAPI\Model\LauncherFileImport422Response::class],
+            ['plans', 'launchPlansCopy', [1, 'failed-plan'], \Plainrouter\OpenAPI\Model\LaunchPlansCopy422Response::class],
+        ];
+        $capture = static function (callable $call): ApiException {
+            try {
+                $call();
+            } catch (ApiException $error) {
+                return $error;
+            }
+            throw new \RuntimeException('A documented 422 response must throw ApiException.');
+        };
+
+        foreach ($cases as [$group, $operation, $arguments, $model]) {
+            $history = [];
+            $stack = HandlerStack::create(new MockHandler([
+                new Response(422, ['Content-Type' => 'application/json'], $body),
+                new Response(422, ['Content-Type' => 'application/json'], $body),
+            ]));
+            $stack->push(Middleware::history($history));
+            $httpClient = new HttpClient(['handler' => $stack]);
+            $client = new Client(baseUrl: 'http://127.0.0.1:4567/api/v1', httpClient: $httpClient);
+            $api = $group === null
+                ? new \Plainrouter\OpenAPI\Api\DeploymentPlanApi($httpClient, $client->configuration)
+                : $client->{$group};
+            $syncMethod = $operation.'WithHttpInfo';
+            $asyncMethod = $operation.($withHttpInfo ? 'AsyncWithHttpInfo' : 'Async');
+            $syncError = $capture(fn () => $api->{$syncMethod}(...$arguments));
+            $asyncError = $capture(fn () => $api->{$asyncMethod}(...$arguments)->wait());
+
+            $this->assertSame(422, $asyncError->getCode());
+            $this->assertSame($body, $asyncError->getResponseBody());
+            $this->assertSame($syncError->getResponseHeaders(), $asyncError->getResponseHeaders());
+            $this->assertInstanceOf($model, $syncError->getResponseObject());
+            $this->assertInstanceOf($model, $asyncError->getResponseObject(), $operation);
+            $this->assertSame('The workspace selector is invalid.', $asyncError->getResponseObject()->getMessage());
+            $this->assertSame(
+                ['workspace' => ['must identify an accessible workspace']],
+                $asyncError->getResponseObject()->getErrors(),
+            );
+            $this->assertEquals($syncError->getResponseObject(), $asyncError->getResponseObject());
+            $this->assertCount(2, $history);
+            foreach ($history as $entry) {
+                $this->assertSame('127.0.0.1', $entry['request']->getUri()->getHost());
+            }
+        }
+    }
+
     public static function redirects(): iterable
     {
         foreach ([300, 301, 302, 303, 304, 307, 308, 399] as $status) {
