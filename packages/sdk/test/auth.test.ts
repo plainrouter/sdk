@@ -13,6 +13,8 @@ import {
   configurePlainrouter,
   createEvent,
   getEmqReport,
+  getAccountInventory,
+  getInventoryMetrics,
   launcherFileImport,
   launchPlansCopy,
   zLaunchPlansCopyResponse,
@@ -338,7 +340,7 @@ describe('JSON API transport', () => {
     }
   });
 
-  it('surfaces the documented workspace 404 body on both newly documented operations', async () => {
+  it('surfaces both inventory 404 bodies and the existing workspace 404s in every result style', async () => {
     const apiRouteNotFound = (method: string, path: string) => ({
       error: {
         code: 'api_route_not_found' as const,
@@ -348,46 +350,33 @@ describe('JSON API transport', () => {
       request: { method, path },
       resources: { documentation: 'https://plainrouter.com/docs', openapi: 'https://plainrouter.com/openapi.json' },
     });
-    const requests: Request[] = [];
-    const fetchMock: typeof globalThis.fetch = async (input, init) => {
-      const request = input instanceof Request ? input : new Request(input, init);
-      requests.push(request);
-      expect(new URL(request.url).hostname).toBe('127.0.0.1');
-      const url = new URL(request.url);
-      return new Response(JSON.stringify(apiRouteNotFound(request.method, url.pathname.slice('/api/v1'.length))), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    };
-    configurePlainrouter({ baseUrl: 'http://127.0.0.1:4567/api/v1', fetch: fetchMock, signalTrackerSecret: 'workspace-404-test' });
-
-    const contextError = apiRouteNotFound('GET', '/agent/context');
-    const context = await agentContext();
-    expect(context.error).toEqual(contextError);
-    expect(context.response?.status).toBe(404);
-    await expect(agentContext({ throwOnError: true })).rejects.toEqual(contextError);
-    expect(await agentContext({ responseStyle: 'data' })).toBeUndefined();
-    await expect(agentContext({ responseStyle: 'data', throwOnError: true })).rejects.toEqual(contextError);
-
-    const importOptions = { body: { file: new Blob(['id']), source_adset_id: '123', source_ad_id: '456', mode: 'duplicate_adset' as const } };
-    const fileImportError = apiRouteNotFound('POST', '/mcp/launcher/import');
-    const fileImport = await launcherFileImport(importOptions);
-    expect(fileImport.error).toEqual(fileImportError);
-    expect(fileImport.response?.status).toBe(404);
-    await expect(launcherFileImport({ ...importOptions, throwOnError: true })).rejects.toEqual(fileImportError);
-    expect(await launcherFileImport({ ...importOptions, responseStyle: 'data' })).toBeUndefined();
-    await expect(launcherFileImport({ ...importOptions, responseStyle: 'data', throwOnError: true })).rejects.toEqual(fileImportError);
-
-    expect(requests).toHaveLength(8);
-    expect(requests.map((request) => [request.method, new URL(request.url).pathname])).toEqual([
-      ['GET', '/api/v1/agent/context'],
-      ['GET', '/api/v1/agent/context'],
-      ['GET', '/api/v1/agent/context'],
-      ['GET', '/api/v1/agent/context'],
-      ['POST', '/api/v1/mcp/launcher/import'],
-      ['POST', '/api/v1/mcp/launcher/import'],
-      ['POST', '/api/v1/mcp/launcher/import'],
-      ['POST', '/api/v1/mcp/launcher/import'],
-    ]);
+    for (const [operation, options, method, path, accountMissing] of [
+      [agentContext, {}, 'GET', '/agent/context', false],
+      [launcherFileImport, { body: { file: new Blob(['id']), source_adset_id: '123', source_ad_id: '456', mode: 'duplicate_adset' } }, 'POST', '/mcp/launcher/import', false],
+      ...[getAccountInventory, getInventoryMetrics].flatMap((operation) => [false, true].map((accountMissing) => [
+        operation, { path: { workspace: 1, account_id: '123' } }, 'GET',
+        `/workspaces/1/admin/ad-accounts/123/inventory${operation === getInventoryMetrics ? '/metrics' : ''}`, accountMissing,
+      ] as const)),
+    ] as const) {
+      const body = accountMissing ? { message: 'Account not found.' } : apiRouteNotFound(method, path);
+      const requests: Request[] = [];
+      const fetchMock: typeof globalThis.fetch = async (input, init) => {
+        const request = input instanceof Request ? input : new Request(input, init);
+        requests.push(request);
+        expect(new URL(request.url).hostname).toBe('127.0.0.1');
+        return new Response(JSON.stringify(body), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      };
+      configurePlainrouter({ baseUrl: 'http://127.0.0.1:4567/api/v1', fetch: fetchMock, signalTrackerSecret: 'workspace-404-test' });
+      const call = operation as (options: unknown) => Promise<unknown>;
+      const result = await call(options) as { error: unknown; response: Response };
+      expect(result.error).toEqual(body);
+      expect(result.response.status).toBe(404);
+      await expect(call({ ...options, throwOnError: true })).rejects.toEqual(body);
+      expect(await call({ ...options, responseStyle: 'data' })).toBeUndefined();
+      await expect(call({ ...options, responseStyle: 'data', throwOnError: true })).rejects.toEqual(body);
+      expect(requests.map((request) => [request.method, new URL(request.url).pathname])).toEqual(
+        Array.from({ length: 4 }, () => [method, `/api/v1${path}`]),
+      );
+    }
   });
 });
