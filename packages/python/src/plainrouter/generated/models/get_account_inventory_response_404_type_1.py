@@ -6,11 +6,11 @@ from typing import Any, Literal, TypeVar, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="GetAccountInventoryResponse404")
+T = TypeVar("T", bound="GetAccountInventoryResponse404Type1")
 
 
 @_attrs_define
-class GetAccountInventoryResponse404:
+class GetAccountInventoryResponse404Type1:
     """
     Attributes:
         message (Literal['Account not found.']):
@@ -39,12 +39,12 @@ class GetAccountInventoryResponse404:
         if message != "Account not found.":
             raise ValueError(f"message must match const 'Account not found.', got '{message}'")
 
-        get_account_inventory_response_404 = cls(
+        get_account_inventory_response_404_type_1 = cls(
             message=message,
         )
 
-        get_account_inventory_response_404.additional_properties = d
-        return get_account_inventory_response_404
+        get_account_inventory_response_404_type_1.additional_properties = d
+        return get_account_inventory_response_404_type_1
 
     @property
     def additional_keys(self) -> list[str]:

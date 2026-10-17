@@ -3,6 +3,7 @@
 ## 0.10.1 (Unreleased)
 
 - Fix launcher import so it reaches the route core serves; it previously returned 404 for every caller using the default base.
+- `GET /workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory` and `GET /workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory/metrics` now document the workspace 404, which decodes as `ApiRouteNotFound`; account-not-found 404s retain their message. Compatibility: inventory 404 types now include `ApiRouteNotFound` alongside the existing message body.
 - Reflect core #1196's stricter server behavior for the existing workspace contract: live credentials targeting foreign, inaccessible same-team, or missing workspaces, and resources inside them, now receive 404 `api_route_not_found`.
 - Non-canonical workspace path IDs (including leading zeros, signs, spaces, decimals, and `true`/`false` in any case) receive the same 404, even for the caller's own workspace. Unauthenticated requests receive the same response for existing and missing workspaces.
 - `workspace_id` is checked only by routes that read it; on those routes, missing, foreign, and non-canonical selectors receive the canonical-missing response, while it has no effect elsewhere. Foreign or non-canonical entries in `workspace_ids` receive the same 422 as nonexistent entries.

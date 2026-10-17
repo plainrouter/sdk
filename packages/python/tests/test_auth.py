@@ -4,7 +4,7 @@ import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO
 from threading import Thread
-from typing import cast
+from typing import Any, cast
 
 import httpx
 import pytest
@@ -14,12 +14,15 @@ from plainrouter.generated.api.action_proposal_api import actions_api_propose
 from plainrouter.generated.api.agent_context import agent_context as agent_context_api
 from plainrouter.generated.api.creative import launch_creatives_index
 from plainrouter.generated.api.draft_batch_file_import import launcher_file_import
+from plainrouter.generated.api.meta_inventory_exposure import get_account_inventory, get_inventory_metrics
 from plainrouter.generated.models import (
     ActionProposalInput,
     ActionProposalInputTargetSource,
     ApiRouteNotFound,
     DraftBatchFileImportRequest,
     DraftBatchMode,
+    ErrorMessage,
+    GetAccountInventoryResponse404Type1,
 )
 from plainrouter.generated.types import File
 
@@ -403,3 +406,68 @@ async def test_launcher_import_route_on_loopback(base: str | None, expected: str
         server.shutdown()
         server.server_close()
         thread.join()
+
+
+@pytest.mark.parametrize("operation,account_missing", [
+    ("context", False), ("import", False),
+    ("inventory", False), ("inventory", True),
+    ("metrics", False), ("metrics", True),
+])
+async def test_inventory_404_bodies_parse_in_all_call_modes(
+    operation: str, account_missing: bool,
+) -> None:
+    observed: list[tuple[str, str]] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        assert request.url.host == "127.0.0.1"
+        path = request.url.path.removeprefix("/api/v1")
+        observed.append((request.method, path))
+        return httpx.Response(
+            404,
+            json={"message": "Account not found."} if account_missing else {
+                "error": {
+                    "code": "api_route_not_found",
+                    "message": "Workspace is nonexistent, inaccessible or noncanonical.",
+                    "resolution": "Check the workspace selector and retry.",
+                },
+                "request": {"method": request.method, "path": path},
+                "resources": {"documentation": "https://plainrouter.com/docs", "openapi": "https://plainrouter.com/openapi.json"},
+            },
+        )
+
+    transport = httpx.MockTransport(handle)
+    client = create_client(
+        "workspace-404-test",
+        base_url="http://127.0.0.1:4567/api/v1",
+        httpx_args={"transport": transport},
+    )
+
+    def import_body() -> DraftBatchFileImportRequest:
+        return DraftBatchFileImportRequest(
+            file=File(payload=BytesIO(b"image")),
+            source_adset_id="123",
+            source_ad_id="456",
+            mode=DraftBatchMode.DUPLICATE_ADSET,
+        )
+
+    cases: dict[str, tuple[Any, dict[str, Any], str]] = {
+        "context": (agent_context_api, {}, "/agent/context"),
+        "import": (launcher_file_import, {"body": import_body()}, "/mcp/launcher/import"),
+        "inventory": (get_account_inventory, {"workspace": 1, "account_id": "123"}, "/workspaces/1/admin/ad-accounts/123/inventory"),
+        "metrics": (get_inventory_metrics, {"workspace": 1, "account_id": "123"}, "/workspaces/1/admin/ad-accounts/123/inventory/metrics"),
+    }
+    api, arguments, path = cases[operation]
+    results = [api.sync(client=client, **arguments), api.sync_detailed(client=client, **arguments).parsed]
+    async with client:
+        results.append(await api.asyncio(client=client, **arguments))
+        response = await api.asyncio_detailed(client=client, **arguments)
+        results.append(response.parsed)
+    assert response.status_code == 404
+    for result in results:
+        if account_missing:
+            assert isinstance(result, ErrorMessage if operation == "metrics" else GetAccountInventoryResponse404Type1)
+            assert result.message == "Account not found."
+        else:
+            assert isinstance(result, ApiRouteNotFound)
+            assert result.error.code.value == "api_route_not_found"
+    assert observed == [("POST" if operation == "import" else "GET", path)] * 4
