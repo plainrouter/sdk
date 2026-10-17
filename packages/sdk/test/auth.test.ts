@@ -1,3 +1,8 @@
+import { createServer } from 'node:http';
+import { once } from 'node:events';
+import { createClient } from '../src/generated/client/index.js';
+import { client as generatedClient } from '../src/generated/client.gen.js';
+
 import { describe, expect, it, vi } from 'vitest';
 import * as generatedOperations from '../src/generated/sdk.gen.js';
 import * as exportedOperations from '../src/operation-exports.js';
@@ -354,7 +359,7 @@ describe('JSON API transport', () => {
       requests.push(request);
       expect(new URL(request.url).hostname).toBe('127.0.0.1');
       const url = new URL(request.url);
-      return new Response(JSON.stringify(apiRouteNotFound(request.method, url.pathname.slice('/api/v1'.length))), {
+      return new Response(JSON.stringify(apiRouteNotFound(request.method, url.pathname.replace(/^\/api\/v1(?=\/)/, ''))), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -384,10 +389,65 @@ describe('JSON API transport', () => {
       ['GET', '/api/v1/agent/context'],
       ['GET', '/api/v1/agent/context'],
       ['GET', '/api/v1/agent/context'],
-      ['POST', '/api/v1/mcp/launcher/import'],
-      ['POST', '/api/v1/mcp/launcher/import'],
-      ['POST', '/api/v1/mcp/launcher/import'],
-      ['POST', '/api/v1/mcp/launcher/import'],
+      ['POST', '/mcp/launcher/import'],
+      ['POST', '/mcp/launcher/import'],
+      ['POST', '/mcp/launcher/import'],
+      ['POST', '/mcp/launcher/import'],
     ]);
+  });
+});
+
+// All logical hosts are redirected before fetch; the capture server only binds loopback.
+describe('launcher import route', () => {
+  it.each([
+    ['default', generatedClient.getConfig().baseUrl ?? '', '/mcp/launcher/import'],
+    ['prefixed', 'https://proxy.example/api/v1', '/mcp/launcher/import'],
+    ['slash', 'https://proxy.example/api/v1/', '/mcp/launcher/import'],
+    ['nested', 'https://proxy.example/prefix/api/v1', '/prefix/mcp/launcher/import'],
+    ['similar', 'https://proxy.example/api/v1beta', '/api/v1beta/mcp/launcher/import'],
+    ['inner', 'https://proxy.example/api/v1/inner', '/api/v1/inner/mcp/launcher/import'],
+    ['bare', 'http://127.0.0.1:8080', '/mcp/launcher/import'],
+  ])('%s base reaches core in every call mode', async (_label, baseUrl, expected) => {
+    if (_label === 'default') expect(baseUrl).toBe('https://plainrouter.com/api/v1');
+    const paths: string[] = [];
+    const server = createServer((request, response) => {
+      paths.push(request.url ?? '');
+      request.resume();
+      response.writeHead(401, { 'Content-Type': 'application/json', Connection: 'close' });
+      response.end('{"message":"Unauthenticated."}');
+    });
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const address = server.address();
+    if (!address || typeof address === 'string') throw new Error('Missing capture address');
+    const redirect: typeof fetch = (input, init) => {
+      const request = new Request(input, init);
+      const target = new URL(request.url);
+      expect(target.origin).toBe(new URL(baseUrl).origin);
+      target.protocol = 'http:';
+      target.hostname = '127.0.0.1';
+      target.port = String(address.port);
+      return globalThis.fetch(new Request(target, request));
+    };
+    try {
+      for (const mode of ['configured', 'per-call', 'custom-client']) {
+        configurePlainrouter({ baseUrl: mode === 'configured' ? baseUrl : 'http://127.0.0.1:1', fetch: redirect, signalTrackerSecret: 'loopback' });
+        for (const responseStyle of ['fields', 'data'] as const) {
+          for (const throwOnError of [false, true]) {
+            const result = launcherFileImport({
+              body: { file: new Blob(['image']), source_adset_id: '123', source_ad_id: '456', mode: 'duplicate_adset' },
+              ...(mode === 'per-call' ? { baseUrl } : {}),
+              ...(mode === 'custom-client' ? { client: createClient({ baseUrl, fetch: redirect }) } : {}),
+              responseStyle, throwOnError,
+            });
+            if (throwOnError) await expect(result).rejects.toEqual({ message: 'Unauthenticated.' });
+            else await result;
+          }
+        }
+      }
+      expect(paths).toEqual(Array(12).fill(expected));
+    } finally {
+      await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+    }
   });
 });
