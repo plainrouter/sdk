@@ -2,7 +2,7 @@
 
 ## 0.6.1 (Unreleased)
 
-- `GET /workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory` and `GET /workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory/metrics` now document the workspace 404, which decodes as `ApiRouteNotFound`; account-not-found 404s retain their message. Compatibility: generated `GetAccountInventory404Response` now includes the workspace error fields alongside `message`.
+- `GET /workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory` and `GET /workspaces/{workspace}/admin/ad-accounts/{account_id}/inventory/metrics` now document the workspace 404, which decodes as `ApiRouteNotFound`; account-not-found 404s retain their message. Compatibility: generated `GetAccountInventory404Response` changes from a model class to an anyOf module (`.build`) that resolves to `ApiRouteNotFound` or `GetAccountInventory404ResponseAnyOf`, the former `message` model; `.new` and `.build_from_hash` are removed.
 - Load Pathname for multipart uploads when Ruby runs outside Bundler.
 - Reflect core #1196's stricter server behavior for the existing workspace contract: live credentials targeting foreign, inaccessible same-team, or missing workspaces, and resources inside them, now receive 404 `api_route_not_found`.
 - Non-canonical workspace path IDs (including leading zeros, signs, spaces, decimals, and `true`/`false` in any case) receive the same 404, even for the caller's own workspace. Unauthenticated requests receive the same response for existing and missing workspaces.
