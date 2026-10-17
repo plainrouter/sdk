@@ -1,5 +1,4 @@
 {
-    "x-signed": true,
     "x-action-types": [
         "increase_budget",
         "decrease_budget",
@@ -6566,19 +6565,26 @@
                 ],
                 "responses": {
                     "404": {
-                        "description": "",
+                        "description": "Workspace is nonexistent, inaccessible or noncanonical, or the account is not found or outside the key binding.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "const": "Account not found."
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ApiRouteNotFound"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "const": "Account not found."
+                                                }
+                                            },
+                                            "required": [
+                                                "message"
+                                            ]
                                         }
-                                    },
-                                    "required": [
-                                        "message"
                                     ]
                                 }
                             }
@@ -7261,11 +7267,18 @@
                         }
                     },
                     "404": {
-                        "description": "Account not found or outside the key binding.",
+                        "description": "Workspace is nonexistent, inaccessible or noncanonical, or the account is not found or outside the key binding.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorMessage"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ApiRouteNotFound"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ErrorMessage"
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -18116,5 +18129,6 @@
                 "title": "WorkspaceLockTimeout"
             }
         }
-    }
+    },
+    "x-signed": true
 }

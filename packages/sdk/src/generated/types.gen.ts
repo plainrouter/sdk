@@ -4487,7 +4487,10 @@ export type GetAccountInventoryErrors = {
      * Invalid or missing Server secret.
      */
     401: ErrorMessage;
-    404: {
+    /**
+     * Workspace is nonexistent, inaccessible or noncanonical, or the account is not found or outside the key binding.
+     */
+    404: ApiRouteNotFound | {
         message: 'Account not found.';
     };
 };
@@ -4557,9 +4560,9 @@ export type GetInventoryMetricsErrors = {
      */
     403: ErrorMessage;
     /**
-     * Account not found or outside the key binding.
+     * Workspace is nonexistent, inaccessible or noncanonical, or the account is not found or outside the key binding.
      */
-    404: ErrorMessage;
+    404: ApiRouteNotFound | ErrorMessage;
     /**
      * Request validation failed.
      */

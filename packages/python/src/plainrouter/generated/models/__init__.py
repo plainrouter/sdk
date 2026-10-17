@@ -616,7 +616,7 @@ from .get_account_inventory_response_200_staleness import GetAccountInventoryRes
 from .get_account_inventory_response_200_summary import GetAccountInventoryResponse200Summary
 from .get_account_inventory_response_200_summary_by_level import GetAccountInventoryResponse200SummaryByLevel
 from .get_account_inventory_response_200_sync import GetAccountInventoryResponse200Sync
-from .get_account_inventory_response_404 import GetAccountInventoryResponse404
+from .get_account_inventory_response_404_type_1 import GetAccountInventoryResponse404Type1
 from .get_emq_report_response_200 import GetEmqReportResponse200
 from .get_emq_report_response_200_snapshots_item import GetEmqReportResponse200SnapshotsItem
 from .get_emq_report_response_200_snapshots_item_platform_response_type_0 import (
@@ -1381,7 +1381,7 @@ __all__ = (
     "GetAccountInventoryResponse200Summary",
     "GetAccountInventoryResponse200SummaryByLevel",
     "GetAccountInventoryResponse200Sync",
-    "GetAccountInventoryResponse404",
+    "GetAccountInventoryResponse404Type1",
     "GetEmqReportResponse200",
     "GetEmqReportResponse200SnapshotsItem",
     "GetEmqReportResponse200SnapshotsItemPlatformResponseType0",
