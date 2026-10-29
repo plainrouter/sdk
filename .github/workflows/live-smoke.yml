@@ -25,8 +25,6 @@ jobs:
       - run: corepack npm ci
       - run: corepack npm run build
       - name: Smoke test against the live API
-        env:
-          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: corepack npm run smoke:live
 
   python:
@@ -45,8 +43,6 @@ jobs:
         working-directory: packages/python
         run: python -m pip install --disable-pip-version-check -r requirements-runtime.txt
       - name: Smoke test against the live API
-        env:
-          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: python scripts/live-smoke.py
 
   ruby:
@@ -63,8 +59,6 @@ jobs:
           working-directory: packages/ruby
       - name: Smoke test against the live API
         working-directory: packages/ruby
-        env:
-          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: bundle exec ruby -Ilib ../../scripts/live-smoke.rb
 
   php:
@@ -83,6 +77,4 @@ jobs:
         working-directory: packages/php
         run: composer install --no-interaction --no-progress --no-dev
       - name: Smoke test against the live API
-        env:
-          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: php scripts/live-smoke.php

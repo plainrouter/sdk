@@ -1,22 +1,14 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.plainrouter/mcp",
+  "description": "Meta Ads MCP: read ad accounts and signal health; propose governed changes under Ask or Full.",
   "title": "Plainrouter",
-  "description": "Inspect an approved ad account and first-party signal health, then propose policy-gated actions.",
-  "version": "0.4.0",
-  "repository": {
-    "url": "https://github.com/plainrouter/sdk",
-    "source": "github"
-  },
+  "version": "0.4.2",
   "websiteUrl": "https://plainrouter.com",
   "remotes": [
     {
       "type": "streamable-http",
       "url": "https://plainrouter.com/mcp"
-    },
-    {
-      "type": "streamable-http",
-      "url": "https://plainrouter.com/mcp/sandbox"
     }
   ],
   "_meta": {
