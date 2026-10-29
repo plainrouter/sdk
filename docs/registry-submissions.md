@@ -1,12 +1,9 @@
 # Registry submissions
 
-Prepared 2026-09-17 for the Laravel MCP 1.0 server release. As last confirmed
-on 2026-08-28, PlainRouter is published in the official MCP Registry as
-`com.plainrouter/mcp`; versions `0.3.0`, `0.3.1`, and `0.3.2` were present, and
-`0.3.2` was current. The repository's `server.json` prepares `0.4.0` for
-publication only after the matching server version is deployed. No registry or
-directory account was used, no listing was submitted, and no credentials were
-added to the repository.
+The official MCP Registry entry `com.plainrouter/mcp` is published at version
+`0.4.2`, matching the hosted server. `server.json` contains that published
+metadata and only the production remote `https://plainrouter.com/mcp`.
+The public synthetic sandbox is retired; do not publish it as an available remote.
 
 ## Shared listing copy
 
@@ -15,19 +12,17 @@ Glama:
 
 | Field | Prepared value |
 | --- | --- |
-| Display name | PlainRouter |
+| Display name | Plainrouter |
 | MCP server name | `com.plainrouter/mcp` |
-| Description | Inspect an approved ad account and first-party signal health, then propose policy-gated actions. |
+| Description | Meta Ads MCP: read ad accounts and signal health; propose governed changes under Ask or Full. |
 | Transport | Streamable HTTP |
 | Production endpoint | `https://plainrouter.com/mcp` |
-| Sandbox endpoint | `https://plainrouter.com/mcp/sandbox` |
 | Repository | `https://github.com/plainrouter/sdk` |
 | Developer documentation | `https://plainrouter.com/docs/reference/mcp-tools` |
-| Authentication | Production uses OAuth 2.1 with only `mcp:use` and the human-approved ad-account boundary. The sandbox accepts no credentials and returns synthetic data only. |
+| Authentication | Production uses OAuth 2.1 with only `mcp:use` and the human-approved ad-account boundary. |
 
-Publish both remotes in the official Registry. For a third-party production
-listing, use `https://plainrouter.com/mcp` unless the directory explicitly
-supports a separate sandbox remote. Do not put an OAuth token in either URL.
+For a third-party production listing, use `https://plainrouter.com/mcp`.
+Do not put an OAuth token in the URL.
 Do not add a tool list to third-party directory copy; tools must be discovered
 from the live MCP server rather than inferred here.
 
@@ -51,9 +46,9 @@ verification is performed through their rendered README.
 The [live Registry query](https://registry.modelcontextprotocol.io/v0/servers?search=plainrouter)
 is authoritative for the existing identity `com.plainrouter/mcp`. A remote URL
 cannot be claimed by another server name, and published versions are immutable:
-publishing `0.3.2` again is not an update. `/server.json` prepares `0.4.0`, but
-it must not be published until the deployed MCP server reports `0.4.0`. This
-lane does not deploy the application or publish the Registry entry.
+publishing `0.4.2` again is not an update. `/server.json` matches the published
+`0.4.2` record. Future metadata changes require a new Registry version; updating
+this repository does not publish that version or deploy the application.
 
 Sources used:
 
@@ -84,7 +79,7 @@ shown here.
    ```
 
 2. Confirm the deployed MCP server reports the same version as `server.json`,
-   then validate the file. Reusing `0.3.2` fails because that Registry version
+   then validate the file. Reusing `0.4.2` fails because that Registry version
    already exists.
 
    ```bash
@@ -212,9 +207,9 @@ listing. Robin verifies the resulting listing and reports any metadata mismatch.
    endpoint and metadata below. Do not present this SDK repository as runnable
    server source; if Glama only accepts a source build, stop and use Registry
    ingestion instead.
-3. If Glama requests scan credentials, provide only a non-production sandbox
-   credential set through Robin's account workflow. Never provide a human's or
-   customer's production advertising-account credentials. `[Robin auth]`
+3. Refresh the retired sandbox connector through official Registry ingestion
+   before configuring health checks. Do not provide a human's or customer's
+   production advertising-account credentials to the directory. `[Robin auth]`
 4. Submit the listing and verify the generated tool/schema metadata. `[Robin
    submit]`
 

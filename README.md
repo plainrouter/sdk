@@ -13,7 +13,6 @@ This repository holds Plainrouter's public SDKs (TypeScript, Python, Ruby and PH
 | | |
 | --- | --- |
 | MCP endpoint | `https://plainrouter.com/mcp` (Streamable HTTP) |
-| Sandbox | `https://plainrouter.com/mcp/sandbox`: no account or credential, synthetic data, never contacts Meta |
 | Authentication | A Workspace key sent as a bearer token, or Plainrouter OAuth sign-in where the client supports it |
 | Access tiers | **Read** for account, signal, inventory and creative reads; **Write** adds previews and proposals |
 | Approvals | **Ask**: a person approves each change. **Full**: policy-allowed changes run automatically. Rule violations are blocked, the kill switch stops further writes, and every change gets a decision receipt |
@@ -24,24 +23,7 @@ This repository holds Plainrouter's public SDKs (TypeScript, Python, Ruby and PH
 
 ## Quick start
 
-### 1. Try the sandbox, no account needed
-
-Claude Code:
-
-```sh
-claude mcp add --transport http plainrouter-test https://plainrouter.com/mcp/sandbox
-```
-
-Codex (`~/.codex/config.toml`):
-
-```toml
-[mcp_servers.plainrouter-test]
-url = "https://plainrouter.com/mcp/sandbox"
-```
-
-Ask the agent to call `get_account_state`, then `get_signal_health`. Every response is synthetic and marked `"sandbox": true`.
-
-### 2. Connect your Meta ad account
+### Connect your Meta ad account
 
 Create a Workspace key in **Settings → Workspace keys** (start with **Read**), keep it in an environment variable, and point your client at `https://plainrouter.com/mcp`.
 
@@ -87,7 +69,7 @@ Meta hosts a first-party server at `https://mcp.facebook.com/ads` for its own ad
 
 ### Does it work with ChatGPT?
 
-Yes, in ChatGPT developer mode on paid plans. Add `https://plainrouter.com/mcp` with OAuth and choose the ad account on Plainrouter's consent screen. The sandbox works there with No Authentication.
+Yes, in ChatGPT developer mode on paid plans. Add `https://plainrouter.com/mcp` with OAuth and choose the ad account on Plainrouter's consent screen.
 
 ### What does it cost?
 
