@@ -25,6 +25,6 @@ npm run build
 
 Run `npm run smoke:production` only when a human explicitly requests a production smoke test. It is not part of ordinary local verification.
 
-`npm run smoke:live`, `scripts/live-smoke.py`, `scripts/live-smoke.rb`, and `scripts/live-smoke.php` call the live zero-auth sandbox through each SDK. They persist nothing and need no credentials; CI runs them nightly and before every publish.
+`npm run smoke:live`, `scripts/live-smoke.py`, `scripts/live-smoke.rb`, and `scripts/live-smoke.php` call the read-only events endpoint without credentials and require its documented HTTP 401 authentication error. They do not send events or exercise authenticated operations; CI runs them nightly and before every publish.
 
 For agent integration changes, validate every JSON file, validate each `SKILL.md`, and keep the documented MCP endpoint, OAuth scope, developer index, and OpenAPI URL consistent with the public Plainrouter resources.

@@ -42,8 +42,6 @@ jobs:
           SPEC_DRIFT_STRICT: ${{ github.event_name == 'pull_request' && '0' || '1' }}
         run: corepack npm run spec:drift
       - name: Smoke test against the live API
-        env:
-          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: corepack npm run smoke:live
       - name: Verify production install parity
         run: |
@@ -141,8 +139,6 @@ jobs:
           python ../../scripts/verify-python-dist.py dist/*.whl dist/*.tar.gz
       - name: Smoke test against the live API
         if: matrix.python-version == '3.11.16'
-        env:
-          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: python scripts/live-smoke.py
 
   ruby-quality:
@@ -188,8 +184,6 @@ jobs:
       - name: Smoke test against the live API
         if: matrix.ruby-version == '3.4'
         working-directory: packages/ruby
-        env:
-          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: bundle exec ruby -Ilib ../../scripts/live-smoke.rb
 
   php-quality:
@@ -240,8 +234,6 @@ jobs:
         run: composer install --no-interaction --no-progress --no-dev
       - name: Smoke test against the live API
         if: matrix.php-version == '8.4'
-        env:
-          PLAINROUTER_SMOKE_SECRET: ${{ secrets.PLAINROUTER_SMOKE_SECRET }}
         run: php scripts/live-smoke.php
 
   secret-scan:
