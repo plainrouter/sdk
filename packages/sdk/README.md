@@ -1,16 +1,23 @@
 # @plainrouter/sdk
 
-Generated TypeScript client and Zod schemas for Plainrouter's signed OpenAPI
-contract.
+Official TypeScript client and Zod schemas for [Plainrouter](https://plainrouter.com), generated from Plainrouter's signed OpenAPI contract. Plainrouter provides Meta Conversions API (CAPI) and Meta Ads MCP tooling with first-party conversion diagnostics and governed ad actions (`Ask`, `Custom`, or `Full` modes).
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
-[documentation](https://plainrouter.com/docs/sdk/typescript) ·
+[documentation](https://plainrouter.com/docs) ·
+[TypeScript SDK guide](https://plainrouter.com/docs/sdk/typescript) ·
+[MCP overview](https://plainrouter.com/docs/mcp/overview) ·
 [source](https://github.com/plainrouter/sdk/tree/main/packages/sdk)
 
 Report SDK issues in the [Plainrouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
 
 This package is in `0.x` development. Its interface is unstable and carries no
 support promise yet.
+
+Install the package:
+
+```sh
+npm install @plainrouter/sdk
+```
 
 Configure authentication by injecting a `signalTrackerSecret` bearer token with
 the exported client configuration helper. No credential is embedded in the

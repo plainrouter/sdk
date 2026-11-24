@@ -2,11 +2,11 @@
 
 <!-- mcp-name: com.plainrouter/mcp -->
 
-**Plainrouter is a hosted Meta Ads MCP server and API for developers and AI agents.** Connect Claude, ChatGPT, Codex, Cursor, Gemini CLI or another MCP client to read a Meta ad account and its conversion-signal health. The agent can then propose pauses, resumes, budget changes and creative tests. Workspace policy checks every proposal. In Ask mode a person approves each change; in Full mode policy-allowed changes run automatically. New ad copies are created paused.
+**Plainrouter is a Meta Conversions API (CAPI) and hosted Meta Ads MCP platform, API, and SDK suite for developers and AI agents.** Connect Claude, ChatGPT, Codex, Cursor, Gemini CLI, or another MCP client to read a Meta ad account, inspect first-party conversion diagnostics, and propose governed ad actions (pauses, resumes, budget changes, and creative tests). Workspace policy checks every proposal under **Ask**, **Custom**, or **Full** mode. In Ask mode, a person approves each change first; Custom permits enabled agent action types without individual approval; Full permits admitted agent actions without individual approval. New ad copies are created paused.
 
 Plainrouter also keeps its own count of website arrivals and verified revenue beside Meta's reported numbers, so an agent can check Meta's claims against independent evidence.
 
-This repository holds Plainrouter's public SDKs (TypeScript, Python, Ruby and PHP; Go lives in [plainrouter/sdk-go](https://github.com/plainrouter/sdk-go)), the CLI, MCP metadata and official Agent Skills.
+This repository holds Plainrouter's public SDKs (TypeScript, Python, Ruby, and PHP; the Go SDK lives in [plainrouter/sdk-go](https://github.com/plainrouter/sdk-go)), the CLI, MCP metadata, and official Agent Skills.
 
 ## At a glance
 
@@ -15,11 +15,11 @@ This repository holds Plainrouter's public SDKs (TypeScript, Python, Ruby and PH
 | MCP endpoint | `https://plainrouter.com/mcp` (Streamable HTTP) |
 | Authentication | A Workspace key sent as a bearer token, or Plainrouter OAuth sign-in where the client supports it |
 | Access tiers | **Read** for account, signal, inventory and creative reads; **Write** adds previews and proposals |
-| Approvals | **Ask**: a person approves each change. **Full**: policy-allowed changes run automatically. Rule violations are blocked, the kill switch stops further writes, and every change gets a decision receipt |
+| Approvals | **Ask**: a person approves each change first. **Custom**: enabled agent action types run without individual approval. **Full**: admitted agent actions run without individual approval. Rule violations are blocked, the kill switch stops further writes, and every change gets a decision receipt |
 | Clients | Claude Code, Claude, ChatGPT (developer mode), Codex, Cursor, Gemini CLI, Grok, Meta Muse, Hermes, OpenClaw, n8n and Make ([setup guides](https://plainrouter.com/docs/mcp/clients)) |
 | Pricing | MCP is included on every plan and calls are not metered. Free below $300 of monthly ad spend ([pricing](https://plainrouter.com/pricing)) |
 | Registry | `com.plainrouter/mcp` in the [official MCP Registry](https://registry.modelcontextprotocol.io) |
-| Docs | [MCP overview](https://plainrouter.com/docs/mcp/overview) · [Meta Ads MCP server](https://plainrouter.com/solutions/meta-ads-mcp) |
+| Docs | [Documentation](https://plainrouter.com/docs) · [MCP overview](https://plainrouter.com/docs/mcp/overview) · [Meta Ads MCP server](https://plainrouter.com/solutions/meta-ads-mcp) |
 
 ## Quick start
 
@@ -65,7 +65,7 @@ Yes. A Read key covers account, Signals, inventory and creative-library reads an
 
 ### How is this different from Meta's own Ads MCP server?
 
-Meta hosts a first-party server at `https://mcp.facebook.com/ads` for its own advertising operations, and it is the first option to evaluate for direct access. Plainrouter adds an independent conversion count and delivery diagnostics, Ask/Full approvals with policy checks and receipts, and keys scoped to one workspace. See the [Meta Ads MCP comparison](https://plainrouter.com/library/meta-ads-mcp-options).
+Meta hosts a first-party server at `https://mcp.facebook.com/ads` for its own advertising operations, and it is the first option to evaluate for direct access. Plainrouter adds an independent conversion count and delivery diagnostics, Ask, Custom, and Full approvals with policy checks and receipts, and keys scoped to one workspace. See the [Meta Ads MCP comparison](https://plainrouter.com/library/meta-ads-mcp-options).
 
 ### Does it work with ChatGPT?
 
@@ -85,7 +85,7 @@ For agents, the repository also includes:
 - three official Agent Skills:
   - [`get-ad-account-context`](skills/get-ad-account-context/SKILL.md) for approved account context and read-only measurements;
   - [`verify-signal-ingestion`](skills/verify-signal-ingestion/SKILL.md) for an idempotent identity-free onboarding check; and
-  - [`propose-governed-ad-actions`](skills/propose-governed-ad-actions/SKILL.md) for evidence-backed proposals governed by Ask or Full.
+  - [`propose-governed-ad-actions`](skills/propose-governed-ad-actions/SKILL.md) for evidence-backed proposals governed by Ask, Custom, or Full mode.
 
 Install the skills with the open Agent Skills CLI:
 
@@ -137,9 +137,11 @@ The live server advertises 32 tools. Your key tier, grants and the selected ad a
 | `revoke_grant` | Write | Revoke an active workspace grant. |
 | `submit_feedback` | Write | Report a bug or a missing capability you hit while using this server. |
 
-Every change to Meta goes through Actions: policy checks, the workspace's Ask or Full mode, provider verification and a decision receipt.
+Every change to Meta goes through Actions: policy checks, the workspace's Ask, Custom, or Full mode, provider verification and a decision receipt.
 
 ## TypeScript SDK
+
+Documentation: [TypeScript SDK guide](https://plainrouter.com/docs/sdk/typescript).
 
 Install the generated SDK:
 
@@ -175,11 +177,15 @@ published versions on [GitHub Releases](https://github.com/plainrouter/sdk/relea
 [Packagist](https://packagist.org/packages/plainrouter/sdk), and
 [plainrouter/sdk-go](https://github.com/plainrouter/sdk-go/releases)).
 
-In Ask mode, a person approves every change first. In Full mode, the workspace
-lets changes run automatically without a per-change approval. Every change gets
-a receipt, and the kill switch stops all changes. It does not undo earlier changes.
+In Ask mode, a person approves every change first. In Custom mode, enabled agent
+action types run without individual approval. In Full mode, admitted agent
+actions run automatically without per-change approval. Every change gets a
+receipt, and the kill switch stops all changes. It does not undo earlier
+changes.
 
 ## Python SDK
+
+Documentation: [Python SDK guide](https://plainrouter.com/docs/sdk/python).
 
 Install the Python SDK:
 
@@ -199,6 +205,8 @@ independently from the API contract and are verified against the vendored,
 signed OpenAPI contract before publication.
 
 ## Ruby SDK
+
+Documentation: [Ruby SDK guide](https://plainrouter.com/docs/sdk/ruby).
 
 Install the Ruby gem:
 
@@ -224,6 +232,8 @@ top-level SDK documentation.
 
 ## PHP SDK
 
+Documentation: [PHP SDK guide](https://plainrouter.com/docs/sdk/php).
+
 Install the PHP package:
 
 ```sh
@@ -245,6 +255,10 @@ methods remain available under `Plainrouter\OpenAPI`.
 
 ## Go SDK
 
+Documentation: [Go SDK guide](https://plainrouter.com/docs/sdk/go) ·
+[pkg.go.dev](https://pkg.go.dev/github.com/plainrouter/sdk-go) ·
+[source](https://github.com/plainrouter/sdk-go).
+
 The generated Go client is published as its own standard Go module:
 
 ```sh
@@ -252,6 +266,8 @@ go get github.com/plainrouter/sdk-go@latest
 ```
 
 ## CLI
+
+Documentation: [CLI quickstart](https://plainrouter.com/docs/cli/quickstart).
 
 Install the canonical scoped CLI globally:
 
@@ -294,7 +310,7 @@ brew install plainrouter/tap/plainrouter
 
 ## Developer resources
 
-Official developer resources: [documentation](https://plainrouter.com/docs), [API documentation](https://plainrouter.com/docs/api/introduction), and [OpenAPI specification](https://plainrouter.com/openapi.json).
+Official developer resources: [documentation](https://plainrouter.com/docs), [MCP overview](https://plainrouter.com/docs/mcp/overview), [API documentation](https://plainrouter.com/docs/api/introduction), and [OpenAPI specification](https://plainrouter.com/openapi.json).
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
 [documentation](https://plainrouter.com/docs) ·

@@ -1,12 +1,17 @@
 # Plainrouter CLI
 
+Official command-line interface for [Plainrouter](https://plainrouter.com), a Meta Conversions API (CAPI) and Meta Ads MCP platform with first-party conversion diagnostics and governed ad actions (`Ask`, `Custom`, or `Full` modes).
+
 The Plainrouter CLI is a `0.x` interface over `@plainrouter/sdk`. It adds no API
 behavior: every API command delegates to one generated SDK operation.
 The interface is unstable and carries no support promise yet.
 This package is unrelated to the npm package `plain-router`.
 
 Official project: [plainrouter.com](https://plainrouter.com) ·
-[documentation](https://plainrouter.com/docs/cli/quickstart) ·
+[documentation](https://plainrouter.com/docs) ·
+[CLI quickstart](https://plainrouter.com/docs/cli/quickstart) ·
+[TypeScript SDK guide](https://plainrouter.com/docs/sdk/typescript) ·
+[MCP overview](https://plainrouter.com/docs/mcp/overview) ·
 [source](https://github.com/plainrouter/sdk/tree/main/packages/cli)
 
 Report CLI issues in the [Plainrouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
