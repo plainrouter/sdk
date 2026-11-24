@@ -164,15 +164,16 @@ embeds credentials.
 
 ## Action policy compatibility
 
-Current published releases: TypeScript SDK (`@plainrouter/sdk`) `0.10.1`,
-CLI (`@plainrouter/cli` and PyPI `plainrouter`) `0.10.1`, Python SDK
-(`plainrouter`) `0.10.1`, Ruby SDK (`plainrouter-sdk`) `0.6.1`, Go SDK
-(`github.com/plainrouter/sdk-go`) `v0.7.1`, and PHP SDK (`plainrouter/sdk`)
-`0.4.1`.
-
 Policy reads in the current `0.x` generated clients omit retired workspace policy
 settings and expose execution mode and outcome-check settings. Ensure
-integrations consume the current signed policy response.
+integrations consume the current signed policy response. See the latest
+published versions on [GitHub Releases](https://github.com/plainrouter/sdk/releases)
+([@plainrouter/sdk](https://www.npmjs.com/package/@plainrouter/sdk),
+[@plainrouter/cli](https://www.npmjs.com/package/@plainrouter/cli),
+[PyPI](https://pypi.org/project/plainrouter/),
+[RubyGems](https://rubygems.org/gems/plainrouter-sdk),
+[Packagist](https://packagist.org/packages/plainrouter/sdk), and
+[plainrouter/sdk-go](https://github.com/plainrouter/sdk-go/releases)).
 
 In Ask mode, a person approves every change first. In Full mode, the workspace
 lets changes run automatically without a per-change approval. Every change gets
@@ -247,7 +248,7 @@ methods remain available under `Plainrouter\OpenAPI`.
 The generated Go client is published as its own standard Go module:
 
 ```sh
-go get github.com/plainrouter/sdk-go@v0.7.1
+go get github.com/plainrouter/sdk-go@latest
 ```
 
 ## CLI
