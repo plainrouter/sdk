@@ -17,7 +17,7 @@ This repository holds Plainrouter's public SDKs (TypeScript, Python, Ruby and PH
 | Access tiers | **Read** for account, signal, inventory and creative reads; **Write** adds previews and proposals |
 | Approvals | **Ask**: a person approves each change. **Full**: policy-allowed changes run automatically. Rule violations are blocked, the kill switch stops further writes, and every change gets a decision receipt |
 | Clients | Claude Code, Claude, ChatGPT (developer mode), Codex, Cursor, Gemini CLI, Grok, Meta Muse, Hermes, OpenClaw, n8n and Make ([setup guides](https://plainrouter.com/docs/mcp/clients)) |
-| Pricing | MCP is included on every plan and calls are not metered. Free below €300 of monthly ad spend ([pricing](https://plainrouter.com/pricing)) |
+| Pricing | MCP is included on every plan and calls are not metered. Free below $300 of monthly ad spend ([pricing](https://plainrouter.com/pricing)) |
 | Registry | `com.plainrouter/mcp` in the [official MCP Registry](https://registry.modelcontextprotocol.io) |
 | Docs | [MCP overview](https://plainrouter.com/docs/mcp/overview) · [Meta Ads MCP server](https://plainrouter.com/solutions/meta-ads-mcp) |
 
@@ -73,7 +73,7 @@ Yes, in ChatGPT developer mode on paid plans. Add `https://plainrouter.com/mcp` 
 
 ### What does it cost?
 
-MCP is included on every Plainrouter plan, and MCP calls are not metered. Plainrouter is free below €300 of observed monthly ad spend.
+MCP is included on every Plainrouter plan, and MCP calls are not metered. Plainrouter is free below $300 of observed monthly ad spend.
 
 ## Agent Skills
 
@@ -164,10 +164,15 @@ embeds credentials.
 
 ## Action policy compatibility
 
-The next npm and Python version is `0.7.0`; the next Ruby version is `0.3.0`.
-These breaking `0.x` updates remove retired workspace policy settings from the
-generated clients. Policy reads expose execution mode and outcome-check settings.
-Update integrations to consume the current signed policy response.
+Current published releases: TypeScript SDK (`@plainrouter/sdk`) `0.10.1`,
+CLI (`@plainrouter/cli` and PyPI `plainrouter`) `0.10.1`, Python SDK
+(`plainrouter`) `0.10.1`, Ruby SDK (`plainrouter-sdk`) `0.6.1`, Go SDK
+(`github.com/plainrouter/sdk-go`) `v0.7.1`, and PHP SDK (`plainrouter/sdk`)
+`0.4.1`.
+
+Policy reads in the current `0.x` generated clients omit retired workspace policy
+settings and expose execution mode and outcome-check settings. Ensure
+integrations consume the current signed policy response.
 
 In Ask mode, a person approves every change first. In Full mode, the workspace
 lets changes run automatically without a per-change approval. Every change gets
@@ -242,7 +247,7 @@ methods remain available under `Plainrouter\OpenAPI`.
 The generated Go client is published as its own standard Go module:
 
 ```sh
-go get github.com/plainrouter/sdk-go@v0.5.0
+go get github.com/plainrouter/sdk-go@v0.7.1
 ```
 
 ## CLI

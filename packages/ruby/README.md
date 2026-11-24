@@ -7,7 +7,7 @@ The official Ruby SDK for the Plainrouter Signals Conversion API. It is generate
 Add the gem to your bundle:
 
 ```ruby
-gem "plainrouter-sdk", "~> 0.4"
+gem "plainrouter-sdk", "~> 0.6"
 ```
 
 Then run `bundle install`. Ruby 3.2 or newer is required.
