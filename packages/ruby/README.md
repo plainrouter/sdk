@@ -1,6 +1,10 @@
 # Plainrouter Ruby SDK
 
-The official Ruby SDK for the Plainrouter Signals Conversion API. It is generated from the repository's signed OpenAPI contract and is currently in `0.x` development.
+Official Ruby SDK for [Plainrouter](https://plainrouter.com), generated from Plainrouter's signed OpenAPI contract. Plainrouter provides Meta Conversions API (CAPI) and Meta Ads MCP tooling with first-party conversion diagnostics and governed ad actions (`Ask`, `Custom`, or `Full` modes). The gem is currently in `0.x` development.
+
+Official project: [plainrouter.com](https://plainrouter.com) · [documentation](https://plainrouter.com/docs) · [Ruby SDK guide](https://plainrouter.com/docs/sdk/ruby) · [MCP overview](https://plainrouter.com/docs/mcp/overview) · [source](https://github.com/plainrouter/sdk/tree/main/packages/ruby)
+
+Report Ruby SDK issues in the [Plainrouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
 
 ## Install
 

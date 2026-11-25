@@ -1,8 +1,8 @@
 # Plainrouter Python SDK and CLI
 
-Generated from Plainrouter's signed OpenAPI contract. The package is in 0.x and its API may change between minor releases. No support guarantees are made yet.
+Official Python SDK and CLI for [Plainrouter](https://plainrouter.com), generated from Plainrouter's signed OpenAPI contract. Plainrouter provides Meta Conversions API (CAPI) and Meta Ads MCP tooling with first-party conversion diagnostics and governed ad actions (`Ask`, `Custom`, or `Full` modes). The package is in `0.x` and its API may change between minor releases. No support guarantees are made yet.
 
-Official project: [plainrouter.com](https://plainrouter.com) · [documentation](https://plainrouter.com/docs/sdk/python) · [source](https://github.com/plainrouter/sdk/tree/main/packages/python)
+Official project: [plainrouter.com](https://plainrouter.com) · [documentation](https://plainrouter.com/docs) · [Python SDK guide](https://plainrouter.com/docs/sdk/python) · [MCP overview](https://plainrouter.com/docs/mcp/overview) · [source](https://github.com/plainrouter/sdk/tree/main/packages/python)
 
 Report Python SDK issues in the [Plainrouter SDK issue tracker](https://github.com/plainrouter/sdk/issues).
 

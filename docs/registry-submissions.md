@@ -14,7 +14,7 @@ Glama:
 | --- | --- |
 | Display name | Plainrouter |
 | MCP server name | `com.plainrouter/mcp` |
-| Description | Meta Ads MCP: read ad accounts and signal health; propose governed changes under Ask or Full. |
+| Description | Meta Ads MCP: read ad accounts and signal health; propose governed changes under Ask, Custom, or Full. |
 | Transport | Streamable HTTP |
 | Production endpoint | `https://plainrouter.com/mcp` |
 | Repository | `https://github.com/plainrouter/sdk` |
